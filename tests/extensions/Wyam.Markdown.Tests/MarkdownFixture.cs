@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Markdig;
-
-using NSubstitute;
-
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Testing;
@@ -46,16 +42,14 @@ namespace Wyam.Markdown.Tests
             [Test]
             public void CanUseExternalExtensionDirectly()
             {
-                IMarkdownExtension mockExtension = Substitute.For<IMarkdownExtension>();
-                Markdown markdown = new Markdown().UseExtension(mockExtension);
+                TestMarkdownExtension extension = new TestMarkdownExtension();
+                Markdown markdown = new Markdown().UseExtension(extension);
 
                 // When
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 markdown.Execute(new[] { new TestDocument(string.Empty) }, new TestExecutionContext()).ToList();  // Make sure to materialize the result list
 
                 // Then
-                // Setup will always be called during markdown pipeline setup.
-                mockExtension.Received().Setup(Arg.Any<MarkdownPipelineBuilder>());
+                extension.ReceivedSetup.ShouldBeTrue();
             }
 
             [Test]
@@ -66,7 +60,7 @@ namespace Wyam.Markdown.Tests
 ".Replace(Environment.NewLine, "\n");
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
-                Type[] o = { typeof(ExternalMarkdownExtension) };
+                Type[] o = { typeof(TestMarkdownExtension) };
                 IEnumerable<Type> cast = o as IEnumerable<Type>;
                 Markdown markdown = new Markdown().UseExtensions(cast);
 
@@ -87,8 +81,8 @@ namespace Wyam.Markdown.Tests
                 TestDocument document = new TestDocument(input);
                 Type[] o =
                 {
-                    typeof(ExternalMarkdownExtension),
-                    typeof(SecondExternalMarkdownExtension)
+                    typeof(TestMarkdownExtension),
+                    typeof(AlternateTestMarkdownExtension)
                 };
                 IEnumerable<Type> cast = o;
                 Markdown markdown = new Markdown().UseExtensions(cast);

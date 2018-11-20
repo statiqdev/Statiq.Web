@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Core.IO;
 using Wyam.Testing;
+using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.IO
 {
@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.IO
             public void SetsDefaultProvider()
             {
                 // Given, When
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // Then
@@ -46,8 +46,8 @@ namespace Wyam.Core.Tests.IO
             public void AddsProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
@@ -66,9 +66,9 @@ namespace Wyam.Core.Tests.IO
             public void AddsDuplicateProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider oldProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider oldProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
@@ -88,8 +88,8 @@ namespace Wyam.Core.Tests.IO
             public void AddsNewDefaultProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
@@ -107,8 +107,8 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNullName()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then
@@ -119,7 +119,7 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNullProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then
@@ -133,8 +133,8 @@ namespace Wyam.Core.Tests.IO
             public void RemovesExistingProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -154,7 +154,7 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsFalseForNonExistingProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
@@ -173,8 +173,8 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNullName()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -186,7 +186,7 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForDefaultProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then
@@ -200,8 +200,8 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -216,8 +216,8 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsDefaultProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -232,7 +232,7 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNullName()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then
@@ -243,7 +243,7 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNotFound()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then
@@ -257,8 +257,8 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsTrueForProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -275,8 +275,8 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsTrueForDefaultProvider()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider newProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider newProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
                 collection.Add("foo", newProvider);
 
@@ -293,7 +293,7 @@ namespace Wyam.Core.Tests.IO
             public void ReturnsFalseIfNotFound()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
@@ -308,7 +308,7 @@ namespace Wyam.Core.Tests.IO
             public void ThrowsForNullName()
             {
                 // Given
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When, Then

@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;

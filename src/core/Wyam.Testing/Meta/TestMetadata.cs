@@ -142,13 +142,11 @@ namespace Wyam.Testing.Meta
         public bool IsReadOnly => _metadata.IsReadOnly;
 
         /// <inhertdoc />
-        public IMetadata<T> MetadataAs<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public IMetadata<T> MetadataAs<T>() => new TestMetadataAs<T>(
+            _metadata.Where(x => x.Value is T).ToDictionary(x => x.Key, x => (T)x.Value));
 
         /// <summary>
-        /// This resolves the metadata value by recursivly expanding IMetadataValue.
+        /// This resolves the metadata value by recursively expanding IMetadataValue.
         /// </summary>
         private object GetValue(object originalValue)
         {
@@ -164,6 +162,5 @@ namespace Wyam.Testing.Meta
             IMetadataValue metadataValue = item.Value as IMetadataValue;
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, GetValue(metadataValue.Get(this))) : item;
         }
-
     }
 }

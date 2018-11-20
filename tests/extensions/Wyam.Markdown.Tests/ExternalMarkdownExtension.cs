@@ -6,10 +6,26 @@ using Markdig.Syntax.Inlines;
 
 namespace Wyam.Markdown.Tests
 {
-    public class ExternalMarkdownExtension : IMarkdownExtension
+    public class TestMarkdownExtension : IMarkdownExtension
     {
+        public bool ReceivedSetup { get; set; }
+
+        public string LinkClassToAdd { get; set; }
+
+        public TestMarkdownExtension()
+        {
+            LinkClassToAdd = "ui spaced image";
+        }
+
+        public TestMarkdownExtension(string linkClassToAdd)
+        {
+            LinkClassToAdd = linkClassToAdd;
+        }
+
         public void Setup(MarkdownPipelineBuilder pipeline)
         {
+            ReceivedSetup = true;
+
             // Make sure we don't have a delegate twice
             pipeline.DocumentProcessed -= PipelineOnDocumentProcessed;
             pipeline.DocumentProcessed += PipelineOnDocumentProcessed;
@@ -17,18 +33,19 @@ namespace Wyam.Markdown.Tests
 
         public void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
         {
+            ReceivedSetup = true;
         }
 
-        private static void PipelineOnDocumentProcessed(MarkdownDocument document)
+        private void PipelineOnDocumentProcessed(MarkdownDocument document)
         {
-            foreach (var node in document.Descendants())
+            foreach (MarkdownObject node in document.Descendants())
             {
                 if (node is Inline)
                 {
-                    var link = node as LinkInline;
+                    LinkInline link = node as LinkInline;
                     if (link != null && link.IsImage)
                     {
-                        link.GetAttributes().AddClass("ui spaced image");
+                        link.GetAttributes().AddClass(LinkClassToAdd);
                     }
                 }
             }

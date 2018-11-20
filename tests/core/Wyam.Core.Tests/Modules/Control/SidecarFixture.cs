@@ -11,9 +11,9 @@ using Wyam.Core.Execution;
 using Wyam.Testing;
 using Wyam.Common.IO;
 using Wyam.Testing.IO;
-using NSubstitute;
 using Wyam.Common.Meta;
 using Wyam.Testing.Execution;
+using Wyam.Testing.Documents;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
@@ -100,23 +100,17 @@ namespace Wyam.Core.Tests.Modules.Control
 
             private IDocument GetDocument(string source, string content)
             {
-                IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(new FilePath("/" + source));
-
-                document.ContainsKey(Keys.RelativeFilePath).Returns(true);
-                document.String(Keys.RelativeFilePath).Returns(source);
-
-                document.ContainsKey(Keys.SourceFilePath).Returns(true);
-                document.String(Keys.SourceFilePath).Returns("/" + source);
-                document.FilePath(Keys.SourceFilePath).Returns(new FilePath("/" + source));
-
-                document.ContainsKey(Keys.SourceFileName).Returns(true);
-                document.FilePath(Keys.SourceFileName).Returns(new FilePath(source).FileName);
-
-                document.Content.Returns(content);
-                document.GetStream().Returns(
-                    new MemoryStream(Encoding.UTF8.GetBytes(content)),
-                    new MemoryStream(Encoding.UTF8.GetBytes(content)));  // Return a new memory stream if called again
+                IDocument document = new TestDocument(
+                    content,
+                    new Dictionary<string, object>
+                    {
+                        { Keys.RelativeFilePath, source },
+                        { Keys.SourceFilePath, new FilePath("/" + source) },
+                        { Keys.SourceFileName, new FilePath(source).FileName }
+                    })
+                    {
+                        Source = new FilePath("/" + source)
+                    };
                 return document;
             }
 
@@ -132,22 +126,19 @@ namespace Wyam.Core.Tests.Modules.Control
 
             private IReadOnlyFileSystem GetFileSystem()
             {
-                IReadOnlyFileSystem fileSystem = Substitute.For<IReadOnlyFileSystem>();
-                IFileProvider fileProvider = GetFileProvider();
-                fileSystem.GetInputFile(Arg.Any<FilePath>()).Returns(x =>
+                TestFileProvider fileProvider = GetFileProvider();
+                TestFileSystem fileSystem = new TestFileSystem
                 {
-                    FilePath path = x.ArgAt<FilePath>(0);
-                    if (!path.IsAbsolute)
+                    InputPaths = new PathCollection<DirectoryPath>(new[]
                     {
-                        path = new FilePath("/" + path.FullPath);
-                    }
-                    return fileProvider.GetFile(path);
-                });
-                fileSystem.GetInputDirectory(Arg.Any<DirectoryPath>()).Returns(x => fileProvider.GetDirectory(x.ArgAt<DirectoryPath>(0)));
+                        new DirectoryPath("/")
+                    }),
+                    FileProvider = fileProvider
+                };
                 return fileSystem;
             }
 
-            private IFileProvider GetFileProvider()
+            private TestFileProvider GetFileProvider()
             {
                 TestFileProvider fileProvider = new TestFileProvider();
 

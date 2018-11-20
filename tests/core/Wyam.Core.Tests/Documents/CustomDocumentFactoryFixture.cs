@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Testing;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Documents
 {
@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.Documents
                 initialMetadata.Add("Foo", "Bar");
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
 
                 // When
                 IDocument resultDocument = customDocumentFactory.GetDocument(context);
@@ -48,7 +48,7 @@ namespace Wyam.Core.Tests.Documents
                 MetadataDictionary initialMetadata = new MetadataDictionary();
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
                 CloneReturnsNullDocument document = new CloneReturnsNullDocument();
 
                 // When, Then
@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Documents
                 MetadataDictionary initialMetadata = new MetadataDictionary();
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
                 CloneReturnsSameDocument document = new CloneReturnsSameDocument();
 
                 // When, Then
@@ -77,7 +77,7 @@ namespace Wyam.Core.Tests.Documents
                 initialMetadata.Add("Foo", "Bar");
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
                 CustomDocument sourceDocument = (CustomDocument)customDocumentFactory.GetDocument(context);
 
                 // When

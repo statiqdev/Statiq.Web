@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;

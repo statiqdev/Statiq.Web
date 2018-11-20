@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Core;
-using Wyam.Core.Modules;
-using Wyam.Common;
 using Wyam.Common.Documents;
-using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Testing;
 using Wyam.Testing.Documents;

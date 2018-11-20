@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
@@ -11,6 +11,7 @@ using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
+using Wyam.Testing.Modules;
 
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
@@ -67,8 +68,8 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
+                    new TestDocument(),
+                    new TestDocument()
                 };
                 Execute execute = new Execute((d, c) => null);
 
@@ -83,11 +84,11 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             public void ReturnsInputsForNullResultWithContextConfig()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
+                    new TestDocument(),
+                    new TestDocument()
                 };
                 Execute execute = new Execute(c => null);
 
@@ -133,7 +134,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                IDocument document = Substitute.For<IDocument>();
+                IDocument document = new TestDocument();
                 Execute execute = new Execute(c => document);
                 engine.Pipelines.Add("Test", execute);
 
@@ -149,7 +150,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                IDocument document = Substitute.For<IDocument>();
+                IDocument document = new TestDocument();
                 Execute execute = new Execute((d, c) => document);
                 engine.Pipelines.Add("Test", execute);
 
@@ -167,37 +168,45 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
+                    new TestDocument(),
+                    new TestDocument()
                 };
-                IModule module = Substitute.For<IModule>();
-                Execute execute = new Execute((d, c) => module);
+                int count = 0;
+                Execute execute = new Execute((d, c) =>
+                {
+                    count++;
+                    return null;
+                });
 
                 // When
                 ((IModule)execute).Execute(inputs, context).ToList();
 
                 // Then
-                module.Received(2).Execute(Arg.Any<IReadOnlyList<IDocument>>(), Arg.Any<IExecutionContext>());
+                count.ShouldBe(2);
             }
 
             [Test]
             public void RunsModuleAgainstInputDocuments()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
+                    new TestDocument(),
+                    new TestDocument()
                 };
-                IModule module = Substitute.For<IModule>();
-                Execute execute = new Execute(c => module);
+                int count = 0;
+                Execute execute = new Execute(c =>
+                {
+                    count++;
+                    return null;
+                });
 
                 // When
                 ((IModule)execute).Execute(inputs, context).ToList();
 
                 // Then
-                context.Received(1).Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>());
+                count.ShouldBe(1);
             }
 
             [Test]
