@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Execution;
 using Wyam.Testing;
@@ -39,8 +40,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 4", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 4");
             }
 
             [Test]
@@ -71,8 +72,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 8");
             }
 
             [Test]
@@ -103,8 +104,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 8");
             }
 
             [Test]
@@ -136,8 +137,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 9", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 9");
             }
 
             [Test]
@@ -162,7 +163,7 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
+                engine.DocumentFactory.GetType().Name.ShouldBe("CustomDocumentFactory`1");
             }
 
             [Test]
@@ -187,7 +188,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
+                engine.DocumentFactory.GetType().Name.ShouldBe("CustomDocumentFactory`1");
             }
 
             [Test]
@@ -207,10 +208,10 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("teststring", engine.Settings["TestString"]);
-                Assert.AreEqual(1234, engine.Settings["TestInt"]);
-                Assert.AreEqual(1234.567, engine.Settings["TestFloat"]);
-                Assert.AreEqual(true, engine.Settings["TestBool"]);
+                engine.Settings["TestString"].ShouldBe("teststring");
+                engine.Settings["TestInt"].ShouldBe(1234);
+                engine.Settings["TestFloat"].ShouldBe(1234.567);
+                engine.Settings["TestBool"].ShouldBe(true);
             }
 
             [Test]
@@ -229,8 +230,8 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual(1, engine.Pipelines.Count);
-                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+                engine.Pipelines.Count.ShouldBe(1);
+                engine.Pipelines.Values.First().Count.ShouldBe(2);
             }
 
             [Test]
@@ -249,8 +250,8 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual(1, engine.Pipelines.Count);
-                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+                engine.Pipelines.Count.ShouldBe(1);
+                engine.Pipelines.Values.First().Count.ShouldBe(2);
             }
 
             [Test]
@@ -270,7 +271,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(string.Empty);
 
                 // Then
-                Assert.AreEqual("Baz", engine.Settings["Foo"]);
+                engine.Settings["Foo"].ShouldBe("Baz");
             }
 
             [Test]
@@ -297,7 +298,7 @@ SetCustomDocumentType<MyDocument>();
 
                 // Then
                 Assert.IsNotNull(exception);
-                StringAssert.Contains("Directive was previously specified", exception.Message);
+                exception.Message.ShouldContain("Directive was previously specified");
             }
 
             [Test]
@@ -324,7 +325,7 @@ SetCustomDocumentType<MyDocument>();
 
                 // Then
                 Assert.IsNotNull(exception);
-                StringAssert.DoesNotContain("Directive was previously specified", exception.Message);
+                exception.Message.ShouldNotContain("Directive was previously specified");
             }
         }
 
@@ -342,7 +343,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(2);
             }
 
             [Test]
@@ -357,7 +358,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(1);
             }
 
             [Test]
@@ -371,7 +372,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(KnownRecipe.Blog.DefaultTheme, configurator.Theme);
+                configurator.Theme.ShouldBe(KnownRecipe.Blog.DefaultTheme);
             }
 
             [Test]
@@ -386,7 +387,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual("Foo", configurator.Theme);
+                configurator.Theme.ShouldBe("Foo");
             }
 
             [Test]
@@ -425,7 +426,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(2);
             }
 
             [Test]
@@ -440,7 +441,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(1);
             }
 
             [Test]
@@ -452,7 +453,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
 
                 // When
-                Assert.Throws<Exception>(() => configurator.AddThemePackagesAndPath());
+                Should.Throw<Exception>(() => configurator.AddThemePackagesAndPath());
             }
 
             [Test]
@@ -491,7 +492,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(engine.FileSystem.InputPaths.First().FullPath, "../MyTheme");
+                engine.FileSystem.InputPaths.First().FullPath.ShouldBe("../MyTheme");
             }
         }
 

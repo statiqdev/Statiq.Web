@@ -8,7 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 
 using Ploeh.AutoFixture;
-
+using Shouldly;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Configuration.ConfigScript;
@@ -77,7 +77,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 cacheManager.EvaluateCode(Autofixture.Create<string>(), Autofixture.CreateMany<Type>().ToList(), false, false, false);
 
                 // Then
-                Assert.AreEqual(scriptManager.RawAssembly, cacheStream.MemoryStream.ToArray());
+                scriptManager.RawAssembly.ShouldBe(cacheStream.MemoryStream.ToArray());
             }
 
             [Test]
@@ -96,7 +96,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 cacheManager.EvaluateCode(Autofixture.Create<string>(), Autofixture.CreateMany<Type>().ToList(), false, false, true);
 
                 // Then
-                Assert.IsEmpty(cacheStream.MemoryStream.ToArray());
+                cacheStream.MemoryStream.ToArray().ShouldBeEmpty();
             }
 
             [Test]

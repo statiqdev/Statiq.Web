@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
 
@@ -30,7 +31,7 @@ namespace Wyam.Configuration.Tests.Preprocessing
                 IEnumerable<string> actual = ArgumentSplitter.Split(arguments);
 
                 // Then
-                CollectionAssert.AreEqual(expected, actual);
+                actual.ShouldBe(expected);
             }
         }
     }

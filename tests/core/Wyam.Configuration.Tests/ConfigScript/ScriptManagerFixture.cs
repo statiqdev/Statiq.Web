@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
@@ -65,7 +66,7 @@ $@"#line 1
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -126,7 +127,7 @@ public class Baz
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -181,7 +182,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -228,7 +229,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -275,7 +276,7 @@ public static string Self(this string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -332,7 +333,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             // Assumes just the Content module is used
@@ -418,7 +419,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(Content), memberNames);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
+                generated.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -440,7 +441,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
+                generated.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
         }
 
