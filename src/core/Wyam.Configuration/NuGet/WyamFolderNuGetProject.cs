@@ -91,7 +91,7 @@ namespace Wyam.Configuration.NuGet
             }
             else
             {
-                Trace.Warning($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.TargetFramework.DotNetFrameworkName))})");
+                Trace.Verbose($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.TargetFramework.DotNetFrameworkName))})");
             }
         }
 
