@@ -136,7 +136,7 @@ Task("Run-Unit-Tests")
         };
         if (isRunningOnAppVeyor)
         {
-            testSettings.Filter = "TestCategory!=ExcludeFromAppVeyor";
+            testSettings.Filter = "TestCategory!=\"ExcludeFromAppVeyor\"";
             testSettings.Logger = "Appveyor";
 
             // Remove this when no longer using the tool (see above)
@@ -305,7 +305,7 @@ Task("Create-Chocolatey-Package")
     
 Task("Publish-MyGet")
     .IsDependentOn("Create-Packages")
-    .WithCriteria(() => !isLocal)
+    .WithCriteria(() => !isLocal && isRunningOnWindows)
     .WithCriteria(() => !isPullRequest)
     .Does(() =>
     {
@@ -400,7 +400,7 @@ Task("Publish-Release")
     });
     
 Task("Update-AppVeyor-Build-Number")
-    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => isRunningOnAppVeyor && isRunningOnWindows)
     .Does(() =>
     {
         AppVeyor.UpdateBuildVersion(semVersion);
@@ -408,7 +408,7 @@ Task("Update-AppVeyor-Build-Number")
 
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Zip-Files")
-    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => isRunningOnAppVeyor && isRunningOnWindows)
     .Does(() =>
     {
         var artifact = buildResultDir + File(zipFile);
