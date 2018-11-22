@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+using Cake.Common.Tools.DotNetCore;
 using Cake.Core;
 using Cake.Core.IO;
 using Cake.Core.Tooling;
-using Cake.Common.Tools.DotNetCore;
 
 namespace Cake.Wyam
 {
     /// <summary>
     /// The Wyam Runner used to execute the Wyam Executable
     /// </summary>
-    public sealed class WyamRunner : DotNetCoreTool<WyamSettings>
+    public sealed class WyamRunner : Tool<WyamSettings>
     {
         private readonly ICakeEnvironment _environment;
 
@@ -24,9 +24,26 @@ namespace Cake.Wyam
         /// <param name="processRunner">The process runner.</param>
         /// <param name="locator">The tool locator.</param>
         public WyamRunner(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IToolLocator locator)
-            : base(fileSystem, environment, processRunner, locator)
+            : base(fileSystem, environment, new PrependDotNetProcessRunner(processRunner), locator)
         {
             _environment = environment;
+        }
+
+        private class PrependDotNetProcessRunner : IProcessRunner
+        {
+            private readonly IProcessRunner _processRunner;
+
+            public PrependDotNetProcessRunner(IProcessRunner processRunner)
+            {
+                _processRunner = processRunner;
+            }
+
+            public IProcess Start(FilePath filePath, ProcessSettings settings)
+            {
+                // Prepends "dotnet" to the tool path
+                settings.Arguments.Prepend(filePath.FullPath);
+                return _processRunner.Start("dotnet", settings);
+            }
         }
 
         /// <summary>

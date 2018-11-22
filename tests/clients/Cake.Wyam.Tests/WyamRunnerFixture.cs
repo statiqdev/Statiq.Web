@@ -4,6 +4,7 @@ using Cake.Core.IO;
 using Cake.Testing;
 using Cake.Testing.Fixtures;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Testing.Attributes;
 
 namespace Cake.Wyam.Tests
@@ -37,7 +38,8 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual(expected, result.Path.FullPath);
+                result.Path.FullPath.ShouldBe("dotnet");
+                result.Args.ShouldStartWith(expected);
             }
 
             [WindowsTestCase("C:/Wyam/Wyam.dll", "C:/Wyam/Wyam.dll")]
@@ -51,7 +53,8 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual(expected, result.Path.FullPath);
+                result.Path.FullPath.ShouldBe("dotnet");
+                result.Args.ShouldStartWith(expected);
             }
 
             [Test]
@@ -64,7 +67,8 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("/Working/tools/Wyam.dll", result.Path.FullPath);
+                result.Path.FullPath.ShouldBe("dotnet");
+                result.Args.ShouldStartWith("/Working/tools/Wyam.dll");
             }
 
             [Test]
@@ -77,7 +81,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("/Working", result.Process.WorkingDirectory.FullPath);
+                result.Process.WorkingDirectory.FullPath.ShouldBe("/Working");
             }
 
             [Test]
@@ -88,7 +92,7 @@ namespace Cake.Wyam.Tests
                 fixture.GivenProcessCannotStart();
 
                 // When, Then
-                Assert.Throws<CakeException>(() => fixture.Run(), "Wyam: Process was not started.");
+                Should.Throw<CakeException>(() => fixture.Run(), "Wyam: Process was not started.");
             }
 
             [Test]
@@ -99,7 +103,7 @@ namespace Cake.Wyam.Tests
                 fixture.GivenProcessExitsWithCode(1);
 
                 // When, Then
-                Assert.Throws<CakeException>(() => fixture.Run(), "Wyam: Process returned an error.");
+                Should.Throw<CakeException>(() => fixture.Run(), "Wyam: Process returned an error.");
             }
 
             // Individual settings tests...
@@ -114,7 +118,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--watch \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --watch \"/Working\"");
             }
 
             [Test]
@@ -127,7 +131,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5080 \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5080 \"/Working\"");
             }
 
             [Test]
@@ -140,7 +144,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5081 \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5081 \"/Working\"");
             }
 
             [Test]
@@ -153,7 +157,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5080 --force-ext \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5080 --force-ext \"/Working\"");
             }
 
             [Test]
@@ -166,7 +170,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5080 --virtual-dir \"foo\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5080 --virtual-dir \"foo\" \"/Working\"");
             }
 
             [Test]
@@ -187,7 +191,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5081 --force-ext \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5081 --force-ext \"/Working\"");
             }
 
             [Test]
@@ -207,7 +211,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5080 --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5080 --preview-root \"PreviewRoot\" \"/Working\"");
             }
 
             [Test]
@@ -229,7 +233,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5081 --force-ext --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --preview 5081 --force-ext --preview-root \"PreviewRoot\" \"/Working\"");
             }
 
             [Test]
@@ -248,7 +252,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--input \"C:/temp\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --input \"C:/temp\" \"/Working\"");
             }
 
             [Test]
@@ -271,7 +275,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--input \"C:/temp\" --input \"a/b\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --input \"C:/temp\" --input \"a/b\" \"/Working\"");
             }
 
             [Test]
@@ -284,7 +288,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--output \"C:/temp\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --output \"C:/temp\" \"/Working\"");
             }
 
             [Test]
@@ -297,7 +301,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--config \"C:/temp/config.wyam\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --config \"C:/temp/config.wyam\" \"/Working\"");
             }
 
             [Test]
@@ -310,7 +314,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--update-packages \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --update-packages \"/Working\"");
             }
 
             [Test]
@@ -323,7 +327,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--use-local-packages \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --use-local-packages \"/Working\"");
             }
 
             [Test]
@@ -336,7 +340,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--packages-path \"C:/temp\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --packages-path \"C:/temp\" \"/Working\"");
             }
 
             [Test]
@@ -349,7 +353,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--output-script \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --output-script \"/Working\"");
             }
 
             [Test]
@@ -362,7 +366,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--verify-config \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --verify-config \"/Working\"");
             }
 
             [Test]
@@ -375,7 +379,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--noclean \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --noclean \"/Working\"");
             }
 
             [Test]
@@ -388,7 +392,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--nocache \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --nocache \"/Working\"");
             }
 
             [Test]
@@ -401,7 +405,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--verbose \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --verbose \"/Working\"");
             }
 
             [Test]
@@ -425,7 +429,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--setting \"A=a\" --setting \"B=1\" --setting \"X=[y,1,x\\,y,z\\\"z]\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --setting \"A=a\" --setting \"B=1\" --setting \"X=[y,1,x\\,y,z\\\"z]\" \"/Working\"");
             }
 
             [Test]
@@ -438,7 +442,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--log \"/temp/log.txt\" \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --log \"/temp/log.txt\" \"/Working\"");
             }
 
             [Test]
@@ -451,7 +455,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("\"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll \"/Working\"");
             }
 
             [Test]
@@ -464,7 +468,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("\"/a/b\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll \"/a/b\"");
             }
 
             [Test]
@@ -477,7 +481,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("\"/Working/a/b\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll \"/Working/a/b\"");
             }
 
             [Test]
@@ -500,7 +504,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--content-type .foo=application/xml --content-type bar=text/bar \"/Working\"", result.Args);
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --content-type .foo=application/xml --content-type bar=text/bar \"/Working\"");
             }
         }
     }

@@ -283,7 +283,7 @@ Task("Create-AllModules-Package")
     });
     
 Task("Create-Tools-Package")
-    .IsDependentOn("Build")
+    .IsDependentOn("Publish-Client")
     .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {        
@@ -292,7 +292,7 @@ Task("Create-Tools-Package")
         {            
             throw new InvalidOperationException("Could not find tools nuspec.");
         }
-        var pattern = string.Format("bin\\{0}\\**\\*", configuration);  // This is needed to get around a Mono scripting issue (see #246, #248, #249)
+        var pattern = string.Format("bin\\{0}\\netcoreapp2.1\\publish\\**\\*", configuration);  // This is needed to get around a Mono scripting issue (see #246, #248, #249)
         NuGetPack(nuspec, new NuGetPackSettings
         {
             Version = semVersion,
@@ -304,7 +304,7 @@ Task("Create-Tools-Package")
                 new NuSpecContent 
                 { 
                     Source = pattern,
-                    Target = "tools"
+                    Target = "tools\\netcoreapp2.1"
                 } 
             }
         });

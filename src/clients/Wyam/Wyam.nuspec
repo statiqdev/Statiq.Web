@@ -16,6 +16,6 @@
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>
   <files>
-    <file src="bin\$configuration$\net462\*" target="tools" />
+    <file src="bin\$configuration$\netcoreapp2.1\publish\*" target="tools\netcoreapp2.1" />
   </files>
 </package>
