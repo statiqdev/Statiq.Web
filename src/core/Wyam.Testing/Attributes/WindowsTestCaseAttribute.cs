@@ -19,25 +19,37 @@ namespace Wyam.Testing.Attributes
         public WindowsTestCaseAttribute(params object[] arguments)
             : base(arguments)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? null : $"Windows only";
+            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Windows only";
+            }
         }
 
         public WindowsTestCaseAttribute(object arg)
             : base(arg)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? null : $"Windows only";
+            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Windows only";
+            }
         }
 
         public WindowsTestCaseAttribute(object arg1, object arg2)
             : base(arg1, arg2)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? null : $"Windows only";
+            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Windows only";
+            }
         }
 
         public WindowsTestCaseAttribute(object arg1, object arg2, object arg3)
             : base(arg1, arg2, arg3)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? null : $"Windows only";
+            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Windows only";
+            }
         }
     }
 }

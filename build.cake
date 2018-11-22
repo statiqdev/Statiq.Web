@@ -124,6 +124,18 @@ Task("Build")
         });
     });
 
+Task("Publish-Client")
+    .IsDependentOn("Build")
+    .Does(() =>
+    {
+        DotNetCorePublish("./src/clients/Wyam/Wyam.csproj", new DotNetCorePublishSettings
+        {
+            Configuration = configuration,
+            NoBuild = true,
+            NoRestore = true
+        });
+    });
+
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .DoesForEach(GetFiles("./tests/**/*.csproj"), project =>
@@ -149,11 +161,10 @@ Task("Run-Unit-Tests")
     .DeferOnError();
 
 Task("Copy-Files")
-    .IsDependentOn("Build")
+    .IsDependentOn("Publish-Client")
     .Does(() =>
     {
-        // TODO: Should point to publish folder
-        CopyDirectory(buildDir.Path.FullPath + "/netcoreapp2.1", binDir);
+        CopyDirectory(buildDir.Path.FullPath + "/netcoreapp2.1/publish", binDir);
         CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
     });
 

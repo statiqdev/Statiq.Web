@@ -1,15 +1,11 @@
-﻿using Cake.Core.Diagnostics;
+﻿using Cake.Common.Tools.DotNetCore;
+using Cake.Core.Diagnostics;
 using Cake.Testing.Fixtures;
 
 namespace Cake.Wyam.Tests
 {
-    internal sealed class WyamToolFixture : ToolFixture<WyamSettings>
+    internal sealed class WyamToolFixture : DotNetCoreFixture<WyamSettings>
     {
-        public WyamToolFixture()
-             : base("Wyam.exe")
-        {
-        }
-
         protected override void RunTool()
         {
             WyamRunner tool = new WyamRunner(FileSystem, Environment, ProcessRunner, Tools);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cake.Common.Tools.DotNetCore;
 using Cake.Core.IO;
 using Cake.Core.Tooling;
 
@@ -8,7 +9,7 @@ namespace Cake.Wyam
     /// <summary>
     /// Contains settings used by <see cref="WyamRunner"/>.
     /// </summary>
-    public sealed class WyamSettings : ToolSettings
+    public sealed class WyamSettings : DotNetCoreSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether to enable watching of input folder for changes to files.

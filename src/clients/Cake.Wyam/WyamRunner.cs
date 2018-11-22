@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Text;
+using System.Collections.Generic;
 using Cake.Core;
 using Cake.Core.IO;
+using Cake.Core.Tooling;
+using Cake.Common.Tools.DotNetCore;
 
 namespace Cake.Wyam
 {
-    using System.Collections.Generic;
-    using Cake.Core.Tooling;
-
     /// <summary>
     /// The Wyam Runner used to execute the Wyam Executable
     /// </summary>
-    public sealed class WyamRunner : Tool<WyamSettings>
+    public sealed class WyamRunner : DotNetCoreTool<WyamSettings>
     {
         private readonly ICakeEnvironment _environment;
 
@@ -30,7 +30,7 @@ namespace Cake.Wyam
         }
 
         /// <summary>
-        /// Publishes a Vsce package from the provided settings.
+        /// Runs the tool from the provided settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         public void Run(WyamSettings settings)
@@ -58,7 +58,7 @@ namespace Cake.Wyam
         /// <returns>The tool executable name.</returns>
         protected override IEnumerable<string> GetToolExecutableNames()
         {
-            return new[] { "Wyam.exe" };
+            return new[] { "Wyam.dll" };
         }
 
         private ProcessArgumentBuilder GetArguments(WyamSettings settings)

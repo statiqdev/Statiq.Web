@@ -1,3 +1,7 @@
+# 2.0.0
+
+- **[Breaking Change]** It's here! Wyam now runs on .NET Core 2.1 and the .NET Framework client is no longer distributed (at least initially).
+
 # 1.7.4
 
 - [Feature] Updated Buildalyzer which includes new features like honoring MSBuild constants

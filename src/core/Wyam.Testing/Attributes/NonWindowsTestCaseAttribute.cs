@@ -18,25 +18,37 @@ namespace Wyam.Testing.Attributes
         public NonWindowsTestCaseAttribute(params object[] arguments)
             : base(arguments)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"Non-Windows only" : null;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Non-Windows only";
+            }
         }
 
         public NonWindowsTestCaseAttribute(object arg)
             : base(arg)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"Non-Windows only" : null;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Non-Windows only";
+            }
         }
 
         public NonWindowsTestCaseAttribute(object arg1, object arg2)
             : base(arg1, arg2)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"Non-Windows only" : null;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Non-Windows only";
+            }
         }
 
         public NonWindowsTestCaseAttribute(object arg1, object arg2, object arg3)
             : base(arg1, arg2, arg3)
         {
-            Ignore = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"Non-Windows only" : null;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Ignore = "Non-Windows only";
+            }
         }
     }
 }
