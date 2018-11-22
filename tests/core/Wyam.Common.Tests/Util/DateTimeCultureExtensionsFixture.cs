@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Util;
@@ -180,7 +181,7 @@ namespace Wyam.Common.Tests.Util
                 string result = dateTime.ToShortDateString(context);
 
                 // Then
-                Assert.That(result, Is.EqualTo("mer. mars"));
+                result.ShouldBe("mer. mars", StringCompareShould.IgnoreCase);
             }
         }
 

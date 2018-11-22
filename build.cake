@@ -136,7 +136,7 @@ Task("Run-Unit-Tests")
         };
         if (isRunningOnAppVeyor)
         {
-            testSettings.Filter = "TestCategory!=\"ExcludeFromAppVeyor\"";
+            testSettings.Filter = "TestCategory!=ExcludeFromAppVeyor";
             testSettings.Logger = "Appveyor";
 
             // Remove this when no longer using the tool (see above)
