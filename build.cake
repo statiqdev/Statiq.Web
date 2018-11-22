@@ -179,16 +179,21 @@ Task("Create-Library-Packages")
         // Package all nuspecs
         foreach (var project in projects)
         {
-            MSBuild(project, new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .WithTarget("pack")
-                .WithProperty("PackageOutputPath", $"\"{MakeAbsolute(nugetRoot)}\"")
-                .WithProperty("PackageVersion", $"\"{semVersion}\"")
-            );
+            DotNetCorePack(
+                MakeAbsolute(project).ToString(),
+                new DotNetCorePackSettings
+                {
+                    Configuration = configuration,
+                    NoBuild = true,
+                    NoRestore = true,
+                    OutputDirectory = nugetRoot,
+                    MSBuildSettings = msBuildSettings
+                });
         }
     });
 
 Task("Create-Theme-Packages")
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {        
         // All themes must be under the themes folder in a NameOfRecipe/NameOfTheme subfolder
@@ -234,6 +239,7 @@ Task("Create-Theme-Packages")
     
 Task("Create-AllModules-Package")
     .IsDependentOn("Build")
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {        
         var nuspec = GetFiles("./src/extensions/Wyam.All/*.nuspec").FirstOrDefault();
@@ -267,6 +273,7 @@ Task("Create-AllModules-Package")
     
 Task("Create-Tools-Package")
     .IsDependentOn("Build")
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {        
         var nuspec = GetFiles("./src/clients/Wyam/*.nuspec").FirstOrDefault();
@@ -294,6 +301,7 @@ Task("Create-Tools-Package")
 
 Task("Create-Chocolatey-Package")
     .IsDependentOn("Copy-Files")
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() => {
         var nuspecFile = GetFiles("./src/clients/Chocolatey/*.nuspec").FirstOrDefault();
         ChocolateyPack(nuspecFile, new ChocolateyPackSettings {
@@ -305,8 +313,9 @@ Task("Create-Chocolatey-Package")
     
 Task("Publish-MyGet")
     .IsDependentOn("Create-Packages")
-    .WithCriteria(() => !isLocal && isRunningOnWindows)
+    .WithCriteria(() => !isLocal)
     .WithCriteria(() => !isPullRequest)
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {
         // Resolve the API key.
@@ -329,6 +338,7 @@ Task("Publish-MyGet")
 Task("Publish-Packages")
     .IsDependentOn("Create-Packages")
     .WithCriteria(() => isLocal)
+    .WithCriteria(() => isRunningOnWindows)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
     {
@@ -351,6 +361,7 @@ Task("Publish-Packages")
 Task("Publish-Chocolatey-Package")
     .IsDependentOn("Create-Chocolatey-Package")
     .WithCriteria(()=> isLocal)
+    .WithCriteria(() => isRunningOnWindows)
     .Does(()=> 
     {
         var chocolateyApiKey = EnvironmentVariable("CHOCOLATEY_API_KEY");
@@ -371,6 +382,7 @@ Task("Publish-Chocolatey-Package")
 Task("Publish-Release")
     .IsDependentOn("Zip-Files")
     .WithCriteria(() => isLocal)
+    .WithCriteria(() => isRunningOnWindows)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
     {
@@ -400,7 +412,8 @@ Task("Publish-Release")
     });
     
 Task("Update-AppVeyor-Build-Number")
-    .WithCriteria(() => isRunningOnAppVeyor && isRunningOnWindows)
+    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {
         AppVeyor.UpdateBuildVersion(semVersion);
@@ -408,7 +421,8 @@ Task("Update-AppVeyor-Build-Number")
 
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Zip-Files")
-    .WithCriteria(() => isRunningOnAppVeyor && isRunningOnWindows)
+    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {
         var artifact = buildResultDir + File(zipFile);
