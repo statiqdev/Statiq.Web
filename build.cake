@@ -152,7 +152,8 @@ Task("Copy-Files")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        CopyDirectory(buildDir.Path.FullPath + "/net462", binDir);
+        // TODO: Should point to publish folder
+        CopyDirectory(buildDir.Path.FullPath + "/netcoreapp2.1", binDir);
         CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
     });
 
