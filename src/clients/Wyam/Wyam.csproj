@@ -3,8 +3,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
-    <PackageId>dotnet-wyam</PackageId>
-    <ToolCommandName>dotnet-wyam</ToolCommandName>
+    <PackageId>Wyam.Tool</PackageId>
+    <ToolCommandName>wyam</ToolCommandName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />
