@@ -179,13 +179,11 @@ Task("Zip-Files")
 
 Task("Create-Library-Packages")
     .IsDependentOn("Build")
+    .IsDependentOn("Publish-Client")
     .Does(() =>
     {        
         // Get the set of projects to package
         List<FilePath> projects = new List<FilePath>(GetFiles("./src/**/*.csproj"));
-
-        // Wyam client is packaged separately
-        projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam");
         
         // Package all nuspecs
         foreach (var project in projects)
