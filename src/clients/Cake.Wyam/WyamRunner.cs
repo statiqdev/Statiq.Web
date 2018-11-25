@@ -111,7 +111,7 @@ namespace Cake.Wyam
                     builder.Append("--force-ext");
                 }
 
-                if (settings.PreviewVirtualDirectory != null)
+                if (!string.IsNullOrWhiteSpace(settings.PreviewVirtualDirectory))
                 {
                     builder.Append("--virtual-dir");
                     builder.AppendQuoted(settings.PreviewVirtualDirectory.FullPath);
