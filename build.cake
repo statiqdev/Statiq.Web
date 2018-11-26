@@ -2,7 +2,7 @@
 // SIGNTOOL (to sign the executable)
 
 // The following environment variables need to be set for Publish target:
-// NUGET_API_KEY
+// WYAM_NUGET_API_KEY
 // WYAM_GITHUB_TOKEN
 
 // The following environment variables need to be set for Publish-MyGet target:
@@ -351,7 +351,7 @@ Task("Publish-Packages")
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
     {
-        var apiKey = EnvironmentVariable("NUGET_API_KEY");
+        var apiKey = EnvironmentVariable("WYAM_NUGET_API_KEY");
         if (string.IsNullOrEmpty(apiKey))
         {
             throw new InvalidOperationException("Could not resolve NuGet API key.");
@@ -362,7 +362,7 @@ Task("Publish-Packages")
             NuGetPush(nupkg, new NuGetPushSettings 
             {
                 ApiKey = apiKey,
-                Source = "https://nuget.org/api/v2/package"
+                Source = "https://api.nuget.org/v3/index.json"
             });
         }
     });
