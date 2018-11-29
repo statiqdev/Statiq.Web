@@ -3,15 +3,18 @@
 }
 
 @section Sidebar {
-    <li class="header"><i class="fa fa-bookmark"></i> Categories</li>    
-    @foreach(string category in Documents[Docs.BlogPosts]
-        .Select(x => x.String(DocsKeys.Category))
-        .Distinct()
-        .OrderBy(x => x))
+    @if(Documents[Docs.BlogPosts].Any(x => x.ContainsKey(DocsKeys.Category)))
     {
-        string link = category.Replace(" ", "-").Replace("'", string.Empty);
-        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/{link}")">@category</a></li>
+        <li class="header"><i class="fa fa-bookmark"></i> Categories</li>    
+        @foreach(string category in Documents[Docs.BlogPosts]
+            .Select(x => x.String(DocsKeys.Category))
+            .Distinct()
+            .OrderBy(x => x))
+        {
+            string link = category.Replace(" ", "-").Replace("'", string.Empty);
+            string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/{link}/") ? "selected" : null;
+            <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/{link}")">@category</a></li>
+        }
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
@@ -26,15 +29,18 @@
         <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/archive/{link}")">@(published.ToString("MMMM, yyyy"))</a></li>
     }
     
-    <li class="header"><i class="fa fa-user"></i> Authors</li>    
-    @foreach(string author in Documents[Docs.BlogPosts]
-        .Select(x => x.String(DocsKeys.Author))
-        .Distinct()
-        .OrderBy(x => x))
+    @if(Documents[Docs.BlogPosts].Any(x => x.ContainsKey(DocsKeys.Author)))
     {
-        string link = author.Replace(" ", "-").Replace("'", string.Empty);
-        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/author/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/author/{link}")">@author</a></li>
+        <li class="header"><i class="fa fa-user"></i> Authors</li>    
+        @foreach(string author in Documents[Docs.BlogPosts]
+            .Select(x => x.String(DocsKeys.Author))
+            .Distinct()
+            .OrderBy(x => x))
+        {
+            string link = author.Replace(" ", "-").Replace("'", string.Empty);
+            string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/author/{link}/") ? "selected" : null;
+            <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/author/{link}")">@author</a></li>
+        }
     }
 }
 

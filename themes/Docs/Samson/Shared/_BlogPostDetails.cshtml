@@ -1,18 +1,18 @@
 @model IDocument
 
-<dl class="dl-horizontal">
-    <dt><i class="fa fa-calendar"></i> Published</dt>
+<dl class="dl-horizontal" style="margin-bottom: 12px;">
+    <dt style="text-align: left;"><i class="fa fa-calendar"></i> Published</dt>
     <dd>@(Model.Get<DateTime>(DocsKeys.Published).ToLongDateString(Context))</dd>
     @if(Model.ContainsKey(DocsKeys.Category))
     {
         string link = Model.String(DocsKeys.Category).Replace(" ", "-").Replace("'", string.Empty);
-        <dt><i class="fa fa-bookmark"></i> Category</dt>
+        <dt style="text-align: left;"><i class="fa fa-bookmark"></i> Category</dt>
         <dd><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/{link}")">@(Model.String(DocsKeys.Category))</a></dd>
     }    
     @if(Model.ContainsKey(DocsKeys.Author))
     {
         string link = Model.String(DocsKeys.Author).Replace(" ", "-").Replace("'", string.Empty);
-        <dt><i class="fa fa-user"></i> Author</dt>
+        <dt style="text-align: left;"><i class="fa fa-user"></i> Author</dt>
         <dd><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/author/{link}")">@(Model.String(DocsKeys.Author))</a></dd>
     }  
 </dl>

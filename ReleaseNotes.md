@@ -1,6 +1,7 @@
 # 2.1.0
 
 - **[Breaking Change]** No longer reads standard input by default, adds a new `--read-stdin` flag to turn on this behavior (#752)
+- [Fix] Blog posts in the docs recipe no longer require Author or Category metadata (#751)
 
 # 2.0.0
 
