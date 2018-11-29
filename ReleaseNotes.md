@@ -1,3 +1,7 @@
+# 2.1.0
+
+- **[Breaking Change]** No longer reads standard input by default, adds a new `--read-stdin` flag to turn on this behavior (#752)
+
 # 2.0.0
 
 - **[Breaking Change]** It's here! Wyam now runs on .NET Core 2.1 and the .NET Framework client is no longer distributed (at least initially).

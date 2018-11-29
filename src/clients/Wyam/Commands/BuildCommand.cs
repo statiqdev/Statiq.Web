@@ -31,6 +31,7 @@ namespace Wyam.Commands
         private DirectoryPath _previewRoot = null;
         private bool _watch = false;
         private bool _noReload = false;
+        private bool _readStdin = false;
 
         public override string Description => "Runs the build process (this is the default command).";
 
@@ -101,6 +102,8 @@ namespace Wyam.Commands
             syntax.DefineOption("noclean", ref _configOptions.NoClean, "Prevents cleaning of the output path on each execution.");
             syntax.DefineOption("nocache", ref _configOptions.NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
 
+            syntax.DefineOption("read-stdin", ref _readStdin, "Reads standard input at startup and sets ApplicationInput in the config script and execution context.");
+
             _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
             if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
             {
@@ -152,7 +155,13 @@ namespace Wyam.Commands
         protected override ExitCode RunCommand(Preprocessor preprocessor)
         {
             // Get the standard input stream
-            _configOptions.Stdin = StandardInputReader.Read();
+            if (_readStdin)
+            {
+                using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
+                {
+                    _configOptions.Stdin = reader.ReadToEnd();
+                }
+            }
 
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
