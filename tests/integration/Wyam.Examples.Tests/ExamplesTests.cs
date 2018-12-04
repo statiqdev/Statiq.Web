@@ -12,7 +12,7 @@ using Shouldly;
 
 namespace Wyam.Examples.Tests
 {
-    [TestFixture(Category = "ExcludeFromAppVeyor")]
+    [TestFixture(Category = "ExcludeFromBuildServer")]
     public class ExamplesTests
     {
         private static IEnumerable<string> _paths;

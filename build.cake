@@ -25,11 +25,7 @@
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
-
-// The built-in AppVeyor logger doesn't work yet,
-// but when it does we can remove the tool directive and TestAdapterPath property
-// https://github.com/appveyor/ci/issues/1601
-#tool "Appveyor.TestLogger&version=2.0.0"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
 
 using Octokit;
 
@@ -47,9 +43,9 @@ var configuration = Argument("configuration", "Release");
 var isLocal = BuildSystem.IsLocalBuild;
 var isRunningOnUnix = IsRunningOnUnix();
 var isRunningOnWindows = IsRunningOnWindows();
-var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
-var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-var buildNumber = AppVeyor.Environment.Build.Number;
+var isRunningOnBuildServer = TFBuild.IsRunningOnVSTS;
+var isPullRequest = !string.IsNullOrWhiteSpace(context.EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID"));  // See https://github.com/cake-build/cake/issues/2149
+var buildNumber = TFBuild.Build.Number;
 
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
@@ -146,13 +142,10 @@ Task("Run-Unit-Tests")
             NoRestore = true,
             Configuration = configuration
         };
-        if (isRunningOnAppVeyor)
+        if (isRunningOnBuildServer)
         {
-            testSettings.Filter = "TestCategory!=ExcludeFromAppVeyor";
-            testSettings.Logger = "Appveyor";
-
-            // Remove this when no longer using the tool (see above)
-            testSettings.TestAdapterPath = GetDirectories($"./tools/Appveyor.TestLogger.*/build/_common").First();
+            testSettings.Filter = "TestCategory!=ExcludeFromBuildServer";
+            testSettings.Logger = "trx";
         }
 
         Information($"Running tests in {project}");
@@ -420,24 +413,6 @@ Task("Publish-Release")
         }
     });
     
-Task("Update-AppVeyor-Build-Number")
-    .WithCriteria(() => isRunningOnAppVeyor)
-    .WithCriteria(() => isRunningOnWindows)
-    .Does(() =>
-    {
-        AppVeyor.UpdateBuildVersion(semVersion);
-    });
-
-Task("Upload-AppVeyor-Artifacts")
-    .IsDependentOn("Zip-Files")
-    .WithCriteria(() => isRunningOnAppVeyor)
-    .WithCriteria(() => isRunningOnWindows)
-    .Does(() =>
-    {
-        var artifact = buildResultDir + File(zipFile);
-        AppVeyor.UploadArtifact(artifact);
-    });
-    
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
@@ -462,11 +437,9 @@ Task("Publish")
     .IsDependentOn("Publish-Chocolatey-Package")
     .IsDependentOn("Publish-Release");
     
-Task("AppVeyor")
+Task("BuildServer")
     .IsDependentOn("Run-Unit-Tests")
-    .IsDependentOn("Publish-MyGet")
-    .IsDependentOn("Update-AppVeyor-Build-Number")
-    .IsDependentOn("Upload-AppVeyor-Artifacts");
+    .IsDependentOn("Publish-MyGet");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
