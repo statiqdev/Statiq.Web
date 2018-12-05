@@ -16,7 +16,7 @@ jobs:
   pool:
     vmImage: 'ubuntu 16.04'
   steps:
-  - script: pwsh .\build.ps1 -target BuildServer
+  - script: pwsh ./build.ps1 -target BuildServer
   - task: PublishTestResults@2
     inputs:
       testRunner: VSTest
@@ -25,7 +25,7 @@ jobs:
   pool:
     vmImage: 'macOS-10.13'
   steps:
-  - script: pwsh .\build.ps1 -target BuildServer
+  - script: pwsh ./build.ps1 -target BuildServer
   - task: PublishTestResults@2
     inputs:
       testRunner: VSTest
