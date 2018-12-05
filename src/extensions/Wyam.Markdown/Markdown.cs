@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Helpers;
-
+using Markdig.Parsers;
+using Markdig.Renderers;
+using Markdig.Syntax;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -39,6 +42,7 @@ namespace Wyam.Markdown
         private readonly OrderedList<IMarkdownExtension> _extensions = new OrderedList<IMarkdownExtension>();
         private string _configuration = DefaultConfiguration;
         private bool _escapeAt = true;
+        private bool _prependLinkRoot = false;
 
         /// <summary>
         /// Processes Markdown in the content of the document.
@@ -158,6 +162,19 @@ namespace Wyam.Markdown
             return this;
         }
 
+        /// <summary>
+        /// Specifies if the <see cref="Keys.LinkRoot"/> setting must be used to rewrite root-relative links when rendering markdown.
+        /// By default, root-relative links, which are links starting with a '/' are left untouched.
+        /// When setting this value to <c>true</c>, the <see cref="Keys.LinkRoot"/> setting value is added before the link.
+        /// </summary>
+        /// <param name="prependLinkRoot">If set to <c>true</c>, the <see cref="Keys.LinkRoot"/> setting value is added before any root-relative link (eg. stating with a '/').</param>
+        /// <returns>The current module instance.</returns>
+        public Markdown PrependLinkRoot(bool prependLinkRoot = false)
+        {
+            _prependLinkRoot = prependLinkRoot;
+            return this;
+        }
+
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -167,25 +184,59 @@ namespace Wyam.Markdown
                     "Processing Markdown {0} for {1}",
                     string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey),
                     input.SourceString());
+
                 string result;
+
                 IExecutionCache executionCache = context.ExecutionCache;
 
                 if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
                 {
+                    string content;
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        MarkdownPipeline pipeline = CreatePipeline();
-                        result = Markdig.Markdown.ToHtml(input.Content, pipeline);
+                        content = input.Content;
                     }
                     else if (input.ContainsKey(_sourceKey))
                     {
-                        MarkdownPipeline pipeline = CreatePipeline();
-                        result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty, pipeline);
+                        content = input.String(_sourceKey) ?? string.Empty;
                     }
                     else
                     {
                         // Don't do anything if the key doesn't exist
                         return input;
+                    }
+
+                    MarkdownPipeline pipeline = CreatePipeline();
+
+                    using (var writer = new StringWriter())
+                    {
+                        var htmlRenderer = new HtmlRenderer(writer);
+                        pipeline.Setup(htmlRenderer);
+
+                        if (_prependLinkRoot && context.Settings.ContainsKey(Keys.LinkRoot))
+                        {
+                            htmlRenderer.LinkRewriter = (link) =>
+                            {
+                                if (link == null || link.Length == 0)
+                                {
+                                    return link;
+                                }
+
+                                if (link[0] == '/')
+                                {
+                                    // root-based url, must be rewritten by prepending the LinkRoot setting value
+                                    // ex: '/virtual/directory' + '/relative/abs/link.html' => '/virtual/directory/relative/abs/link.html'
+                                    link = context.Settings[Keys.LinkRoot] + link;
+                                }
+
+                                return link;
+                            };
+                        }
+
+                        MarkdownDocument document = MarkdownParser.Parse(content, pipeline);
+                        htmlRenderer.Render(document);
+                        writer.Flush();
+                        result = writer.ToString();
                     }
 
                     if (_escapeAt)
