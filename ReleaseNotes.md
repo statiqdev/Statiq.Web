@@ -4,6 +4,7 @@
 - [Fix] Blog posts in the docs recipe no longer require Author or Category metadata (#751)
 - [Feature] New `Markdown.PrependLinkRoot()` method to prepend a configured `LinkRoot` to all `Markdown` links (#735, #748, thanks @tbolon)
 - [Feature] New `MarkdownPrependLinkRoot` setting for the blog and docs recipes to turn on this behavior for Markdown documents (#735)
+- [Fix] Fix for tuples in generic type parameters in docs (#749)
 
 # 2.0.0
 

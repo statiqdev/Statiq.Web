@@ -21,6 +21,7 @@
 // - Run a Publish build with Cake (`build -target Publish`)
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
+// - Add a blog post to Wyam.Web about the release
 // - Run a build on Wyam.Web from CI to verify final release (first make sure NuGet Gallery has updated packages by searching for "wyam")
 
 #addin "Cake.FileHelpers"
