@@ -26,6 +26,7 @@
 #addin "Cake.FileHelpers"
 #addin "Octokit"
 #tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
+#tool "nuget:?package=NuGet.CommandLine&version=4.7.1"
 
 using Octokit;
 
