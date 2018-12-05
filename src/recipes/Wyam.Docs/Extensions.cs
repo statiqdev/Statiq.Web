@@ -54,7 +54,7 @@ namespace Wyam.Docs
                 {
                     // Get the type argument positions
                     int begin = name.IndexOf("<wbr>&lt;") + 9;
-                    int openParen = name.IndexOf("<wbr>(");
+                    int openParen = name.IndexOf("&gt;<wbr>(");
                     int end = name.LastIndexOf("&gt;<wbr>", openParen == -1 ? name.Length : openParen);  // Don't look past the opening paren if there is one
 
                     // Remove existing type arguments and insert linked type arguments (do this first to preserve original indexes)
