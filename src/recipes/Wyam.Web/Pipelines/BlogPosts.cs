@@ -75,7 +75,8 @@ namespace Wyam.Web.Pipelines
                     new FrontMatter(new Yaml.Yaml()),
                     new Execute(ctx => new Markdown.Markdown()
                         .UseConfiguration(settings.MarkdownConfiguration.Invoke<string>(ctx))
-                        .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
+                        .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx))
+                        .PrependLinkRoot(settings.PrependLinkRoot.Invoke<bool>(ctx)))
                 }
             },
             {

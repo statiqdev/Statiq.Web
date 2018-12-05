@@ -64,6 +64,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownPrependLinkRoot" usage="Setting" />
     /// <metadata cref="DocsKeys.Description" usage="Input" />
     /// <metadata cref="DocsKeys.Category" usage="Input" />
     /// <metadata cref="DocsKeys.Tags" usage="Input" />
@@ -106,7 +107,8 @@ namespace Wyam.Docs
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
-                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath
+                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath,
+                PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot)
             })
                 .InsertAfter(
                     BlogPosts.RazorPosts,
@@ -135,6 +137,7 @@ namespace Wyam.Docs
                 MarkdownConfiguration = ctx => ctx.String(DocsKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
+                PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot),
                 CreateTree = true,
                 TreePlaceholderFactory = TreePlaceholderFactory
             })

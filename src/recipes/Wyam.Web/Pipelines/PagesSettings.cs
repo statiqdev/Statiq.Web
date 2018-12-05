@@ -60,5 +60,10 @@ namespace Wyam.Web.Pipelines
         /// If <c>null</c>, the default placeholder factory will be used which outputs empty index files.
         /// </summary>
         public Func<object[], MetadataItems, IExecutionContext, IDocument> TreePlaceholderFactory { get; set; }
+
+        /// <summary>
+        /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
+        /// </summary>
+        public ContextConfig PrependLinkRoot { get; set; }
     }
 }

@@ -41,5 +41,10 @@ namespace Wyam.Web.Pipelines
         /// A delegate that should return a <see cref="string"/> with the path to blog post files.
         /// </summary>
         public ContextConfig PostsPath { get; set; }
+
+        /// <summary>
+        /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
+        /// </summary>
+        public ContextConfig PrependLinkRoot { get; set; }
     }
 }

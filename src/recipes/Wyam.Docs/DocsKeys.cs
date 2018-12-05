@@ -349,5 +349,11 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ImplicitInheritDoc = nameof(ImplicitInheritDoc);
+
+        /// <summary>
+        /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string MarkdownPrependLinkRoot = nameof(MarkdownPrependLinkRoot);
     }
 }
