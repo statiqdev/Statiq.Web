@@ -45,7 +45,7 @@ var isRunningOnUnix = IsRunningOnUnix();
 var isRunningOnWindows = IsRunningOnWindows();
 var isRunningOnBuildServer = TFBuild.IsRunningOnVSTS;
 var isPullRequest = !string.IsNullOrWhiteSpace(EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID"));  // See https://github.com/cake-build/cake/issues/2149
-var buildNumber = TFBuild.Build.Number;
+var buildNumber = TFBuild.Environment.Build.Number;
 
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
