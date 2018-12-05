@@ -333,7 +333,8 @@ Task("Publish-MyGet")
             NuGetPush(nupkg, new NuGetPushSettings 
             {
                 Source = "https://www.myget.org/F/wyam/api/v2/package",
-                ApiKey = apiKey
+                ApiKey = apiKey,
+                Timeout = TimeSpan.FromSeconds(600)
             });
         }
     });
