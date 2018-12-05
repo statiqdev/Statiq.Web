@@ -208,9 +208,9 @@ namespace Wyam.Markdown
 
                     MarkdownPipeline pipeline = CreatePipeline();
 
-                    using (var writer = new StringWriter())
+                    using (StringWriter writer = new StringWriter())
                     {
-                        var htmlRenderer = new HtmlRenderer(writer);
+                        HtmlRenderer htmlRenderer = new HtmlRenderer(writer);
                         pipeline.Setup(htmlRenderer);
 
                         if (_prependLinkRoot && context.Settings.ContainsKey(Keys.LinkRoot))

@@ -27,7 +27,7 @@ namespace Wyam.Markdown.Tests
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -36,7 +36,7 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -57,7 +57,7 @@ namespace Wyam.Markdown.Tests
             {
                 string input = @"![Alt text](/path/to/img.jpg)";
                 string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Type[] o = { typeof(TestMarkdownExtension) };
@@ -68,14 +68,15 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void CanUseMultipleExternalExtensions()
             {
                 const string input = @"![Alt text](/path/to/img.jpg)";
-                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>";
+                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>
+";
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -91,7 +92,7 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();
 
                 // Then
-                Assert.That(results.Select(x => x.Content.Trim()), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -100,7 +101,7 @@ namespace Wyam.Markdown.Tests
                 // Given
                 string input = @"[link](url){#id .class}";
                 string output = @"<p><a href=""url"">link</a>{#id .class}</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -109,7 +110,7 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -118,7 +119,7 @@ namespace Wyam.Markdown.Tests
                 // Given
                 string input = @"[link](url){#id .class}";
                 string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseExtensions();
@@ -127,7 +128,7 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -140,7 +141,7 @@ namespace Wyam.Markdown.Tests
                 string output = @"<p>Apple
 :   Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -149,7 +150,7 @@ the family Rosaceae.</p>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -164,7 +165,7 @@ the family Rosaceae.</p>
 <dd>Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</dd>
 </dl>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseConfiguration("definitionlists");
@@ -173,7 +174,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -182,7 +183,7 @@ the family Rosaceae.</dd>
                 // Given
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking &#64;Good, Man!</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -191,7 +192,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -200,7 +201,7 @@ the family Rosaceae.</dd>
                 // Given
                 string input = @"Looking @Good, \\@Man!";
                 string output = @"<p>Looking &#64;Good, @Man!</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -209,7 +210,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -218,7 +219,7 @@ the family Rosaceae.</dd>
                 // Given
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking @Good, Man!</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().EscapeAt(false);
@@ -227,7 +228,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -240,8 +241,7 @@ the family Rosaceae.</dd>
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
-
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
@@ -253,7 +253,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.String("meta")), Is.EquivalentTo(new[] { output }));
+                results.Single().String("meta").ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -266,8 +266,7 @@ the family Rosaceae.</dd>
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
-
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
@@ -279,7 +278,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.String("meta2")), Is.EquivalentTo(new[] { output }));
+                results.Single().String("meta2").ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -294,7 +293,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results, Is.EquivalentTo(new[] { document }));
+                results.ShouldBe(new[] { document });
             }
 
             [Test]
@@ -302,8 +301,7 @@ the family Rosaceae.</dd>
             {
                 // Given
                 string input = @"This is a [link](/link.html)";
-                string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>
-".Replace(Environment.NewLine, "\n");
+                string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>" + Environment.NewLine;
                 TestExecutionContext context = new TestExecutionContext();
                 context.Settings[Keys.LinkRoot] = "/virtual-dir";
                 TestDocument document = new TestDocument(input);
@@ -313,7 +311,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }
