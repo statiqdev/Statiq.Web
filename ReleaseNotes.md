@@ -1,5 +1,6 @@
 # 2.1.1
 
+- [Fix] Fixed a bug in blog and docs recipes when the `Published` front matter contained an invalid date according to the culture (#611)
 - [Fix] Added favicon and empty override CSS output to docs theme so that settings `ValidateRelativeLinks` or `ValidateAbsoluteLinks` does not error (#607)
 
 # 2.1.0
