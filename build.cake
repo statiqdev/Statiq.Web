@@ -48,6 +48,7 @@ var isRunningOnWindows = IsRunningOnWindows();
 var isRunningOnBuildServer = TFBuild.IsRunningOnVSTS;
 var isPullRequest = !string.IsNullOrWhiteSpace(EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID"));  // See https://github.com/cake-build/cake/issues/2149
 var buildNumber = TFBuild.Environment.Build.Number.Replace('.', '-');
+var branch = TFBuild.Environment.Repository.Branch;
 
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
@@ -320,6 +321,7 @@ Task("Publish-MyGet")
     .WithCriteria(() => !isLocal)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRunningOnWindows)
+    .WithCriteria(() => branch == "develop")
     .Does(() =>
     {
         // Resolve the API key.
