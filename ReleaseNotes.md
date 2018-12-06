@@ -1,3 +1,7 @@
+# 2.1.1
+
+- [Fix] Added favicon and empty override CSS output to docs theme so that settings `ValidateRelativeLinks` or `ValidateAbsoluteLinks` does not error (#607)
+
 # 2.1.0
 
 - **[Breaking Change]** No longer reads standard input by default, adds a new `--read-stdin` flag to turn on this behavior (#752)
