@@ -181,6 +181,11 @@ namespace Cake.Wyam
                 builder.Append("--verify-config");
             }
 
+            if (settings.IgnoreConfigHash || settings.VerifyConfig)
+            {
+                builder.Append("--ignore-config-hash");
+            }
+
             if (settings.NoClean)
             {
                 builder.Append("--noclean");

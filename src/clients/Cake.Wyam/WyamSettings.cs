@@ -108,6 +108,12 @@ namespace Cake.Wyam
         public bool VerifyConfig { get; set; }
 
         /// <summary>
+        /// Force evaluating the configuration file, even when no changes were detected.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool IgnoreConfigHash { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to prevent cleaning of the output path on each execution if <c>true</c>.
         /// </summary>
         /// <remarks>Default is false</remarks>
