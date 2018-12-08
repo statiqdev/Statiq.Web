@@ -35,7 +35,4 @@
     <PackageReference Include="SharpScss" Version="1.4.0" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
-  </ItemGroup>
 </Project>

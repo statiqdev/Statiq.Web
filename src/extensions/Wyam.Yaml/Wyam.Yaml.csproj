@@ -14,7 +14,4 @@
   <ItemGroup>
     <PackageReference Include="YamlDotNet" Version="4.3.1" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
-  </ItemGroup>
 </Project>

@@ -219,7 +219,7 @@ namespace Wyam.Testing.Execution
             return inputs.ToList();
         }
 
-        public Func<IJsEngine> JsEngineFunc { get; } = () =>
+        public Func<IJsEngine> JsEngineFunc { get; set; } = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
         };

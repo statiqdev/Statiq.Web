@@ -32,7 +32,4 @@
       <_Parameter1>Wyam.Hosting.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
-  </ItemGroup>
 </Project>

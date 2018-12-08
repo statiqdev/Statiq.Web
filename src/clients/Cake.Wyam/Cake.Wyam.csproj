@@ -13,8 +13,8 @@
     <PackageReference Include="Cake.Common" Version="0.28.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+    <PackageReference Include="Roslynator.Analyzers" Version="2.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

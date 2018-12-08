@@ -20,7 +20,4 @@
   <ItemGroup>
     <EmbeddedResource Include="highlight-all.js" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
-  </ItemGroup>
 </Project>

@@ -16,7 +16,8 @@ namespace Wyam.Core.JavaScript
         private readonly JsPool<JsEngine> _pool;
         private bool _disposed = false;
 
-        public JsEnginePool(Action<IJsEngine> initializer,
+        public JsEnginePool(
+            Action<IJsEngine> initializer,
             int startEngines,
             int maxEngines,
             int maxUsagesPerEngine,
