@@ -548,8 +548,8 @@ namespace Wyam.Html.Tests
             public void AddLinksToGenericWordsInsideAngleBrackets(string input, string expected)
             {
                 // Given
-                string inputContent = $@"<html><head></head><body><foo></foo><ul>{ input }</ul></body></html>";
-                string expectedContent = $@"<html><head></head><body><foo></foo><ul>{ expected }</ul></body></html>";
+                string inputContent = $@"<html><head></head><body><foo></foo><ul>{input}</ul></body></html>";
+                string expectedContent = $@"<html><head></head><body><foo></foo><ul>{expected}</ul></body></html>";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(inputContent);
                 Dictionary<string, string> links = new Dictionary<string, string>()

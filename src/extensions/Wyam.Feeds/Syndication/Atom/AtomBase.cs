@@ -37,7 +37,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 string value = ConvertToString(_id);
                 return string.IsNullOrEmpty(value) ? string.Empty : value;
             }
-            set { _id = ConvertToUri(value); }
+
+            set
+            {
+                _id = ConvertToUri(value);
+            }
         }
 
         /// <remarks>

@@ -172,8 +172,8 @@ namespace Wyam.Sass
                         context.GetContentStream(result.Css ?? string.Empty),
                         new MetadataItems
                         {
-                            {Keys.RelativeFilePath, cssPath},
-                            {Keys.WritePath, cssPath}
+                            { Keys.RelativeFilePath, cssPath },
+                            { Keys.WritePath, cssPath }
                         });
 
                     IDocument sourceMapDocument = null;
@@ -185,12 +185,12 @@ namespace Wyam.Sass
                             context.GetContentStream(result.SourceMap),
                             new MetadataItems
                             {
-                                {Keys.RelativeFilePath, sourceMapPath},
-                                {Keys.WritePath, sourceMapPath}
+                                { Keys.RelativeFilePath, sourceMapPath },
+                                { Keys.WritePath, sourceMapPath }
                             });
                     }
 
-                    return new[] {cssDocument, sourceMapDocument};
+                    return new[] { cssDocument, sourceMapDocument };
                 })
                 .Where(x => x != null);
         }

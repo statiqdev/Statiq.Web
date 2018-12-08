@@ -17,4 +17,7 @@
     <PackageReference Include="Google.Apis.Core" Version="1.29.1" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.29.1.760" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

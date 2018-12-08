@@ -29,7 +29,11 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
                 return _value.Value;
             }
-            set { _value = value; }
+
+            set
+            {
+                _value = value;
+            }
         }
 
         [XmlIgnore]

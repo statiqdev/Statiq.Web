@@ -84,7 +84,6 @@ namespace Wyam.Highlight
                 {
                     x.ExecuteFile(_highlightJsFile);
                 }
-
             }))
             {
                 return inputs.AsParallel().Select(context, input =>
@@ -114,7 +113,6 @@ namespace Wyam.Highlight
 
                                     try
                                     {
-
                                         if (language != null)
                                         {
                                             engine.SetVariableValue("language", language.Replace("language-", ""));

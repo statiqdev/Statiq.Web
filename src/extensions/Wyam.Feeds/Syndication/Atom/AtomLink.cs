@@ -112,7 +112,6 @@ namespace Wyam.Feeds.Syndication.Atom
         {
             get
             {
-                // http://tools.ietf.org/html/rfc4685#section-4
                 string value = _type;
                 if (ThreadCount > 0 && string.IsNullOrEmpty(value))
                 {
@@ -120,7 +119,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return value;
             }
-            set { _type = string.IsNullOrEmpty(value) ? null : value; }
+
+            set
+            {
+                _type = string.IsNullOrEmpty(value) ? null : value;
+            }
         }
 
         [XmlAttribute("href")]

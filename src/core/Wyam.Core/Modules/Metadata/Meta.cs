@@ -145,7 +145,6 @@ namespace Wyam.Core.Modules.Metadata
                 // Execute the modules once and apply to each input document
                 foreach (IDocument result in context.Execute(_modules))
                 {
-
                     foreach (KeyValuePair<string, object> kvp in result)
                     {
                         metadata[kvp.Key] = kvp.Value;

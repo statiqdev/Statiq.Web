@@ -62,13 +62,21 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("width")]
         public int Width
         {
-            get { return _width; }
+            get
+            {
+                return _width;
+            }
+
             set
             {
                 if (value <= 0)
+                {
                     _width = int.MinValue;
+                }
                 else
+                {
                     _width = value;
+                }
             }
         }
 
@@ -79,13 +87,21 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("height")]
         public int Height
         {
-            get { return _height; }
+            get
+            {
+                return _height;
+            }
+
             set
             {
                 if (value <= 0)
+                {
                     _height = int.MinValue;
+                }
                 else
+                {
                     _height = value;
+                }
             }
         }
 

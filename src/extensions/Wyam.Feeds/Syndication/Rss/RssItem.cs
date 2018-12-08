@@ -39,7 +39,6 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public RssItem(IFeedItem source)
         {
-
             // ** IFeedMetadata
 
             // ID
@@ -176,10 +175,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _author = new RssPerson();
                 }
-
                 return _author;
             }
-            set { _author = value; }
+
+            set
+            {
+                _author = value;
+            }
         }
 
         [XmlIgnore]
@@ -221,7 +223,11 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
                 return _enclosure;
             }
-            set { _enclosure = value; }
+
+            set
+            {
+                _enclosure = value;
+            }
         }
 
         [XmlIgnore]
@@ -242,7 +248,11 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
                 return _guid;
             }
-            set { _guid = value; }
+
+            set
+            {
+                _guid = value;
+            }
         }
 
         [XmlIgnore]
@@ -323,7 +333,11 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
                 return _slashComments.Value;
             }
-            set { _slashComments = value; }
+
+            set
+            {
+                _slashComments = value;
+            }
         }
 
         [XmlIgnore]

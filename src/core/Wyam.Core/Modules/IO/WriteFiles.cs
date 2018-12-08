@@ -336,8 +336,10 @@ namespace Wyam.Core.Modules.IO
                 MetadataItems metadata = new MetadataItems
                 {
                     { Keys.RelativeFilePath, relativePath },
-                    { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
-                        ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                    {
+                        Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                            ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension)
+                    },
                     { Keys.RelativeFileDir, relativePath.Directory }
                 };
                 if (_onlyMetadata)
@@ -353,8 +355,10 @@ namespace Wyam.Core.Modules.IO
                         { Keys.DestinationFileName, output.Path.FileName },
                         { Keys.DestinationFileDir, output.Path.Directory },
                         { Keys.DestinationFilePath, output.Path },
-                        { Keys.DestinationFilePathBase, fileNameWithoutExtension == null
-                            ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                        {
+                            Keys.DestinationFilePathBase, fileNameWithoutExtension == null
+                                ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension)
+                        },
                     });
                 }
                 return _onlyMetadata

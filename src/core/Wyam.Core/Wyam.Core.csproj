@@ -23,4 +23,7 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
     <PackageReference Include="UniversalTypeConverter" Version="1.0.4" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

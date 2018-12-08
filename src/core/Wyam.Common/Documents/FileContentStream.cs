@@ -50,7 +50,7 @@ namespace Wyam.Common.Documents
             CheckDisposed();
             return GetStream().InitializeLifetimeService();
         }
-        
+
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             CheckDisposed();

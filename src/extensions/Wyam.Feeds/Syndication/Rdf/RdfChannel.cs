@@ -29,10 +29,12 @@ namespace Wyam.Feeds.Syndication.Rdf
                 {
                     return null;
                 }
-
                 return new RdfResource(_parent.Image);
             }
-            set {  }
+
+            set
+            {
+            }
         }
 
         /// <summary>
@@ -63,10 +65,12 @@ namespace Wyam.Feeds.Syndication.Rdf
                 {
                     return null;
                 }
-
                 return new RdfResource(_parent.TextInput);
             }
-            set { }
+
+            set
+            {
+            }
         }
 
         internal void SetParent(RdfFeed feed)

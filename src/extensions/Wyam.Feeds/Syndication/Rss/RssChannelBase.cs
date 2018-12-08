@@ -56,7 +56,11 @@ namespace Wyam.Feeds.Syndication.Rss
                 string value = ConvertToString(_link);
                 return string.IsNullOrEmpty(value) ? string.Empty : value;
             }
-            set { _link = ConvertToUri(value); }
+
+            set
+            {
+                _link = ConvertToUri(value);
+            }
         }
 
         /// <remarks>
@@ -73,7 +77,11 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("language")]
         public string Language
         {
-            get { return _language.Name; }
+            get
+            {
+                return _language.Name;
+            }
+
             set
             {
                 if (value == null)
@@ -104,10 +112,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _managingEditor = new RssPerson();
                 }
-
                 return _managingEditor;
             }
-            set { _managingEditor = value; }
+
+            set
+            {
+                _managingEditor = value;
+            }
         }
 
         [XmlIgnore]
@@ -129,10 +140,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _webMaster = new RssPerson();
                 }
-
                 return _webMaster;
             }
-            set { _webMaster = value; }
+
+            set
+            {
+                _webMaster = value;
+            }
         }
 
         [XmlIgnore]
@@ -208,16 +222,19 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _cloud = new RssCloud();
                 }
-
                 return _cloud;
             }
-            set { _cloud = value; }
+
+            set
+            {
+                _cloud = value;
+            }
         }
 
         [XmlIgnore]
         public bool CloudSpecified
         {
-            get { return (_cloud != null && !_cloud.IsEmpty()); }
+            get { return _cloud != null && !_cloud.IsEmpty(); }
             set { }
         }
 
@@ -225,11 +242,17 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("ttl")]
         public int Ttl
         {
-            get { return _ttl; }
+            get
+            {
+                return _ttl;
+            }
+
             set
             {
                 if (value < 0)
+                {
                     _ttl = int.MinValue;
+                }
                 else
                     _ttl = value;
             }
@@ -245,10 +268,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _image = new RssImage();
                 }
-
                 return _image;
             }
-            set { _image = value; }
+
+            set
+            {
+                _image = value;
+            }
         }
 
         [XmlIgnore]
@@ -275,10 +301,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _textInput = new RssTextInput();
                 }
-
                 return _textInput;
             }
-            set { _textInput = value; }
+
+            set
+            {
+                _textInput = value;
+            }
         }
 
         [XmlIgnore]
@@ -298,10 +327,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _skipHours = new RssSkipHours();
                 }
-
                 return _skipHours;
             }
-            set { _skipHours = value; }
+
+            set
+            {
+                _skipHours = value;
+            }
         }
 
         [XmlIgnore]
@@ -321,10 +353,13 @@ namespace Wyam.Feeds.Syndication.Rss
                 {
                     _skipDays = new RssSkipDays();
                 }
-
                 return _skipDays;
             }
-            set { _skipDays = value; }
+
+            set
+            {
+                _skipDays = value;
+            }
         }
 
         [XmlIgnore]

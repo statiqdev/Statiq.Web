@@ -141,7 +141,10 @@ namespace Wyam.CodeAnalysis.Analysis
         /// <exception cref="InvalidOperationException">The lock is not currently held by the calling thread.</exception>
         public void AssertHasLock()
         {
-            if (!LockHeldByMe()) throw new Exception();
+            if (!LockHeldByMe())
+            {
+                throw new Exception();
+            }
         }
 
         /// <summary>

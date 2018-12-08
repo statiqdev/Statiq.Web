@@ -197,7 +197,11 @@ namespace Wyam.Core.Execution
             int maxEngines = 25,
             int maxUsagesPerEngine = 100,
             TimeSpan? engineTimeout = null) =>
-            new JsEnginePool(initializer, startEngines, maxEngines, maxUsagesPerEngine,
+            new JsEnginePool(
+                initializer,
+                startEngines,
+                maxEngines,
+                maxUsagesPerEngine,
                 engineTimeout ?? TimeSpan.FromSeconds(5));
 
         // IMetadata

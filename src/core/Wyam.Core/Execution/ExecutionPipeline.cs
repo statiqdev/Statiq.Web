@@ -47,7 +47,11 @@ namespace Wyam.Core.Execution
 
         public bool ProcessDocumentsOnce
         {
-            get { return _previouslyProcessedCache != null; }
+            get
+            {
+                return _previouslyProcessedCache != null;
+            }
+
             set
             {
                 if (!value)
@@ -166,6 +170,7 @@ namespace Wyam.Core.Execution
                                         _previouslyProcessedCache.Set(resultDocument, processedDocuments);
                                         _processedSources.Add(resultDocument.Source, processedDocuments);
                                     }
+
                                     // Otherwise, this document was previously processed so don't add it to the results
                                 }
                             }

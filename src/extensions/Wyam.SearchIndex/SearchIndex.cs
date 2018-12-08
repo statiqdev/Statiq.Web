@@ -222,12 +222,12 @@ namespace Wyam.SearchIndex
                 }
                 metadata = new MetadataItems
                 {
-                    {Keys.RelativeFilePath, outputPath},
-                    {Keys.WritePath, outputPath}
+                    { Keys.RelativeFilePath, outputPath },
+                    { Keys.WritePath, outputPath }
                 };
             }
 
-            return new []{ context.GetDocument(context.GetContentStream(script), metadata) };
+            return new [] { context.GetDocument(context.GetContentStream(script), metadata) };
         }
 
         private StringBuilder BuildScript(IList<ISearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)

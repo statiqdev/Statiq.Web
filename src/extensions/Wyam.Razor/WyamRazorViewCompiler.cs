@@ -46,7 +46,6 @@ using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
-
     internal class WyamRazorViewCompiler : RazorViewCompiler
     {
         public WyamRazorViewCompiler(

@@ -44,7 +44,11 @@ namespace Wyam.Feeds.Syndication.Atom
         [XmlIgnore]
         public AtomTextType Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
+
             set
             {
                 _type = value;
@@ -93,7 +97,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return _value;
             }
-            set { _value = value; }
+
+            set
+            {
+                _value = value;
+            }
         }
 
         /// <summary>

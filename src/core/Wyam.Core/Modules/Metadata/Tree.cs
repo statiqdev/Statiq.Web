@@ -322,7 +322,7 @@ namespace Wyam.Core.Modules.Metadata
                 MetadataItems metadata = new MetadataItems();
                 if (tree._childrenKey != null)
                 {
-                    metadata.Add(tree._childrenKey, new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray()));
+                    metadata.Add(tree._childrenKey, new ReadOnlyCollection<IDocument>(Children.Select(x => x.OutputDocument).ToArray()));
                 }
                 if (tree._parentKey != null)
                 {

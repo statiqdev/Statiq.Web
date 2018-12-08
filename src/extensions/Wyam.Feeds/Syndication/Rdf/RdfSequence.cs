@@ -36,7 +36,6 @@ namespace Wyam.Feeds.Syndication.Rdf
                 {
                     return null;
                 }
-
                 List<RdfResource> items = new List<RdfResource>(_target.Items.Count);
                 foreach (RdfBase item in _target.Items)
                 {
@@ -44,7 +43,10 @@ namespace Wyam.Feeds.Syndication.Rdf
                 }
                 return items;
             }
-            set { }
+
+            set
+            {
+            }
         }
 
         [XmlIgnore]
@@ -53,10 +55,12 @@ namespace Wyam.Feeds.Syndication.Rdf
             get
             {
                 List<RdfResource> items = Items;
-
                 return (items != null) && (items.Count > 0);
             }
-            set { }
+
+            set
+            {
+            }
         }
     }
 }

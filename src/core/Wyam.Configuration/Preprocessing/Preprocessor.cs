@@ -86,7 +86,6 @@ namespace Wyam.Configuration.Preprocessing
                         {
                             singleDirectiveValues.Add(value.Name, value.Value);
                         }
-
                     }
 
                     // Process the directive

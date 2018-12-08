@@ -278,7 +278,6 @@ namespace Wyam.Core.Execution
                         _pipelines.Count,
                         engineStopwatch.ElapsedMilliseconds);
                 }
-
             }
             catch (Exception ex)
             {

@@ -13,7 +13,6 @@
     <Rule Id="CS1587" Action="None" />
     <Rule Id="CS1589" Action="None" />
     <Rule Id="CS1590" Action="None" />
-    <Rule Id="CS1591" Action="None" />
     <Rule Id="CS1592" Action="None" />
     <Rule Id="CS1710" Action="None" />
     <Rule Id="CS1711" Action="None" />

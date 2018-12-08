@@ -24,12 +24,15 @@ namespace Wyam.Feeds.Syndication.Rss
             get
             {
                 string link = Value;
-
                 return _isPermaLink &&
                        (link != null) &&
                        link.StartsWith(Uri.UriSchemeHttp);
             }
-            set { _isPermaLink = value; }
+
+            set
+            {
+                _isPermaLink = value;
+            }
         }
 
         /// <summary>

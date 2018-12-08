@@ -55,10 +55,10 @@ body {
                 Sass sass = new Sass().WithCompactOutputStyle();
 
                 // When
-                List<IDocument> results = sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                List<IDocument> results = sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] {output}));
+                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] { output }));
                 Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
             }
 
@@ -131,7 +131,7 @@ body {
                 // When, Then
                 Assert.Catch<AggregateException>(() =>
                 {
-                    sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                    sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
                 });
             }
 
@@ -177,10 +177,10 @@ body {
                 Sass sass = new Sass().IncludeSourceComments(false).WithCompactOutputStyle();
 
                 // When
-                List<IDocument> results = sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                List<IDocument> results = sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] {output}));
+                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] { output }));
                 Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
             }
 

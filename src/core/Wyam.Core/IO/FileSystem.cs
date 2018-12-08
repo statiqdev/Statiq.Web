@@ -35,7 +35,8 @@ namespace Wyam.Core.IO
 
         public DirectoryPath RootPath
         {
-            get { return _rootPath; }
+            get => _rootPath;
+
             set
             {
                 if (value == null)
@@ -56,7 +57,11 @@ namespace Wyam.Core.IO
 
         public DirectoryPath OutputPath
         {
-            get { return _outputPath; }
+            get
+            {
+                return _outputPath;
+            }
+
             set
             {
                 if (value == null)
@@ -69,7 +74,11 @@ namespace Wyam.Core.IO
 
         public DirectoryPath TempPath
         {
-            get { return _tempPath; }
+            get
+            {
+                return _tempPath;
+            }
+
             set
             {
                 if (value == null)

@@ -55,10 +55,13 @@ namespace Wyam.Feeds.Syndication.Rdf
                 {
                     _image = new RdfImage();
                 }
-
                 return _image;
             }
-            set { _image = value; }
+
+            set
+            {
+                _image = value;
+            }
         }
 
         [XmlIgnore]
@@ -81,10 +84,13 @@ namespace Wyam.Feeds.Syndication.Rdf
                 {
                     _textInput = new RdfTextInput();
                 }
-
                 return _textInput;
             }
-            set { _textInput = value; }
+
+            set
+            {
+                _textInput = value;
+            }
         }
 
         [XmlIgnore]

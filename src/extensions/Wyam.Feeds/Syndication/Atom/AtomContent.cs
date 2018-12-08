@@ -56,7 +56,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return base.Value;
             }
-            set { base.Value = value; }
+
+            set
+            {
+                base.Value = value;
+            }
         }
 
         Uri IUriProvider.Uri => _src;

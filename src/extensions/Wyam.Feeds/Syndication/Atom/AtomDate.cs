@@ -32,7 +32,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return _value.Value;
             }
-            set { _value = value; }
+
+            set
+            {
+                _value = value;
+            }
         }
 
         [XmlIgnore]

@@ -252,7 +252,7 @@ namespace Wyam.Markdown
                     ? context.GetDocument(input, context.GetContentStream(result))
                     : context.GetDocument(input, new MetadataItems
                     {
-                        {string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result}
+                        { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }
                     });
             });
         }

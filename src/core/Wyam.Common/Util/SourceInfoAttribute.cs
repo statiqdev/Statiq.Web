@@ -34,6 +34,5 @@ namespace Wyam.Common.Util
         /// The file path of the source file.
         /// </summary>
         public string FilePath { get; }
-
     }
 }

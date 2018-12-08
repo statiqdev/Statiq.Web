@@ -143,8 +143,7 @@ namespace Wyam.Core.Modules.Contents
                     input,
                     context.GetContentStream(_isRegex ?
                         Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
-                        input.Content.Replace(_search, content.ToString())
-                    ))
+                        input.Content.Replace(_search, content.ToString())))
             };
         }
     }

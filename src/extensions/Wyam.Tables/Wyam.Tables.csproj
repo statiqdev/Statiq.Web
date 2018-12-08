@@ -15,4 +15,7 @@
     <PackageReference Include="CsvHelper" Version="7.1.0" />
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

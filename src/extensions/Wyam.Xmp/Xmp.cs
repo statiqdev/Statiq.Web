@@ -19,7 +19,6 @@ using Wyam.Common.Util;
 
 namespace Wyam.Xmp
 {
-
     /// <summary>
     /// Reads XMP data from the input documents and adds it to the document metadata.
     /// </summary>
@@ -38,11 +37,11 @@ namespace Wyam.Xmp
         private readonly Dictionary<string, string> _namespaceAlias =
             new Dictionary<string, string>
             {
-                {"dc", "http://purl.org/dc/elements/1.1/" },
-                {"xmpRights", "http://ns.adobe.com/xap/1.0/rights/"},
-                {"cc", "http://creativecommons.org/ns#"},
-                {"xmp", "http://ns.adobe.com/xap/1.0/"},
-                {"xml", "http://www.w3.org/XML/1998/namespace"},
+                { "dc", "http://purl.org/dc/elements/1.1/" },
+                { "xmpRights", "http://ns.adobe.com/xap/1.0/rights/" },
+                { "cc", "http://creativecommons.org/ns#" },
+                { "xmp", "http://ns.adobe.com/xap/1.0/" },
+                { "xml", "http://www.w3.org/XML/1998/namespace" },
             };
 
         /// <summary>
@@ -119,7 +118,6 @@ namespace Wyam.Xmp
                  {
                      using (var stream = input.GetStream())
                      {
-
                          xmpDirectory = ImageMetadataReader.ReadMetadata(stream).OfType<XmpDirectory>().FirstOrDefault();
                      }
                  }
@@ -127,8 +125,9 @@ namespace Wyam.Xmp
                  {
                      xmpDirectory = null;
                  }
-                 if (xmpDirectory == null) // Try to read sidecarfile
+                 if (xmpDirectory == null)
                  {
+                     // Try to read sidecarfile
                      FilePath sourceFilePath = input.FilePath(Keys.SourceFilePath);
                      if (sourceFilePath != null)
                      {
@@ -150,7 +149,9 @@ namespace Wyam.Xmp
                      {
                          Trace.Warning($"File doe not contain Metadata or sidecar file ({input.SourceString()})");
                          if (_skipElementOnMissingData)
+                         {
                              return null;
+                         }
                      }
                      return input;
                  }
@@ -186,13 +187,14 @@ namespace Wyam.Xmp
                          {
                              newValues[search.MetadataKey] = value;
                          }
-
                      }
                      catch (Exception e)
                      {
                          Trace.Error($"An exception occurred : {e} {e.Message}");
                          if (search.IsMandatory && _skipElementOnMissingData)
+                         {
                              return null;
+                         }
                      }
                  }
                  return newValues.Any() ? context.GetDocument(input, newValues) : input;
@@ -225,17 +227,27 @@ namespace Wyam.Xmp
                 {
                     string path = Element?.Path;
                     if (string.IsNullOrWhiteSpace(path))
+                    {
                         return -1;
+                    }
 
                     string pathWithouParent;
                     if (!string.IsNullOrWhiteSpace(Parent?.Element?.Path))
+                    {
                         pathWithouParent = path.Substring(Parent.Element.Path.Length).TrimStart('/');
+                    }
                     else
+                    {
                         pathWithouParent = path.TrimStart('/');
+                    }
+
                     string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
 
                     if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
+                    {
                         return int.Parse(Regex.Replace(pathWithoutNamespace, @"\[(?<index>\d+)\]", "${index}"));
+                    }
+
                     return -1;
                 }
             }
@@ -250,7 +262,6 @@ namespace Wyam.Xmp
 
             private TreeDirectory()
             {
-
             }
 
             private TreeDirectory(IXmpPropertyInfo x)
@@ -286,7 +297,6 @@ namespace Wyam.Xmp
                     {
                         child.Parent = node.Element;
                     }
-
                 }
 
                 return root;
@@ -307,16 +317,24 @@ namespace Wyam.Xmp
                     {
                         matchingString = array.OfType<LocalizedString>().FirstOrDefault(x => x.Culture.Equals(systemCulture));
                         if (systemCulture.Parent.Equals(systemCulture))
-                            break; // We are at the Culture Root. so break or run for ever.
+                        {
+                            // We are at the Culture Root. so break or run for ever.
+                            break;
+                        }
                         systemCulture = systemCulture.Parent;
-
-                    } while (matchingString == null);
+                    }
+                    while (matchingString == null);
 
                     if (matchingString != null)
+                    {
                         return matchingString.Value;
+                    }
                 }
                 if (_flatten && array.Length == 1)
+                {
                     return array[0];
+                }
+
                 return array;
             }
             else if (metadata.Element.Options.IsStruct)
@@ -348,7 +366,6 @@ namespace Wyam.Xmp
                     }
 
                     return new LocalizedString() { Culture = culture, Value = metadata.ElementValue };
-
                 }
 
                 return metadata.ElementValue;
@@ -387,7 +404,9 @@ namespace Wyam.Xmp
                 this.XmpPath = xmpPath;
                 string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
                 if (!_parent._namespaceAlias.ContainsKey(alias))
+                {
                     throw new ArgumentException($"Namespace alias {alias} unknown.", nameof(xmpPath));
+                }
             }
 
             public string XmpPath { get; }

@@ -46,7 +46,6 @@ using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
-
     /// <summary>
     /// This is copied from <see cref="RazorViewCompilerProvider"/> and exists entirely to provide
     /// <see cref="WyamRazorViewCompiler"/> instead of <see cref="RazorViewCompiler"/>.

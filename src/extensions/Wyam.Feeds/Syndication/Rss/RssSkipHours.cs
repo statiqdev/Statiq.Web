@@ -62,7 +62,9 @@ namespace Wyam.Feeds.Syndication.Rss
                 for (int i = MinHour; i <= MaxHour; i++)
                 {
                     if (this[i])
+                    {
                         skipped.Add(i);
+                    }
                 }
 
                 return skipped.ToArray();

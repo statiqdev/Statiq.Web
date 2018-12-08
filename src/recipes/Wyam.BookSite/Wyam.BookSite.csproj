@@ -22,4 +22,7 @@
     <ProjectReference Include="..\..\extensions\Wyam.Yaml\Wyam.Yaml.csproj" />
     <ProjectReference Include="..\Wyam.Web\Wyam.Web.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

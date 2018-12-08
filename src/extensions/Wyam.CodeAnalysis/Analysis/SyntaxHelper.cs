@@ -67,13 +67,13 @@ namespace Wyam.CodeAnalysis.Analysis
         private static readonly Dictionary<Accessibility, string> _cSharpAccessibilityStrings
             = new Dictionary<Accessibility, string>
             {
-                {Accessibility.Internal, "internal "},
-                {Accessibility.NotApplicable, string.Empty},
-                {Accessibility.Private, "private "},
-                {Accessibility.Protected, "protected "},
-                {Accessibility.ProtectedAndInternal, string.Empty},
-                {Accessibility.ProtectedOrInternal, "protected internal "},
-                {Accessibility.Public, "public "}
+                { Accessibility.Internal, "internal " },
+                { Accessibility.NotApplicable, string.Empty },
+                { Accessibility.Private, "private " },
+                { Accessibility.Protected, "protected " },
+                { Accessibility.ProtectedAndInternal, string.Empty },
+                { Accessibility.ProtectedOrInternal, "protected internal " },
+                { Accessibility.Public, "public " }
             };
 
         private static string GetCSharpSyntax(ISymbol symbol)

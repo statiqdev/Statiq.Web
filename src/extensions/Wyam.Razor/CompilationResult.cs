@@ -40,7 +40,6 @@ using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
-
     internal class CompilationResult
     {
         RazorCompiledItem CompiledItem { get; }

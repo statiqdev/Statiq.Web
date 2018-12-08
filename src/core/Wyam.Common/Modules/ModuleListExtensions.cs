@@ -489,7 +489,8 @@ namespace Wyam.Common.Modules
             throw new InvalidOperationException($"Could not find module of type {typeof(T).FullName}");
         }
 
-        private static int GuardIndexOfFirst<T>(this IModuleList moduleList, Predicate<T> filter) where T : class, IModule
+        private static int GuardIndexOfFirst<T>(this IModuleList moduleList, Predicate<T> filter)
+            where T : class, IModule
         {
             for (int index = 0; index < moduleList.Count; index++)
             {

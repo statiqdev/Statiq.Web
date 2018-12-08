@@ -87,7 +87,6 @@ namespace Wyam.Configuration.NuGet
             {
                 // Only show a verbose message if there were no reference items (I.e., it's probably a content-only package or a metapackage and not a mismatch)
                 Trace.Verbose($"Could not find any reference items in package {packageIdentify}");
-
             }
             else
             {

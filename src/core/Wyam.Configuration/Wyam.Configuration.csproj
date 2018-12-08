@@ -39,4 +39,7 @@
       <HintPath>..\..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

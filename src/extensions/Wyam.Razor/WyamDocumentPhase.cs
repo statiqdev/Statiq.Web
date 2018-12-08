@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
 namespace Wyam.Razor
 {
-
     internal class WyamDocumentPhase : RazorEnginePhaseBase
     {
         private readonly string _baseType;

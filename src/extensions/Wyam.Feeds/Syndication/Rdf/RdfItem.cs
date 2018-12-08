@@ -171,7 +171,11 @@ namespace Wyam.Feeds.Syndication.Rdf
                 }
                 return _slashComments.Value;
             }
-            set { _slashComments = value; }
+
+            set
+            {
+                _slashComments = value;
+            }
         }
 
         [XmlIgnore]

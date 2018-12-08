@@ -40,7 +40,6 @@ using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
-
     public class CompilationErrorsException : AggregateException
     {
         public CompilationErrorsException(IEnumerable<CompilationErrorException> errors)

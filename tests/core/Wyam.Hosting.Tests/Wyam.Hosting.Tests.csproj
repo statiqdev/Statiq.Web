@@ -28,4 +28,7 @@
     <EmbeddedResource Include="wwwroot\BasicHtmlDocumentNoBodyEnd.html" />
     <EmbeddedResource Include="wwwroot\NonHtmlDocument.css" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.1-beta.61" />
+  </ItemGroup>
 </Project>

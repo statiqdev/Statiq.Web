@@ -134,11 +134,15 @@ namespace Wyam.Core.Modules.IO
                             { Keys.SourceFileName, file.Path.FileName },
                             { Keys.SourceFileDir, file.Path.Directory },
                             { Keys.SourceFilePath, file.Path },
-                            { Keys.SourceFilePathBase, fileNameWithoutExtension == null
-                                ? null : file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            {
+                                Keys.SourceFilePathBase, fileNameWithoutExtension == null
+                                    ? null : file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension)
+                            },
                             { Keys.RelativeFilePath, relativePath },
-                            { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
-                                ? null : relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            {
+                                Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                                    ? null : relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension)
+                            },
                             { Keys.RelativeFileDir, relativePath.Directory }
                         });
                     });

@@ -32,7 +32,7 @@ namespace Wyam.Html
     /// <category>Metadata</category>
     public class Excerpt : IModule
     {
-        private string[] _separators = { "more", "excerpt"};
+        private string[] _separators = { "more", "excerpt" };
         private string _querySelector = "p";
         private string _metadataKey = HtmlKeys.Excerpt;
         private bool _outerHtml = true;
@@ -145,7 +145,7 @@ namespace Wyam.Html
                 {
                     return context.GetDocument(input, new MetadataItems
                     {
-                        {_metadataKey,  excerpt.Trim()}
+                        { _metadataKey,  excerpt.Trim() }
                     });
                 }
                 return input;
@@ -215,7 +215,6 @@ namespace Wyam.Html
 
                     return parent.InnerHtml;
                 }
-
             }
             return null;
         }
