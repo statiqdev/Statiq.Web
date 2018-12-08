@@ -14,7 +14,8 @@ namespace Wyam.Core.Modules
     {
         internal static ConcurrentHashSet<IModule> AsNewDocumentModules { get; } = new ConcurrentHashSet<IModule>();
 
-        public static TModule AsNewDocuments<TModule>(this TModule module) where TModule : IModule, IAsNewDocuments
+        public static TModule AsNewDocuments<TModule>(this TModule module)
+            where TModule : IModule, IAsNewDocuments
         {
             AsNewDocumentModules.Add(module);
             return module;

@@ -124,7 +124,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool ManagingEditorSpecified
         {
-            get { return (_managingEditor != null && !_managingEditor.IsEmpty()); }
+            get { return _managingEditor != null && !_managingEditor.IsEmpty(); }
             set { }
         }
 
@@ -152,7 +152,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool WebMasterSpecified
         {
-            get { return (_webMaster != null && !_webMaster.IsEmpty()); }
+            get { return _webMaster != null && !_webMaster.IsEmpty(); }
             set { }
         }
 
@@ -192,7 +192,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool CategoriesSpecified
         {
-            get { return (Categories.Count > 0); }
+            get { return Categories.Count > 0; }
             set { }
         }
 
@@ -280,7 +280,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool ImageSpecified
         {
-            get { return (_image != null && !_image.IsEmpty()); }
+            get { return _image != null && !_image.IsEmpty(); }
             set { }
         }
 
@@ -313,7 +313,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool TextInputSpecified
         {
-            get { return (_textInput != null && !_textInput.IsEmpty()); }
+            get { return _textInput != null && !_textInput.IsEmpty(); }
             set { }
         }
 
@@ -339,7 +339,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool SkipHoursSpecified
         {
-            get { return (_skipHours != null && !_skipHours.IsEmpty()); }
+            get { return _skipHours != null && !_skipHours.IsEmpty(); }
             set { }
         }
 
@@ -365,7 +365,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool SkipDaysSpecified
         {
-            get { return (_skipDays != null && !_skipDays.IsEmpty()); }
+            get { return _skipDays != null && !_skipDays.IsEmpty(); }
             set { }
         }
 

@@ -34,8 +34,7 @@ namespace Wyam.Docs.Pipelines
                         new DocSearchIndexItem(
                             doc,
                             doc.String(CodeAnalysisKeys.DisplayName),
-                            doc.String(CodeAnalysisKeys.DisplayName)
-                        ))
+                            doc.String(CodeAnalysisKeys.DisplayName)))
                     .WithScript((scriptBuilder, context) =>
                     {
                         // Use a custom tokenizer that splits on camel case characters

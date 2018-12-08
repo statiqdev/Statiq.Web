@@ -21,7 +21,7 @@ namespace Wyam.Highlight
     /// <remarks>
     /// <para>This module finds all &lt;pre&gt; &lt;code&gt; blocks and applies HighlightJs's syntax highlighting.</para>
     /// </remarks>
-    ///  <example>
+    /// <example>
     /// <code>
     /// Pipelines.Add("Highlight",
     ///     ReadFiles("*.html"),

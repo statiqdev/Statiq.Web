@@ -37,7 +37,7 @@ namespace Wyam.Html
         public HtmlInsert(string querySelector, string content)
         {
             _querySelector = querySelector;
-            _content = (doc,ctx) => content;
+            _content = (doc, ctx) => content;
         }
 
         /// <summary>

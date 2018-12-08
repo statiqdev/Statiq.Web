@@ -8,13 +8,13 @@ namespace Wyam.Testing.Modules
 {
     public class CountModule : IModule
     {
-        public int AdditionalOutputs { get; set; }  // Controls how many additional outputs are spawned
-        public string ValueKey { get; set; }  // This is the key used for storing the value in the metadata
-        public int Value { get; set; }  // This is incremented on every call and output and added to the metadata
+        public int AdditionalOutputs { get; set; } // Controls how many additional outputs are spawned
+        public string ValueKey { get; set; } // This is the key used for storing the value in the metadata
+        public int Value { get; set; } // This is incremented on every call and output and added to the metadata
         public int ExecuteCount { get; set; }
         public int InputCount { get; set; }
         public int OutputCount { get; set; }
-        public bool CloneSource { get; set; }  // Indicates whether the clone call should output a source
+        public bool CloneSource { get; set; } // Indicates whether the clone call should output a source
 
         public CountModule(string valueKey)
         {

@@ -115,7 +115,7 @@ namespace Wyam.Feeds.Syndication.Atom
         [XmlIgnore]
         public bool EntriesSpecified
         {
-            get { return (Entries.Count > 0); }
+            get { return Entries.Count > 0; }
             set { }
         }
 

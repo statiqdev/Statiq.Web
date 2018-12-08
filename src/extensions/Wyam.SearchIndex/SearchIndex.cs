@@ -201,7 +201,7 @@ namespace Wyam.SearchIndex
                 .Where(x => !string.IsNullOrEmpty(x?.Title) && !string.IsNullOrEmpty(x.Content))
                 .ToArray();
 
-            if ( searchIndexItems.Length == 0 )
+            if (searchIndexItems.Length == 0)
             {
                 Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
                 return Array.Empty<IDocument>();
@@ -227,7 +227,7 @@ namespace Wyam.SearchIndex
                 };
             }
 
-            return new [] { context.GetDocument(context.GetContentStream(script), metadata) };
+            return new[] { context.GetDocument(context.GetContentStream(script), metadata) };
         }
 
         private StringBuilder BuildScript(IList<ISearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
@@ -326,7 +326,7 @@ var searchModule = function() {{
                 if (stopwordsFile.Exists)
                 {
                     stopwords = stopwordsFile.ReadAllText()
-                        .Split(new [] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(f => f.Trim().ToLowerInvariant())
                         .Where(f => f.Length > 1)
                         .ToArray();

@@ -9,10 +9,6 @@ namespace Wyam.Feeds.Syndication.Rss
     {
         private DateTime? _value;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="date"></param>
         public RssDate(DateTime date)
         {
             _value = date;

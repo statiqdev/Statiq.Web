@@ -19,7 +19,7 @@ namespace Wyam
             // Find the first unescaped equal
             for (int i = 0; i < arg.Length; i++)
             {
-                if (arg[i] == '=' && (i > 0 && arg[i - 1] != '\\'))
+                if (arg[i] == '=' && i > 0 && arg[i - 1] != '\\')
                 {
                     return new KeyValuePair<string, object>(
                         Unescape(arg.Substring(0, i).Trim()),

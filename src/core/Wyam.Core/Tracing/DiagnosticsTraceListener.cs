@@ -29,7 +29,7 @@ namespace Wyam.Core.Tracing
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
         {
-            this.TraceData(eventCache, source, eventType, id, new object[] { data });
+            TraceData(eventCache, source, eventType, id, new object[] { data });
         }
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)

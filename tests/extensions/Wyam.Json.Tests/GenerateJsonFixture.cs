@@ -227,7 +227,7 @@ namespace Wyam.Json.Tests
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            results.Select(x => x.Content).Single().ShouldBe(
+                results.Select(x => x.Content).Single().ShouldBe(
                 @"{
   ""Bar"": ""baz""
 }",

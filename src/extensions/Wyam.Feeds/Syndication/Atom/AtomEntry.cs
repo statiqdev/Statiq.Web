@@ -168,13 +168,13 @@ namespace Wyam.Feeds.Syndication.Atom
             set { _summary = value; }
         }
 
-        [XmlElement("in-reply-to", Namespace=ThreadingNamespace)]
-        public readonly List<AtomInReplyTo> InReplyToReferences = new List<AtomInReplyTo>();
+        [XmlElement("in-reply-to", Namespace = ThreadingNamespace)]
+        public List<AtomInReplyTo> InReplyToReferences { get; } = new List<AtomInReplyTo>();
 
         [XmlIgnore]
         public bool InReplyToReferencesSpecified
         {
-            get { return (InReplyToReferences.Count > 0); }
+            get { return InReplyToReferences.Count > 0; }
             set { }
         }
 

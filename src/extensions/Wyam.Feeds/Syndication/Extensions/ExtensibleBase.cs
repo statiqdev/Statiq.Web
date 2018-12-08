@@ -22,13 +22,10 @@ namespace Wyam.Feeds.Syndication.Extensions
 
         protected const string SlashPrefix = "slash";
         protected const string SlashNamespace = "http://purl.org/rss/1.0/modules/slash/";
-        //protected const string SlashSectionElement = "section";
-        //protected const string SlashDepartmentElement = "department";
         protected const string SlashCommentsElement = "comments";
-        //protected const string SlashHitParadeElement = "hit_parade";
 
         [XmlAnyElement]
-        public readonly List<XmlElement> ElementExtensions = new List<XmlElement>();
+        public List<XmlElement> ElementExtensions { get; } = new List<XmlElement>();
 
         [XmlIgnore]
         public bool ElementExtensionsSpecified
@@ -38,7 +35,7 @@ namespace Wyam.Feeds.Syndication.Extensions
         }
 
         [XmlAnyAttribute]
-        public readonly List<XmlAttribute> AttributeExtensions = new List<XmlAttribute>();
+        public List<XmlAttribute> AttributeExtensions { get; } = new List<XmlAttribute>();
 
         [XmlIgnore]
         public bool AttributeExtensionsSpecified
@@ -50,7 +47,6 @@ namespace Wyam.Feeds.Syndication.Extensions
         /// <summary>
         /// Applies the extensions in adapter to ExtensibleBase
         /// </summary>
-        /// <param name="adapter"></param>
         public void AddExtensions(IExtensionAdapter adapter)
         {
             if (adapter == null)
@@ -74,7 +70,6 @@ namespace Wyam.Feeds.Syndication.Extensions
         /// <summary>
         /// Extracts the extensions in this ExtensibleBase into adapter
         /// </summary>
-        /// <param name="adapter"></param>
         protected void FillExtensions(IExtensionAdapter adapter)
         {
             if (adapter == null)

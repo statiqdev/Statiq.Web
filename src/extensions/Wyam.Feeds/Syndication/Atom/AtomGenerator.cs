@@ -14,17 +14,10 @@ namespace Wyam.Feeds.Syndication.Atom
         private string _version = null;
         private string _value = null;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public AtomGenerator()
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="text"></param>
         public AtomGenerator(string text)
         {
             _value = text;

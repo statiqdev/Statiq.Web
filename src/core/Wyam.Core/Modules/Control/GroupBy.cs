@@ -110,7 +110,7 @@ namespace Wyam.Core.Modules.Control
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null
-                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                ? (Func<IDocument, IExecutionContext, bool>)predicate.Invoke<bool>
                 : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
@@ -172,8 +172,7 @@ namespace Wyam.Core.Modules.Control
                     {
                         { Common.Meta.Keys.GroupDocuments, x.ToImmutableArray() },
                         { Common.Meta.Keys.GroupKey, x.Key }
-                    })
-                );
+                    }));
             });
         }
     }

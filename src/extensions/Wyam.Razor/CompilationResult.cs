@@ -42,7 +42,7 @@ namespace Wyam.Razor
 {
     internal class CompilationResult
     {
-        RazorCompiledItem CompiledItem { get; }
+        private RazorCompiledItem CompiledItem { get; }
 
         public CompilationResult(RazorCompiledItem item)
         {

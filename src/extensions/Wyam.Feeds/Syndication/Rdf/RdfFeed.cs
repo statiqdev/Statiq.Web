@@ -99,7 +99,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         [XmlIgnore]
         public bool ItemsSpecified
         {
-            get { return (Items.Count > 0); }
+            get { return Items.Count > 0; }
             set { }
         }
 

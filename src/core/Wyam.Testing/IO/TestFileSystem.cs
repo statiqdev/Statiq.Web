@@ -36,7 +36,7 @@ namespace Wyam.Testing.IO
             new DirectoryPath("input")
         });
 
-        IReadOnlyList <DirectoryPath> IReadOnlyFileSystem.InputPaths => InputPaths;
+        IReadOnlyList<DirectoryPath> IReadOnlyFileSystem.InputPaths => InputPaths;
 
         /// <inheritdoc />
         public DirectoryPath OutputPath { get; set; } = "output";

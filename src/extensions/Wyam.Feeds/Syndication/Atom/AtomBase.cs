@@ -24,7 +24,7 @@ namespace Wyam.Feeds.Syndication.Atom
         private Uri _id = null;
         private AtomText _rights = null;
         private AtomText _title = new AtomText();
-        private AtomDate _updated = new AtomDate();
+        private AtomDate _updated = default(AtomDate);
 
         /// <remarks>
         /// Required even if empty.
@@ -55,42 +55,42 @@ namespace Wyam.Feeds.Syndication.Atom
         }
 
         [XmlElement("author")]
-        public readonly List<AtomPerson> Authors = new List<AtomPerson>();
+        public List<AtomPerson> Authors { get; } = new List<AtomPerson>();
 
         [XmlIgnore]
         public bool AuthorsSpecified
         {
-            get { return (Authors.Count > 0); }
+            get { return Authors.Count > 0; }
             set { }
         }
 
         [XmlElement("category")]
-        public readonly List<AtomCategory> Categories = new List<AtomCategory>();
+        public List<AtomCategory> Categories { get; } = new List<AtomCategory>();
 
         [XmlIgnore]
         public bool CategoriesSpecified
         {
-            get { return (Categories.Count > 0); }
+            get { return Categories.Count > 0; }
             set { }
         }
 
         [XmlElement("contributor")]
-        public readonly List<AtomPerson> Contributors = new List<AtomPerson>();
+        public List<AtomPerson> Contributors { get; } = new List<AtomPerson>();
 
         [XmlIgnore]
         public bool ContributorsSpecified
         {
-            get { return (Contributors.Count > 0); }
+            get { return Contributors.Count > 0; }
             set { }
         }
 
         [XmlElement("link")]
-        public readonly List<AtomLink> Links = new List<AtomLink>();
+        public List<AtomLink> Links { get; } = new List<AtomLink>();
 
         [XmlIgnore]
         public bool LinksSpecified
         {
-            get { return (Links.Count > 0); }
+            get { return Links.Count > 0; }
             set { }
         }
 

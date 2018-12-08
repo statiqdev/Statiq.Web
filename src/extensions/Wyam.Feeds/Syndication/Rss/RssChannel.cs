@@ -22,7 +22,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool ItemsSpecified
         {
-            get { return (Items.Count > 0); }
+            get { return Items.Count > 0; }
             set { }
         }
 

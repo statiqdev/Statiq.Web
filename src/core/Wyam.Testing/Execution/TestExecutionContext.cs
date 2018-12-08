@@ -198,7 +198,6 @@ namespace Wyam.Testing.Execution
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) =>
             Execute(modules, inputs, null);
 
-        // Executes the module with an empty document containing the specified metadata items
         /// <inheritdoc/>
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) =>
             Execute(modules, null, items);
@@ -220,15 +219,18 @@ namespace Wyam.Testing.Execution
             return inputs.ToList();
         }
 
-        public Func<IJsEngine> JsEngineFunc = () =>
+        public Func<IJsEngine> JsEngineFunc { get; } = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
         };
 
         /// <inheritdoc/>
-        public IJsEnginePool GetJsEnginePool(Action<IJsEngine> initializer = null,
-            int startEngines = 10, int maxEngines = 25,
-            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) =>
+        public IJsEnginePool GetJsEnginePool(
+            Action<IJsEngine> initializer = null,
+            int startEngines = 10,
+            int maxEngines = 25,
+            int maxUsagesPerEngine = 100,
+            TimeSpan? engineTimeout = null) =>
             new TestJsEnginePool(JsEngineFunc, initializer);
 
         private class TestJsEnginePool : IJsEnginePool
@@ -273,7 +275,7 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) _settings).GetEnumerator();
+            return ((IEnumerable)_settings).GetEnumerator();
         }
 
         /// <inheritdoc/>

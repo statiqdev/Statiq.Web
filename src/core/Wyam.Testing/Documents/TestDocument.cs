@@ -140,9 +140,8 @@ namespace Wyam.Testing.Documents
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) _metadata).GetEnumerator();
+            return ((IEnumerable)_metadata).GetEnumerator();
         }
-
 
         /// <inhertdoc />
         public int Count => _metadata.Count;

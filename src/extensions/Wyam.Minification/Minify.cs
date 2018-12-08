@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Minification
 {
-    class Minify
+    internal class Minify
     {
     }
 }

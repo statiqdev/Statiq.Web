@@ -16,7 +16,7 @@ namespace Wyam.Feeds.Syndication.Rss
         private string _title = null;
         private Uri _link = null;
 
-        //optional
+        // optional
         private int _width = int.MinValue;
         private int _height = int.MinValue;
 
@@ -107,11 +107,11 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Url) &&
-                   string.IsNullOrEmpty(Title) &&
-                   string.IsNullOrEmpty(Link) &&
-                   Width <= 0 ||
-                   Height <= 0;
+            return (string.IsNullOrEmpty(Url) &&
+                string.IsNullOrEmpty(Title) &&
+                string.IsNullOrEmpty(Link) &&
+                Width <= 0) ||
+                Height <= 0;
         }
 
         Uri IUriProvider.Uri => _url;

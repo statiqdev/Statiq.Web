@@ -52,7 +52,6 @@ namespace Wyam.Razor
     /// </summary>
     internal class WyamRazorViewCompilerProvider : IViewCompilerProvider
     {
-        private object _initializeLock = new object();
         private readonly RazorProjectEngine _razorProjectEngine;
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
@@ -60,6 +59,7 @@ namespace Wyam.Razor
         private readonly RazorViewEngineOptions _viewEngineOptions;
         private readonly ILogger<RazorViewCompiler> _logger;
         private readonly Func<IViewCompiler> _createCompiler;
+        private object _initializeLock = new object();
         private bool _initialized;
         private IViewCompiler _compiler;
 

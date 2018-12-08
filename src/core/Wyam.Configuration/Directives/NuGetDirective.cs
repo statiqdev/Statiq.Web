@@ -17,7 +17,7 @@ namespace Wyam.Configuration.Directives
         public override IEqualityComparer<string> ValueComparer => StringComparer.Ordinal;
 
         // Any changes to settings should also be made in Cake.Wyam
-        public class Settings
+        public struct Settings
         {
             public bool Prerelease;
             public bool Unlisted;
@@ -53,8 +53,14 @@ namespace Wyam.Configuration.Directives
         protected override void Process(Configurator configurator, Settings settings)
         {
             // Add the package to the repository (it'll actually get fetched later)
-            configurator.PackageInstaller.AddPackage(settings.Package, settings.Sources,
-                settings.VersionRange, settings.Latest, settings.Prerelease, settings.Unlisted, settings.Exclusive);
+            configurator.PackageInstaller.AddPackage(
+                settings.Package,
+                settings.Sources,
+                settings.VersionRange,
+                settings.Latest,
+                settings.Prerelease,
+                settings.Unlisted,
+                settings.Exclusive);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Wyam.Feeds.Syndication.Rss
         private Uri _link = null;
         private string _description = null;
 
-        //optional
+        // optional
         private RssPerson _author = null;
         private Uri _comments = null;
         private RssEnclosure _enclosure = null;
@@ -187,17 +187,17 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool AuthorSpecified
         {
-            get { return (_author != null && !_author.IsEmpty()); }
+            get { return _author != null && !_author.IsEmpty(); }
             set { }
         }
 
         [XmlElement("category")]
-        public readonly List<RssCategory> Categories = new List<RssCategory>();
+        public List<RssCategory> Categories { get; } = new List<RssCategory>();
 
         [XmlIgnore]
         public bool CategoriesSpecified
         {
-            get { return (Categories.Count > 0); }
+            get { return Categories.Count > 0; }
             set { }
         }
 

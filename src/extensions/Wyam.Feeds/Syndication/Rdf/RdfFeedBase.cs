@@ -67,7 +67,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         [XmlIgnore]
         public bool ImageSpecified
         {
-            get { return (_image != null && !_image.IsEmpty()); }
+            get { return _image != null && !_image.IsEmpty(); }
             set { }
         }
 
@@ -96,7 +96,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         [XmlIgnore]
         public bool TextInputSpecified
         {
-            get { return (_textInput != null && !_textInput.IsEmpty()); }
+            get { return _textInput != null && !_textInput.IsEmpty(); }
             set { }
         }
     }

@@ -196,8 +196,9 @@ namespace Wyam.Html
                         {
                             remove = true;
                         }
+
+                        // Also remove if it's a top-level element that doesn't match the query selector
                         if (remove ||
-                            // Also remove if it's a top-level element that doesn't match the query selector
                             (node.Parent == parent
                             && node is IElement
                             && !string.IsNullOrEmpty(_querySelector)

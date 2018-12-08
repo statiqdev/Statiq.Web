@@ -364,6 +364,7 @@ namespace Wyam.CodeAnalysis.Analysis
             {
                 { CodeAnalysisKeys.Symbol, _ => _namespaceDisplayNameToSymbols[displayName].ToImmutableList() },
                 { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
+
                 // We need to aggregate the results across all matching namespaces
                 { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetNamespaceMembers())) },
                 { CodeAnalysisKeys.MemberTypes, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetTypeMembers())) }
@@ -467,7 +468,7 @@ namespace Wyam.CodeAnalysis.Analysis
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements
-            metadata.AddRange(new []
+            metadata.AddRange(new[]
             {
                 new MetadataItem(CodeAnalysisKeys.CommentXml, documentationCommentXml),
                 new MetadataItem(CodeAnalysisKeys.Example, _ => xmlDocumentationParser.Process().Example),

@@ -48,7 +48,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         public RdfSequence Items
         {
             get { return new RdfSequence(_parent); }
-            set {  }
+            set { }
         }
 
         /// <summary>

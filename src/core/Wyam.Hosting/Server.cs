@@ -45,7 +45,6 @@ namespace Wyam.Hosting
 
         public IServiceProvider Services => _host.Services;
 
-
         /// <summary>
         /// Creates the HTTP server.
         /// </summary>
@@ -145,12 +144,12 @@ namespace Wyam.Hosting
                 app.UseScriptInjection($"{VirtualDirectory ?? string.Empty}/livereload.js?host=localhost&port={Port}");
 
                 // Host ws:// (this also needs to go early in the pipeline so WS can return before virtual directory, etc.)
-                //app.MapFleckRoute<ReloadClient>("/livereload", connection =>
-                //{
+                // app.MapFleckRoute<ReloadClient>("/livereload", connection =>
+                // {
                 //    ReloadClient reloadClient = (ReloadClient)connection;
                 //    reloadClient.Logger = _loggerProvider?.CreateLogger("LiveReload");
                 //    LiveReloadClients.Add(reloadClient);
-                //});
+                // });
 
                 // Turn on web sockets and the live reload middleware
                 app.UseWebSockets();
@@ -201,8 +200,8 @@ namespace Wyam.Hosting
                 ContentTypeProvider = contentTypeProvider
             });
 
-            //if (LiveReloadClients != null)
-            //{
+            // if (LiveReloadClients != null)
+            // {
             //    // Host livereload.js (do this last so virtual directory rewriting applies)
             //    Assembly liveReloadAssembly = typeof(ReloadClient).Assembly;
             //    string rootNamespace = typeof(ReloadClient).Namespace;
@@ -214,7 +213,7 @@ namespace Wyam.Hosting
             //        ServeUnknownFileTypes = true,
             //        ContentTypeProvider = contentTypeProvider
             //    });
-            //}
+            // }
         }
 
         public async Task TriggerReloadAsync()

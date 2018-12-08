@@ -38,8 +38,8 @@ namespace Wyam.Sass
     /// <category>Templates</category>
     public class Sass : IModule
     {
-        private DocumentConfig _inputPath = DefaultInputPath;
         private readonly List<string> _includePaths = new List<string>();
+        private DocumentConfig _inputPath = DefaultInputPath;
         private bool _includeSourceComments = false;
         private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
         private bool _generateSourceMap = false;

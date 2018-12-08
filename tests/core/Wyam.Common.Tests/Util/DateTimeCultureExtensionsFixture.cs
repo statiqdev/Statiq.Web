@@ -172,7 +172,7 @@ namespace Wyam.Common.Tests.Util
             {
                 // Given
                 TestExecutionContext context = new TestExecutionContext();
-                CultureInfo culture = (CultureInfo) CultureInfo.GetCultureInfo("fr-FR").Clone();
+                CultureInfo culture = (CultureInfo)CultureInfo.GetCultureInfo("fr-FR").Clone();
                 culture.DateTimeFormat.ShortDatePattern = "ddd MMM";
                 context.Settings[Keys.DateTimeDisplayCulture] = culture;
                 DateTime dateTime = new DateTime(2000, 3, 1);

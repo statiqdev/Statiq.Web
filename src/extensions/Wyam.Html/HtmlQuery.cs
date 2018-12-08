@@ -186,7 +186,7 @@ namespace Wyam.Html
                 IHtmlDocument htmlDocument = input.ParseHtml(parser);
                 if (htmlDocument == null)
                 {
-                    return new [] { input };
+                    return new[] { input };
                 }
 
                 // Evaluate the query selector

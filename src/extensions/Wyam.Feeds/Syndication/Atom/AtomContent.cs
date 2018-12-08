@@ -13,15 +13,10 @@ namespace Wyam.Feeds.Syndication.Atom
     {
         private Uri _src = null;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public AtomContent() { }
+        public AtomContent()
+        {
+        }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="text"></param>
         public AtomContent(string text)
             : base(text)
         {

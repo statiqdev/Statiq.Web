@@ -1,17 +1,17 @@
-﻿//  This file is part of YamlDotNet - A .NET library for YAML.
+﻿// This file is part of YamlDotNet - A .NET library for YAML.
 //  Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013 Antoine Aubry and contributors
 
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
 //  the Software without restriction, including without limitation the rights to
 //  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
 //  of the Software, and to permit persons to whom the Software is furnished to do
 //  so, subject to the following conditions:
 
-//  The above copyright notice and this permission notice shall be included in all
+// The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
 
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 //  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -19,7 +19,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-//  Credits for this class: https://github.com/imgen
+// Credits for this class: https://github.com/imgen
 
 using System;
 using System.Collections;
@@ -47,7 +47,6 @@ namespace Wyam.Yaml.Dynamic
             typeof(decimal),
             typeof(bool)
         };
-
 
         private static readonly Type[] ConvertableGenericCollectionTypes =
         {
@@ -77,10 +76,10 @@ namespace Wyam.Yaml.Dynamic
         private static readonly Type[] ConvertableArrayTypes =
             ConvertableBasicTypes.Select(type => type.MakeArrayType()).ToArray();
 
-        private YamlMappingNode mappingNode;
-        private YamlSequenceNode sequenceNode;
-        private YamlScalarNode scalarNode;
-        private YamlNode yamlNode;
+        private YamlMappingNode _mappingNode;
+        private YamlSequenceNode _sequenceNode;
+        private YamlScalarNode _scalarNode;
+        private YamlNode _yamlNode;
 
         public DynamicYaml(YamlNode node)
         {
@@ -99,11 +98,11 @@ namespace Wyam.Yaml.Dynamic
 
         public void Reload(YamlNode node)
         {
-            yamlNode = node;
-            mappingNode = yamlNode as YamlMappingNode;
-            sequenceNode = yamlNode as YamlSequenceNode;
-            scalarNode = yamlNode as YamlScalarNode;
-            children = null;
+            _yamlNode = node;
+            _mappingNode = _yamlNode as YamlMappingNode;
+            _sequenceNode = _yamlNode as YamlSequenceNode;
+            _scalarNode = _yamlNode as YamlScalarNode;
+            _children = null;
         }
 
         public void Reload(TextReader reader)
@@ -135,7 +134,7 @@ namespace Wyam.Yaml.Dynamic
 
         private bool TryGetValueByKeyAndType(string key, Type type, out object result)
         {
-            if (mappingNode == null)
+            if (_mappingNode == null)
             {
                 return FailToGetValue(out result);
             }
@@ -158,9 +157,9 @@ namespace Wyam.Yaml.Dynamic
 
         private bool TryGetValueByYamlKeyAndType(YamlScalarNode yamlKey, Type type, out object result)
         {
-            if (mappingNode.Children.ContainsKey(yamlKey))
+            if (_mappingNode.Children.ContainsKey(yamlKey))
             {
-                var value = mappingNode.Children[yamlKey];
+                var value = _mappingNode.Children[yamlKey];
                 if (YamlDoc.TryMapValue(value, out result))
                 {
                     return true;
@@ -177,17 +176,17 @@ namespace Wyam.Yaml.Dynamic
 
         private bool TryGetValueByIndex(int index, out object result)
         {
-            if (sequenceNode == null)
+            if (_sequenceNode == null)
             {
                 return FailToGetValue(out result);
             }
 
-            if (index >= sequenceNode.Count())
+            if (index >= _sequenceNode.Count())
             {
                 throw new IndexOutOfRangeException();
             }
 
-            return YamlDoc.TryMapValue(sequenceNode.ToArray()[index], out result);
+            return YamlDoc.TryMapValue(_sequenceNode.ToArray()[index], out result);
         }
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indices, out object result)
@@ -230,8 +229,6 @@ namespace Wyam.Yaml.Dynamic
         /// Determines if a node is null.
         /// Adapted from <c>YamlDotNet.Serialization.NodeDeserializers.NullNodeDeserializer</c>
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
         private bool NodeIsNull(YamlScalarNode node)
         {
             // http://yaml.org/type/null.html
@@ -256,7 +253,7 @@ namespace Wyam.Yaml.Dynamic
             {
                 return SuccessfullyGetValue(this, out result);
             }
-            if (scalarNode == null)
+            if (_scalarNode == null)
             {
                 return isNullable ? SuccessfullyGetValue(null, out result) : FailToGetValue(out result);
             }
@@ -264,7 +261,7 @@ namespace Wyam.Yaml.Dynamic
             // check if scalar value is a valid YAML null type
             if (!type.IsValueType || isNullable)
             {
-                if (NodeIsNull(scalarNode))
+                if (NodeIsNull(_scalarNode))
                 {
                     return SuccessfullyGetValue(null, out result);
                 }
@@ -272,61 +269,61 @@ namespace Wyam.Yaml.Dynamic
 
             if (type == typeof(string))
             {
-                return SuccessfullyGetValue(scalarNode.Value, out result);
+                return SuccessfullyGetValue(_scalarNode.Value, out result);
             }
             if (type == typeof(char))
             {
                 char charResult;
-                var success = char.TryParse(scalarNode.Value, out charResult);
+                var success = char.TryParse(_scalarNode.Value, out charResult);
                 result = success ? (object)charResult : null;
                 return success;
             }
             if (type == typeof(int))
             {
                 int intResult;
-                var success = int.TryParse(scalarNode.Value, out intResult);
+                var success = int.TryParse(_scalarNode.Value, out intResult);
                 result = success ? (object)intResult : null;
                 return success;
             }
             if (type == typeof(long))
             {
                 long longResult;
-                var success = long.TryParse(scalarNode.Value, out longResult);
+                var success = long.TryParse(_scalarNode.Value, out longResult);
                 result = success ? (object)longResult : null;
                 return success;
             }
             if (type == typeof(float))
             {
                 float floatResult;
-                var success = float.TryParse(scalarNode.Value, out floatResult);
+                var success = float.TryParse(_scalarNode.Value, out floatResult);
                 result = success ? (object)floatResult : null;
                 return success;
             }
             if (type == typeof(double))
             {
                 double doubleResult;
-                var success = double.TryParse(scalarNode.Value, out doubleResult);
+                var success = double.TryParse(_scalarNode.Value, out doubleResult);
                 result = success ? (object)doubleResult : null;
                 return success;
             }
             if (type == typeof(decimal))
             {
                 decimal decimalResult;
-                var success = decimal.TryParse(scalarNode.Value, out decimalResult);
+                var success = decimal.TryParse(_scalarNode.Value, out decimalResult);
                 result = success ? (object)decimalResult : null;
                 return success;
             }
             if (type == typeof(bool))
             {
                 bool boolResult;
-                var success = bool.TryParse(scalarNode.Value, out boolResult);
+                var success = bool.TryParse(_scalarNode.Value, out boolResult);
                 result = success ? (object)boolResult : null;
                 return success;
             }
             if (type.IsEnum)
             {
                 long longResult;
-                if (long.TryParse(scalarNode.Value, out longResult))
+                if (long.TryParse(_scalarNode.Value, out longResult))
                 {
                     result = longResult;
                     return true;
@@ -334,7 +331,7 @@ namespace Wyam.Yaml.Dynamic
 
                 try
                 {
-                    result = Enum.Parse(type, scalarNode.Value);
+                    result = Enum.Parse(type, _scalarNode.Value);
                     return true;
                 }
                 catch
@@ -426,7 +423,7 @@ namespace Wyam.Yaml.Dynamic
 
         private bool TryConvertToDictionary(Type type, out object result)
         {
-            if (mappingNode == null)
+            if (_mappingNode == null)
             {
                 return FailToGetValue(out result);
             }
@@ -440,7 +437,7 @@ namespace Wyam.Yaml.Dynamic
 
             if (dict != null)
             {
-                foreach (var pair in mappingNode.Children)
+                foreach (var pair in _mappingNode.Children)
                 {
                     object key;
                     if (!new DynamicYaml(pair.Key).TryConvertToType(keyType, out key))
@@ -509,23 +506,23 @@ namespace Wyam.Yaml.Dynamic
 
         private IList<DynamicYaml> GetChildren()
         {
-            if (mappingNode != null)
+            if (_mappingNode != null)
             {
-                return mappingNode.Children.Values.Select(node => new DynamicYaml(node)).ToList();
+                return _mappingNode.Children.Values.Select(node => new DynamicYaml(node)).ToList();
             }
 
-            if (sequenceNode != null)
+            if (_sequenceNode != null)
             {
-                return sequenceNode.Select(node => new DynamicYaml(node)).ToList();
+                return _sequenceNode.Select(node => new DynamicYaml(node)).ToList();
             }
 
             return new List<DynamicYaml>();
         }
 
-        private IList<DynamicYaml> children;
+        private IList<DynamicYaml> _children;
         public IList<DynamicYaml> Children
         {
-            get { return children ?? (children = GetChildren()); }
+            get { return _children ?? (_children = GetChildren()); }
         }
 
         public int Count

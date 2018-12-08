@@ -20,7 +20,7 @@ namespace Wyam.Testing.Attributes
 
         public void BeforeTest(ITest test)
         {
-            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Assert.Ignore("Windows only");
             }

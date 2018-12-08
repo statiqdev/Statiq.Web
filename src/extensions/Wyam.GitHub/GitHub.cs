@@ -27,9 +27,9 @@ namespace Wyam.GitHub
     public class GitHub : IModule, IAsNewDocuments
     {
         private readonly Credentials _credentials;
-        private Uri _url;
         private readonly Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>> _requests
             = new Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>>();
+        private Uri _url;
 
         /// <summary>
         /// Creates a connection to the GitHub API with basic authenticated access.

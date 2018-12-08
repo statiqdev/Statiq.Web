@@ -112,9 +112,7 @@ namespace Wyam.Configuration.NuGet
             }
         }
 
-        // Probably going to hell for using a region
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
-        #region MSBuildNuGetProjectSystemUtility
 
         private static FrameworkSpecificGroup GetMostCompatibleGroup(NuGetFramework projectTargetFramework,
             IEnumerable<FrameworkSpecificGroup> itemGroups)
@@ -140,14 +138,12 @@ namespace Wyam.Configuration.NuGet
         {
             if (frameworkSpecificGroup != null)
             {
-                return (frameworkSpecificGroup.HasEmptyFolder
-                     || frameworkSpecificGroup.Items.Any()
-                     || !frameworkSpecificGroup.TargetFramework.Equals(NuGetFramework.AnyFramework));
+                return frameworkSpecificGroup.HasEmptyFolder
+                    || frameworkSpecificGroup.Items.Any()
+                    || !frameworkSpecificGroup.TargetFramework.Equals(NuGetFramework.AnyFramework);
             }
 
             return false;
         }
-
-        #endregion MSBuildNuGetProjectSystemUtility
     }
 }

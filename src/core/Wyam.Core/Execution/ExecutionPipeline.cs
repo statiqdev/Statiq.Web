@@ -184,8 +184,11 @@ namespace Wyam.Core.Execution
                         // Set results in engine and trace
                         context.Engine.DocumentCollection.Set(Name, resultDocuments);
                         stopwatch.Stop();
-                        Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)",
-                            moduleName, stopwatch.ElapsedMilliseconds, resultDocuments.Length);
+                        Trace.Verbose(
+                            "Executed module {0} in {1} ms resulting in {2} output document(s)",
+                            moduleName,
+                            stopwatch.ElapsedMilliseconds,
+                            resultDocuments.Length);
                         inputDocuments = resultDocuments;
                     }
                     catch (Exception)
@@ -224,7 +227,7 @@ namespace Wyam.Core.Execution
                         return children ?? Enumerable.Empty<IDocument>();
                     }),
                     flattenedResultDocuments);
-            };
+            }
         }
 
         public void AddClonedDocument(IDocument document) => _clonedDocuments.Add(document);
@@ -271,7 +274,7 @@ namespace Wyam.Core.Execution
             foreach (IModule module in modules)
             {
                 (module as IDisposable)?.Dispose();
-                IEnumerable<IModule> childModules = module as IEnumerable<IModule>;
+                var childModules = module as IEnumerable<IModule>;
                 if (childModules != null)
                 {
                     DisposeModules(childModules);

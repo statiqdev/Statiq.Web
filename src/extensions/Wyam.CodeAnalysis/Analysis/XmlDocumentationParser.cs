@@ -117,11 +117,17 @@ namespace Wyam.CodeAnalysis.Analysis
                                         _processActions.Add(() => Permissions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "param":
-                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName,
+                                        _processActions.Add(() => Params = GetReferenceComments(
+                                            group,
+                                            false,
+                                            elementName,
                                             (_symbol as IMethodSymbol)?.Parameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     case "typeparam":
-                                        _processActions.Add(() => TypeParams = GetReferenceComments(group, false, elementName,
+                                        _processActions.Add(() => TypeParams = GetReferenceComments(
+                                            group,
+                                            false,
+                                            elementName,
                                             (_symbol as IMethodSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? (_symbol as INamedTypeSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     default:
@@ -559,7 +565,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Get all the lines of the code element
                 XmlReader reader = codeElement.CreateReader();
                 reader.MoveToContent();
-                List<string> lines = reader.ReadInnerXml().Split(new [] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
+                List<string> lines = reader.ReadInnerXml().Split(new[] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
 
                 // Trim start and end lines
                 while (lines[0].Trim() == string.Empty)
@@ -584,7 +590,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Remove the padding, replacing the nodes in the original element to preserve any attributes
                 if (padding > 0)
                 {
-                    string newInnerXml = string.Join("\n",
+                    string newInnerXml = string.Join(
+                        "\n",
                         lines.Select(x => padding < x.Length ? x.Substring(padding) : string.Empty));
                     XElement newCodeElement = XElement.Parse($"<code>{newInnerXml}</code>");
                     codeElement.ReplaceNodes(newCodeElement.Nodes().Cast<object>().ToArray());

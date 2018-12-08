@@ -252,7 +252,7 @@ namespace Wyam.Xmp
                 }
             }
 
-            public bool IsArrayElement => this.ElementArrayIndex != -1;
+            public bool IsArrayElement => ElementArrayIndex != -1;
             public string ElementNameSpace => Element?.Namespace;
             public string ElementValue => Element?.Value;
             public IXmpPropertyInfo Element { get; }
@@ -266,7 +266,7 @@ namespace Wyam.Xmp
 
             private TreeDirectory(IXmpPropertyInfo x)
             {
-                this.Element = x;
+                Element = x;
             }
 
             internal static TreeDirectory GetHierarchicalDirectory(XmpDirectory directories)
@@ -340,7 +340,7 @@ namespace Wyam.Xmp
             else if (metadata.Element.Options.IsStruct)
             {
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
-                List<TreeDirectory> properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
+                List<TreeDirectory> properties = metadata.Childrean; // directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
 
                 foreach (var prop in properties)
                 {
@@ -350,7 +350,7 @@ namespace Wyam.Xmp
             }
             else if (metadata.Element.Options.IsSimple)
             {
-                //xml:lang, de
+                // xml:lang, de
 
                 if (metadata.Element.Options.HasLanguage)
                 {
@@ -386,7 +386,7 @@ namespace Wyam.Xmp
                 return Value;
             }
 
-            public static implicit operator string (LocalizedString localizedString)
+            public static implicit operator string(LocalizedString localizedString)
             {
                 return localizedString.Value;
             }
@@ -399,9 +399,9 @@ namespace Wyam.Xmp
             public XmpSearchEntry(Xmp parent, bool isMandatory, string targetMetadata, string xmpPath)
             {
                 _parent = parent;
-                this.IsMandatory = isMandatory;
-                this.MetadataKey = targetMetadata;
-                this.XmpPath = xmpPath;
+                IsMandatory = isMandatory;
+                MetadataKey = targetMetadata;
+                XmpPath = xmpPath;
                 string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
                 if (!_parent._namespaceAlias.ContainsKey(alias))
                 {

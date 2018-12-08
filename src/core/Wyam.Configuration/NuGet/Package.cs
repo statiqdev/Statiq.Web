@@ -30,8 +30,15 @@ namespace Wyam.Configuration.NuGet
 
         private NuGetVersion _versionMatch;
 
-        public Package(NuGetFramework currentFramework, string packageId, IReadOnlyList<SourceRepository> sourceRepositories,
-            string versionRange, bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
+        public Package(
+            NuGetFramework currentFramework,
+            string packageId,
+            IReadOnlyList<SourceRepository> sourceRepositories,
+            string versionRange,
+            bool getLatest,
+            bool allowPrereleaseVersions,
+            bool allowUnlisted,
+            bool exclusive)
         {
             if (packageId == null)
             {
@@ -59,8 +66,11 @@ namespace Wyam.Configuration.NuGet
             _exclusive = exclusive;
         }
 
-        public async Task ResolveVersion(SourceRepository localRepository,
-            IReadOnlyList<SourceRepository> remoteRepositories, bool updatePackages, ILogger logger)
+        public async Task ResolveVersion(
+            SourceRepository localRepository,
+            IReadOnlyList<SourceRepository> remoteRepositories,
+            bool updatePackages,
+            ILogger logger)
         {
             string versionRangeString = _versionRange == null ? string.Empty : " " + _versionRange;
             Trace.Verbose($"Resolving package version for {_packageId}{versionRangeString} (with dependencies)");
@@ -114,9 +124,14 @@ namespace Wyam.Configuration.NuGet
                     ResolutionContext resolutionContext = new ResolutionContext(
                         DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
                     INuGetProjectContext projectContext = new NuGetProjectContext();
-                    await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
-                        packageIdentity, resolutionContext, projectContext,
-                        sourceRepositories, Array.Empty<SourceRepository>(), CancellationToken.None);
+                    await packageManager.InstallPackageAsync(
+                        packageManager.PackagesFolderNuGetProject,
+                        packageIdentity,
+                        resolutionContext,
+                        projectContext,
+                        sourceRepositories,
+                        Array.Empty<SourceRepository>(),
+                        CancellationToken.None);
                     Trace.Verbose($"Installed package {_packageId} {_versionMatch.ToNormalizedString()}");
                 }
             }
