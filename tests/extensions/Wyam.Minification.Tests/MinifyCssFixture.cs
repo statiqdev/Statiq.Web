@@ -30,7 +30,7 @@ namespace Wyam.Minification.Tests
     /* comment in declaration block */
     font-weight: normal;
 }";
-                const string output = @".classname{font-weight:normal}";
+                const string output = ".classname{font-weight:normal}";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyCss minifyCss = new MinifyCss();

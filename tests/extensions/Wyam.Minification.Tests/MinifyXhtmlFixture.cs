@@ -30,7 +30,7 @@ namespace Wyam.Minification.Tests
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                const string output = @"<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br />some text</p></body></html>";
+                const string output = "<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br />some text</p></body></html>";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyXhtml minifyXhtml = new MinifyXhtml();

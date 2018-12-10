@@ -97,7 +97,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument document = new TestDocument();
                 IExecutionContext context = new TestExecutionContext();
-                IModule download = new Download().WithUris("https://wyam.io/Content/images/nav-logo.png");
+                IModule download = new Download().WithUris("https://wyam.io/assets/img/logo.png");
 
                 // When
                 IList<IDocument> results = download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -117,7 +117,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 IExecutionContext context = new TestExecutionContext();
                 RequestHeaders header = new RequestHeaders();
                 header.Accept.Add("image/jpeg");
-                IModule download = new Download().WithUri("https://wyam.io/Content/images/nav-logo.png", header);
+                IModule download = new Download().WithUri("https://wyam.io/assets/img/logo.png", header);
 
                 // When
                 IList<IDocument> results = download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

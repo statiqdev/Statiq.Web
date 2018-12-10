@@ -55,7 +55,7 @@ namespace Wyam.Markdown.Tests
             [Test]
             public void CanUseExternalExtension()
             {
-                const string input = @"![Alt text](/path/to/img.jpg)";
+                const string input = "![Alt text](/path/to/img.jpg)";
                 const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
@@ -74,7 +74,7 @@ namespace Wyam.Markdown.Tests
             [Test]
             public void CanUseMultipleExternalExtensions()
             {
-                const string input = @"![Alt text](/path/to/img.jpg)";
+                const string input = "![Alt text](/path/to/img.jpg)";
                 const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>
 ";
 
@@ -99,7 +99,7 @@ namespace Wyam.Markdown.Tests
             public void DoesNotRenderSpecialAttributesByDefault()
             {
                 // Given
-                const string input = @"[link](url){#id .class}";
+                const string input = "[link](url){#id .class}";
                 const string output = @"<p><a href=""url"">link</a>{#id .class}</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
@@ -117,7 +117,7 @@ namespace Wyam.Markdown.Tests
             public void DoesRenderSpecialAttributesIfExtensionsActive()
             {
                 // Given
-                const string input = @"[link](url){#id .class}";
+                const string input = "[link](url){#id .class}";
                 const string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
@@ -181,7 +181,7 @@ the family Rosaceae.</dd>
             public void EscapesAtByDefault()
             {
                 // Given
-                const string input = @"Looking @Good, Man!";
+                const string input = "Looking @Good, Man!";
                 const string output = @"<p>Looking &#64;Good, Man!</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
@@ -217,7 +217,7 @@ the family Rosaceae.</dd>
             public void DoesNotEscapeAtIfDisabled()
             {
                 // Given
-                const string input = @"Looking @Good, Man!";
+                const string input = "Looking @Good, Man!";
                 const string output = @"<p>Looking @Good, Man!</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
@@ -300,7 +300,7 @@ the family Rosaceae.</dd>
             public void UsePrependLinkRootSetting()
             {
                 // Given
-                const string input = @"This is a [link](/link.html)";
+                const string input = "This is a [link](/link.html)";
                 string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>" + Environment.NewLine;
                 TestExecutionContext context = new TestExecutionContext();
                 context.Settings[Keys.LinkRoot] = "/virtual-dir";

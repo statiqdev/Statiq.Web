@@ -465,7 +465,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                engine.FileSystem.InputPaths.First().FullPath.ShouldBe("../MyTheme");
+                engine.FileSystem.InputPaths[0].FullPath.ShouldBe("../MyTheme");
             }
         }
 

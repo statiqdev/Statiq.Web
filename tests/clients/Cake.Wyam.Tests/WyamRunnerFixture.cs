@@ -436,7 +436,7 @@ namespace Cake.Wyam.Tests
             public void ShouldSetLogFilePath()
             {
                 // Given
-                WyamToolFixture fixture = new WyamToolFixture { Settings = { LogFilePath = @"/temp/log.txt" } };
+                WyamToolFixture fixture = new WyamToolFixture { Settings = { LogFilePath = "/temp/log.txt" } };
 
                 // When
                 ToolFixtureResult result = fixture.Run();

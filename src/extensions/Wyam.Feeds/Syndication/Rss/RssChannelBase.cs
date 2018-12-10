@@ -23,8 +23,6 @@ namespace Wyam.Feeds.Syndication.Rss
         private string _copyright = null;
         private RssPerson _managingEditor = null;
         private RssPerson _webMaster = null;
-        private RssDate _pubDate;
-        private RssDate _lastBuildDate;
         private string _generator = null;
         private string _docs = null;
         private RssCloud _cloud = null;
@@ -143,31 +141,23 @@ namespace Wyam.Feeds.Syndication.Rss
 
         [DefaultValue(null)]
         [XmlElement("pubDate")]
-        public RssDate PubDate
-        {
-            get { return _pubDate; }
-            set { _pubDate = value; }
-        }
+        public RssDate PubDate { get; set; }
 
         [XmlIgnore]
         public bool PubDateSpecified
         {
-            get { return _pubDate.HasValue; }
+            get { return PubDate.HasValue; }
             set { }
         }
 
         [DefaultValue(null)]
         [XmlElement("lastBuildDate")]
-        public RssDate LastBuildDate
-        {
-            get { return _lastBuildDate; }
-            set { _lastBuildDate = value; }
-        }
+        public RssDate LastBuildDate { get; set; }
 
         [XmlIgnore]
         public bool LastBuildDateSpecified
         {
-            get { return _lastBuildDate.HasValue; }
+            get { return LastBuildDate.HasValue; }
             set { }
         }
 

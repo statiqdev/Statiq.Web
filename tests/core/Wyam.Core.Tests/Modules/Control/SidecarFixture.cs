@@ -146,14 +146,14 @@ namespace Wyam.Core.Tests.Modules.Control
                 fileProvider.AddDirectory("/a");
                 fileProvider.AddDirectory("/b");
 
-                fileProvider.AddFile("/a/1.md", @"File a1");
-                fileProvider.AddFile("/a/1.md.meta", @"data: a1");
-                fileProvider.AddFile("/a/1.md.other", @"data: other");
-                fileProvider.AddFile("/a/2.md", @"File a2");
-                fileProvider.AddFile("/a/2.md.meta", @"data: a2");
+                fileProvider.AddFile("/a/1.md", "File a1");
+                fileProvider.AddFile("/a/1.md.meta", "data: a1");
+                fileProvider.AddFile("/a/1.md.other", "data: other");
+                fileProvider.AddFile("/a/2.md", "File a2");
+                fileProvider.AddFile("/a/2.md.meta", "data: a2");
 
-                fileProvider.AddFile("/b/1.md", @"File b1");
-                fileProvider.AddFile("/b/1.md.meta", @"data: b1");
+                fileProvider.AddFile("/b/1.md", "File b1");
+                fileProvider.AddFile("/b/1.md.meta", "data: b1");
 
                 return fileProvider;
             }

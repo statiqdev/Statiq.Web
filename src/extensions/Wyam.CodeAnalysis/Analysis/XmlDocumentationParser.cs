@@ -573,11 +573,11 @@ namespace Wyam.CodeAnalysis.Analysis
                 List<string> lines = reader.ReadInnerXml().Split(new[] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
 
                 // Trim start and end lines
-                while (lines[0].Trim() == string.Empty)
+                while (lines[0].Trim()?.Length == 0)
                 {
                     lines.RemoveAt(0);
                 }
-                while (lines[lines.Count - 1].Trim() == string.Empty)
+                while (lines[lines.Count - 1].Trim()?.Length == 0)
                 {
                     lines.RemoveAt(lines.Count - 1);
                 }

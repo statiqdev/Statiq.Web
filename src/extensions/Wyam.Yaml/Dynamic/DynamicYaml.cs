@@ -140,14 +140,14 @@ namespace Wyam.Yaml.Dynamic
             }
 
             // try and get an exact match to the key first
-            if (TryGetValueByYamlKeyAndType(new YamlScalarNode(key), type, out result))
+            if (TryGetValueByYamlKey(new YamlScalarNode(key), out result))
             {
                 return true;
             }
 
             // otherwise try and match the key with a different cased first character
             YamlScalarNode yamlKey = new YamlScalarNode(key.InverseFirstCapital());
-            if (TryGetValueByYamlKeyAndType(yamlKey, type, out result))
+            if (TryGetValueByYamlKey(yamlKey, out result))
             {
                 return true;
             }
@@ -155,7 +155,7 @@ namespace Wyam.Yaml.Dynamic
             return IsNullableType(type) ? SuccessfullyGetValue(new DynamicYaml((YamlNode)null), out result) : FailToGetValue(out result);
         }
 
-        private bool TryGetValueByYamlKeyAndType(YamlScalarNode yamlKey, Type type, out object result)
+        private bool TryGetValueByYamlKey(YamlScalarNode yamlKey, out object result)
         {
             if (_mappingNode.Children.ContainsKey(yamlKey))
             {
@@ -191,8 +191,7 @@ namespace Wyam.Yaml.Dynamic
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indices, out object result)
         {
-            string stringKey = indices[0] as string;
-            if (stringKey != null)
+            if (indices[0] is string stringKey)
             {
                 if (TryGetValueByKeyAndType(stringKey, binder.ReturnType, out result))
                 {
@@ -244,7 +243,7 @@ namespace Wyam.Yaml.Dynamic
             }
 
             string value = node.Value;
-            return value == string.Empty || value == "~" || value == "null" || value == "Null" || value == "NULL";
+            return value?.Length == 0 || value == "~" || value == "null" || value == "Null" || value == "NULL";
         }
 
         private bool TryConvertToBasicType(Type type, bool isNullable, out object result)
@@ -273,57 +272,49 @@ namespace Wyam.Yaml.Dynamic
             }
             if (type == typeof(char))
             {
-                char charResult;
-                bool success = char.TryParse(_scalarNode.Value, out charResult);
+                bool success = char.TryParse(_scalarNode.Value, out char charResult);
                 result = success ? (object)charResult : null;
                 return success;
             }
             if (type == typeof(int))
             {
-                int intResult;
-                bool success = int.TryParse(_scalarNode.Value, out intResult);
+                bool success = int.TryParse(_scalarNode.Value, out int intResult);
                 result = success ? (object)intResult : null;
                 return success;
             }
             if (type == typeof(long))
             {
-                long longResult;
-                bool success = long.TryParse(_scalarNode.Value, out longResult);
+                bool success = long.TryParse(_scalarNode.Value, out long longResult);
                 result = success ? (object)longResult : null;
                 return success;
             }
             if (type == typeof(float))
             {
-                float floatResult;
-                bool success = float.TryParse(_scalarNode.Value, out floatResult);
+                bool success = float.TryParse(_scalarNode.Value, out float floatResult);
                 result = success ? (object)floatResult : null;
                 return success;
             }
             if (type == typeof(double))
             {
-                double doubleResult;
-                bool success = double.TryParse(_scalarNode.Value, out doubleResult);
+                bool success = double.TryParse(_scalarNode.Value, out double doubleResult);
                 result = success ? (object)doubleResult : null;
                 return success;
             }
             if (type == typeof(decimal))
             {
-                decimal decimalResult;
-                bool success = decimal.TryParse(_scalarNode.Value, out decimalResult);
+                bool success = decimal.TryParse(_scalarNode.Value, out decimal decimalResult);
                 result = success ? (object)decimalResult : null;
                 return success;
             }
             if (type == typeof(bool))
             {
-                bool boolResult;
-                bool success = bool.TryParse(_scalarNode.Value, out boolResult);
+                bool success = bool.TryParse(_scalarNode.Value, out bool boolResult);
                 result = success ? (object)boolResult : null;
                 return success;
             }
             if (type.IsEnum)
             {
-                long longResult;
-                if (long.TryParse(_scalarNode.Value, out longResult))
+                if (long.TryParse(_scalarNode.Value, out long longResult))
                 {
                     result = longResult;
                     return true;
@@ -439,14 +430,12 @@ namespace Wyam.Yaml.Dynamic
             {
                 foreach (KeyValuePair<YamlNode, YamlNode> pair in _mappingNode.Children)
                 {
-                    object key;
-                    if (!new DynamicYaml(pair.Key).TryConvertToType(keyType, out key))
+                    if (!new DynamicYaml(pair.Key).TryConvertToType(keyType, out object key))
                     {
                         return FailToGetValue(out result);
                     }
 
-                    object value;
-                    if (!new DynamicYaml(pair.Value).TryConvertToType(valueType, out value))
+                    if (!new DynamicYaml(pair.Value).TryConvertToType(valueType, out object value))
                     {
                         return FailToGetValue(out result);
                     }
@@ -468,8 +457,7 @@ namespace Wyam.Yaml.Dynamic
             {
                 foreach (DynamicYaml child in Children)
                 {
-                    object result2;
-                    if (!child.TryConvertToType(elementType, out result2))
+                    if (!child.TryConvertToType(elementType, out object result2))
                     {
                         return FailToGetValue(out result);
                     }
@@ -492,8 +480,7 @@ namespace Wyam.Yaml.Dynamic
             int index = 0;
             foreach (DynamicYaml child in Children)
             {
-                object result2;
-                if (!child.TryConvertToType(elementType, out result2))
+                if (!child.TryConvertToType(elementType, out object result2))
                 {
                     return FailToGetValue(out result);
                 }
@@ -526,12 +513,6 @@ namespace Wyam.Yaml.Dynamic
             get { return _children ?? (_children = GetChildren()); }
         }
 
-        public int Count
-        {
-            get
-            {
-                return Children != null ? Children.Count : 0;
-            }
-        }
+        public int Count => Children?.Count ?? 0;
     }
 }

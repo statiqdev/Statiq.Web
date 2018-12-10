@@ -198,7 +198,7 @@ namespace Wyam.Xmp
                          }
                      }
                  }
-                 return newValues.Any() ? context.GetDocument(input, newValues) : input;
+                 return newValues.Count > 0 ? context.GetDocument(input, newValues) : input;
              }).Where(x => x != null);
         }
 
@@ -217,7 +217,7 @@ namespace Wyam.Xmp
                     string pathWithouParent = !string.IsNullOrWhiteSpace(Parent?.Element?.Path)
                         ? path.Substring(Parent.Element.Path.Length).TrimStart('/')
                         : path.TrimStart('/');
-                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, "^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
                     return Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]") ? null : pathWithoutNamespace;
                 }
             }
@@ -242,7 +242,7 @@ namespace Wyam.Xmp
                         pathWithouParent = path.TrimStart('/');
                     }
 
-                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, "^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
 
                     if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
                     {
@@ -403,7 +403,7 @@ namespace Wyam.Xmp
                 IsMandatory = isMandatory;
                 MetadataKey = targetMetadata;
                 XmpPath = xmpPath;
-                string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
+                string alias = Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
                 if (!_parent._namespaceAlias.ContainsKey(alias))
                 {
                     throw new ArgumentException($"Namespace alias {alias} unknown.", nameof(xmpPath));
@@ -412,9 +412,9 @@ namespace Wyam.Xmp
 
             public string XmpPath { get; }
 
-            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${name}");
+            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${name}");
 
-            public string Namespace => _parent._namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
+            public string Namespace => _parent._namespaceAlias[Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
 
             public string MetadataKey { get; }
             public bool IsMandatory { get; }

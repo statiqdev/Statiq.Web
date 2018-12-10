@@ -31,8 +31,7 @@ namespace Wyam.Configuration.NuGet
 
             // Construct the package reference and dependencies
             string id = GetAttributeValue(element, IdAttributeName);
-            NuGetVersion version;
-            if (!NuGetVersion.TryParse(GetAttributeValue(element, VersionAttributeName), out version))
+            if (!NuGetVersion.TryParse(GetAttributeValue(element, VersionAttributeName), out NuGetVersion version))
             {
                 throw new ArgumentException($@"Package element has invalid ""{VersionAttributeName}"" attribute");
             }

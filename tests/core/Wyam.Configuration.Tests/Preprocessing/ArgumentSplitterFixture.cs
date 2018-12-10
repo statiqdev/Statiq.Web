@@ -24,7 +24,7 @@ namespace Wyam.Configuration.Tests.Preprocessing
             [TestCase("a b \"c d\"", new[] { "a", "b", "c d" })]
             [TestCase(
                 @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam",
-                new[] { @"/src:""C:\tmp\Some Folder\Sub Folder""", @"/users:""abcdefg@hijkl.com""", @"tasks:""SomeTask,Some Other Task""", @"-someParam" })]
+                new[] { @"/src:""C:\tmp\Some Folder\Sub Folder""", @"/users:""abcdefg@hijkl.com""", @"tasks:""SomeTask,Some Other Task""", "-someParam" })]
             public void ShouldSplitExceptInQuotes(string arguments, string[] expected)
             {
                 // Given, When

@@ -75,8 +75,10 @@ namespace Wyam.Html
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+#pragma warning disable RCS1163 // Unused parameter.
             // Handle invalid HTTPS certificates and allow alternate security protocols (see http://stackoverflow.com/a/5670954/807064)
             ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, ssl) => true;
+#pragma warning restore RCS1163 // Unused parameter.
 
             // Key = link, Value = source, tag HTML
             ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links =
@@ -93,8 +95,7 @@ namespace Wyam.Html
             Parallel.ForEach(links, link =>
             {
                 // Attempt to parse the URI
-                Uri uri;
-                if (!Uri.TryCreate(link.Key, UriKind.RelativeOrAbsolute, out uri))
+                if (!Uri.TryCreate(link.Key, UriKind.RelativeOrAbsolute, out Uri uri))
                 {
                     AddOrUpdateFailure(link.Value, failures);
                 }
@@ -113,7 +114,7 @@ namespace Wyam.Html
                 }
 
                 // Absolute
-                if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !ValidateAbsoluteLink(uri, context))
+                if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !ValidateAbsoluteLink(uri))
                 {
                     AddOrUpdateFailure(link.Value, failures);
                 }
@@ -182,7 +183,7 @@ namespace Wyam.Html
                 normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("?", StringComparison.Ordinal));
             }
             normalizedPath = Uri.UnescapeDataString(normalizedPath);
-            if (normalizedPath == string.Empty)
+            if (normalizedPath?.Length == 0)
             {
                 return true;
             }
@@ -205,7 +206,7 @@ namespace Wyam.Html
             }
 
             // Add filenames
-            checkPaths.AddRange(LinkGenerator.DefaultHidePages.Select(x => new FilePath(normalizedPath == string.Empty ? x : $"{normalizedPath}/{x}")));
+            checkPaths.AddRange(LinkGenerator.DefaultHidePages.Select(x => new FilePath(normalizedPath?.Length == 0 ? x : $"{normalizedPath}/{x}")));
 
             // Add extensions
             checkPaths.AddRange(LinkGenerator.DefaultHideExtensions.SelectMany(x => checkPaths.Select(y => y.AppendExtension(x))).ToArray());
@@ -235,7 +236,7 @@ namespace Wyam.Html
         }
 
         // Internal for testing
-        internal static bool ValidateAbsoluteLink(Uri uri, IExecutionContext context)
+        internal static bool ValidateAbsoluteLink(Uri uri)
         {
             // Create a request
             HttpWebRequest request;

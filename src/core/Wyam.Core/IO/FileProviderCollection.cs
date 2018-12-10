@@ -40,7 +40,7 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentNullException(nameof(scheme));
             }
-            if (scheme == string.Empty)
+            if (scheme?.Length == 0)
             {
                 throw new ArgumentException("Can not remove the default provider", nameof(scheme));
             }

@@ -315,7 +315,7 @@ namespace Wyam.Common.IO
                 stack.Push(segment);
             }
             string collapsed = string.Join("/", stack.Reverse());
-            return collapsed == string.Empty ? "." : collapsed;
+            return collapsed?.Length == 0 ? "." : collapsed;
         }
 
         /// <summary>

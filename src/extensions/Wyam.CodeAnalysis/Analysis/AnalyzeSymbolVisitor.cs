@@ -343,11 +343,8 @@ namespace Wyam.CodeAnalysis.Analysis
             return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
         }
 
-        private bool OperatorPredicate(ISymbol symbol)
-        {
-            IMethodSymbol method = symbol as IMethodSymbol;
-            return method != null && (method.MethodKind == MethodKind.Conversion || method.MethodKind == MethodKind.UserDefinedOperator);
-        }
+        private bool OperatorPredicate(ISymbol symbol) =>
+            symbol is IMethodSymbol method && (method.MethodKind == MethodKind.Conversion || method.MethodKind == MethodKind.UserDefinedOperator);
 
         private IDocument AddMemberDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
         {
