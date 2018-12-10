@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Configuration;
+using Wyam.Core.Modules.IO;
 
 namespace Wyam.Web.Pipelines
 {

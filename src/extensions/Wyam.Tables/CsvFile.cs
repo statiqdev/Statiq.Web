@@ -46,7 +46,7 @@ namespace Wyam.Tables
                 return;
             }
 
-            var csv = new CsvWriter(writer, new Configuration { QuoteAllFields = true });
+            CsvWriter csv = new CsvWriter(writer, new Configuration { QuoteAllFields = true });
             {
                 foreach (IEnumerable<string> row in records)
                 {

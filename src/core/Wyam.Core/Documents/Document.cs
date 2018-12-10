@@ -34,16 +34,12 @@ namespace Wyam.Core.Documents
 
         private Document(string id, MetadataStack metadata, FilePath source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-            if (source != null && !source.IsAbsolute)
+            if (source?.IsAbsolute == false)
             {
                 throw new ArgumentException("Document sources must be absolute", nameof(source));
             }
 
-            Id = id;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
             Source = source;
             _metadata = items == null ? metadata : metadata.Clone(items);
 

@@ -34,7 +34,7 @@ namespace Wyam.Core.Tracing
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < data.Length; ++i)
             {
                 if (i > 0)

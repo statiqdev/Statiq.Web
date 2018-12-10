@@ -26,14 +26,14 @@ namespace Wyam.Configuration.Assemblies
         /// Gets all classes of a specified type.
         /// </summary>
         /// <typeparam name="T">The type of classes to get.</typeparam>
-        /// <returns>All classes of type <see cref="T"/>.</returns>
+        /// <returns>All classes of type <c>T</c>.</returns>
         public IEnumerable<Type> GetClasses<T>() => _types.Values.Where(x => typeof(T).IsAssignableFrom(x));
 
         /// <summary>
         /// Gets instances for all classes of a specified type..
         /// </summary>
         /// <typeparam name="T">The type of instances to get.</typeparam>
-        /// <returns>Instances for all classes of type <see cref="T"/>.</returns>
+        /// <returns>Instances for all classes of type <c>T</c>.</returns>
         public IEnumerable<T> GetInstances<T>() => GetClasses<T>().Select(x => (T)Activator.CreateInstance(x));
 
         /// <summary>
@@ -47,7 +47,8 @@ namespace Wyam.Configuration.Assemblies
         /// </returns>
         public T GetInstance<T>(string typeName, bool ignoreCase = false)
         {
-            Type type = GetClasses<T>().FirstOrDefault(x => x.Name.Equals(typeName,
+            Type type = GetClasses<T>().FirstOrDefault(x => x.Name.Equals(
+                typeName,
                 ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
             return type == null ? default(T) : (T)Activator.CreateInstance(type);
         }

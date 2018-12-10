@@ -87,10 +87,7 @@ namespace Wyam.Html
 
             // Gather all links
             HtmlParser parser = new HtmlParser();
-            context.ParallelForEach(inputs, input =>
-            {
-                GatherLinks(input, parser, links);
-            });
+            context.ParallelForEach(inputs, input => GatherLinks(input, parser, links));
 
             // Perform validation
             Parallel.ForEach(links, link =>
@@ -126,7 +123,8 @@ namespace Wyam.Html
             if (failures.Count > 0)
             {
                 int failureCount = failures.Sum(x => x.Value.Count);
-                string failureMessage = string.Join(Environment.NewLine,
+                string failureMessage = string.Join(
+                    Environment.NewLine,
                     failures.Select(x => $"{x.Key.FullPath}{Environment.NewLine} - {string.Join(Environment.NewLine + " - ", x.Value)}"));
                 Trace.TraceEvent(
                     _asError ? TraceEventType.Error : TraceEventType.Warning,
@@ -213,7 +211,7 @@ namespace Wyam.Html
             checkPaths.AddRange(LinkGenerator.DefaultHideExtensions.SelectMany(x => checkPaths.Select(y => y.AppendExtension(x))).ToArray());
 
             // Check all the candidate paths
-            FilePath validatedPath = checkPaths.FirstOrDefault(x =>
+            FilePath validatedPath = checkPaths.Find(x =>
             {
                 IFile outputFile;
                 try
@@ -312,7 +310,8 @@ namespace Wyam.Html
             {
                 return;
             }
-            links.AddOrUpdate(link,
+            links.AddOrUpdate(
+                link,
                 _ => new ConcurrentBag<Tuple<FilePath, string>> { Tuple.Create(source, ((IElement)element.Clone(false)).OuterHtml) },
                 (_, list) =>
                 {
@@ -325,7 +324,8 @@ namespace Wyam.Html
         {
             foreach (Tuple<FilePath, string> link in links)
             {
-                failures.AddOrUpdate(link.Item1,
+                failures.AddOrUpdate(
+                    link.Item1,
                     _ => new ConcurrentBag<string> { link.Item2 },
                     (_, list) =>
                     {

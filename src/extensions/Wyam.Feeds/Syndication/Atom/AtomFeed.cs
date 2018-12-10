@@ -110,7 +110,7 @@ namespace Wyam.Feeds.Syndication.Atom
         }
 
         [XmlElement("entry")]
-        public readonly List<AtomEntry> Entries = new List<AtomEntry>();
+        public List<AtomEntry> Entries { get; } = new List<AtomEntry>();
 
         [XmlIgnore]
         public bool EntriesSpecified

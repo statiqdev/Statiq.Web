@@ -20,7 +20,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ReturnsAllTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -58,7 +58,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ReturnsExtensionMethods()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -90,7 +90,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ReturnsExtensionMethodsForBaseClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Red
@@ -126,7 +126,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MemberTypesReturnsNestedTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -162,7 +162,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void FullNameContainsContainingType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -199,7 +199,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void DisplayNameContainsContainingType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -236,7 +236,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void QualifiedNameContainsNamespaceAndContainingType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -273,7 +273,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ContainingNamespaceIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -313,7 +313,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ContainingTypeIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -353,7 +353,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void KindIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -393,7 +393,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SpecificKindIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -433,7 +433,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void BaseTypeIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Red
@@ -481,7 +481,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MembersReturnsAllMembersExceptConstructors()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -519,7 +519,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ConstructorsIsPopulated()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -559,7 +559,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void WritePathIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red
@@ -599,7 +599,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void GetDocumentForExternalBaseType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red
@@ -622,7 +622,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void GetDocumentsForExternalInterfaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red : IBlue, IFoo
@@ -650,7 +650,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void GetDerivedTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red : IBlue, IFoo
@@ -693,7 +693,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void GetTypeParams()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red<T>
@@ -721,7 +721,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void TypeParamReferencesClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red<T>
@@ -744,7 +744,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void TypesExcludedByPredicate()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -782,7 +782,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void RestrictedToNamedTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -812,7 +812,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void RestrictedToNamedTypesWithPredicate()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue

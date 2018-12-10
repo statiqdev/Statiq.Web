@@ -194,7 +194,8 @@ namespace Wyam.Html
         {
             foreach (char c in toEscape)
             {
-                _currentlyEscapedCharacters.Add(c,
+                _currentlyEscapedCharacters.Add(
+                    c,
                     _predefinedEscapeSequences.ContainsKey(c) ? _predefinedEscapeSequences[c] : GenerateEscape(c));
             }
             return this;

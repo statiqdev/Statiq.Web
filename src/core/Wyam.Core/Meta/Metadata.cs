@@ -19,12 +19,7 @@ namespace Wyam.Core.Meta
 
         protected Metadata(Stack<IDictionary<string, object>> stack)
         {
-            if (stack == null)
-            {
-                throw new ArgumentNullException(nameof(stack));
-            }
-
-            Stack = stack;
+            Stack = stack ?? throw new ArgumentNullException(nameof(stack));
         }
 
         public IMetadata<T> MetadataAs<T>() => new MetadataAs<T>(this);

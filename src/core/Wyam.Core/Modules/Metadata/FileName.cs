@@ -78,11 +78,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="fileName">A delegate that should return a <c>string</c> with the filename to optimize.</param>
         public FileName(DocumentConfig fileName)
         {
-            if (fileName == null)
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
-            _fileName = fileName;
+            _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
         }
 
         /// <summary>
@@ -121,10 +117,6 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="outputKey">The metadata key to use for the optimized filename.</param>
         public FileName(DocumentConfig fileName, string outputKey)
         {
-            if (fileName == null)
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
             if (outputKey == null)
             {
                 throw new ArgumentNullException(nameof(outputKey));
@@ -133,7 +125,7 @@ namespace Wyam.Core.Modules.Metadata
             {
                 throw new ArgumentException(nameof(outputKey));
             }
-            _fileName = fileName;
+            _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
             _outputKey = outputKey;
         }
 
@@ -224,12 +216,12 @@ namespace Wyam.Core.Modules.Metadata
             fileName = fileName.Trim();
 
             // Remove multiple dashes
-            fileName = Regex.Replace(fileName, @"\-{2,}", "");
+            fileName = Regex.Replace(fileName, @"\-{2,}", string.Empty);
 
             // Remove reserved chars - doing this as an array reads a lot better than a regex
             foreach (string token in ReservedChars.Except(_allowedCharacters))
             {
-                fileName = fileName.Replace(token, "");
+                fileName = fileName.Replace(token, string.Empty);
             }
 
             // Trim dot (special case, only reserved if at beginning or end)
@@ -251,9 +243,7 @@ namespace Wyam.Core.Modules.Metadata
             }
 
             // Urls should not be case-sensitive
-            fileName = fileName.ToLowerInvariant();
-
-            return fileName;
+            return fileName.ToLowerInvariant();
         }
     }
 }

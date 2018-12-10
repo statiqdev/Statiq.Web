@@ -36,8 +36,11 @@ namespace Wyam.Configuration.NuGet
         }
 
         // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances
-        public override Task<bool> InstallPackageAsync(PackageIdentity packageIdentity, DownloadResourceResult downloadResourceResult,
-            INuGetProjectContext nuGetProjectContext, CancellationToken token)
+        public override Task<bool> InstallPackageAsync(
+            PackageIdentity packageIdentity,
+            DownloadResourceResult downloadResourceResult,
+            INuGetProjectContext nuGetProjectContext,
+            CancellationToken token)
         {
             _installedPackages.AddPackage(packageIdentity, _currentFramework);
             Trace.Verbose($"Installing package or dependency {packageIdentity.Id} {(packageIdentity.HasVersion ? packageIdentity.Version.ToNormalizedString() : string.Empty)}");
@@ -114,15 +117,16 @@ namespace Wyam.Configuration.NuGet
 
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
 
-        private static FrameworkSpecificGroup GetMostCompatibleGroup(NuGetFramework projectTargetFramework,
+        private static FrameworkSpecificGroup GetMostCompatibleGroup(
+            NuGetFramework projectTargetFramework,
             IEnumerable<FrameworkSpecificGroup> itemGroups)
         {
-            var reducer = new FrameworkReducer();
-            var mostCompatibleFramework
+            FrameworkReducer reducer = new FrameworkReducer();
+            NuGetFramework mostCompatibleFramework
                 = reducer.GetNearest(projectTargetFramework, itemGroups.Select(i => i.TargetFramework));
             if (mostCompatibleFramework != null)
             {
-                var mostCompatibleGroup
+                FrameworkSpecificGroup mostCompatibleGroup
                     = itemGroups.FirstOrDefault(i => i.TargetFramework.Equals(mostCompatibleFramework));
 
                 if (IsValid(mostCompatibleGroup))

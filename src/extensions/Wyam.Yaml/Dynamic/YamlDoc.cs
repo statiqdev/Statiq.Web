@@ -41,7 +41,7 @@ namespace Wyam.Yaml.Dynamic
 
         public static YamlNode LoadFromTextReader(TextReader reader)
         {
-            var yaml = new YamlStream();
+            YamlStream yaml = new YamlStream();
             yaml.Load(reader);
 
             return yaml.Documents.First().RootNode;
@@ -49,7 +49,7 @@ namespace Wyam.Yaml.Dynamic
 
         internal static bool TryMapValue(object value, out object result)
         {
-            var node = value as YamlNode;
+            YamlNode node = value as YamlNode;
             if (node != null)
             {
                 result = new DynamicYaml(node);

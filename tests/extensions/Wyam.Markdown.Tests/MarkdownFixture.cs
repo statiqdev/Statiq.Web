@@ -21,10 +21,10 @@ namespace Wyam.Markdown.Tests
             public void RendersMarkdown()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
 ";
@@ -55,8 +55,8 @@ namespace Wyam.Markdown.Tests
             [Test]
             public void CanUseExternalExtension()
             {
-                string input = @"![Alt text](/path/to/img.jpg)";
-                string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
+                const string input = @"![Alt text](/path/to/img.jpg)";
+                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -99,8 +99,8 @@ namespace Wyam.Markdown.Tests
             public void DoesNotRenderSpecialAttributesByDefault()
             {
                 // Given
-                string input = @"[link](url){#id .class}";
-                string output = @"<p><a href=""url"">link</a>{#id .class}</p>
+                const string input = @"[link](url){#id .class}";
+                const string output = @"<p><a href=""url"">link</a>{#id .class}</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -117,8 +117,8 @@ namespace Wyam.Markdown.Tests
             public void DoesRenderSpecialAttributesIfExtensionsActive()
             {
                 // Given
-                string input = @"[link](url){#id .class}";
-                string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
+                const string input = @"[link](url){#id .class}";
+                const string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -135,10 +135,10 @@ namespace Wyam.Markdown.Tests
             public void DoesNotRenderDefinitionListWithoutExtensions()
             {
                 // Given
-                string input = @"Apple
+                const string input = @"Apple
 :   Pomaceous fruit of plants of the genus Malus in 
     the family Rosaceae.";
-                string output = @"<p>Apple
+                const string output = @"<p>Apple
 :   Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</p>
 ";
@@ -157,10 +157,10 @@ the family Rosaceae.</p>
             public void DoesRenderDefintionListWithSpecificConfiguration()
             {
                 // Given
-                string input = @"Apple
+                const string input = @"Apple
 :   Pomaceous fruit of plants of the genus Malus in 
     the family Rosaceae.";
-                string output = @"<dl>
+                const string output = @"<dl>
 <dt>Apple</dt>
 <dd>Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</dd>
@@ -181,8 +181,8 @@ the family Rosaceae.</dd>
             public void EscapesAtByDefault()
             {
                 // Given
-                string input = @"Looking @Good, Man!";
-                string output = @"<p>Looking &#64;Good, Man!</p>
+                const string input = @"Looking @Good, Man!";
+                const string output = @"<p>Looking &#64;Good, Man!</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -199,8 +199,8 @@ the family Rosaceae.</dd>
             public void UnescapesDoubleAt()
             {
                 // Given
-                string input = @"Looking @Good, \\@Man!";
-                string output = @"<p>Looking &#64;Good, @Man!</p>
+                const string input = @"Looking @Good, \\@Man!";
+                const string output = @"<p>Looking &#64;Good, @Man!</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -217,8 +217,8 @@ the family Rosaceae.</dd>
             public void DoesNotEscapeAtIfDisabled()
             {
                 // Given
-                string input = @"Looking @Good, Man!";
-                string output = @"<p>Looking @Good, Man!</p>
+                const string input = @"Looking @Good, Man!";
+                const string output = @"<p>Looking @Good, Man!</p>
 ";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
@@ -235,10 +235,10 @@ the family Rosaceae.</dd>
             public void RendersMarkdownFromMetadata()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
 ";
@@ -260,10 +260,10 @@ the family Rosaceae.</dd>
             public void RendersMarkdownFromMetadataToNewKey()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
 ";
@@ -300,7 +300,7 @@ the family Rosaceae.</dd>
             public void UsePrependLinkRootSetting()
             {
                 // Given
-                string input = @"This is a [link](/link.html)";
+                const string input = @"This is a [link](/link.html)";
                 string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>" + Environment.NewLine;
                 TestExecutionContext context = new TestExecutionContext();
                 context.Settings[Keys.LinkRoot] = "/virtual-dir";

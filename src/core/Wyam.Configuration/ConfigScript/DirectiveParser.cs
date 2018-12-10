@@ -22,7 +22,7 @@ namespace Wyam.Configuration.ConfigScript
         public void Parse(string code)
         {
             DirectiveValues.Clear();
-            List<string> lines = code.Replace("\r", "").Split(new[] { '\n' }, StringSplitOptions.None).ToList();
+            List<string> lines = code.Replace("\r", string.Empty).Split(new[] { '\n' }, StringSplitOptions.None).ToList();
 
             // Find all directives
             for (int c = 0; c < lines.Count; c++)

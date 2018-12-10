@@ -56,7 +56,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string usingStatements = "using Foo.Bar;";
+                const string usingStatements = "using Foo.Bar;";
                 string scriptCode =
 $@"#line 1
 {output}";
@@ -75,7 +75,7 @@ $@"#line 1
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public class Foo
 {
     int X { get; set; }
@@ -95,14 +95,14 @@ Pipelines.Add(Content());
 public class Baz
 {
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 13
 
 int x = 1 + 2;
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public class Foo
 {
@@ -136,7 +136,7 @@ public class Baz
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"using Red.Blue;
 using Yellow;
 
@@ -151,17 +151,17 @@ public string Self(string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string usingDirectives = @"using Red.Blue;
+                const string usingStatements = "using Foo.Bar;";
+                const string usingDirectives = @"using Red.Blue;
 using Yellow;
 ";
 
-                string scriptCode =
+                const string scriptCode =
 @"#line 8
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 3
 
 public static class Foo
@@ -169,7 +169,7 @@ public static class Foo
     public static string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 10
 
 public string Self(string x)
@@ -191,7 +191,7 @@ public string Self(string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public static class Foo
 {
     public static string Bar(this string x) => x;
@@ -203,20 +203,20 @@ public string Self(string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 5
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public static class Foo
 {
     public static string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 7
 
 public string Self(string x)
@@ -238,7 +238,7 @@ public string Self(string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public static class Foo
 {
     public static string Bar(this string x) => x;
@@ -250,20 +250,20 @@ public static string Self(this string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 5
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public static class Foo
 {
     public static string Bar(this string x) => x;
 }
 ";
-                string extensionMethodDeclarations =
+                const string extensionMethodDeclarations =
 @"#line 7
 
 public static string Self(this string x)
@@ -285,7 +285,7 @@ public static string Self(this string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"// XYZ
 public class Foo
 {
@@ -302,14 +302,14 @@ public string Self(string x)
     // RTY
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 7
 
 // 123
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 // XYZ
 public class Foo
@@ -318,7 +318,7 @@ public class Foo
     public string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 10
 
 // QWE

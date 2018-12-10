@@ -19,11 +19,7 @@ namespace Wyam.Core.Util
 
         public ConvertingEqualityComparer(IEqualityComparer<TValue> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
         bool IEqualityComparer<object>.Equals(object x, object y)

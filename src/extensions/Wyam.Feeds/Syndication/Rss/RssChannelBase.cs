@@ -96,8 +96,8 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("copyright")]
         public string Copyright
         {
-            get { return _copyright; }
-            set { _copyright = string.IsNullOrEmpty(value) ? null : value; }
+            get => _copyright;
+            set => _copyright = string.IsNullOrEmpty(value) ? null : value;
         }
 
         /// <summary>
@@ -106,25 +106,14 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("managingEditor")]
         public RssPerson ManagingEditor
         {
-            get
-            {
-                if (_managingEditor == null)
-                {
-                    _managingEditor = new RssPerson();
-                }
-                return _managingEditor;
-            }
-
-            set
-            {
-                _managingEditor = value;
-            }
+            get => _managingEditor ?? (_managingEditor = new RssPerson());
+            set => _managingEditor = value;
         }
 
         [XmlIgnore]
         public bool ManagingEditorSpecified
         {
-            get { return _managingEditor != null && !_managingEditor.IsEmpty(); }
+            get { return _managingEditor?.IsEmpty() == false; }
             set { }
         }
 
@@ -136,11 +125,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_webMaster == null)
-                {
-                    _webMaster = new RssPerson();
-                }
-                return _webMaster;
+                return _webMaster ?? (_webMaster = new RssPerson());
             }
 
             set
@@ -152,7 +137,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool WebMasterSpecified
         {
-            get { return _webMaster != null && !_webMaster.IsEmpty(); }
+            get { return _webMaster?.IsEmpty() == false; }
             set { }
         }
 
@@ -187,7 +172,7 @@ namespace Wyam.Feeds.Syndication.Rss
         }
 
         [XmlElement("category")]
-        public readonly List<RssCategory> Categories = new List<RssCategory>();
+        public List<RssCategory> Categories { get; } = new List<RssCategory>();
 
         [XmlIgnore]
         public bool CategoriesSpecified
@@ -218,11 +203,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_cloud == null)
-                {
-                    _cloud = new RssCloud();
-                }
-                return _cloud;
+                return _cloud ?? (_cloud = new RssCloud());
             }
 
             set
@@ -234,7 +215,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool CloudSpecified
         {
-            get { return _cloud != null && !_cloud.IsEmpty(); }
+            get { return _cloud?.IsEmpty() == false; }
             set { }
         }
 
@@ -254,7 +235,9 @@ namespace Wyam.Feeds.Syndication.Rss
                     _ttl = int.MinValue;
                 }
                 else
+                {
                     _ttl = value;
+                }
             }
         }
 
@@ -264,11 +247,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_image == null)
-                {
-                    _image = new RssImage();
-                }
-                return _image;
+                return _image ?? (_image = new RssImage());
             }
 
             set
@@ -280,7 +259,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool ImageSpecified
         {
-            get { return _image != null && !_image.IsEmpty(); }
+            get { return _image?.IsEmpty() == false; }
             set { }
         }
 
@@ -297,11 +276,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_textInput == null)
-                {
-                    _textInput = new RssTextInput();
-                }
-                return _textInput;
+                return _textInput ?? (_textInput = new RssTextInput());
             }
 
             set
@@ -313,7 +288,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool TextInputSpecified
         {
-            get { return _textInput != null && !_textInput.IsEmpty(); }
+            get { return _textInput?.IsEmpty() == false; }
             set { }
         }
 
@@ -323,11 +298,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_skipHours == null)
-                {
-                    _skipHours = new RssSkipHours();
-                }
-                return _skipHours;
+                return _skipHours ?? (_skipHours = new RssSkipHours());
             }
 
             set
@@ -339,7 +310,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool SkipHoursSpecified
         {
-            get { return _skipHours != null && !_skipHours.IsEmpty(); }
+            get { return _skipHours?.IsEmpty() == false; }
             set { }
         }
 
@@ -349,11 +320,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_skipDays == null)
-                {
-                    _skipDays = new RssSkipDays();
-                }
-                return _skipDays;
+                return _skipDays ?? (_skipDays = new RssSkipDays());
             }
 
             set
@@ -365,7 +332,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool SkipDaysSpecified
         {
-            get { return _skipDays != null && !_skipDays.IsEmpty(); }
+            get { return _skipDays?.IsEmpty() == false; }
             set { }
         }
 

@@ -14,7 +14,7 @@ namespace Wyam.Configuration.NuGet
 
         public MachineWideSettings()
         {
-            var baseDirectory = NuGetEnvironment.GetFolderPath(NuGetFolderPath.MachineWideConfigDirectory);
+            string baseDirectory = NuGetEnvironment.GetFolderPath(NuGetFolderPath.MachineWideConfigDirectory);
             _settings = new Lazy<IEnumerable<Settings>>(
                 () => global::NuGet.Configuration.Settings.LoadMachineWideSettings(baseDirectory));
         }

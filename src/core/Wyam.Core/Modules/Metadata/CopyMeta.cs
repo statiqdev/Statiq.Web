@@ -27,17 +27,8 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="format">The formatting to apply to the new value.</param>
         public CopyMeta(string fromKey, string toKey, string format = null)
         {
-            if (fromKey == null)
-            {
-                throw new ArgumentNullException(nameof(fromKey));
-            }
-            if (toKey == null)
-            {
-                throw new ArgumentNullException(nameof(toKey));
-            }
-
-            _fromKey = fromKey;
-            _toKey = toKey;
+            _fromKey = fromKey ?? throw new ArgumentNullException(nameof(fromKey));
+            _toKey = toKey ?? throw new ArgumentNullException(nameof(toKey));
             _format = format;
         }
 
@@ -48,11 +39,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public CopyMeta WithFormat(string format)
         {
-            if (format == null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
-            _format = format;
+            _format = format ?? throw new ArgumentNullException(nameof(format));
             return this;
         }
 
@@ -63,11 +50,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public CopyMeta WithFormat(Func<string, string> execute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException(nameof(execute));
-            }
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             return this;
         }
 
@@ -77,7 +60,7 @@ namespace Wyam.Core.Modules.Metadata
             return inputs.AsParallel().SelectMany(context, input =>
             {
                 object existingValue;
-                var hasExistingKey = input.TryGetValue(_fromKey, out existingValue);
+                bool hasExistingKey = input.TryGetValue(_fromKey, out existingValue);
 
                 if (hasExistingKey)
                 {

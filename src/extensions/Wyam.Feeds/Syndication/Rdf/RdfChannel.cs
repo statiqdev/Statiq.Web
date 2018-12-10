@@ -24,8 +24,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_parent == null ||
-                    !_parent.ImageSpecified)
+                if (_parent?.ImageSpecified != true)
                 {
                     return null;
                 }
@@ -60,8 +59,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_parent == null ||
-                    !_parent.TextInputSpecified)
+                if (_parent?.TextInputSpecified != true)
                 {
                     return null;
                 }

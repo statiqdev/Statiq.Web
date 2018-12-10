@@ -20,11 +20,6 @@ namespace Wyam.Hosting.Middleware
 
         public DefaultExtensionsMiddleware(RequestDelegate next, IHostingEnvironment hostingEnv, IOptions<DefaultExtensionsOptions> options, ILoggerFactory loggerFactory)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-
             if (hostingEnv == null)
             {
                 throw new ArgumentNullException(nameof(hostingEnv));
@@ -40,7 +35,7 @@ namespace Wyam.Hosting.Middleware
                 throw new ArgumentNullException(nameof(loggerFactory));
             }
 
-            _next = next;
+            _next = next ?? throw new ArgumentNullException(nameof(next));
             _fileProvider = hostingEnv.WebRootFileProvider;
             _extensions = (options?.Value ?? new DefaultExtensionsOptions()).Extensions.Select(x => x.StartsWith(".") ? x : ("." + x)).ToArray();
             _logger = loggerFactory.CreateLogger<DefaultExtensionsMiddleware>();
@@ -56,7 +51,7 @@ namespace Wyam.Hosting.Middleware
                 {
                     string filePath = context.Request.Path.ToString() + extension;
                     IFileInfo fileInfo = _fileProvider.GetFileInfo(filePath);
-                    if (fileInfo != null && fileInfo.Exists)
+                    if (fileInfo?.Exists == true)
                     {
                         _logger.LogInformation($"Rewriting extensionless path to {filePath}");
                         context.Request.Path = new PathString(filePath);

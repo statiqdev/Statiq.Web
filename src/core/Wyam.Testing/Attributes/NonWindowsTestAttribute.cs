@@ -14,6 +14,7 @@ using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Testing.Attributes
 {
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
     public class NonWindowsTestAttribute : Attribute, ITestAction
     {
         public ActionTargets Targets { get; }

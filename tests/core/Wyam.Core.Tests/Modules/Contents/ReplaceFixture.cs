@@ -20,7 +20,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void RecursiveReplaceWithContentFinder()
         {
             // Given
-            string input = @"<html>
+            const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                             <span>foo<span>bar</span></span>
                         </body>
                     </html>";
-            string expected = @"<html>
+            const string expected = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -51,7 +51,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void ReplaceWithContentFinderUsingDocument()
         {
             // Given
-            string input = @"<html>
+            const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -59,7 +59,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                             <span>foo<span>bar</span></span>
                         </body>
                     </html>";
-            string expected = @"<html>
+            const string expected = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>

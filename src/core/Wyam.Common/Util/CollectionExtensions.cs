@@ -17,7 +17,7 @@ namespace Wyam.Common.Util
         /// <param name="items">The items to add.</param>
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
-            foreach (var item in items)
+            foreach (T item in items)
             {
                 collection.Add(item);
             }
@@ -33,7 +33,7 @@ namespace Wyam.Common.Util
         public static int RemoveAll<T>(this ICollection<T> collection, Func<T, bool> match)
         {
             IList<T> toRemove = collection.Where(match).ToList();
-            foreach (var item in toRemove)
+            foreach (T item in toRemove)
             {
                 collection.Remove(item);
             }

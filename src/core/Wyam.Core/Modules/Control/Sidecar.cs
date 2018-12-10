@@ -98,12 +98,7 @@ namespace Wyam.Core.Modules.Control
         public Sidecar(DocumentConfig sidecarPath, IEnumerable<IModule> modules)
             : base(modules)
         {
-            if (sidecarPath == null)
-            {
-                throw new ArgumentNullException(nameof(sidecarPath));
-            }
-
-            _sidecarPath = sidecarPath;
+            _sidecarPath = sidecarPath ?? throw new ArgumentNullException(nameof(sidecarPath));
         }
 
         /// <inheritdoc />

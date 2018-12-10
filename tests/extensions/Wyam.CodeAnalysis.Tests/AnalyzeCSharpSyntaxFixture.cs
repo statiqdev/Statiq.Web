@@ -18,7 +18,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ImplicitClassAccessibility()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -41,7 +41,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ImplicitMemberAccessibility()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -67,7 +67,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ExplicitClassAccessibility()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Green
@@ -90,7 +90,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ExplicitMemberAccessibility()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -116,7 +116,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ClassAttributes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         [  Foo]
@@ -134,16 +134,18 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(@"[Foo]
+                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(
+                    @"[Foo]
 [Bar, Foo]
-internal class Green", StringCompareShould.IgnoreLineEndings);
+internal class Green",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void MethodAttributes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -164,16 +166,18 @@ internal class Green", StringCompareShould.IgnoreLineEndings);
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                GetMember(results, "Green", "Blue")["Syntax"].ToString().ShouldBe(@"[Foo]
+                GetMember(results, "Green", "Blue")["Syntax"].ToString().ShouldBe(
+                    @"[Foo]
 [Bar]
-private int Blue()", StringCompareShould.IgnoreLineEndings);
+private int Blue()",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void ClassComments()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         // asfd
@@ -199,16 +203,18 @@ private int Blue()", StringCompareShould.IgnoreLineEndings);
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(@"[Foo]
+                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(
+                    @"[Foo]
 [Bar(5)]
-internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
+internal class Green : Blue",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void AbstractClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         abstract class Green
@@ -231,7 +237,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void SealedClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         sealed class Green
@@ -254,7 +260,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void StaticClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         static class Green
@@ -277,7 +283,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void StaticMethod()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -303,7 +309,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void ClassWithGenericTypeParameters()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green<out TKey, TValue>
@@ -326,7 +332,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void ClassWithGenericTypeParametersAndConstraints()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green<out TKey, TValue> where TValue : class
@@ -349,7 +355,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void ClassWithGenericTypeParametersAndBaseAndConstraints()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green<out TKey, TValue> : Blue, 
@@ -381,7 +387,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void MethodWithGenericParameters()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -408,7 +414,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void MethodWithGenericParametersAndConstraints()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -435,7 +441,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void Enum()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         enum Green
@@ -460,7 +466,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void EnumWithBase()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         enum Green : long
@@ -485,7 +491,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void ExplicitProperty()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -512,7 +518,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void AutoProperty()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -536,7 +542,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void WrapsForLongMethodSignature()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -566,7 +572,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void WrapsForLongClassSignature()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green<TKey, TValue> : IReallyLongInterface, INameToForceWrapping, IFoo, IBar, IFooBar, ICircle, ISquare, IRectangle where TKey : class
@@ -593,7 +599,7 @@ internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             public void ClassWithInterfaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green : IFoo, IBar, IFooBar

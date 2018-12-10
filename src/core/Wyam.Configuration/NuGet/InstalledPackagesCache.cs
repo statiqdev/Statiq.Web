@@ -75,7 +75,7 @@ namespace Wyam.Configuration.NuGet
             CachedPackage cached = _cachedPackages.FirstOrDefault(x =>
                 x.PackageReference.PackageIdentity.Id.Equals(packageIdentity.Id, StringComparison.OrdinalIgnoreCase)
                 && x.PackageReference.PackageIdentity.Version.Equals(packageIdentity.Version));
-            if (cached != null && cached.VerifyPackage(packageManager))
+            if (cached?.VerifyPackage(packageManager) == true)
             {
                 _installedPackages.Add(cached);
                 return true;
@@ -85,7 +85,7 @@ namespace Wyam.Configuration.NuGet
 
         public IDisposable AddPackage(PackageIdentity identity, NuGetFramework targetFramework)
         {
-            if (_currentlyInstallingPackage != null && _currentlyInstallingPackage.CurrentlyInstalling)
+            if (_currentlyInstallingPackage?.CurrentlyInstalling == true)
             {
                 // We're currently installing a package, so add the dependency to that one
                 // Make sure this isn't the actual top-level package

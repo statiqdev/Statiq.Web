@@ -24,7 +24,7 @@ namespace Wyam.Core.IO.Globbing
         /// <param name="directory">The directory to search.</param>
         /// <param name="patterns">The globbing pattern(s) to use.</param>
         /// <returns>Files that match the globbing pattern(s).</returns>
-        public static IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) => 
+        public static IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) =>
             GetFiles(directory, (IEnumerable<string>)patterns);
 
         /// <summary>

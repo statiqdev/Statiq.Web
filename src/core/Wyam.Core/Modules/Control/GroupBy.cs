@@ -58,12 +58,7 @@ namespace Wyam.Core.Modules.Control
         public GroupBy(DocumentConfig key, IEnumerable<IModule> modules)
             : base(modules)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            _key = key;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
         }
 
         /// <summary>
@@ -167,7 +162,8 @@ namespace Wyam.Core.Modules.Control
             }
             return inputs.SelectMany(context, input =>
             {
-                return groupings.Select(x => context.GetDocument(input,
+                return groupings.Select(x => context.GetDocument(
+                    input,
                     new MetadataItems
                     {
                         { Common.Meta.Keys.GroupDocuments, x.ToImmutableArray() },

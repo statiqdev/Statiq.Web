@@ -199,7 +199,7 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
         {
-            namespaces.Add("", Namespace);
+            namespaces.Add(string.Empty, Namespace);
 
             Channel.AddNamespaces(namespaces);
 

@@ -115,7 +115,7 @@ namespace Wyam.Highlight
                                     {
                                         if (language != null)
                                         {
-                                            engine.SetVariableValue("language", language.Replace("language-", ""));
+                                            engine.SetVariableValue("language", language.Replace("language-", string.Empty));
                                             engine.Execute("result = hljs.highlight(language, input)");
                                         }
                                         else

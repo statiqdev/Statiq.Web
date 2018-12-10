@@ -64,10 +64,10 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Title) &&
-                   string.IsNullOrEmpty(Description) &&
-                   string.IsNullOrEmpty(Name) &&
-                   string.IsNullOrEmpty(Link);
+            return string.IsNullOrEmpty(Title)
+                   && string.IsNullOrEmpty(Description)
+                   && string.IsNullOrEmpty(Name)
+                   && string.IsNullOrEmpty(Link);
         }
     }
 }

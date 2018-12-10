@@ -45,7 +45,7 @@ namespace Wyam.Docs
 
             // Link the type and type parameters seperatly for generic types
             IReadOnlyList<IDocument> typeArguments = metadata.DocumentList(CodeAnalysisKeys.TypeArguments);
-            if (typeArguments != null && typeArguments.Count > 0)
+            if (typeArguments?.Count > 0)
             {
                 // Link to the original definition of the generic type
                 metadata = metadata.Document(CodeAnalysisKeys.OriginalDefinition) ?? metadata;

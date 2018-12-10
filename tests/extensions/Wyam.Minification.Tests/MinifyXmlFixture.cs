@@ -20,7 +20,7 @@ namespace Wyam.Minification.Tests
             public void Minify()
             {
                 // Given
-                string input = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+                const string input = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
                         <urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
                             <!-- Homepage -->
                             <url>
@@ -35,7 +35,7 @@ namespace Wyam.Minification.Tests
                                 <priority>0.7</priority>
                             </url>
                         </urlset>";
-                string output = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""><url><loc>https://wyam.io/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url><url><loc>https://wyam.io/modules/minifyxml</loc><changefreq>monthly</changefreq><priority>0.7</priority></url></urlset>";
+                const string output = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""><url><loc>https://wyam.io/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url><url><loc>https://wyam.io/modules/minifyxml</loc><changefreq>monthly</changefreq><priority>0.7</priority></url></urlset>";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyXml minifyXml = new MinifyXml();

@@ -79,11 +79,7 @@ namespace Wyam.Core.Modules.Contents
         /// getting the value of the specified metadata key.</param>
         public Sitemap(DocumentConfig sitemapItemOrLocation, Func<string, string> locationFormatter = null)
         {
-            if (sitemapItemOrLocation == null)
-            {
-                throw new ArgumentNullException(nameof(sitemapItemOrLocation));
-            }
-            _sitemapItemOrLocation = sitemapItemOrLocation;
+            _sitemapItemOrLocation = sitemapItemOrLocation ?? throw new ArgumentNullException(nameof(sitemapItemOrLocation));
             _locationFormatter = locationFormatter;
         }
 

@@ -24,6 +24,7 @@ namespace Wyam.Configuration.NuGet
         };
 
         private readonly List<SourceRepository> _defaultRepositories = new List<SourceRepository>();
+
         private readonly ConcurrentDictionary<PackageSource, SourceRepository> _repositoryCache
             = new ConcurrentDictionary<PackageSource, SourceRepository>();
 

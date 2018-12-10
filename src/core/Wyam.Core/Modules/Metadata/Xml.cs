@@ -47,12 +47,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="itemXPath">The XPath expression to use to find child items. If <c>null</c>, all child elements will be used.</param>
         public Xml(string data, string itemXPath)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            _data = data;
+            _data = data ?? throw new ArgumentNullException(nameof(data));
             _itemXPath = itemXPath;
         }
 

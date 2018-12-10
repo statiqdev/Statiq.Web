@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using AutoFixture;
 using NSubstitute;
-
 using NUnit.Framework;
-
-using Ploeh.AutoFixture;
 using Shouldly;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;

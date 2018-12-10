@@ -17,16 +17,12 @@ namespace Wyam.Hosting.Middleware
 
         public ScriptInjectionMiddleware(RequestDelegate next, params string[] scriptUrls)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
             if (scriptUrls == null)
             {
                 throw new ArgumentNullException(nameof(scriptUrls));
             }
 
-            _next = next;
+            _next = next ?? throw new ArgumentNullException(nameof(next));
             _injectionCode = string.Join(
                 Environment.NewLine,
                 scriptUrls.Select(x => $@"<script type=""text/javascript"" src=""{x}""></script>"));

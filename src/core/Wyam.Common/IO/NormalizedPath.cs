@@ -129,7 +129,7 @@ namespace Wyam.Common.IO
             {
                 FileProvider = DefaultFileProvider;
             }
-            else if (providerAndPath.Item1 != null && !providerAndPath.Item1.IsAbsoluteUri)
+            else if (providerAndPath.Item1?.IsAbsoluteUri == false)
             {
                 throw new ArgumentException("The provider URI must always be absolute");
             }
@@ -182,7 +182,7 @@ namespace Wyam.Common.IO
             }
 
             // If we got a relative URI, then just use that as the path
-            if (uriPath != null && !uriPath.IsAbsoluteUri)
+            if (uriPath?.IsAbsoluteUri == false)
             {
                 return new Tuple<Uri, string>(null, uriPath.ToString());
             }

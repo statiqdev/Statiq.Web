@@ -124,8 +124,8 @@ namespace Wyam.Feeds.Syndication.Extensions
         protected static Uri ConvertToUri(string value)
         {
             Uri uri;
-            if (string.IsNullOrEmpty(value) ||
-                !Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out uri))
+            if (string.IsNullOrEmpty(value)
+                || !Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out uri))
             {
                 return null;
             }

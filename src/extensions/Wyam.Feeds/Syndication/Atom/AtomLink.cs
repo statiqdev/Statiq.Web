@@ -89,7 +89,7 @@ namespace Wyam.Feeds.Syndication.Atom
                 try
                 {
                     // TODO: use XmlEnum values
-                    _relation = (AtomLinkRelation)Enum.Parse(typeof(AtomLinkRelation), value.Replace("-", ""), true);
+                    _relation = (AtomLinkRelation)Enum.Parse(typeof(AtomLinkRelation), value.Replace("-", string.Empty), true);
                 }
                 catch
                 {

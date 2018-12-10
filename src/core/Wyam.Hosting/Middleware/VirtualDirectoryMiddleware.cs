@@ -17,16 +17,12 @@ namespace Wyam.Hosting.Middleware
 
         public VirtualDirectoryMiddleware(RequestDelegate next, string virtualDirectory)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
             if (virtualDirectory == null)
             {
                 throw new ArgumentNullException(nameof(virtualDirectory));
             }
 
-            _next = next;
+            _next = next ?? throw new ArgumentNullException(nameof(next));
             _virtualDirectory = NormalizeVirtualDirectory(virtualDirectory);
         }
 

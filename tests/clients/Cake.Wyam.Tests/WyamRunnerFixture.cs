@@ -366,7 +366,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                result.Args.ShouldBe("/Working/tools/Wyam.dll --verify-config \"/Working\"");
+                result.Args.ShouldBe("/Working/tools/Wyam.dll --verify-config --ignore-config-hash \"/Working\"");
             }
 
             [Test]

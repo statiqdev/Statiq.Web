@@ -171,11 +171,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_author == null)
-                {
-                    _author = new RssPerson();
-                }
-                return _author;
+                return _author ?? (_author = new RssPerson());
             }
 
             set
@@ -187,7 +183,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool AuthorSpecified
         {
-            get { return _author != null && !_author.IsEmpty(); }
+            get { return _author?.IsEmpty() == false; }
             set { }
         }
 
@@ -217,11 +213,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_enclosure == null)
-                {
-                    _enclosure = new RssEnclosure();
-                }
-                return _enclosure;
+                return _enclosure ?? (_enclosure = new RssEnclosure());
             }
 
             set
@@ -233,7 +225,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool EnclosureSpecified
         {
-            get { return (_enclosure != null) && _enclosure.HasValue; }
+            get { return _enclosure?.HasValue == true; }
             set { }
         }
 
@@ -242,11 +234,7 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_guid == null)
-                {
-                    _guid = new RssGuid();
-                }
-                return _guid;
+                return _guid ?? (_guid = new RssGuid());
             }
 
             set
@@ -258,7 +246,7 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool GuidSpecified
         {
-            get { return (_guid != null) && _guid.HasValue; }
+            get { return _guid?.HasValue == true; }
             set { }
         }
 
@@ -456,8 +444,8 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
 
                 string type = _enclosure.Type;
-                if (string.IsNullOrEmpty(type) ||
-                    !type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrEmpty(type)
+                    || !type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return null;
                 }

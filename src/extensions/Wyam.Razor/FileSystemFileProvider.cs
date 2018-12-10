@@ -23,11 +23,7 @@ namespace Wyam.Razor
 
         public FileSystemFileProvider(IReadOnlyFileSystem fileSystem)
         {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystem));
-            }
-            WyamFileSystem = fileSystem;
+            WyamFileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         }
 
         public IFileInfo GetFileInfo(string subpath)

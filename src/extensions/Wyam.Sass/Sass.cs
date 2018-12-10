@@ -141,7 +141,7 @@ namespace Wyam.Sass
                     Trace.Verbose($"Processing Sass for {input.SourceString()}");
 
                     FilePath inputPath = _inputPath.Invoke<FilePath>(input, context);
-                    if (inputPath == null || !inputPath.IsAbsolute)
+                    if (inputPath?.IsAbsolute != true)
                     {
                         inputPath = context.FileSystem.GetInputFile(new FilePath(Path.GetRandomFileName())).Path;
                         Trace.Warning($"No input path found for document {input.SourceString()}, using {inputPath.FileName.FullPath}");

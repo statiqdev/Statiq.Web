@@ -21,7 +21,7 @@ namespace Wyam.Html.Tests
             public void ExcerptFirstParagraph()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -46,7 +46,7 @@ namespace Wyam.Html.Tests
             public void ExcerptAlternateQuerySelector()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -71,7 +71,7 @@ namespace Wyam.Html.Tests
             public void ExcerptAlternateMetadataKey()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -96,7 +96,7 @@ namespace Wyam.Html.Tests
             public void ExcerptInnerHtml()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -121,7 +121,7 @@ namespace Wyam.Html.Tests
             public void NoExcerptReturnsSameDocument()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -145,7 +145,7 @@ namespace Wyam.Html.Tests
             public void SeparatorInsideParagraph()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -170,7 +170,7 @@ namespace Wyam.Html.Tests
             public void SeparatorBetweenParagraphs()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -200,7 +200,7 @@ namespace Wyam.Html.Tests
             public void SeparatorInsideParagraphWithSiblings()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -228,7 +228,7 @@ namespace Wyam.Html.Tests
             public void AlternateSeparatorComment()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -253,7 +253,7 @@ namespace Wyam.Html.Tests
             public void MultipleSeparatorComments()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>

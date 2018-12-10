@@ -60,8 +60,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void FileNameShouldBeLowercase()
             {
                 // Given
-                string input = "FileName With MiXeD CapS";
-                string output = "filename-with-mixed-caps";
+                const string input = "FileName With MiXeD CapS";
+                const string output = "filename-with-mixed-caps";
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
@@ -86,8 +86,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void WithAllowedCharactersDoesNotReplaceProvidedCharacters()
             {
                 // Given
-                string input = "this-is-a-.net-tag";
-                string output = "this-is-a-.net-tag";
+                const string input = "this-is-a-.net-tag";
+                const string output = "this-is-a-.net-tag";
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
@@ -113,8 +113,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void WithAllowedCharactersDoesNotReplaceDotAtEnd()
             {
                 // Given
-                string input = "this-is-a-.";
-                string output = "thisisa.";
+                const string input = "this-is-a-.";
+                const string output = "thisisa.";
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
@@ -194,8 +194,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void PreservesExtension()
             {
                 // Given
-                string input = "myfile.html";
-                string output = "myfile.html";
+                const string input = "myfile.html";
+                const string output = "myfile.html";
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
@@ -220,8 +220,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void TrimWhitespace()
             {
                 // Given
-                string input = "   myfile.html   ";
-                string output = "myfile.html";
+                const string input = "   myfile.html   ";
+                const string output = "myfile.html";
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);

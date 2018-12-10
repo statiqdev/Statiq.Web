@@ -70,8 +70,8 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Email) &&
-                   string.IsNullOrEmpty(Name);
+            return string.IsNullOrEmpty(Email)
+                   && string.IsNullOrEmpty(Name);
         }
     }
 }

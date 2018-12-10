@@ -31,16 +31,22 @@ namespace Wyam.CodeAnalysis.Analysis
         public string Summary { get; private set; } = string.Empty;
         public string Returns { get; private set; } = string.Empty;
         public string Value { get; private set; } = string.Empty;
+
         public IReadOnlyList<ReferenceComment> Exceptions { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> Permissions { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> Params { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> TypeParams { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<string> SeeAlso { get; private set; }
             = ImmutableArray<string>.Empty;
+
         public IReadOnlyDictionary<string, IReadOnlyList<OtherComment>> OtherComments { get; private set; }
             = ImmutableDictionary<string, IReadOnlyList<OtherComment>>.Empty;
 
@@ -178,8 +184,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             XDocument document = XDocument.Parse($"<root>{xml}</root>", LoadOptions.PreserveWhitespace);
             XElement root = document.Root;
-            if (root != null
-                && root.Elements().Count() == 1
+            if (root?.Elements().Count() == 1
                 && string.Equals(root.Elements().First().Name.LocalName, "member", StringComparison.OrdinalIgnoreCase))
             {
                 root = root.Elements().First();
@@ -361,7 +366,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     ISymbol implementationSymbol = symbol.ContainingType.FindImplementationForInterfaceMember(x);
                     return symbol.Equals(implementationSymbol)
-                           || (overriddenMethodSymbol != null && overriddenMethodSymbol.Equals(implementationSymbol));
+                           || (overriddenMethodSymbol?.Equals(implementationSymbol) == true);
                 });
             if (interfaceSymbol != null
                 && inheritedSymbolCommentIds.Add(interfaceSymbol.GetDocumentationCommentId()))
@@ -420,7 +425,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     string name = keyIsCref
                         ? GetRefNameAndLink(element, out link)
                         : (element.Attribute("name")?.Value ?? string.Empty);
-                    if (validNames != null && !validNames.Contains(name))
+                    if (validNames?.Contains(name) == false)
                     {
                         return null;
                     }
@@ -617,7 +622,7 @@ namespace Wyam.CodeAnalysis.Analysis
             foreach (XElement listElement in parentElement.Elements("list").ToList())
             {
                 XAttribute typeAttribute = listElement.Attribute("type");
-                if (typeAttribute != null && typeAttribute.Value == "table")
+                if (typeAttribute?.Value == "table")
                 {
                     ProcessListElementTable(listElement, typeAttribute);
                 }
@@ -631,7 +636,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private void ProcessListElementList(XElement listElement, XAttribute typeAttribute)
         {
             // Number or bullet
-            if (typeAttribute != null && typeAttribute.Value == "number")
+            if (typeAttribute?.Value == "number")
             {
                 listElement.Name = "ol";
             }

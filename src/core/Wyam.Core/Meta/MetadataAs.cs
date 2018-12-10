@@ -15,11 +15,7 @@ namespace Wyam.Core.Meta
 
         public MetadataAs(IMetadata metadata)
         {
-            if (metadata == null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
-            _metadata = metadata;
+            _metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
         }
 
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()

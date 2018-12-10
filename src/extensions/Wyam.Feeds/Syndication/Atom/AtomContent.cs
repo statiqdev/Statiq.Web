@@ -22,10 +22,6 @@ namespace Wyam.Feeds.Syndication.Atom
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="xhtml"></param>
         public AtomContent(XmlNode xhtml)
             : base(xhtml)
         {

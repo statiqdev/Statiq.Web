@@ -18,7 +18,7 @@ namespace Wyam.Configuration.Directives
         public override IEqualityComparer<string> ValueComparer => StringComparer.OrdinalIgnoreCase;
 
         // Any changes to settings should also be made in Cake.Wyam
-        public class Settings
+        public struct Settings
         {
             public bool IgnoreKnownPackages;
             public string Recipe;

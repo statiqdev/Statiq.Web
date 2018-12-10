@@ -107,12 +107,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithPlaceholderFactory(Func<object[], MetadataItems, IExecutionContext, IDocument> factory)
         {
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
-
-            _placeholderFactory = factory;
+            _placeholderFactory = factory ?? throw new ArgumentNullException(nameof(factory));
             return this;
         }
 
@@ -125,12 +120,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithSort(Comparison<IDocument> sort)
         {
-            if (sort == null)
-            {
-                throw new ArgumentNullException(nameof(sort));
-            }
-
-            _sort = sort;
+            _sort = sort ?? throw new ArgumentNullException(nameof(sort));
             return this;
         }
 
@@ -142,12 +132,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithRoots(DocumentConfig isRoot)
         {
-            if (isRoot == null)
-            {
-                throw new ArgumentNullException(nameof(isRoot));
-            }
-
-            _isRoot = isRoot;
+            _isRoot = isRoot ?? throw new ArgumentNullException(nameof(isRoot));
             return this;
         }
 
@@ -159,12 +144,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithTreePath(DocumentConfig treePath)
         {
-            if (treePath == null)
-            {
-                throw new ArgumentNullException(nameof(treePath));
-            }
-
-            _treePath = treePath;
+            _treePath = treePath ?? throw new ArgumentNullException(nameof(treePath));
             return this;
         }
 
@@ -284,12 +264,7 @@ namespace Wyam.Core.Modules.Metadata
             // New placeholder node
             public TreeNode(object[] treePath)
             {
-                if (treePath == null)
-                {
-                    throw new ArgumentNullException(nameof(treePath));
-                }
-
-                TreePath = treePath;
+                TreePath = treePath ?? throw new ArgumentNullException(nameof(treePath));
             }
 
             // New node from an input document
@@ -371,7 +346,7 @@ namespace Wyam.Core.Modules.Metadata
             private TreeNode GetPrevious()
             {
                 TreeNode previousSibling = GetPreviousSibling();
-                while (previousSibling != null && previousSibling.Children.Count > 0)
+                while (previousSibling?.Children.Count > 0)
                 {
                     previousSibling = previousSibling.Children.Last();
                 }

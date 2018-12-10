@@ -19,7 +19,7 @@ namespace Wyam.Html.Tests
             public void NoReplacementReturnsSameDocument()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -46,7 +46,7 @@ namespace Wyam.Html.Tests
             public void AddsLink()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -55,7 +55,7 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -81,7 +81,7 @@ namespace Wyam.Html.Tests
             public void AddsLinkWithoutImpactingEscapes()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -90,7 +90,7 @@ namespace Wyam.Html.Tests
                             <p>This A&lt;string, List&lt;B&gt;&gt; is some Foobar text</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -116,7 +116,7 @@ namespace Wyam.Html.Tests
             public void AddsLinkWithAlternateQuerySelector()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -126,7 +126,7 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -153,7 +153,7 @@ namespace Wyam.Html.Tests
             public void AddsLinkWhenContainerHasChildElements()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -162,7 +162,7 @@ namespace Wyam.Html.Tests
                             <p>This <i>is</i> some Foobar <b>text</b></p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -188,7 +188,7 @@ namespace Wyam.Html.Tests
             public void AddsLinkWhenInsideChildElement()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -197,7 +197,7 @@ namespace Wyam.Html.Tests
                             <p>This <i>is</i> some <i>Foobar</i> <b>text</b></p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -223,7 +223,7 @@ namespace Wyam.Html.Tests
             public void DoesNotReplaceInAttributes()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -232,7 +232,7 @@ namespace Wyam.Html.Tests
                             <p attr=""Foobar"">This is some Foobar <b ref=""Foobar"">text</b></p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -258,7 +258,7 @@ namespace Wyam.Html.Tests
             public void AddsMultipleLinksInSameElement()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -267,7 +267,7 @@ namespace Wyam.Html.Tests
                             <p>This is some <i>Foobar</i> text Foobaz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -294,7 +294,7 @@ namespace Wyam.Html.Tests
             public void AddsMultipleLinksInDifferentElements()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -304,7 +304,7 @@ namespace Wyam.Html.Tests
                             <p>Another Foobaz paragraph</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -332,7 +332,7 @@ namespace Wyam.Html.Tests
             public void DoesNotAddLinksInExistingLinkElements()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -341,7 +341,7 @@ namespace Wyam.Html.Tests
                             <p>This is some <a href=""http://www.yahoo.com"">Foobar</a> text Foobaz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -368,7 +368,7 @@ namespace Wyam.Html.Tests
             public void AddsMultipleLinksWhenFirstIsSubstring()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -377,7 +377,7 @@ namespace Wyam.Html.Tests
                             <p>This is some <i>Foobar</i> text Foobaz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -404,7 +404,7 @@ namespace Wyam.Html.Tests
             public void AddLinkMethodTakesPrecedence()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -413,7 +413,7 @@ namespace Wyam.Html.Tests
                             <p>This is some <i>Foobar</i> text Foobaz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -440,7 +440,7 @@ namespace Wyam.Html.Tests
             public void IgnoreSubstringIfSearchingForWholeWords()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -449,7 +449,7 @@ namespace Wyam.Html.Tests
                             <p>This is some <i>Foo</i> text Foobaz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -475,7 +475,7 @@ namespace Wyam.Html.Tests
             public void AdjacentWords()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -484,7 +484,7 @@ namespace Wyam.Html.Tests
                             <p>abc Foo(baz) xyz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
+                const string output = @"<html><head>
                             <title>Foobar</title>
                         </head>
                         <body>
@@ -511,7 +511,7 @@ namespace Wyam.Html.Tests
             public void NonWholeWords()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>

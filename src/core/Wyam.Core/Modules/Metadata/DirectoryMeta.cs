@@ -86,12 +86,13 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public DirectoryMeta WithMetadataFile(FilePath metadataFileName, bool inherited = false, bool replace = false)
         {
-            return WithMetadataFile((x, y) => x.Source != null && x.Source.FileName.Equals(metadataFileName), inherited, replace);
+            return WithMetadataFile((x, y) => x.Source?.FileName.Equals(metadataFileName) == true, inherited, replace);
         }
 
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+#pragma warning disable RCS1008 // Use explicit type instead of 'var' (when the type is not obvious).
             // Find metadata files
             var metadataDictionary = inputs
                 .Where(input => input.Source != null)
@@ -119,6 +120,7 @@ namespace Wyam.Core.Modules.Metadata
                 .Where(x => x != null)
                 .ToLookup(x => x.Path)
                 .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+#pragma warning restore RCS1008 // Use explicit type instead of 'var' (when the type is not obvious).
 
             // Apply Metadata
             return inputs
@@ -132,7 +134,7 @@ namespace Wyam.Core.Modules.Metadata
                     if (inputPath != null)
                     {
                         DirectoryPath dir = input.Source.Directory.Collapse();
-                        while (dir != null && dir.FullPath.StartsWith(inputPath.FullPath))
+                        while (dir?.FullPath.StartsWith(inputPath.FullPath) == true)
                         {
                             sourcePaths.Add(dir);
                             dir = dir.Parent;

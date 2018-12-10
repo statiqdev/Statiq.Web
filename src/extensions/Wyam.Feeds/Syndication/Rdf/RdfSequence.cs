@@ -6,19 +6,13 @@ namespace Wyam.Feeds.Syndication.Rdf
 {
     public class RdfSequence
     {
-        private RdfFeed _target = null;
+        private readonly RdfFeed _target = null;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public RdfSequence()
         {
             _target = null;
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public RdfSequence(RdfFeed target)
         {
             _target = target;
@@ -30,9 +24,9 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_target == null ||
-                    _target.Items == null ||
-                    _target.Items.Count == 0)
+                if (_target == null
+                    || _target.Items == null
+                    || _target.Items.Count == 0)
                 {
                     return null;
                 }
@@ -55,7 +49,7 @@ namespace Wyam.Feeds.Syndication.Rdf
             get
             {
                 List<RdfResource> items = Items;
-                return (items != null) && (items.Count > 0);
+                return items?.Count > 0;
             }
 
             set

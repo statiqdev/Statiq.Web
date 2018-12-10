@@ -25,6 +25,7 @@ namespace Wyam.Core.Modules.Control
     {
         private readonly List<Tuple<object, IModule[]>> _cases
             = new List<Tuple<object, IModule[]>>();
+
         private readonly DocumentConfig _value;
         private IModule[] _defaultModules;
 
@@ -34,11 +35,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="value">A delegate that returns an object to compare cases against.</param>
         public Switch(DocumentConfig value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            _value = value;
+            _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>

@@ -131,7 +131,8 @@ namespace Wyam.CodeAnalysis.Analysis
             // Create the document (but not if none of the members would be included)
             if (ShouldIncludeSymbol(symbol, x => _symbolPredicate == null || x.GetMembers().Any(m => _symbolPredicate(m))))
             {
-                _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
+                _namespaceDisplayNameToDocument.AddOrUpdate(
+                    displayName,
                     _ => AddNamespaceDocument(symbol, true),
                     (_, existing) =>
                     {
@@ -334,7 +335,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private bool MemberPredicate(ISymbol symbol)
         {
             IPropertySymbol propertySymbol = symbol as IPropertySymbol;
-            if (propertySymbol != null && propertySymbol.IsIndexer)
+            if (propertySymbol?.IsIndexer == true)
             {
                 // Special case for indexers
                 return true;

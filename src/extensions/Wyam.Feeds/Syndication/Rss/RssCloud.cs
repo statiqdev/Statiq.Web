@@ -89,11 +89,11 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Domain) &&
-                   Port <= 0 &&
-                   string.IsNullOrEmpty(Path) &&
-                   string.IsNullOrEmpty(RegisterProcedure) &&
-                   string.IsNullOrEmpty(Protocol);
+            return string.IsNullOrEmpty(Domain)
+                   && Port <= 0
+                   && string.IsNullOrEmpty(Path)
+                   && string.IsNullOrEmpty(RegisterProcedure)
+                   && string.IsNullOrEmpty(Protocol);
         }
     }
 }

@@ -304,7 +304,7 @@ namespace Wyam.Html
             public Trie(IEnumerable<IEnumerable<T>> elems)
             {
                 Root = new Node(new T[0]);
-                foreach (var elem in elems)
+                foreach (IEnumerable<T> elem in elems)
                 {
                     LoadSingle(elem);
                 }
@@ -313,7 +313,7 @@ namespace Wyam.Html
             private void LoadSingle(IEnumerable<T> word)
             {
                 Node lastNode = Root;
-                foreach (var chr in word)
+                foreach (T chr in word)
                 {
                     Node node;
                     if (!lastNode.Children.TryGetValue(chr, out node))

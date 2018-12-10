@@ -351,8 +351,8 @@ namespace Wyam.Feeds.Syndication.Atom
                     if (link.Relation == AtomLinkRelation.Enclosure)
                     {
                         string type = link.Type;
-                        if (!string.IsNullOrEmpty(type) &&
-                            type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
+                        if (!string.IsNullOrEmpty(type)
+                            && type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
                         {
                             return ((IUriProvider)link).Uri;
                         }
@@ -394,8 +394,8 @@ namespace Wyam.Feeds.Syndication.Atom
                 {
                     foreach (AtomLink link in Links)
                     {
-                        if (link.Relation == AtomLinkRelation.Replies &&
-                        link.ThreadCountSpecified)
+                        if (link.Relation == AtomLinkRelation.Replies
+                        && link.ThreadCountSpecified)
                         {
                             return link.ThreadCount;
                         }
@@ -413,8 +413,8 @@ namespace Wyam.Feeds.Syndication.Atom
                 {
                     foreach (AtomLink link in Links)
                     {
-                        if (link.Relation == AtomLinkRelation.Replies &&
-                        link.ThreadUpdatedSpecified)
+                        if (link.Relation == AtomLinkRelation.Replies
+                        && link.ThreadUpdatedSpecified)
                         {
                             return link.ThreadUpdated.Value;
                         }

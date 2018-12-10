@@ -55,11 +55,7 @@ namespace Wyam.Core.Modules.Contents
         /// <returns>The current module instance.</returns>
         public Redirect WithPaths(DocumentConfig paths)
         {
-            if (paths == null)
-            {
-                throw new ArgumentNullException(nameof(paths));
-            }
-            _paths = paths;
+            _paths = paths ?? throw new ArgumentNullException(nameof(paths));
             return this;
         }
 

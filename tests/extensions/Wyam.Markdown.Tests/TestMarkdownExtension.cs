@@ -43,7 +43,7 @@ namespace Wyam.Markdown.Tests
                 if (node is Inline)
                 {
                     LinkInline link = node as LinkInline;
-                    if (link != null && link.IsImage)
+                    if (link?.IsImage == true)
                     {
                         link.GetAttributes().AddClass(LinkClassToAdd);
                     }

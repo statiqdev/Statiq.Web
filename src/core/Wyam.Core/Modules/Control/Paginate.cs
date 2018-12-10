@@ -144,11 +144,8 @@ namespace Wyam.Core.Modules.Control
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            if (metadata == null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
-            _pageMetadata[key] = metadata;
+
+            _pageMetadata[key] = metadata ?? throw new ArgumentNullException(nameof(metadata));
             return this;
         }
 

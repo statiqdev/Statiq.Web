@@ -106,11 +106,7 @@ namespace Wyam.SearchIndex
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
         public SearchIndex(DocumentConfig searchIndexItem, FilePath stopwordsPath = null, bool enableStemming = false)
         {
-            if (searchIndexItem == null)
-            {
-                throw new ArgumentNullException(nameof(searchIndexItem));
-            }
-            _searchIndexItem = searchIndexItem;
+            _searchIndexItem = searchIndexItem ?? throw new ArgumentNullException(nameof(searchIndexItem));
             _stopwordsPath = stopwordsPath;
             _enableStemming = enableStemming;
         }
@@ -168,11 +164,7 @@ namespace Wyam.SearchIndex
         /// <returns>The current module instance.</returns>
         public SearchIndex WithPath(ContextConfig path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            _path = path;
+            _path = path ?? throw new ArgumentNullException(nameof(path));
             return this;
         }
 
@@ -185,11 +177,7 @@ namespace Wyam.SearchIndex
         /// <returns>The current module instance.</returns>
         public SearchIndex WithScript(Func<StringBuilder, IExecutionContext, string> script)
         {
-            if (script == null)
-            {
-                throw new ArgumentNullException(nameof(script));
-            }
-            _script = script;
+            _script = script ?? throw new ArgumentNullException(nameof(script));
             return this;
         }
 
@@ -244,7 +232,7 @@ var searchModule = function() {{
 
             for (int i = 0; i < searchIndexItems.Count; ++i)
             {
-                var itm = searchIndexItems[i];
+                ISearchIndexItem itm = searchIndexItems[i];
 
                 // Get the URL and skip if not valid
                 string url = itm.GetLink(context, _includeHost);
@@ -279,7 +267,7 @@ var searchModule = function() {{
         this.ref('id');
 
         this.pipeline.remove(lunr.stopWordFilter);
-        {(_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);")}
+        {(_enableStemming ? string.Empty : "this.pipeline.remove(lunr.stemmer);")}
         documents.forEach(function (doc) {{ this.add(doc) }}, this)
     }});
 ");

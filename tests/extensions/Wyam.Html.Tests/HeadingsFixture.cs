@@ -20,7 +20,7 @@ namespace Wyam.Html.Tests
             public void SetsHeadingContent()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -49,7 +49,7 @@ namespace Wyam.Html.Tests
             public void SetsHeadingMetadata()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -78,7 +78,7 @@ namespace Wyam.Html.Tests
             public void DoesNotSetHeadingMetadataIfNull()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -108,7 +108,7 @@ namespace Wyam.Html.Tests
             public void OnlyGetsFirstLevelByDefault()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -138,7 +138,7 @@ namespace Wyam.Html.Tests
             public void GetsDeeperLevels()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -168,7 +168,7 @@ namespace Wyam.Html.Tests
             public void Nesting()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -206,7 +206,7 @@ namespace Wyam.Html.Tests
             public void SetsChildrenWhenNotNesting()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -244,7 +244,7 @@ namespace Wyam.Html.Tests
             public void SetsHeadingIdAttribute()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>

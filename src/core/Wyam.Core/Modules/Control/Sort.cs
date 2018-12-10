@@ -26,11 +26,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="sort">The sorting delegate to use.</param>
         public Sort(Comparison<IDocument> sort)
         {
-            if (sort == null)
-            {
-                throw new ArgumentNullException(nameof(sort));
-            }
-            _sort = sort;
+            _sort = sort ?? throw new ArgumentNullException(nameof(sort));
         }
 
         /// <inheritdoc />

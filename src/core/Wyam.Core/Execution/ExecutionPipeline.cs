@@ -108,8 +108,7 @@ namespace Wyam.Core.Execution
                 // Add new result documents to the cache
                 foreach (IDocument resultDocument in _clonedDocuments)
                 {
-                    List<IDocument> processedResultDocuments;
-                    if (_processedSources.TryGetValue(resultDocument.Source, out processedResultDocuments))
+                    if (_processedSources.TryGetValue(resultDocument.Source, out List<IDocument> processedResultDocuments))
                     {
                         processedResultDocuments.Add(resultDocument);
                     }
@@ -161,8 +160,7 @@ namespace Wyam.Core.Execution
                                 }
                                 else
                                 {
-                                    List<IDocument> processedDocuments;
-                                    if (!_previouslyProcessedCache.TryGetValue(resultDocument, out processedDocuments))
+                                    if (!_previouslyProcessedCache.TryGetValue(resultDocument, out List<IDocument> processedDocuments))
                                     {
                                         // This document was not previously processed, so add it to the current result and set up a list to track final results
                                         newDocuments.Add(resultDocument);
@@ -274,7 +272,7 @@ namespace Wyam.Core.Execution
             foreach (IModule module in modules)
             {
                 (module as IDisposable)?.Dispose();
-                var childModules = module as IEnumerable<IModule>;
+                IEnumerable<IModule> childModules = module as IEnumerable<IModule>;
                 if (childModules != null)
                 {
                     DisposeModules(childModules);

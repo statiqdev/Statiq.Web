@@ -26,7 +26,7 @@ namespace Wyam.Razor
 
         public override bool Equals(object obj)
         {
-            var other = obj as DynamicAssemblyCollection;
+            DynamicAssemblyCollection other = obj as DynamicAssemblyCollection;
             return other != null && _assemblies.SequenceEqual(other._assemblies);
         }
 

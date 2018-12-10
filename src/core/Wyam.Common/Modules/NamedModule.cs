@@ -31,16 +31,8 @@ namespace Wyam.Common.Modules
         /// <param name="module">The wrapped module.</param>
         public NamedModule(string name, IModule module)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            if (module == null)
-            {
-                throw new ArgumentNullException(nameof(module));
-            }
-            Name = name;
-            Module = module;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Module = module ?? throw new ArgumentNullException(nameof(module));
         }
 
         /// <inheritdoc />

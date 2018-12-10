@@ -20,7 +20,7 @@ namespace Wyam.Minification.Tests
             public void Minify()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Title</title>
                         </head>
@@ -30,7 +30,7 @@ namespace Wyam.Minification.Tests
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                string output = @"<html><head><title>Title</title><body><h1>Title</h1><p>This is<br>some text";
+                const string output = @"<html><head><title>Title</title><body><h1>Title</h1><p>This is<br>some text";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyHtml minifyHtml = new MinifyHtml();
@@ -46,7 +46,7 @@ namespace Wyam.Minification.Tests
             public void MinifyWithCustomSettings()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Title</title>
                         </head>
@@ -56,7 +56,7 @@ namespace Wyam.Minification.Tests
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                string output = @"<html><head><title>Title</title></head><body><!-- FOO --><h1>Title</h1><p>This is<br>some text</p></body></html>";
+                const string output = @"<html><head><title>Title</title></head><body><!-- FOO --><h1>Title</h1><p>This is<br>some text</p></body></html>";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyHtml minifyHtml = new MinifyHtml()

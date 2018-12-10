@@ -22,7 +22,7 @@ namespace Wyam.Html.Tests
             public void GetOuterHtml()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -52,7 +52,7 @@ namespace Wyam.Html.Tests
             public void GetOuterHtmlWithAttributes()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -82,7 +82,7 @@ namespace Wyam.Html.Tests
             public void GetOuterHtmlForFirst()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -112,7 +112,7 @@ namespace Wyam.Html.Tests
             public void GetInnerHtml()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -142,7 +142,7 @@ namespace Wyam.Html.Tests
             public void GetInnerHtmlAndOuterHtml()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -178,7 +178,7 @@ namespace Wyam.Html.Tests
             public void SetOuterHtmlContent()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -208,7 +208,7 @@ namespace Wyam.Html.Tests
             public void SetInnerHtmlContent()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -238,7 +238,7 @@ namespace Wyam.Html.Tests
             public void SetOuterHtmlContentWithMetadata()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -280,7 +280,7 @@ namespace Wyam.Html.Tests
             public void GetTextContent()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -310,7 +310,7 @@ namespace Wyam.Html.Tests
             public void GetAttributeValue()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -340,7 +340,7 @@ namespace Wyam.Html.Tests
             public void GetAttributeValueWithImplicitKey()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -370,7 +370,7 @@ namespace Wyam.Html.Tests
             public void GetAttributeValueWithMoreThanOneMatch()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -400,7 +400,7 @@ namespace Wyam.Html.Tests
             public void GetAttributeValues()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -442,7 +442,7 @@ namespace Wyam.Html.Tests
             public void GetAll()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>

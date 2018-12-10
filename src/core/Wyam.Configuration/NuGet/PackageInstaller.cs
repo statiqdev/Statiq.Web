@@ -58,11 +58,7 @@ namespace Wyam.Configuration.NuGet
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(PackagesPath));
-                }
-                _packagesPath = value;
+                _packagesPath = value ?? throw new ArgumentNullException(nameof(PackagesPath));
             }
         }
 

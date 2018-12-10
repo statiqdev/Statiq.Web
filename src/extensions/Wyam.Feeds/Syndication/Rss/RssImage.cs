@@ -107,11 +107,11 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return (string.IsNullOrEmpty(Url) &&
-                string.IsNullOrEmpty(Title) &&
-                string.IsNullOrEmpty(Link) &&
-                Width <= 0) ||
-                Height <= 0;
+            return (string.IsNullOrEmpty(Url)
+                && string.IsNullOrEmpty(Title)
+                && string.IsNullOrEmpty(Link)
+                && Width <= 0)
+                || Height <= 0;
         }
 
         Uri IUriProvider.Uri => _url;

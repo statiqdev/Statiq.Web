@@ -172,9 +172,9 @@ namespace Wyam.Configuration.ConfigScript
         public void Compile(IReadOnlyCollection<Assembly> referenceAssemblies)
         {
             // Get the compilation
-            var parseOptions = new CSharpParseOptions();
-            var sourceText = SourceText.From(Code, Encoding.UTF8);
-            var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
+            CSharpParseOptions parseOptions = new CSharpParseOptions();
+            SourceText sourceText = SourceText.From(Code, Encoding.UTF8);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).
                 WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
                 {
@@ -187,8 +187,8 @@ namespace Wyam.Configuration.ConfigScript
 
             // For some reason, Roslyn really wants these added by filename
             // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create(
+            string assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            CSharpCompilation compilation = CSharpCompilation.Create(
                 AssemblyName,
                 new[] { syntaxTree },
                 referenceAssemblies

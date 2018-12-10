@@ -15,10 +15,6 @@ namespace Wyam.Core.IO
 
         public VirtualInputDirectory(FileSystem fileSystem, DirectoryPath path)
         {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystem));
-            }
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -28,7 +24,7 @@ namespace Wyam.Core.IO
                 throw new ArgumentException("Virtual input paths should always be relative", nameof(path));
             }
 
-            _fileSystem = fileSystem;
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _path = path;
         }
 

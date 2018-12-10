@@ -1,21 +1,21 @@
-﻿using MetadataExtractor;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Wyam.Common.Documents;
-using Wyam.Common.Modules;
-using Wyam.Common.Execution;
+using MetadataExtractor;
 using MetadataExtractor.Formats.Xmp;
-using XmpCore;
-using System.Globalization;
-using System.IO;
+using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using XmpCore;
 
 namespace Wyam.Xmp
 {
@@ -34,6 +34,7 @@ namespace Wyam.Xmp
         private readonly bool _delocalizing = true;
         private readonly bool _flatten = true;
         private readonly List<XmpSearchEntry> _toSearch = new List<XmpSearchEntry>();
+
         private readonly Dictionary<string, string> _namespaceAlias =
             new Dictionary<string, string>
             {
@@ -116,7 +117,7 @@ namespace Wyam.Xmp
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     using (var stream = input.GetStream())
+                     using (Stream stream = input.GetStream())
                      {
                          xmpDirectory = ImageMetadataReader.ReadMetadata(stream).OfType<XmpDirectory>().FirstOrDefault();
                      }
@@ -160,11 +161,11 @@ namespace Wyam.Xmp
 
                  TreeDirectory hierarchicalDirectory = TreeDirectory.GetHierarchicalDirectory(xmpDirectory);
 
-                 foreach (var search in _toSearch)
+                 foreach (XmpSearchEntry search in _toSearch)
                  {
                      try
                      {
-                         TreeDirectory metadata = hierarchicalDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
+                         TreeDirectory metadata = hierarchicalDirectory.Childrean.Find(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
                          {
@@ -290,10 +291,10 @@ namespace Wyam.Xmp
 
                 foreach (var node in possibleChildrean)
                 {
-                    TreeDirectory[] childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Where(y => node.PossibleChildrean.Contains(y.Element)).Any(y => y.PossibleChildrean.Contains(x))).ToArray();
+                    TreeDirectory[] childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Any(y => node.PossibleChildrean.Contains(y.Element) && y.PossibleChildrean.Contains(x))).ToArray();
 
                     node.Element.Childrean.AddRange(childOfNode);
-                    foreach (var child in childOfNode)
+                    foreach (TreeDirectory child in childOfNode)
                     {
                         child.Parent = node.Element;
                     }
@@ -307,7 +308,7 @@ namespace Wyam.Xmp
         {
             if (metadata.Element.Options.IsArray)
             {
-                var arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
+                IOrderedEnumerable<TreeDirectory> arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
                 object[] array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
                 if (_delocalizing && array.All(x => x is LocalizedString))
                 {
@@ -342,7 +343,7 @@ namespace Wyam.Xmp
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
                 List<TreeDirectory> properties = metadata.Childrean; // directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
 
-                foreach (var prop in properties)
+                foreach (TreeDirectory prop in properties)
                 {
                     obj.Add(prop.ElementName, GetObjectFromMetadata(prop, hirachciDirectory));
                 }

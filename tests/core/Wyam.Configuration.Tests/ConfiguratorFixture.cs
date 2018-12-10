@@ -22,7 +22,7 @@ namespace Wyam.Configuration.Tests
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 int z = 0;
 
 foo bar;
@@ -50,7 +50,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     Content(true
         && @doc.Bool(""Key"") == false
@@ -82,7 +82,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     Content(
         @doc.Bool(""Key"") == false
@@ -114,7 +114,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     If(
         @doc.Bool(""Key""),
@@ -147,7 +147,7 @@ foo bar;
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
 public class MyDocument : CustomDocument
 {
     protected override CustomDocument Clone()
@@ -172,7 +172,7 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
 public class MyDocument : CustomDocument
 {
     protected override CustomDocument Clone()
@@ -197,7 +197,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Settings[""TestString""] = ""teststring"";
                     Settings[""TestInt""] = 1234;
                     Settings[""TestFloat""] = 1234.567;
@@ -220,7 +220,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Pipelines.Add(
                         new ReadFiles(""*.cshtml""),
 	                    new WriteFiles("".html""));
@@ -240,7 +240,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Pipelines.Add(
                         ReadFiles(""*.cshtml""),
 	                    WriteFiles("".html""));
@@ -280,7 +280,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 #recipe foo
 #recipe bar
 ";
@@ -299,33 +299,6 @@ SetCustomDocumentType<MyDocument>();
                 // Then
                 Assert.IsNotNull(exception);
                 exception.Message.ShouldContain("Directive was previously specified");
-            }
-
-            [Test]
-            public void DoesNotThrowForEquivalentDirectiveValues()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-#recipe foo
-#recipe Foo
-";
-
-                // When
-                Exception exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.IsNotNull(exception);
-                exception.Message.ShouldNotContain("Directive was previously specified");
             }
         }
 

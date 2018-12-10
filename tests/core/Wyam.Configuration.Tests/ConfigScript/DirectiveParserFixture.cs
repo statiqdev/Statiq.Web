@@ -21,7 +21,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"A
+                const string configScript = @"A
 B
 C";
 
@@ -30,9 +30,11 @@ C";
 
                 // Then
                 directiveParser.DirectiveValues.ShouldBeEmpty();
-                directiveParser.Code.ShouldBe(@"A
+                directiveParser.Code.ShouldBe(
+                    @"A
 B
-C", StringCompareShould.IgnoreLineEndings);
+C",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -41,7 +43,7 @@ C", StringCompareShould.IgnoreLineEndings);
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"#valid a b c
+                const string configScript = @"#valid a b c
 #invalid a b c
 #validx y z
 A=
@@ -78,15 +80,17 @@ C", StringCompareShould.IgnoreLineEndings);
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"# valid a b c
+                const string configScript = @"# valid a b c
             A";
 
                 // When
                 directiveParser.Parse(configScript);
 
                 // Then
-                directiveParser.Code.ShouldBe(@"# valid a b c
-            A", StringCompareShould.IgnoreLineEndings);
+                directiveParser.Code.ShouldBe(
+                    @"# valid a b c
+            A",
+                    StringCompareShould.IgnoreLineEndings);
                 directiveParser.DirectiveValues.ShouldBeEmpty();
             }
         }

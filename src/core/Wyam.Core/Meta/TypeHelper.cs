@@ -92,8 +92,12 @@ namespace Wyam.Core.Meta
             return gotResult;
         }
 
-        private static bool TryConvertEnumerable<T>(object value, Func<Type, Type> elementTypeFunc,
-            Func<MetadataTypeConverter, IEnumerable, IEnumerable> conversionFunc, out T result)
+        private static bool TryConvertEnumerable<T>(
+            object value,
+            Func<Type, Type> elementTypeFunc,
+            Func<MetadataTypeConverter,
+            IEnumerable, IEnumerable> conversionFunc,
+            out T result)
         {
             Type elementType = elementTypeFunc(typeof(T));
             IEnumerable enumerable = value is string ? null : value as IEnumerable;

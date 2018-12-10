@@ -15,12 +15,7 @@ namespace Wyam.Core.IO.Globbing
 
         public DirectoryInfo(IDirectory directory, bool isParentPath = false)
         {
-            if (directory == null)
-            {
-                throw new ArgumentNullException(nameof(directory));
-            }
-
-            _directory = directory;
+            _directory = directory ?? throw new ArgumentNullException(nameof(directory));
             _isParentPath = isParentPath;
         }
 

@@ -29,6 +29,7 @@ namespace Wyam.Json.Tests
     ""Admin""
   ]
 }";
+
         public class ExecuteTests : JsonFixture
         {
             [Test]
