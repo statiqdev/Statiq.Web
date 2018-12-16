@@ -28,6 +28,7 @@
 #addin "Octokit"
 #tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
 #tool "nuget:?package=NuGet.CommandLine&version=4.7.1"
+#tool "AzurePipelines.TestLogger&version=0.4.7"
 
 using Octokit;
 
@@ -148,7 +149,8 @@ Task("Run-Unit-Tests")
         if (isRunningOnBuildServer)
         {
             testSettings.Filter = "TestCategory!=ExcludeFromBuildServer";
-            testSettings.Logger = "trx";
+            testSettings.Logger = "AzurePipelines";
+            testSettings.TestAdapterPath = GetDirectories($"./tools/AzurePipelines.TestLogger.*/contentFiles/any/any").First();
         }
 
         Information($"Running tests in {project}");
