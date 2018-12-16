@@ -259,50 +259,54 @@ namespace Wyam.Html
             request.Timeout = 60000; // 60 seconds
 
             // Perform request as HEAD
-            HttpWebResponse response;
-            request.Method = "HEAD";
+            HttpWebResponse response = null;
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-                response.Close();
-            }
-            catch (WebException)
-            {
-                response = null;
-            }
+                request.Method = "HEAD";
+                try
+                {
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException)
+                {
+                    response = null;
+                }
 
-            // Check the status code
-            if (response != null)
-            {
+                // Check the status code
+                if (response != null)
+                {
+                    if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
+                    {
+                        Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
+                        return true;
+                    }
+                }
+
+                // Try one more time as GET
+                request.Method = "GET";
+                try
+                {
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException ex)
+                {
+                    Trace.Warning($"Validation failure for absolute link {uri}: {ex.Message}");
+                    return false;
+                }
+
+                // Check the status code
                 if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
                 {
                     Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
                     return true;
                 }
-            }
-
-            // Try one more time as GET
-            request.Method = "GET";
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-                response.Close();
-            }
-            catch (WebException ex)
-            {
-                Trace.Warning($"Validation failure for absolute link {uri}: {ex.Message}");
+                Trace.Warning($"Validation failure for absolute link {uri}: returned status code {(int)response.StatusCode} {response.StatusCode}");
                 return false;
             }
-
-            // Check the status code
-            if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
+            finally
             {
-                Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
-                return true;
+                response?.Close();
             }
-            Trace.Warning($"Validation failure for absolute link {uri}: returned status code {(int)response.StatusCode} {response.StatusCode}");
-
-            return false;
         }
 
         private static void AddOrUpdateLink(string link, IElement element, FilePath source, ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links)

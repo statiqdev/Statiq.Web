@@ -1,5 +1,6 @@
 # 2.1.1
 
+- [Fix] Fixed a bug with early closure of HTTP response objects when validating links (#759)
 - [Fix] Fixed a regression bug with the BookSite recipe (#758)
 - [Feature] Adds support for `IgnoreConfigHash` to Cake.Wyam (#628)
 - [Fix] Fixed a bug in blog and docs recipes when the `Published` front matter contained an invalid date according to the culture (#611)
