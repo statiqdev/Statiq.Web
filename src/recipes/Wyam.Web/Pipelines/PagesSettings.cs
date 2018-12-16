@@ -64,6 +64,6 @@ namespace Wyam.Web.Pipelines
         /// <summary>
         /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
         /// </summary>
-        public ContextConfig PrependLinkRoot { get; set; }
+        public ContextConfig PrependLinkRoot { get; set; } = _ => false;
     }
 }

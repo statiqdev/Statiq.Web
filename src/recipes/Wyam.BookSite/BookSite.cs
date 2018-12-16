@@ -40,6 +40,7 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.SectionsPath" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MarkdownConfiguration" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MarkdownExtensionTypes" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.MarkdownPrependLinkRoot" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IncludeDateInPostPath" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MetaRefreshRedirects" usage="Setting" />
     /// <metadata cref="BookSiteKeys.NetlifyRedirects" usage="Setting" />
@@ -85,6 +86,7 @@ namespace Wyam.BookSite
                 PublishedKey = BookSiteKeys.Published,
                 MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                PrependLinkRoot = ctx => ctx.Bool(BookSiteKeys.MarkdownPrependLinkRoot),
                 ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
                 PostsPath = ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath
@@ -105,6 +107,7 @@ namespace Wyam.BookSite
                     .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
                 MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                PrependLinkRoot = ctx => ctx.Bool(BookSiteKeys.MarkdownPrependLinkRoot),
                 ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
                 Sort = (x, y) =>
                 {
