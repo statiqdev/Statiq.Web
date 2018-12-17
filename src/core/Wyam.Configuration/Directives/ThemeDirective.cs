@@ -18,10 +18,12 @@ namespace Wyam.Configuration.Directives
         public override IEqualityComparer<string> ValueComparer => StringComparer.OrdinalIgnoreCase;
 
         // Any changes to settings should also be made in Cake.Wyam
-        public struct Settings
+        public class Settings
         {
+#pragma warning disable SA1401 // Fields should be private
             public bool IgnoreKnownPackages;
             public string Theme;
+#pragma warning restore SA1401 // Fields should be private
         }
 
         protected override void Define(ArgumentSyntax syntax, Settings settings)
