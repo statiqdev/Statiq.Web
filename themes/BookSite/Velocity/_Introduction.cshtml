@@ -3,7 +3,7 @@
     <section id="intro" class="container">
 	<div class="row">
 	    <div class="4u 12u(mobile) image">
-		<img src="@Context.String(BookSiteKeys.BookImage)">
+		<img src="@Context.GetLink(Context.String(BookSiteKeys.BookImage))">
 	    </div>
 	    <div class="8u 12u(mobile)">
 		@if(Context.ContainsKey(BookSiteKeys.Description))
