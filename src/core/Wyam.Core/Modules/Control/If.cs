@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -17,7 +16,7 @@ namespace Wyam.Core.Modules.Control
     /// outputs without modification.
     /// </remarks>
     /// <category>Control</category>
-    public class If : IModule
+    public class If : IModule, IReadOnlyList<IModuleList>
     {
         private readonly List<Condition> _conditions = new List<Condition>();
         private bool _withoutUnmatchedDocuments;
@@ -138,7 +137,7 @@ namespace Wyam.Core.Modules.Control
                 // Run the modules on the documents that satisfy the predicate
                 if (matched.Count > 0)
                 {
-                    results.AddRange(context.Execute(condition.Modules, matched));
+                    results.AddRange(context.Execute(condition, matched));
                 }
 
                 // Continue with the documents that don't satisfy the predicate
@@ -154,22 +153,33 @@ namespace Wyam.Core.Modules.Control
             return results;
         }
 
-        private class Condition
+        /// <inheritdoc />
+        public int Count => _conditions.Count;
+
+        /// <inheritdoc />
+        public IModuleList this[int index] => _conditions[index];
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <inheritdoc />
+        public IEnumerator<IModuleList> GetEnumerator() => _conditions.GetEnumerator();
+
+        private class Condition : ModuleList
         {
             public DocumentConfig DocumentConfig { get; }
             public ContextConfig ContextConfig { get; }
-            public IModule[] Modules { get; }
 
             public Condition(DocumentConfig documentConfig, IModule[] modules)
+                : base(modules)
             {
                 DocumentConfig = documentConfig;
-                Modules = modules;
             }
 
             public Condition(ContextConfig contextConfig, IModule[] modules)
+                : base(modules)
             {
                 ContextConfig = contextConfig;
-                Modules = modules;
             }
         }
     }
