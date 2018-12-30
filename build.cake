@@ -27,8 +27,8 @@
 #addin "Cake.FileHelpers"
 #addin "Octokit"
 #tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
-#tool "nuget:?package=NuGet.CommandLine&version=4.7.1"
-#tool "AzurePipelines.TestLogger&version=0.4.7"
+#tool "nuget:?package=NuGet.CommandLine&version=4.9.2"
+#tool "AzurePipelines.TestLogger&version=1.0.0"
 
 using Octokit;
 
@@ -46,7 +46,7 @@ var configuration = Argument("configuration", "Release");
 var isLocal = BuildSystem.IsLocalBuild;
 var isRunningOnUnix = IsRunningOnUnix();
 var isRunningOnWindows = IsRunningOnWindows();
-var isRunningOnBuildServer = TFBuild.IsRunningOnVSTS;
+var isRunningOnBuildServer = !string.IsNullOrEmpty(EnvironmentVariable("AGENT_NAME")); // See https://github.com/cake-build/cake/issues/1684#issuecomment-397682686
 var isPullRequest = !string.IsNullOrWhiteSpace(EnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID"));  // See https://github.com/cake-build/cake/issues/2149
 var buildNumber = TFBuild.Environment.Build.Number.Replace('.', '-');
 var branch = TFBuild.Environment.Repository.Branch;

@@ -15,8 +15,5 @@
     <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="2.2.0" />
     <PackageReference Include="JavaScriptEngineSwitcher.Jint" Version="2.3.0" />
     <PackageReference Include="jint" Version="2.10.3" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 </Project>
