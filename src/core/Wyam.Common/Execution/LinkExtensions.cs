@@ -1,4 +1,5 @@
-﻿using Wyam.Common.Configuration;
+﻿using System;
+using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Util;
@@ -61,8 +62,21 @@ namespace Wyam.Common.Execution
         /// </returns>
         public static string GetLink(this IExecutionContext context, IMetadata metadata, string key, bool includeHost = false)
         {
-            FilePath filePath = metadata?.FilePath(key);
-            return filePath != null ? GetLink(context, filePath, includeHost) : null;
+            if (metadata?.ContainsKey(key) == true)
+            {
+                // Return the actual URI if it's absolute
+                if (Uri.TryCreate(metadata.String(key), UriKind.Absolute, out Uri uri)
+                    && (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)
+                        || uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return uri.ToString();
+                }
+
+                // Otherwise try to process the value as a file path
+                FilePath filePath = metadata.FilePath(key);
+                return filePath != null ? GetLink(context, filePath, includeHost) : null;
+            }
+            return null;
         }
 
         /// <summary>

@@ -21,16 +21,8 @@ namespace Wyam.Testing.Meta
         {
         }
 
-        public T Get(string key)
-        {
-            T value;
-            return TryGetValue(key, out value) ? value : default(T);
-        }
+        public T Get(string key) => TryGetValue(key, out T value) ? value : default(T);
 
-        public T Get(string key, T defaultValue)
-        {
-            T value;
-            return TryGetValue(key, out value) ? value : defaultValue;
-        }
+        public T Get(string key, T defaultValue) => TryGetValue(key, out T value) ? value : defaultValue;
     }
 }

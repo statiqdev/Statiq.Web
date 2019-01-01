@@ -2,10 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common.Documents;
-using Wyam.Common.IO;
 using Wyam.Common.Meta;
 
 namespace Wyam.Testing.Meta
@@ -13,7 +9,7 @@ namespace Wyam.Testing.Meta
     /// <summary>
     /// A test implementation of <see cref="IMetadata"/>.
     /// </summary>
-    public class TestMetadata : IMetadata, IDictionary<string, object>
+    public class TestMetadata : IMetadata, IDictionary<string, object>, ITypeConversions
     {
         private readonly IDictionary<string, object> _metadata;
 
@@ -65,20 +61,49 @@ namespace Wyam.Testing.Meta
         }
 
         /// <inhertdoc />
-        public object Get(string key, object defaultValue = null)
-        {
-            object value;
-            return TryGetValue(key, out value) ? value : defaultValue;
-        }
+        public object Get(string key, object defaultValue = null) =>
+            TryGetValue(key, out object value) ? value : defaultValue;
 
         /// <inhertdoc />
         public object GetRaw(string key) => _metadata[key];
 
         /// <inhertdoc />
-        public T Get<T>(string key) => (T)Get(key);
+        public T Get<T>(string key)
+        {
+            object value = Get(key);
+
+            // Check if there's a test-specific conversion
+            if (TypeConversions.TryGetValue((value?.GetType() ?? typeof(object), typeof(T)), out Func<object, object> typeConversion))
+            {
+                return (T)typeConversion(value);
+            }
+
+            // Default conversion is just to cast
+            return (T)value;
+        }
 
         /// <inhertdoc />
-        public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);
+        public T Get<T>(string key, T defaultValue)
+        {
+            if (TryGetValue(key, out object value))
+            {
+                // Check if there's a test-specific conversion
+                if (TypeConversions.TryGetValue((value?.GetType() ?? typeof(object), typeof(T)), out Func<object, object> typeConversion))
+                {
+                    return (T)typeConversion(value);
+                }
+
+                // Default conversion is just to cast
+                return (T)value;
+            }
+
+            // Key not found, return the default value
+            return defaultValue;
+        }
+
+        public Dictionary<(Type Value, Type Result), Func<object, object>> TypeConversions { get; } = new Dictionary<(Type Value, Type Result), Func<object, object>>();
+
+        public void AddTypeConversion<T, TResult>(Func<T, TResult> typeConversion) => TypeConversions.Add((typeof(T), typeof(TResult)), x => typeConversion((T)x));
 
         /// <inhertdoc />
         public IMetadata GetMetadata(params string[] keys) => new TestMetadata(keys.Where(ContainsKey).ToDictionary(x => x, x => this[x]));
@@ -143,7 +168,9 @@ namespace Wyam.Testing.Meta
 
         /// <inhertdoc />
         public IMetadata<T> MetadataAs<T>() => new TestMetadataAs<T>(
-            _metadata.Where(x => x.Value is T).ToDictionary(x => x.Key, x => (T)x.Value));
+            _metadata
+                .Where(x => x.Value is T || TypeConversions.ContainsKey((x.Value?.GetType() ?? typeof(object), typeof(T))))
+                .ToDictionary(x => x.Key, x => Get<T>(x.Key)));
 
         /// <summary>
         /// This resolves the metadata value by recursively expanding IMetadataValue.

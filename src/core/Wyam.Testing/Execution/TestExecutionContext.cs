@@ -27,7 +27,7 @@ namespace Wyam.Testing.Execution
     /// <summary>
     /// An <see cref="IExecutionContext"/> that can be used for testing.
     /// </summary>
-    public class TestExecutionContext : IExecutionContext
+    public class TestExecutionContext : IExecutionContext, ITypeConversions
     {
         private readonly TestSettings _settings = new TestSettings();
 
@@ -182,14 +182,27 @@ namespace Wyam.Testing.Execution
         public Stream GetContentStream(string content = null) =>
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
 
+        public Dictionary<(Type Value, Type Result), Func<object, object>> TypeConversions { get; } = new Dictionary<(Type Value, Type Result), Func<object, object>>();
+
+        public void AddTypeConversion<T, TResult>(Func<T, TResult> typeConversion) => TypeConversions.Add((typeof(T), typeof(TResult)), x => typeConversion((T)x));
+
         /// <inheritdoc/>
         public bool TryConvert<T>(object value, out T result)
         {
+            // Check if there's a test-specific conversion
+            if (TypeConversions.TryGetValue((value?.GetType() ?? typeof(object), typeof(T)), out Func<object, object> typeConversion))
+            {
+                result = (T)typeConversion(value);
+                return true;
+            }
+
+            // Default conversion is just to cast
             if (value is T)
             {
                 result = (T)value;
                 return true;
             }
+
             result = default(T);
             return value == null;
         }
