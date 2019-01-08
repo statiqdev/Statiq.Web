@@ -10,7 +10,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private const int MaximumLineLength = 100;
         private const string NewLinePrefix = "    ";
 
-        private readonly static SymbolDisplayFormat _symbolDisplayFormat = new SymbolDisplayFormat(
+        private static readonly SymbolDisplayFormat _symbolDisplayFormat = new SymbolDisplayFormat(
             typeQualificationStyle:
                 SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
             genericsOptions:
@@ -42,7 +42,7 @@ namespace Wyam.CodeAnalysis.Analysis
             miscellaneousOptions:
                 SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
-        private readonly static SymbolDisplayFormat _baseTypeDisplayFormat = new SymbolDisplayFormat(
+        private static readonly SymbolDisplayFormat _baseTypeDisplayFormat = new SymbolDisplayFormat(
         typeQualificationStyle:
             SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
         genericsOptions:
@@ -67,13 +67,13 @@ namespace Wyam.CodeAnalysis.Analysis
         private static readonly Dictionary<Accessibility, string> _cSharpAccessibilityStrings
             = new Dictionary<Accessibility, string>
             {
-                {Accessibility.Internal, "internal "},
-                {Accessibility.NotApplicable, string.Empty},
-                {Accessibility.Private, "private "},
-                {Accessibility.Protected, "protected "},
-                {Accessibility.ProtectedAndInternal, string.Empty},
-                {Accessibility.ProtectedOrInternal, "protected internal "},
-                {Accessibility.Public, "public "}
+                { Accessibility.Internal, "internal " },
+                { Accessibility.NotApplicable, string.Empty },
+                { Accessibility.Private, "private " },
+                { Accessibility.Protected, "protected " },
+                { Accessibility.ProtectedAndInternal, string.Empty },
+                { Accessibility.ProtectedOrInternal, "protected internal " },
+                { Accessibility.Public, "public " }
             };
 
         private static string GetCSharpSyntax(ISymbol symbol)
@@ -87,7 +87,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 .Distinct()
                 .Select(parent => parent.NormalizeWhitespace()))
             {
-                builder.AppendLine(attributeListNode.ReplaceTrivia(attributeListNode.DescendantTrivia(), (x, y) => new SyntaxTrivia()).NormalizeWhitespace().ToString());
+                builder.AppendLine(attributeListNode.ReplaceTrivia(attributeListNode.DescendantTrivia(), (x, y) => default(SyntaxTrivia)).NormalizeWhitespace().ToString());
             }
             builder.NewLinePrefix = NewLinePrefix;
 

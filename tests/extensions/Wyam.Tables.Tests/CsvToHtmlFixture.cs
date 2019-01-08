@@ -47,7 +47,7 @@ namespace Wyam.Tables.Tests
 + "\"25\",\"25\",\"50\",\"75\",\"100\",\"125\",\"150\",\"175\"\r\n"
 + "\"26\",\"26\",\"52\",\"78\",\"104\",\"130\",\"156\",\"182\"\r\n";
 
-                string output = @"<table>
+                const string output = @"<table>
 <tr>
 <td></td>
 <td>A</td>
@@ -364,7 +364,7 @@ namespace Wyam.Tables.Tests
 + "\"25\",\"25\",\"50\",\"75\",\"100\",\"125\",\"150\",\"175\"\r\n"
 + "\"26\",\"26\",\"52\",\"78\",\"104\",\"130\",\"156\",\"182\"\r\n";
 
-                string output = @"<table>
+                const string output = @"<table>
 <tr>
 <th></th>
 <th>A</th>

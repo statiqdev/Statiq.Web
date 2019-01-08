@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
-using Wyam.Common.Util;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;
+using Shouldly;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Metadata
 {
@@ -97,6 +96,32 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "c/index.html",
                     "c/d/index.html",
                     "c/d/5.txt");
+            }
+
+            [Test]
+            public void GetsPlaceholderWithSource()
+            {
+                // Given
+                IExecutionContext context = new TestExecutionContext();
+                IDocument[] inputs = GetDocuments(
+                    context,
+                    "a/2.txt",
+                    "a/1.txt");
+                Tree tree = new Tree().WithNesting();
+
+                // When
+                List<IDocument> documents = tree.Execute(inputs, context).ToList();
+
+                // Then
+                Assert.AreEqual(1, documents.Count);
+                AssertTree(
+                    documents[0],
+                    "index.html",
+                    "a/index.html",
+                    "a/1.txt",
+                    "a/2.txt");
+                documents[0].Source.ShouldBe("/input/index.html");
+                documents[0].Document(Keys.Next).Source.ShouldBe("/input/a/index.html");
             }
 
             [Test]
@@ -331,7 +356,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             private IDocument[] GetDocuments(IExecutionContext context, params string[] relativeFilePaths) =>
                 relativeFilePaths.Select(x => context.GetDocument(new MetadataItems
                 {
-                    new MetadataItem(Keys.RelativeFilePath, x)
+                    new MetadataItem(Keys.RelativeFilePath, new FilePath(x))
                 })).ToArray();
         }
     }

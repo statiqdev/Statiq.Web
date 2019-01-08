@@ -96,7 +96,7 @@ namespace Wyam.Tables
 
         private static void WriteLine(StringBuilder builder, int[] columnSize, bool isHeader = false)
         {
-            foreach (var column in columnSize)
+            foreach (int column in columnSize)
             {
                 builder.Append("+");
                 builder.Append(isHeader ? '=' : '-', column + 2);

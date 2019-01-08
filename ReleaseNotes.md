@@ -1,3 +1,57 @@
+# 2.1.1
+
+- [Fix] Fixed a bug with early closure of HTTP response objects when validating links (#759)
+- [Fix] Fixed a regression bug with the BookSite recipe (#758)
+- [Feature] Adds support for `IgnoreConfigHash` to Cake.Wyam (#628)
+- [Fix] Fixed a bug in blog and docs recipes when the `Published` front matter contained an invalid date according to the culture (#611)
+- [Fix] Added favicon and empty override CSS output to docs theme so that settings `ValidateRelativeLinks` or `ValidateAbsoluteLinks` does not error (#607)
+
+# 2.1.0
+
+- **[Breaking Change]** No longer reads standard input by default, adds a new `--read-stdin` flag to turn on this behavior (#752)
+- [Fix] Blog posts in the docs recipe no longer require Author or Category metadata (#751)
+- [Feature] New `Markdown.PrependLinkRoot()` method to prepend a configured `LinkRoot` to all `Markdown` links (#735, #748, thanks @tbolon)
+- [Feature] New `MarkdownPrependLinkRoot` setting for the blog and docs recipes to turn on this behavior for Markdown documents (#735)
+- [Fix] Fix for tuples in generic type parameters in docs (#749)
+
+# 2.0.0
+
+- **[Breaking Change]** It's here! Wyam now runs on .NET Core 2.1 and the .NET Framework client is no longer distributed (at least initially).
+
+# 1.7.4
+
+- [Feature] Updated Buildalyzer which includes new features like honoring MSBuild constants
+
+# 1.7.3
+
+- [Fix] Fixes a regression with the new Razor module when using nested layouts
+- [Refactoring] Even better code signing (thanks @vcsjones) 
+
+# 1.7.2
+
+- [Fix] Updated Authenticode certificate
+
+# 1.7.1
+
+- [Fix] Fixed Authenticode signing of `wyam.exe`
+
+# 1.7.0
+
+- **[Breaking Change]**[Refactoring] New Razor parser based on ASP.NET Core 2.x (potentially breaking due to differences in Razor behavior such as tighter local variable scope)
+- [Refactoring] New integrated preview server based on ASP.NET Core 2.x (#300, thanks @RLittlesII)
+- [Feature] New `IExecutionContext.GetDocument()` overload to get an empty document while defining a source
+- [Fix] Updates `Tree` module placeholder function to set document source for the placeholder
+- [Feature] Adds `Keys.TreePlaceholder` metadata to indicate a placeholder tree document from `Tree` module
+- [Feature] Adds ability to configure blog title in docs recipe (#710, thanks @rschoenbach)
+
+# 1.6.0
+
+- [Refactoring] Big update to Buildalyzer which should make MSBuild-based project introspection for docs much more reliable
+- [Fix] Fixes a bug with docs `NoTitle` not working correctly
+- [Feature] Adds support for linking generic type arguments (#707, #709) 
+- [Fix] Fix for generic type argument names (#709)
+- [Fix] Fix for a bug when linking nullable types in docs recipe
+
 # 1.5.1
 
 - [Refactoring] Updated Cake.Wyam Cake reference to 0.28.0 (#701)

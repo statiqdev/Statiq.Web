@@ -197,5 +197,11 @@ namespace Wyam.BookSite
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ShowInNavbar = nameof(ShowInNavbar);
+
+        /// <summary>
+        /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string MarkdownPrependLinkRoot = nameof(MarkdownPrependLinkRoot);
     }
 }

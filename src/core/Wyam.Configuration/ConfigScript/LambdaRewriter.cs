@@ -46,7 +46,7 @@ namespace Wyam.Configuration.ConfigScript
                             argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
                                 SyntaxFactory.ParenthesizedLambdaExpression(
                                     SyntaxFactory.ParameterList(
-                                        new SeparatedSyntaxList<ParameterSyntax>()
+                                        default(SeparatedSyntaxList<ParameterSyntax>)
                                             .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
                                             .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
                                     argument.Expression))

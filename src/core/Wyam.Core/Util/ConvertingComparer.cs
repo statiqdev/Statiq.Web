@@ -16,11 +16,7 @@ namespace Wyam.Core.Util
 
         public ConvertingComparer(IComparer<TValue> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
         public int Compare(object x, object y)

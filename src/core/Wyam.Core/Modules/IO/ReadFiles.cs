@@ -50,12 +50,7 @@ namespace Wyam.Core.Modules.IO
         /// <param name="patterns">A delegate that returns one or more globbing patterns and/or absolute paths.</param>
         public ReadFiles(ContextConfig patterns)
         {
-            if (patterns == null)
-            {
-                throw new ArgumentNullException(nameof(patterns));
-            }
-
-            _contextPatterns = patterns;
+            _contextPatterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         /// <summary>
@@ -65,12 +60,7 @@ namespace Wyam.Core.Modules.IO
         /// <param name="patterns">A delegate that returns one or more globbing patterns and/or absolute paths.</param>
         public ReadFiles(DocumentConfig patterns)
         {
-            if (patterns == null)
-            {
-                throw new ArgumentNullException(nameof(patterns));
-            }
-
-            _documentPatterns = patterns;
+            _documentPatterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         /// <summary>
@@ -134,11 +124,15 @@ namespace Wyam.Core.Modules.IO
                             { Keys.SourceFileName, file.Path.FileName },
                             { Keys.SourceFileDir, file.Path.Directory },
                             { Keys.SourceFilePath, file.Path },
-                            { Keys.SourceFilePathBase, fileNameWithoutExtension == null
-                                ? null : file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            {
+                                Keys.SourceFilePathBase, fileNameWithoutExtension == null
+                                    ? null : file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension)
+                            },
                             { Keys.RelativeFilePath, relativePath },
-                            { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
-                                ? null : relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            {
+                                Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                                    ? null : relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension)
+                            },
                             { Keys.RelativeFileDir, relativePath.Directory }
                         });
                     });

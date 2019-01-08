@@ -124,7 +124,7 @@ namespace Wyam.Core.Modules.Control
                 {
                     context.ForEach(documents, document =>
                     {
-                        if (condition.DocumentConfig == null || condition.DocumentConfig.Invoke<bool>(document, context, "while evaluating condition"))
+                        if (condition.DocumentConfig?.Invoke<bool>(document, context, "while evaluating condition") != false)
                         {
                             matched.Add(document);
                         }

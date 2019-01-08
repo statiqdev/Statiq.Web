@@ -10,7 +10,8 @@ namespace Wyam.Configuration
     /// use fields to store the values, which are instances of the class.
     /// </summary>
     /// <typeparam name="T">The derived class type.</typeparam>
-    public abstract class ClassEnum<T> where T : ClassEnum<T>
+    public abstract class ClassEnum<T>
+        where T : ClassEnum<T>
     {
         static ClassEnum()
         {

@@ -35,8 +35,8 @@ namespace Wyam.Feeds.Syndication.Rdf
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Url) &&
-                string.IsNullOrEmpty(Title);
+            return string.IsNullOrEmpty(Url)
+                && string.IsNullOrEmpty(Title);
         }
 
         Uri IUriProvider.Uri => _url;

@@ -32,7 +32,7 @@ namespace Wyam.Html
     /// <category>Metadata</category>
     public class Excerpt : IModule
     {
-        private string[] _separators = { "more", "excerpt"};
+        private string[] _separators = { "more", "excerpt" };
         private string _querySelector = "p";
         private string _metadataKey = HtmlKeys.Excerpt;
         private bool _outerHtml = true;
@@ -104,7 +104,7 @@ namespace Wyam.Html
         /// <summary>
         /// Controls whether the inner HTML (not including the containing element's HTML) or
         /// outer HTML (including the containing element's HTML) of the first result from
-        /// the query selector is added to metadata. The default is true, which gets the outer 
+        /// the query selector is added to metadata. The default is true, which gets the outer
         /// HTML content. This setting has no effect if a separator comment is found.
         /// </summary>
         /// <param name="outerHtml">If set to <c>true</c>, outer HTML will be stored.</param>
@@ -145,7 +145,7 @@ namespace Wyam.Html
                 {
                     return context.GetDocument(input, new MetadataItems
                     {
-                        {_metadataKey,  excerpt.Trim()}
+                        { _metadataKey,  excerpt.Trim() }
                     });
                 }
                 return input;
@@ -165,7 +165,7 @@ namespace Wyam.Html
         // Use this after attempting to find the excerpt element because it destroys the HTML document
         private string GetSeparatorExcerpt(IHtmlDocument htmlDocument)
         {
-            if (_separators != null && _separators.Length > 0)
+            if (_separators?.Length > 0)
             {
                 ITreeWalker walker = htmlDocument.CreateTreeWalker(htmlDocument.DocumentElement, FilterSettings.Comment);
                 IComment comment = (IComment)walker.ToFirst();
@@ -196,9 +196,10 @@ namespace Wyam.Html
                         {
                             remove = true;
                         }
-                        if (remove ||
-                            // Also remove if it's a top-level element that doesn't match the query selector
-                            (node.Parent == parent
+
+                        // Also remove if it's a top-level element that doesn't match the query selector
+                        if (remove
+                            || (node.Parent == parent
                             && node is IElement
                             && !string.IsNullOrEmpty(_querySelector)
                             && !((IElement)node).Matches(_querySelector)))
@@ -215,7 +216,6 @@ namespace Wyam.Html
 
                     return parent.InnerHtml;
                 }
-
             }
             return null;
         }

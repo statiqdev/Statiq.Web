@@ -14,7 +14,7 @@ namespace Wyam.SwaggerCodeGen
         private readonly string _key;
         private readonly string _openApiInputKey;
 
-        public SwaggerCodeGen(string key, string openApiInputKey = OpenAPI.OpenAPI.OpenAPI_DEFAULT_KEY)
+        public SwaggerCodeGen(string key, string openApiInputKey = OpenAPI.OpenAPI.OpenAPIDEFAULTKEY)
         {
             _key = key;
             _openApiInputKey = openApiInputKey;
@@ -28,8 +28,6 @@ namespace Wyam.SwaggerCodeGen
                 {
                     if (!input.Metadata.TryGetValue(_openApiInputKey, out var inputMeta)) return null;
                     if (!(inputMeta is OpenApiDocument openApiDocument)) return null;
-
-                    
 
                     var documentMetadata = new Dictionary<string, object>() { { _openApiInputKey, openApiDocument } };
                     return context.GetDocument(input, documentMetadata);

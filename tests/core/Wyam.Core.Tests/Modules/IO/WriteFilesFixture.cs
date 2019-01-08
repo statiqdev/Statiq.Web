@@ -329,9 +329,9 @@ namespace Wyam.Core.Tests.Modules.IO
                         emptyStream,
                         new MetadataItems
                         {
-                            new MetadataItem(Keys.RelativeFilePath, new FilePath(@"Subfolder/stream-test"))
+                            new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/stream-test"))
                         })
-                    };
+                };
                 WriteFiles writeFiles = new WriteFiles();
 
                 // When

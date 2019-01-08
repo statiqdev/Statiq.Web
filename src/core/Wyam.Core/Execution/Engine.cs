@@ -112,11 +112,7 @@ namespace Wyam.Core.Execution
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(DocumentFactory));
-                }
-                _documentFactory = value;
+                _documentFactory = value ?? throw new ArgumentNullException(nameof(DocumentFactory));
             }
         }
 
@@ -132,11 +128,7 @@ namespace Wyam.Core.Execution
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(ContentStreamFactory));
-                }
-                _contentStreamFactory = value;
+                _contentStreamFactory = value ?? throw new ArgumentNullException(nameof(ContentStreamFactory));
             }
         }
 
@@ -278,7 +270,6 @@ namespace Wyam.Core.Execution
                         _pipelines.Count,
                         engineStopwatch.ElapsedMilliseconds);
                 }
-
             }
             catch (Exception ex)
             {

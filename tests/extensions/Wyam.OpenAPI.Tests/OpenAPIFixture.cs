@@ -1,17 +1,35 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.OpenApi.Models;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
-using Wyam.Testing.Execution;
 using Wyam.Testing.Documents;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Extensions;
-using Microsoft.OpenApi;
-using Shouldly;
-using Microsoft.OpenApi.Interfaces;
-using System;
+using Wyam.Testing.Execution;
+
+[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1310", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1300", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1136", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1502", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1307", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1515", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1508", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1124", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1507", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1132", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
 
 namespace Wyam.OpenAPI.Tests
 {
@@ -212,9 +230,9 @@ components:
 
                 // Then
                 documents.Count.ShouldBe(1);
-                documents[0].Keys.ShouldBe(new[] { OpenAPI.OpenAPI_DEFAULT_KEY }, true);
-                documents[0][OpenAPI.OpenAPI_DEFAULT_KEY].ShouldBeOfType<OpenApiDocument>();
-                var api = (OpenApiDocument)documents[0][OpenAPI.OpenAPI_DEFAULT_KEY];
+                documents[0].Keys.ShouldBe(new[] { OpenAPI.OpenAPIDEFAULTKEY }, true);
+                documents[0][OpenAPI.OpenAPIDEFAULTKEY].ShouldBeOfType<OpenApiDocument>();
+                var api = (OpenApiDocument)documents[0][OpenAPI.OpenAPIDEFAULTKEY];
                 api.Paths.Count.ShouldBe(2);
             }
 

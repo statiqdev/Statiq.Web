@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Testing;
+using Wyam.Testing.Attributes;
 
 namespace Wyam.Common.Tests.IO
 {
@@ -22,13 +23,11 @@ namespace Wyam.Common.Tests.IO
             [TestCase("/a/b/..", "..")]
             [TestCase("/a", "a")]
             [TestCase("/", "/")]
-#if !UNIX
-            [TestCase("C:/", "C:")]
-            [TestCase("C:", "C:")]
-            [TestCase("C:/Data", "Data")]
-            [TestCase("C:/Data/Work", "Work")]
-            [TestCase("C:/Data/Work/file.txt", "file.txt")]
-#endif
+            [WindowsTestCase("C:/", "C:")]
+            [WindowsTestCase("C:", "C:")]
+            [WindowsTestCase("C:/Data", "Data")]
+            [WindowsTestCase("C:/Data/Work", "Work")]
+            [WindowsTestCase("C:/Data/Work/file.txt", "file.txt")]
             public void ShouldReturnDirectoryName(string directoryPath, string name)
             {
                 // Given
@@ -49,10 +48,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase("/a/b/", "/a")]
             [TestCase("/a/b/../c", "/a/b/..")]
             [TestCase("/a", "/")]
-#if !UNIX
-            [TestCase("C:/a/b", "C:/a")]
-            [TestCase("C:/a", "C:/")]
-#endif
+            [WindowsTestCase("C:/a/b", "C:/a")]
+            [WindowsTestCase("C:/a", "C:/")]
             public void ReturnsParent(string directoryPath, string expected)
             {
                 // Given
@@ -68,9 +65,7 @@ namespace Wyam.Common.Tests.IO
             [TestCase(".")]
             [TestCase("/")]
             [TestCase("a")]
-#if !UNIX
-            [TestCase("C:")]
-#endif
+            [WindowsTestCase("C:")]
             public void RootDirectoryReturnsNullParent(string directoryPath)
             {
                 // Given
@@ -99,15 +94,12 @@ namespace Wyam.Common.Tests.IO
                 Assert.Throws<ArgumentNullException>(test);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
-            [TestCase("c:/", "simple.frag", "c:/simple.frag")]
-            [TestCase("c:/", "c:/simple.frag", "c:/simple.frag")]
-            [TestCase("c:/", "c:/test/simple.frag", "c:/simple.frag")]
-            [TestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/simple.frag")]
-            [TestCase("c:/", "test/simple.frag", "c:/simple.frag")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
+            [WindowsTestCase("c:/", "simple.frag", "c:/simple.frag")]
+            [WindowsTestCase("c:/", "c:/simple.frag", "c:/simple.frag")]
+            [WindowsTestCase("c:/", "c:/test/simple.frag", "c:/simple.frag")]
+            [WindowsTestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/simple.frag")]
+            [WindowsTestCase("c:/", "test/simple.frag", "c:/simple.frag")]
             [TestCase("assets/shaders", "simple.frag", "assets/shaders/simple.frag")]
             [TestCase("assets/shaders/", "simple.frag", "assets/shaders/simple.frag")]
             [TestCase("/assets/shaders/", "simple.frag", "/assets/shaders/simple.frag")]
@@ -129,11 +121,8 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(expected, result.FullPath);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("first:///", "c:/assets/shaders/", null, "simple.frag")]
-            [TestCase("first:///", "c:/", "second:///", "c:/simple.frag")]
-#endif
+            [WindowsTestCase("first:///", "c:/assets/shaders/", null, "simple.frag")]
+            [WindowsTestCase("first:///", "c:/", "second:///", "c:/simple.frag")]
             [TestCase(null, "assets/shaders", null, "simple.frag")]
             [TestCase("first:///", "/assets/shaders/", null, "simple.frag")]
             [TestCase(null, "assets/shaders", "second:///", "/simple.frag")]
@@ -159,10 +148,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c", "a/b/c")]
             [TestCase("foo.txt", "foo.txt")]
             [TestCase("foo", "foo")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c", "a/b/c")]
-            [TestCase("c:/a/b/c", "a/b/c")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c", "a/b/c")]
+            [WindowsTestCase("c:/a/b/c", "a/b/c")]
             public void ShouldReturnRootRelativePath(string fullPath, string expected)
             {
                 // Given
@@ -181,10 +168,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c")]
             [TestCase("foo.txt")]
             [TestCase("foo")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c")]
-            [TestCase("c:/a/b/c")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c")]
+            [WindowsTestCase("c:/a/b/c")]
             public void ShouldReturnSelfForExplicitRelativePath(string fullPath)
             {
                 // Given
@@ -213,14 +198,11 @@ namespace Wyam.Common.Tests.IO
                 Assert.Throws<ArgumentNullException>(test);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
-            [TestCase("c:/", "simple.frag", "c:/simple.frag")]
-            [TestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/test/simple.frag")]
-            [TestCase("c:/", "test/simple.frag", "c:/test/simple.frag")]
-            [TestCase("c:/", "c:/test/simple.frag", "c:/test/simple.frag")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
+            [WindowsTestCase("c:/", "simple.frag", "c:/simple.frag")]
+            [WindowsTestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/test/simple.frag")]
+            [WindowsTestCase("c:/", "test/simple.frag", "c:/test/simple.frag")]
+            [WindowsTestCase("c:/", "c:/test/simple.frag", "c:/test/simple.frag")]
             [TestCase("assets/shaders", "simple.frag", "assets/shaders/simple.frag")]
             [TestCase("assets/shaders/", "simple.frag", "assets/shaders/simple.frag")]
             [TestCase("/assets/shaders/", "simple.frag", "/assets/shaders/simple.frag")]
@@ -243,10 +225,7 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(expected, result.FullPath);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "simple.frag")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "simple.frag")]
             [TestCase("/assets/shaders/", "simple.frag")]
             public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
             {
@@ -260,10 +239,7 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(new Uri("foo:///"), result.FileProvider);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "c:/simple.frag")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "c:/simple.frag")]
             [TestCase("/assets/shaders/", "/simple.frag")]
             public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
             {
@@ -280,12 +256,9 @@ namespace Wyam.Common.Tests.IO
 
         public class CombineTests : DirectoryPathFixture
         {
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "simple", "c:/assets/shaders/simple")]
-            [TestCase("c:/", "simple", "c:/simple")]
-            [TestCase("c:/assets/shaders/", "c:/simple", "c:/simple")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "simple", "c:/assets/shaders/simple")]
+            [WindowsTestCase("c:/", "simple", "c:/simple")]
+            [WindowsTestCase("c:/assets/shaders/", "c:/simple", "c:/simple")]
             [TestCase("assets/shaders", "simple", "assets/shaders/simple")]
             [TestCase("assets/shaders/", "simple", "assets/shaders/simple")]
             [TestCase("/assets/shaders/", "simple", "/assets/shaders/simple")]
@@ -302,10 +275,7 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(expected, result.FullPath);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "simple")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "simple")]
             [TestCase("/assets/shaders/", "simple")]
             public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
             {
@@ -319,10 +289,7 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(new Uri("foo:///"), result.FileProvider);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("c:/assets/shaders/", "c:/simple")]
-#endif
+            [WindowsTestCase("c:/assets/shaders/", "c:/simple")]
             [TestCase("/assets/shaders/", "/simpl")]
             public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
             {
@@ -352,11 +319,8 @@ namespace Wyam.Common.Tests.IO
 
         public class CollapseTests : FilePathFixture
         {
-            [Test]
             [TestCase("/a/b/c/../d", "/a/b/d")]
-#if !UNIX
-            [TestCase("c:/a/b/c/../d", "c:/a/b/d")]
-#endif
+            [WindowsTestCase("c:/a/b/c/../d", "c:/a/b/d")]
             public void ShouldCollapse(string fullPath, string expected)
             {
                 // Given

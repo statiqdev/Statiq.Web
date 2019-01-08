@@ -12,10 +12,10 @@ namespace Wyam.Feeds.Syndication.Rss
     [Serializable]
     public class RssSkipHours : RssBase
     {
-        private static readonly int[] HourMasks = new int[24];
         private const int EmptyHours = 0x0;
         private const int MinHour = 0;
         private const int MaxHour = 23;
+        private static readonly int[] HourMasks = new int[24];
 
         private BitVector32 _hours = new BitVector32(EmptyHours);
 
@@ -62,7 +62,9 @@ namespace Wyam.Feeds.Syndication.Rss
                 for (int i = MinHour; i <= MaxHour; i++)
                 {
                     if (this[i])
+                    {
                         skipped.Add(i);
+                    }
                 }
 
                 return skipped.ToArray();

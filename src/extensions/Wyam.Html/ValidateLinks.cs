@@ -75,8 +75,10 @@ namespace Wyam.Html
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+#pragma warning disable RCS1163 // Unused parameter.
             // Handle invalid HTTPS certificates and allow alternate security protocols (see http://stackoverflow.com/a/5670954/807064)
             ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, ssl) => true;
+#pragma warning restore RCS1163 // Unused parameter.
 
             // Key = link, Value = source, tag HTML
             ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links =
@@ -87,17 +89,13 @@ namespace Wyam.Html
 
             // Gather all links
             HtmlParser parser = new HtmlParser();
-            context.ParallelForEach(inputs, input =>
-            {
-                GatherLinks(input, parser, links);
-            });
+            context.ParallelForEach(inputs, input => GatherLinks(input, parser, links));
 
             // Perform validation
             Parallel.ForEach(links, link =>
             {
                 // Attempt to parse the URI
-                Uri uri;
-                if (!Uri.TryCreate(link.Key, UriKind.RelativeOrAbsolute, out uri))
+                if (!Uri.TryCreate(link.Key, UriKind.RelativeOrAbsolute, out Uri uri))
                 {
                     AddOrUpdateFailure(link.Value, failures);
                 }
@@ -116,7 +114,7 @@ namespace Wyam.Html
                 }
 
                 // Absolute
-                if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !ValidateAbsoluteLink(uri, context))
+                if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !ValidateAbsoluteLink(uri))
                 {
                     AddOrUpdateFailure(link.Value, failures);
                 }
@@ -126,7 +124,8 @@ namespace Wyam.Html
             if (failures.Count > 0)
             {
                 int failureCount = failures.Sum(x => x.Value.Count);
-                string failureMessage = string.Join(Environment.NewLine,
+                string failureMessage = string.Join(
+                    Environment.NewLine,
                     failures.Select(x => $"{x.Key.FullPath}{Environment.NewLine} - {string.Join(Environment.NewLine + " - ", x.Value)}"));
                 Trace.TraceEvent(
                     _asError ? TraceEventType.Error : TraceEventType.Warning,
@@ -184,7 +183,7 @@ namespace Wyam.Html
                 normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("?", StringComparison.Ordinal));
             }
             normalizedPath = Uri.UnescapeDataString(normalizedPath);
-            if (normalizedPath == string.Empty)
+            if (normalizedPath?.Length == 0)
             {
                 return true;
             }
@@ -207,13 +206,13 @@ namespace Wyam.Html
             }
 
             // Add filenames
-            checkPaths.AddRange(LinkGenerator.DefaultHidePages.Select(x => new FilePath(normalizedPath == string.Empty ? x : $"{normalizedPath}/{x}")));
+            checkPaths.AddRange(LinkGenerator.DefaultHidePages.Select(x => new FilePath(normalizedPath?.Length == 0 ? x : $"{normalizedPath}/{x}")));
 
             // Add extensions
             checkPaths.AddRange(LinkGenerator.DefaultHideExtensions.SelectMany(x => checkPaths.Select(y => y.AppendExtension(x))).ToArray());
 
             // Check all the candidate paths
-            FilePath validatedPath = checkPaths.FirstOrDefault(x =>
+            FilePath validatedPath = checkPaths.Find(x =>
             {
                 IFile outputFile;
                 try
@@ -237,7 +236,7 @@ namespace Wyam.Html
         }
 
         // Internal for testing
-        internal static bool ValidateAbsoluteLink(Uri uri, IExecutionContext context)
+        internal static bool ValidateAbsoluteLink(Uri uri)
         {
             // Create a request
             HttpWebRequest request;
@@ -260,50 +259,54 @@ namespace Wyam.Html
             request.Timeout = 60000; // 60 seconds
 
             // Perform request as HEAD
-            HttpWebResponse response;
-            request.Method = "HEAD";
+            HttpWebResponse response = null;
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-                response.Close();
-            }
-            catch (WebException)
-            {
-                response = null;
-            }
+                request.Method = "HEAD";
+                try
+                {
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException)
+                {
+                    response = null;
+                }
 
-            // Check the status code
-            if (response != null)
-            {
+                // Check the status code
+                if (response != null)
+                {
+                    if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
+                    {
+                        Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
+                        return true;
+                    }
+                }
+
+                // Try one more time as GET
+                request.Method = "GET";
+                try
+                {
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException ex)
+                {
+                    Trace.Warning($"Validation failure for absolute link {uri}: {ex.Message}");
+                    return false;
+                }
+
+                // Check the status code
                 if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
                 {
                     Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
                     return true;
                 }
-            }
-
-            // Try one more time as GET
-            request.Method = "GET";
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-                response.Close();
-            }
-            catch (WebException ex)
-            {
-                Trace.Warning($"Validation failure for absolute link {uri}: {ex.Message}");
+                Trace.Warning($"Validation failure for absolute link {uri}: returned status code {(int)response.StatusCode} {response.StatusCode}");
                 return false;
             }
-
-            // Check the status code
-            if ((int)response.StatusCode >= 100 && (int)response.StatusCode < 400)
+            finally
             {
-                Trace.Verbose($"Validated absolute link {uri} with status code {(int)response.StatusCode} {response.StatusCode}");
-                return true;
+                response?.Close();
             }
-            Trace.Warning($"Validation failure for absolute link {uri}: returned status code {(int)response.StatusCode} {response.StatusCode}");
-
-            return false;
         }
 
         private static void AddOrUpdateLink(string link, IElement element, FilePath source, ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links)
@@ -312,7 +315,8 @@ namespace Wyam.Html
             {
                 return;
             }
-            links.AddOrUpdate(link,
+            links.AddOrUpdate(
+                link,
                 _ => new ConcurrentBag<Tuple<FilePath, string>> { Tuple.Create(source, ((IElement)element.Clone(false)).OuterHtml) },
                 (_, list) =>
                 {
@@ -325,7 +329,8 @@ namespace Wyam.Html
         {
             foreach (Tuple<FilePath, string> link in links)
             {
-                failures.AddOrUpdate(link.Item1,
+                failures.AddOrUpdate(
+                    link.Item1,
                     _ => new ConcurrentBag<string> { link.Item2 },
                     (_, list) =>
                     {

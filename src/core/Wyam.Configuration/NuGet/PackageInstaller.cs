@@ -51,14 +51,14 @@ namespace Wyam.Configuration.NuGet
 
         public DirectoryPath PackagesPath
         {
-            get { return _packagesPath; }
+            get
+            {
+                return _packagesPath;
+            }
+
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(PackagesPath));
-                }
-                _packagesPath = value;
+                _packagesPath = value ?? throw new ArgumentNullException(nameof(PackagesPath));
             }
         }
 
@@ -196,7 +196,7 @@ namespace Wyam.Configuration.NuGet
                     {
                         Trace.Verbose($"Exception while resolving package versions: {ex.Message}");
                         Trace.Warning("Error while resolving package versions, attempting without remote repositories");
-                        installationRepositories = new[] {localRepository};
+                        installationRepositories = new[] { localRepository };
                         ResolveVersions(localRepository, Array.Empty<SourceRepository>());
                     }
 

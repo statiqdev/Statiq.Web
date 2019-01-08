@@ -55,11 +55,7 @@ namespace Wyam.Core.Modules.Control
         /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to output.</param>
         public Documents(ContextConfig documents)
         {
-            if (documents == null)
-            {
-                throw new ArgumentNullException(nameof(documents));
-            }
-            _contextDocuments = documents;
+            _contextDocuments = documents ?? throw new ArgumentNullException(nameof(documents));
         }
 
         /// <summary>
@@ -72,11 +68,7 @@ namespace Wyam.Core.Modules.Control
         /// output for each input document.</param>
         public Documents(DocumentConfig documents)
         {
-            if (documents == null)
-            {
-                throw new ArgumentNullException(nameof(documents));
-            }
-            _documentDocuments = documents;
+            _documentDocuments = documents ?? throw new ArgumentNullException(nameof(documents));
         }
 
         /// <summary>

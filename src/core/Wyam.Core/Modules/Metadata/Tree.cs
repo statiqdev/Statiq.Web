@@ -80,14 +80,13 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     segments.RemoveAt(segments.Count - 1);
                 }
-                return segments;
+                return segments.Cast<object>().ToArray();
             };
             _placeholderFactory = (treePath, items, context) =>
             {
-                items.Add(new MetadataItem(
-                    Keys.RelativeFilePath,
-                    new FilePath(string.Join("/", treePath.Concat(new[] { "index.html" })))));
-                return context.GetDocument(items);
+                FilePath source = new FilePath(string.Join("/", treePath.Concat(new[] { "index.html" })));
+                items.Add(new MetadataItem(Keys.RelativeFilePath, source));
+                return context.GetDocument(context.FileSystem.GetInputFile(source).Path.FullPath, items);
             };
             _sort = (x, y) => Comparer.Default.Compare(
                 x.Get<object[]>(Keys.TreePath)?.LastOrDefault(),
@@ -101,16 +100,14 @@ namespace Wyam.Core.Modules.Metadata
         /// and the execution context which can be used to create a new document. If the factory function
         /// returns null, a new document with the tree metadata is created.
         /// </summary>
+        /// <remarks>
+        /// The default placeholder factory creates a document at the current tree path with a file name of <c>index.html</c>.
+        /// </remarks>
         /// <param name="factory">The factory function.</param>
         /// <returns>The current module instance.</returns>
         public Tree WithPlaceholderFactory(Func<object[], MetadataItems, IExecutionContext, IDocument> factory)
         {
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
-
-            _placeholderFactory = factory;
+            _placeholderFactory = factory ?? throw new ArgumentNullException(nameof(factory));
             return this;
         }
 
@@ -123,12 +120,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithSort(Comparison<IDocument> sort)
         {
-            if (sort == null)
-            {
-                throw new ArgumentNullException(nameof(sort));
-            }
-
-            _sort = sort;
+            _sort = sort ?? throw new ArgumentNullException(nameof(sort));
             return this;
         }
 
@@ -140,12 +132,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithRoots(DocumentConfig isRoot)
         {
-            if (isRoot == null)
-            {
-                throw new ArgumentNullException(nameof(isRoot));
-            }
-
-            _isRoot = isRoot;
+            _isRoot = isRoot ?? throw new ArgumentNullException(nameof(isRoot));
             return this;
         }
 
@@ -157,12 +144,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public Tree WithTreePath(DocumentConfig treePath)
         {
-            if (treePath == null)
-            {
-                throw new ArgumentNullException(nameof(treePath));
-            }
-
-            _treePath = treePath;
+            _treePath = treePath ?? throw new ArgumentNullException(nameof(treePath));
             return this;
         }
 
@@ -282,12 +264,7 @@ namespace Wyam.Core.Modules.Metadata
             // New placeholder node
             public TreeNode(object[] treePath)
             {
-                if (treePath == null)
-                {
-                    throw new ArgumentNullException(nameof(treePath));
-                }
-
-                TreePath = treePath;
+                TreePath = treePath ?? throw new ArgumentNullException(nameof(treePath));
             }
 
             // New node from an input document
@@ -320,7 +297,7 @@ namespace Wyam.Core.Modules.Metadata
                 MetadataItems metadata = new MetadataItems();
                 if (tree._childrenKey != null)
                 {
-                    metadata.Add(tree._childrenKey, new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray()));
+                    metadata.Add(tree._childrenKey, new ReadOnlyCollection<IDocument>(Children.Select(x => x.OutputDocument).ToArray()));
                 }
                 if (tree._parentKey != null)
                 {
@@ -346,9 +323,16 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     metadata.Add(tree._treePathKey, TreePath);
                 }
-                OutputDocument = InputDocument == null
-                    ? (tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata))
-                    : context.GetDocument(InputDocument, metadata);
+                if (InputDocument == null)
+                {
+                    // There's no input document for this node so we need to make a placeholder
+                    metadata.Add(Keys.TreePlaceholder, true);
+                    OutputDocument = tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata);
+                }
+                else
+                {
+                    OutputDocument = context.GetDocument(InputDocument, metadata);
+                }
             }
 
             public object[] GetParentTreePath() => TreePath.Take(TreePath.Length - 1).ToArray();
@@ -362,7 +346,7 @@ namespace Wyam.Core.Modules.Metadata
             private TreeNode GetPrevious()
             {
                 TreeNode previousSibling = GetPreviousSibling();
-                while (previousSibling != null && previousSibling.Children.Count > 0)
+                while (previousSibling?.Children.Count > 0)
                 {
                     previousSibling = previousSibling.Children.Last();
                 }

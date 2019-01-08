@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+using Cake.Common.Tools.DotNetCore;
 using Cake.Core;
 using Cake.Core.IO;
+using Cake.Core.Tooling;
 
 namespace Cake.Wyam
 {
-    using System.Collections.Generic;
-    using Cake.Core.Tooling;
-
     /// <summary>
     /// The Wyam Runner used to execute the Wyam Executable
     /// </summary>
@@ -24,13 +24,30 @@ namespace Cake.Wyam
         /// <param name="processRunner">The process runner.</param>
         /// <param name="locator">The tool locator.</param>
         public WyamRunner(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IToolLocator locator)
-            : base(fileSystem, environment, processRunner, locator)
+            : base(fileSystem, environment, new PrependDotNetProcessRunner(processRunner), locator)
         {
             _environment = environment;
         }
 
+        private class PrependDotNetProcessRunner : IProcessRunner
+        {
+            private readonly IProcessRunner _processRunner;
+
+            public PrependDotNetProcessRunner(IProcessRunner processRunner)
+            {
+                _processRunner = processRunner;
+            }
+
+            public IProcess Start(FilePath filePath, ProcessSettings settings)
+            {
+                // Prepends "dotnet" to the tool path
+                settings.Arguments.Prepend(filePath.FullPath);
+                return _processRunner.Start("dotnet", settings);
+            }
+        }
+
         /// <summary>
-        /// Publishes a Vsce package from the provided settings.
+        /// Runs the tool from the provided settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         public void Run(WyamSettings settings)
@@ -58,7 +75,7 @@ namespace Cake.Wyam
         /// <returns>The tool executable name.</returns>
         protected override IEnumerable<string> GetToolExecutableNames()
         {
-            return new[] { "Wyam.exe" };
+            return new[] { "Wyam.dll" };
         }
 
         private ProcessArgumentBuilder GetArguments(WyamSettings settings)
@@ -94,7 +111,7 @@ namespace Cake.Wyam
                     builder.Append("--force-ext");
                 }
 
-                if (settings.PreviewVirtualDirectory != null)
+                if (!string.IsNullOrWhiteSpace(settings.PreviewVirtualDirectory?.FullPath))
                 {
                     builder.Append("--virtual-dir");
                     builder.AppendQuoted(settings.PreviewVirtualDirectory.FullPath);
@@ -162,6 +179,11 @@ namespace Cake.Wyam
             if (settings.VerifyConfig)
             {
                 builder.Append("--verify-config");
+            }
+
+            if (settings.IgnoreConfigHash || settings.VerifyConfig)
+            {
+                builder.Append("--ignore-config-hash");
             }
 
             if (settings.NoClean)

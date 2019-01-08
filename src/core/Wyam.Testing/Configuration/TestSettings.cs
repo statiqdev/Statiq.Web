@@ -120,7 +120,6 @@ namespace Wyam.Testing.Configuration
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_metadata).GetEnumerator();
 
-
         /// <inheritdoc />
         public int Count => _metadata.Count;
     }

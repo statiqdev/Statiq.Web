@@ -22,7 +22,7 @@
     foreach(Tuple<string, string> page in pages)
     {
         string current = Context.GetLink(Document).StartsWith(page.Item2) ? "current" : null;
-        <li class="@current"><a href="@page.Item2">@page.Item1</a></li>
+        <li class="@current"><a href="@(page.Item2)">@(page.Item1)</a></li>
     }
     if(pages.Count > 0)
     {

@@ -1,25 +1,24 @@
-﻿using MetadataExtractor;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Wyam.Common.Documents;
-using Wyam.Common.Modules;
-using Wyam.Common.Execution;
+using MetadataExtractor;
 using MetadataExtractor.Formats.Xmp;
-using XmpCore;
-using System.Globalization;
-using System.IO;
+using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using XmpCore;
 
 namespace Wyam.Xmp
 {
-
     /// <summary>
     /// Reads XMP data from the input documents and adds it to the document metadata.
     /// </summary>
@@ -35,14 +34,15 @@ namespace Wyam.Xmp
         private readonly bool _delocalizing = true;
         private readonly bool _flatten = true;
         private readonly List<XmpSearchEntry> _toSearch = new List<XmpSearchEntry>();
+
         private readonly Dictionary<string, string> _namespaceAlias =
             new Dictionary<string, string>
             {
-                {"dc", "http://purl.org/dc/elements/1.1/" },
-                {"xmpRights", "http://ns.adobe.com/xap/1.0/rights/"},
-                {"cc", "http://creativecommons.org/ns#"},
-                {"xmp", "http://ns.adobe.com/xap/1.0/"},
-                {"xml", "http://www.w3.org/XML/1998/namespace"},
+                { "dc", "http://purl.org/dc/elements/1.1/" },
+                { "xmpRights", "http://ns.adobe.com/xap/1.0/rights/" },
+                { "cc", "http://creativecommons.org/ns#" },
+                { "xmp", "http://ns.adobe.com/xap/1.0/" },
+                { "xml", "http://www.w3.org/XML/1998/namespace" },
             };
 
         /// <summary>
@@ -117,9 +117,8 @@ namespace Wyam.Xmp
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     using (var stream = input.GetStream())
+                     using (Stream stream = input.GetStream())
                      {
-
                          xmpDirectory = ImageMetadataReader.ReadMetadata(stream).OfType<XmpDirectory>().FirstOrDefault();
                      }
                  }
@@ -127,8 +126,9 @@ namespace Wyam.Xmp
                  {
                      xmpDirectory = null;
                  }
-                 if (xmpDirectory == null) // Try to read sidecarfile
+                 if (xmpDirectory == null)
                  {
+                     // Try to read sidecarfile
                      FilePath sourceFilePath = input.FilePath(Keys.SourceFilePath);
                      if (sourceFilePath != null)
                      {
@@ -150,7 +150,9 @@ namespace Wyam.Xmp
                      {
                          Trace.Warning($"File doe not contain Metadata or sidecar file ({input.SourceString()})");
                          if (_skipElementOnMissingData)
+                         {
                              return null;
+                         }
                      }
                      return input;
                  }
@@ -159,11 +161,11 @@ namespace Wyam.Xmp
 
                  TreeDirectory hierarchicalDirectory = TreeDirectory.GetHierarchicalDirectory(xmpDirectory);
 
-                 foreach (var search in _toSearch)
+                 foreach (XmpSearchEntry search in _toSearch)
                  {
                      try
                      {
-                         TreeDirectory metadata = hierarchicalDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
+                         TreeDirectory metadata = hierarchicalDirectory.Childrean.Find(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
                          {
@@ -186,16 +188,17 @@ namespace Wyam.Xmp
                          {
                              newValues[search.MetadataKey] = value;
                          }
-
                      }
                      catch (Exception e)
                      {
                          Trace.Error($"An exception occurred : {e} {e.Message}");
                          if (search.IsMandatory && _skipElementOnMissingData)
+                         {
                              return null;
+                         }
                      }
                  }
-                 return newValues.Any() ? context.GetDocument(input, newValues) : input;
+                 return newValues.Count > 0 ? context.GetDocument(input, newValues) : input;
              }).Where(x => x != null);
         }
 
@@ -214,7 +217,7 @@ namespace Wyam.Xmp
                     string pathWithouParent = !string.IsNullOrWhiteSpace(Parent?.Element?.Path)
                         ? path.Substring(Parent.Element.Path.Length).TrimStart('/')
                         : path.TrimStart('/');
-                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, "^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
                     return Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]") ? null : pathWithoutNamespace;
                 }
             }
@@ -225,22 +228,32 @@ namespace Wyam.Xmp
                 {
                     string path = Element?.Path;
                     if (string.IsNullOrWhiteSpace(path))
+                    {
                         return -1;
+                    }
 
                     string pathWithouParent;
                     if (!string.IsNullOrWhiteSpace(Parent?.Element?.Path))
+                    {
                         pathWithouParent = path.Substring(Parent.Element.Path.Length).TrimStart('/');
+                    }
                     else
+                    {
                         pathWithouParent = path.TrimStart('/');
-                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+                    }
+
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, "^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
 
                     if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
+                    {
                         return int.Parse(Regex.Replace(pathWithoutNamespace, @"\[(?<index>\d+)\]", "${index}"));
+                    }
+
                     return -1;
                 }
             }
 
-            public bool IsArrayElement => this.ElementArrayIndex != -1;
+            public bool IsArrayElement => ElementArrayIndex != -1;
             public string ElementNameSpace => Element?.Namespace;
             public string ElementValue => Element?.Value;
             public IXmpPropertyInfo Element { get; }
@@ -250,12 +263,11 @@ namespace Wyam.Xmp
 
             private TreeDirectory()
             {
-
             }
 
             private TreeDirectory(IXmpPropertyInfo x)
             {
-                this.Element = x;
+                Element = x;
             }
 
             internal static TreeDirectory GetHierarchicalDirectory(XmpDirectory directories)
@@ -279,14 +291,13 @@ namespace Wyam.Xmp
 
                 foreach (var node in possibleChildrean)
                 {
-                    TreeDirectory[] childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Where(y => node.PossibleChildrean.Contains(y.Element)).Any(y => y.PossibleChildrean.Contains(x))).ToArray();
+                    TreeDirectory[] childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Any(y => node.PossibleChildrean.Contains(y.Element) && y.PossibleChildrean.Contains(x))).ToArray();
 
                     node.Element.Childrean.AddRange(childOfNode);
-                    foreach (var child in childOfNode)
+                    foreach (TreeDirectory child in childOfNode)
                     {
                         child.Parent = node.Element;
                     }
-
                 }
 
                 return root;
@@ -297,7 +308,7 @@ namespace Wyam.Xmp
         {
             if (metadata.Element.Options.IsArray)
             {
-                var arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
+                IOrderedEnumerable<TreeDirectory> arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
                 object[] array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
                 if (_delocalizing && array.All(x => x is LocalizedString))
                 {
@@ -307,24 +318,32 @@ namespace Wyam.Xmp
                     {
                         matchingString = array.OfType<LocalizedString>().FirstOrDefault(x => x.Culture.Equals(systemCulture));
                         if (systemCulture.Parent.Equals(systemCulture))
-                            break; // We are at the Culture Root. so break or run for ever.
+                        {
+                            // We are at the Culture Root. so break or run for ever.
+                            break;
+                        }
                         systemCulture = systemCulture.Parent;
-
-                    } while (matchingString == null);
+                    }
+                    while (matchingString == null);
 
                     if (matchingString != null)
+                    {
                         return matchingString.Value;
+                    }
                 }
                 if (_flatten && array.Length == 1)
+                {
                     return array[0];
+                }
+
                 return array;
             }
             else if (metadata.Element.Options.IsStruct)
             {
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
-                List<TreeDirectory> properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
+                List<TreeDirectory> properties = metadata.Childrean; // directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
 
-                foreach (var prop in properties)
+                foreach (TreeDirectory prop in properties)
                 {
                     obj.Add(prop.ElementName, GetObjectFromMetadata(prop, hirachciDirectory));
                 }
@@ -332,7 +351,7 @@ namespace Wyam.Xmp
             }
             else if (metadata.Element.Options.IsSimple)
             {
-                //xml:lang, de
+                // xml:lang, de
 
                 if (metadata.Element.Options.HasLanguage)
                 {
@@ -348,7 +367,6 @@ namespace Wyam.Xmp
                     }
 
                     return new LocalizedString() { Culture = culture, Value = metadata.ElementValue };
-
                 }
 
                 return metadata.ElementValue;
@@ -369,7 +387,7 @@ namespace Wyam.Xmp
                 return Value;
             }
 
-            public static implicit operator string (LocalizedString localizedString)
+            public static implicit operator string(LocalizedString localizedString)
             {
                 return localizedString.Value;
             }
@@ -382,19 +400,21 @@ namespace Wyam.Xmp
             public XmpSearchEntry(Xmp parent, bool isMandatory, string targetMetadata, string xmpPath)
             {
                 _parent = parent;
-                this.IsMandatory = isMandatory;
-                this.MetadataKey = targetMetadata;
-                this.XmpPath = xmpPath;
-                string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
+                IsMandatory = isMandatory;
+                MetadataKey = targetMetadata;
+                XmpPath = xmpPath;
+                string alias = Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
                 if (!_parent._namespaceAlias.ContainsKey(alias))
+                {
                     throw new ArgumentException($"Namespace alias {alias} unknown.", nameof(xmpPath));
+                }
             }
 
             public string XmpPath { get; }
 
-            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${name}");
+            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${name}");
 
-            public string Namespace => _parent._namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
+            public string Namespace => _parent._namespaceAlias[Regex.Replace(XmpPath, "^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
 
             public string MetadataKey { get; }
             public bool IsMandatory { get; }

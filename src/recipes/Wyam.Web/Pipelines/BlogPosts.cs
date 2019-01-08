@@ -75,7 +75,8 @@ namespace Wyam.Web.Pipelines
                     new FrontMatter(new Yaml.Yaml()),
                     new Execute(ctx => new Markdown.Markdown()
                         .UseConfiguration(settings.MarkdownConfiguration.Invoke<string>(ctx))
-                        .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
+                        .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx))
+                        .PrependLinkRoot(settings.PrependLinkRoot.Invoke<bool>(ctx)))
                 }
             },
             {
@@ -96,17 +97,20 @@ namespace Wyam.Web.Pipelines
                 Published,
                 new ModuleCollection
                 {
-                    new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(settings.PublishedKey)),  // Record whether the publish date came from front matter
-                    new Meta(settings.PublishedKey, (doc, ctx) =>
-                    {
-                        DateTime published;
-                        if (doc.String(Keys.SourceFileName).Length >= 10 && ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
-                        {
-                            return published;
-                        }
-                        Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
-                        return null;
-                    }).OnlyIfNonExisting(),
+                    new If(
+                        (doc, ctx) => doc.ContainsKey(settings.PublishedKey) && ctx.TryParseInputDateTime(doc.String(settings.PublishedKey), out _),
+                        new Meta("FrontMatterPublished", (doc, ctx) => true)) // Record whether the publish date came from front matter
+                        .Else(
+                            new Meta(settings.PublishedKey, (doc, ctx) =>
+                            {
+                                DateTime published;
+                                if (doc.String(Keys.SourceFileName).Length >= 10 && ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
+                                {
+                                    return published;
+                                }
+                                Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
+                                return null;
+                            })),
                     new Where((doc, ctx) =>
                     {
                         if (!doc.ContainsKey(settings.PublishedKey) || doc.Get(settings.PublishedKey) == null)

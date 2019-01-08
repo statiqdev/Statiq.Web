@@ -22,7 +22,7 @@ namespace Wyam.Highlight.Tests
             public void CanHighlightCSharp()
             {
                 // Given
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -74,7 +74,7 @@ namespace Wyam.Highlight.Tests
             [Test]
             public void CanHighlightHtml()
             {
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -115,7 +115,7 @@ namespace Wyam.Highlight.Tests
             {
                 // Given
                 // if we execute razor before this, the code block will be escaped.
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -148,7 +148,7 @@ namespace Wyam.Highlight.Tests
             public void CanHighlightAutoCodeBlocks()
             {
                 // Given
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -184,7 +184,7 @@ namespace Wyam.Highlight.Tests
             public void HighlightFailsForMissingLanguage()
             {
                 // Given
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -225,7 +225,7 @@ namespace Wyam.Highlight.Tests
             public void HighlightSucceedsForMissingLanguageWhenConfiguredNotToWarn()
             {
                 // Given
-                string input = @"
+                const string input = @"
 <html>
 <head>
     <title>Foobar</title>

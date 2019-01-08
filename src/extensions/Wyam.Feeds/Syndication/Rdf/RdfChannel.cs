@@ -24,15 +24,16 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_parent == null ||
-                    !_parent.ImageSpecified)
+                if (_parent?.ImageSpecified != true)
                 {
                     return null;
                 }
-
                 return new RdfResource(_parent.Image);
             }
-            set {  }
+
+            set
+            {
+            }
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace Wyam.Feeds.Syndication.Rdf
         public RdfSequence Items
         {
             get { return new RdfSequence(_parent); }
-            set {  }
+            set { }
         }
 
         /// <summary>
@@ -58,15 +59,16 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_parent == null ||
-                    !_parent.TextInputSpecified)
+                if (_parent?.TextInputSpecified != true)
                 {
                     return null;
                 }
-
                 return new RdfResource(_parent.TextInput);
             }
-            set { }
+
+            set
+            {
+            }
         }
 
         internal void SetParent(RdfFeed feed)

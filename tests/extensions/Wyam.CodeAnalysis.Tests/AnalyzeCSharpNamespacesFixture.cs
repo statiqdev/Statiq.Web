@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -27,7 +19,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void GetsTopLevelNamespaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -51,7 +43,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void TopLevelNamespaceContainsDirectlyNestedNamespaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -82,7 +74,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NestedNamespaceContainsDirectlyNestedNamespaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -113,7 +105,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void FullNameDoesNotContainFullHierarchy()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -137,7 +129,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void QualifiedNameContainsFullHierarchy()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -161,7 +153,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void DisplayNameContainsFullHierarchy()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -185,7 +177,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NamespaceKindIsNamespace()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -209,7 +201,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NestedNamespacesReferenceParents()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                     }
@@ -234,7 +226,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NamespacesContainTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red
@@ -273,7 +265,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NamespacesDoNotContainNestedTypes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Blue
@@ -301,7 +293,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void WritePathIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         namespace Bar

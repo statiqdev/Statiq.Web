@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis.Tests
 {
@@ -29,7 +23,7 @@ namespace Wyam.CodeAnalysis.Tests
                 try
                 {
                     // Given
-                    string code = @"
+                    const string code = @"
                         namespace Foo
                         {
                             public class Blue
@@ -67,7 +61,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ClassOperatorsContainsOperators()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -100,7 +94,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ContainingTypeIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -126,7 +120,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void WritePathIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red
@@ -161,7 +155,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void DisplayNameIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     class Yellow
                     {
                         public void X()
@@ -194,7 +188,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ReturnTypeIsCorrect()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -237,7 +231,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ReturnTypeParamReferencesClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Red<T>
@@ -264,7 +258,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ClassMemberExcludedByPredicate()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public class Blue
@@ -300,7 +294,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ParameterType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     class Yellow
                     {
                         public void X(int z)
@@ -323,7 +317,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ParameterParamsType()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     class Yellow
                     {
                         public void X(params int[] z)
@@ -339,9 +333,9 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                var x = GetParameter(results, "Yellow", "X", "z");
-                var y = (IDocument)x["Type"];
-                var z = y["Name"];
+                IDocument x = GetParameter(results, "Yellow", "X", "z");
+                IDocument y = (IDocument)x["Type"];
+                object z = y["Name"];
                 Assert.AreEqual("int[]", ((IDocument)GetParameter(results, "Yellow", "X", "z")["Type"])["Name"]);
             }
         }

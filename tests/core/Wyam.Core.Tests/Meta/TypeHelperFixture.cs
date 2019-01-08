@@ -342,7 +342,7 @@ namespace Wyam.Core.Tests.Meta
             public void StringConvertsToUri()
             {
                 // Given
-                string value = "http://google.com/";
+                const string value = "http://google.com/";
 
                 // When
                 Uri uri;
@@ -357,7 +357,7 @@ namespace Wyam.Core.Tests.Meta
             public void StringConvertsToDateTime()
             {
                 // Given
-                string value = "2016-10-17 08:00";
+                const string value = "2016-10-17 08:00";
 
                 // When
                 DateTime dateTime;

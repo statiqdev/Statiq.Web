@@ -186,7 +186,7 @@ namespace Wyam.Html
                 IHtmlDocument htmlDocument = input.ParseHtml(parser);
                 if (htmlDocument == null)
                 {
-                    return new [] { input };
+                    return new[] { input };
                 }
 
                 // Evaluate the query selector
@@ -195,7 +195,7 @@ namespace Wyam.Html
                     if (!string.IsNullOrWhiteSpace(_querySelector))
                     {
                         IElement[] elements = _first
-                            ? new[] {htmlDocument.QuerySelector(_querySelector)}
+                            ? new[] { htmlDocument.QuerySelector(_querySelector) }
                             : htmlDocument.QuerySelectorAll(_querySelector).ToArray();
                         if (elements.Length > 0 && elements[0] != null)
                         {

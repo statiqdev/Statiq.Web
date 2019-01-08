@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
-    <!-- Need to ensure x64 due to Buildalyzer -> MSBuild -> NuGet.Build.Tasks.dll, see #699 -->
-    <!-- Also to make sure correct x64 libuv gets copied to output, see https://github.com/aspnet/KestrelHttpServer/issues/1292#issuecomment-278871702 -->
-    <PlatformTarget>x64</PlatformTarget>
+    <PackAsTool>true</PackAsTool>
+    <PackageId>Wyam.Tool</PackageId>
+    <ToolCommandName>wyam</ToolCommandName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />
@@ -13,23 +13,20 @@
     <ProjectReference Include="..\..\core\Wyam.Hosting\Wyam.Hosting.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- These are needed because they contain unmanaged libraries and we don't know how to load those dynamically at runtime yet - see #586 -->
-    <PackageReference Include="SharpScss" Version="1.3.8" />
-    <PackageReference Include="Libuv" Version="1.10.0" />
+    <PackageReference Include="SharpScss" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.CommandLine">
       <HintPath>..\..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
-  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != '' AND !($(DesignTimeBuild) == true OR $(BuildingProject) != true)" AfterTargets="AfterBuild">
-    <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />
+  <Target Name="SignBuild" Condition="'$(OS)' == 'Windows_NT' AND '$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != '' AND !($(DesignTimeBuild) == true OR $(BuildingProject) != true)" AfterTargets="AfterBuild">
+    <!-- https://www.digicert.com/code-signing/signcode-signtool-command-line.htm -->
+    <PropertyGroup>
+      <SignCommand>"$(SIGNTOOL)" sign /f "$(ProjectDir)..\..\..\digicert-davidglick.pfx" /p $(WYAM_CERTPASS) /fd SHA256 /td SHA256 /tr "http://timestamp.digicert.com" /d "Wyam" /du "https://wyam.io"</SignCommand>
+    </PropertyGroup>
+    <!-- Sign both the bin and obj files since some targets like Publish and Pack copy from obj -->
+    <Exec Command="$(SignCommand) &quot;$(TargetPath)&quot;" />
+    <Exec Command="$(SignCommand) &quot;$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)&quot;" />
   </Target>
 </Project>

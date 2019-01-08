@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,20 @@ using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using HDN = HandlebarsDotNet;
 
+[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
+
 namespace Wyam.Handlebars
 {
     public class Handlebars : IModule
     {
         private static string Json(object value, out string[] errors)
         {
-            var result = new List<string>();
+            List<string> result = new List<string>();
 
             var jsonSettings = new JsonSerializerSettings
             {

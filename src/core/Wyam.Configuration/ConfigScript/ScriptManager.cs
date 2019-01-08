@@ -49,7 +49,8 @@ namespace Wyam.Configuration.ConfigScript
 
             // Get the methods to instantiate each module
             Dictionary<string, string> moduleNames = new Dictionary<string, string>();
-            string moduleMethods = string.Join(Environment.NewLine,
+            string moduleMethods = string.Join(
+                Environment.NewLine,
                 moduleTypes.Select(x => GenerateModuleConstructorMethods(x, moduleNames)));
 
             // Return the fully parsed script
@@ -140,7 +141,8 @@ namespace Wyam.Configuration.ConfigScript
                     parameterOptions: SymbolDisplayParameterOptions.IncludeName
                                       | SymbolDisplayParameterOptions.IncludeParamsRefOut,
                     memberOptions: SymbolDisplayMemberOptions.IncludeParameters));
-                stringBuilder.AppendFormat(@"
+                stringBuilder.AppendFormat(
+                    @"
                     {0} {1}{2}
                     {{
                         return new {0}{3};  
@@ -154,7 +156,8 @@ namespace Wyam.Configuration.ConfigScript
             // Add a default constructor if we need to
             if (!foundInstanceConstructor)
             {
-                stringBuilder.AppendFormat(@"
+                stringBuilder.AppendFormat(
+                    @"
                     {0} {1}()
                     {{
                         return new {0}();  
@@ -169,9 +172,9 @@ namespace Wyam.Configuration.ConfigScript
         public void Compile(IReadOnlyCollection<Assembly> referenceAssemblies)
         {
             // Get the compilation
-            var parseOptions = new CSharpParseOptions();
-            var sourceText = SourceText.From(Code, Encoding.UTF8);
-            var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
+            CSharpParseOptions parseOptions = new CSharpParseOptions();
+            SourceText sourceText = SourceText.From(Code, Encoding.UTF8);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).
                 WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
                 {
@@ -180,20 +183,22 @@ namespace Wyam.Configuration.ConfigScript
                     { "CS1701", ReportDiagnostic.Suppress },
                     { "CS1702", ReportDiagnostic.Suppress },
                     { "CS1705", ReportDiagnostic.Suppress }
-                 });
-            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
+                });
+
+            // For some reason, Roslyn really wants these added by filename
+            // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+            string assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                AssemblyName,
+                new[] { syntaxTree },
                 referenceAssemblies
                     .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
                     .Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
                     .AddReferences(
-                        // For some reason, Roslyn really wants these added by filename
-                        // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
                         MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
                         MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
                         MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
-                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
-            );
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")));
 
             // Emit the assembly
             using (MemoryStream ms = new MemoryStream())
@@ -207,7 +212,9 @@ namespace Wyam.Configuration.ConfigScript
                     .ToList();
                 if (warningMessages.Count > 0)
                 {
-                    Trace.Warning("{0} warnings compiling configuration:{1}{2}", warningMessages.Count,
+                    Trace.Warning(
+                        "{0} warnings compiling configuration:{1}{2}",
+                        warningMessages.Count,
                         Environment.NewLine,
                         string.Join(Environment.NewLine, warningMessages));
                 }
@@ -219,7 +226,9 @@ namespace Wyam.Configuration.ConfigScript
                     .ToList();
                 if (errorMessages.Count > 0)
                 {
-                    Trace.Error("{0} errors compiling configuration:{1}{2}", errorMessages.Count,
+                    Trace.Error(
+                        "{0} errors compiling configuration:{1}{2}",
+                        errorMessages.Count,
                         Environment.NewLine,
                         string.Join(Environment.NewLine, errorMessages));
                 }

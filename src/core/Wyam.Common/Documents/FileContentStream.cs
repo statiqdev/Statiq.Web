@@ -17,11 +17,7 @@ namespace Wyam.Common.Documents
 
         public FileContentStream(IFile file)
         {
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-            _file = file;
+            _file = file ?? throw new ArgumentNullException(nameof(file));
         }
 
         protected override void Dispose(bool disposing)
@@ -50,7 +46,7 @@ namespace Wyam.Common.Documents
             CheckDisposed();
             return GetStream().InitializeLifetimeService();
         }
-        
+
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             CheckDisposed();

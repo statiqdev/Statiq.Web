@@ -16,7 +16,7 @@ namespace Wyam.Feeds.Syndication.Rss
         private string _title = null;
         private Uri _link = null;
 
-        //optional
+        // optional
         private int _width = int.MinValue;
         private int _height = int.MinValue;
 
@@ -62,13 +62,21 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("width")]
         public int Width
         {
-            get { return _width; }
+            get
+            {
+                return _width;
+            }
+
             set
             {
                 if (value <= 0)
+                {
                     _width = int.MinValue;
+                }
                 else
+                {
                     _width = value;
+                }
             }
         }
 
@@ -79,23 +87,31 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement("height")]
         public int Height
         {
-            get { return _height; }
+            get
+            {
+                return _height;
+            }
+
             set
             {
                 if (value <= 0)
+                {
                     _height = int.MinValue;
+                }
                 else
+                {
                     _height = value;
+                }
             }
         }
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Url) &&
-                   string.IsNullOrEmpty(Title) &&
-                   string.IsNullOrEmpty(Link) &&
-                   Width <= 0 ||
-                   Height <= 0;
+            return (string.IsNullOrEmpty(Url)
+                && string.IsNullOrEmpty(Title)
+                && string.IsNullOrEmpty(Link)
+                && Width <= 0)
+                || Height <= 0;
         }
 
         Uri IUriProvider.Uri => _url;

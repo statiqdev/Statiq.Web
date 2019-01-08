@@ -7,13 +7,14 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 SkipDays
-    ///     http://blogs.law.harvard.edu/tech/skipHoursDays
+    /// http://blogs.law.harvard.edu/tech/skipHoursDays
     /// </summary>
     [Serializable]
     public class RssSkipDays : RssBase
     {
-        private static readonly int[] DayMasks = new int[7];
         private const int EmptyDays = 0x0;
+
+        private static readonly int[] DayMasks = new int[7];
 
         private BitVector32 _days = new BitVector32(EmptyDays);
 
@@ -27,7 +28,9 @@ namespace Wyam.Feeds.Syndication.Rss
             }
         }
 
-        public RssSkipDays() { }
+        public RssSkipDays()
+        {
+        }
 
         [XmlIgnore]
         public bool this[DayOfWeek day]

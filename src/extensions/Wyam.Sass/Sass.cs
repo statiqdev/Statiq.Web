@@ -38,8 +38,8 @@ namespace Wyam.Sass
     /// <category>Templates</category>
     public class Sass : IModule
     {
-        private DocumentConfig _inputPath = DefaultInputPath;
         private readonly List<string> _includePaths = new List<string>();
+        private DocumentConfig _inputPath = DefaultInputPath;
         private bool _includeSourceComments = false;
         private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
         private bool _generateSourceMap = false;
@@ -141,7 +141,7 @@ namespace Wyam.Sass
                     Trace.Verbose($"Processing Sass for {input.SourceString()}");
 
                     FilePath inputPath = _inputPath.Invoke<FilePath>(input, context);
-                    if (inputPath == null || !inputPath.IsAbsolute)
+                    if (inputPath?.IsAbsolute != true)
                     {
                         inputPath = context.FileSystem.GetInputFile(new FilePath(Path.GetRandomFileName())).Path;
                         Trace.Warning($"No input path found for document {input.SourceString()}, using {inputPath.FileName.FullPath}");
@@ -172,8 +172,8 @@ namespace Wyam.Sass
                         context.GetContentStream(result.Css ?? string.Empty),
                         new MetadataItems
                         {
-                            {Keys.RelativeFilePath, cssPath},
-                            {Keys.WritePath, cssPath}
+                            { Keys.RelativeFilePath, cssPath },
+                            { Keys.WritePath, cssPath }
                         });
 
                     IDocument sourceMapDocument = null;
@@ -185,12 +185,12 @@ namespace Wyam.Sass
                             context.GetContentStream(result.SourceMap),
                             new MetadataItems
                             {
-                                {Keys.RelativeFilePath, sourceMapPath},
-                                {Keys.WritePath, sourceMapPath}
+                                { Keys.RelativeFilePath, sourceMapPath },
+                                { Keys.WritePath, sourceMapPath }
                             });
                     }
 
-                    return new[] {cssDocument, sourceMapDocument};
+                    return new[] { cssDocument, sourceMapDocument };
                 })
                 .Where(x => x != null);
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Testing;
+using Wyam.Testing.Attributes;
 
 namespace Wyam.Common.Tests.IO
 {
@@ -84,10 +85,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c", "a/b/c")]
             [TestCase("foo.txt", "foo.txt")]
             [TestCase("foo", "foo")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c", "a/b/c")]
-            [TestCase("c:/a/b/c", "a/b/c")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c", "a/b/c")]
+            [WindowsTestCase("c:/a/b/c", "a/b/c")]
             public void ShouldReturnRootRelativePath(string fullPath, string expected)
             {
                 // Given
@@ -106,10 +105,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c")]
             [TestCase("foo.txt")]
             [TestCase("foo")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c")]
-            [TestCase("c:/a/b/c")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c")]
+            [WindowsTestCase("c:/a/b/c")]
             public void ShouldReturnSelfForExplicitRelativePath(string fullPath)
             {
                 // Given
@@ -330,9 +327,7 @@ namespace Wyam.Common.Tests.IO
         public class CollapseTests : FilePathFixture
         {
             [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
-#if !UNIX
-            [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
-#endif
+            [WindowsTestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
             public void ShouldCollapse(string fullPath, string expected)
             {
                 // Given

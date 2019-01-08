@@ -168,13 +168,13 @@ namespace Wyam.Feeds.Syndication.Atom
             set { _summary = value; }
         }
 
-        [XmlElement("in-reply-to", Namespace=ThreadingNamespace)]
-        public readonly List<AtomInReplyTo> InReplyToReferences = new List<AtomInReplyTo>();
+        [XmlElement("in-reply-to", Namespace = ThreadingNamespace)]
+        public List<AtomInReplyTo> InReplyToReferences { get; } = new List<AtomInReplyTo>();
 
         [XmlIgnore]
         public bool InReplyToReferencesSpecified
         {
-            get { return (InReplyToReferences.Count > 0); }
+            get { return InReplyToReferences.Count > 0; }
             set { }
         }
 
@@ -351,8 +351,8 @@ namespace Wyam.Feeds.Syndication.Atom
                     if (link.Relation == AtomLinkRelation.Enclosure)
                     {
                         string type = link.Type;
-                        if (!string.IsNullOrEmpty(type) &&
-                            type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
+                        if (!string.IsNullOrEmpty(type)
+                            && type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
                         {
                             return ((IUriProvider)link).Uri;
                         }
@@ -394,8 +394,8 @@ namespace Wyam.Feeds.Syndication.Atom
                 {
                     foreach (AtomLink link in Links)
                     {
-                        if (link.Relation == AtomLinkRelation.Replies &&
-                        link.ThreadCountSpecified)
+                        if (link.Relation == AtomLinkRelation.Replies
+                        && link.ThreadCountSpecified)
                         {
                             return link.ThreadCount;
                         }
@@ -413,8 +413,8 @@ namespace Wyam.Feeds.Syndication.Atom
                 {
                     foreach (AtomLink link in Links)
                     {
-                        if (link.Relation == AtomLinkRelation.Replies &&
-                        link.ThreadUpdatedSpecified)
+                        if (link.Relation == AtomLinkRelation.Replies
+                        && link.ThreadUpdatedSpecified)
                         {
                             return link.ThreadUpdated.Value;
                         }

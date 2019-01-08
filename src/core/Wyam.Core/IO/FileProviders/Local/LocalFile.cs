@@ -51,7 +51,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             // Use the file system APIs if destination is also in the file system
             if (destination is LocalFile)
             {
-                LocalFileProvider.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
+                RetryHelper.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
             }
             else
             {
@@ -76,7 +76,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             // Use the file system APIs if destination is also in the file system
             if (destination is LocalFile)
             {
-                LocalFileProvider.Retry(() => _file.MoveTo(destination.Path.FullPath));
+                RetryHelper.Retry(() => _file.MoveTo(destination.Path.FullPath));
             }
             else
             {
@@ -92,10 +92,10 @@ namespace Wyam.Core.IO.FileProviders.Local
             }
         }
 
-        public void Delete() => LocalFileProvider.Retry(() => _file.Delete());
+        public void Delete() => RetryHelper.Retry(() => _file.Delete());
 
         public string ReadAllText() =>
-            LocalFileProvider.Retry(() => System.IO.File.ReadAllText(_file.FullName));
+            RetryHelper.Retry(() => System.IO.File.ReadAllText(_file.FullName));
 
         public void WriteAllText(string contents, bool createDirectory = true)
         {
@@ -103,11 +103,11 @@ namespace Wyam.Core.IO.FileProviders.Local
             {
                 Directory.Create();
             }
-            LocalFileProvider.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
+            RetryHelper.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
         }
 
         public Stream OpenRead() =>
-            LocalFileProvider.Retry(() => _file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+            RetryHelper.Retry(() => _file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
         public Stream OpenWrite(bool createDirectory = true)
         {
@@ -115,7 +115,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             {
                 Directory.Create();
             }
-            return LocalFileProvider.Retry(() => _file.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
+            return RetryHelper.Retry(() => _file.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
         }
 
         public Stream OpenAppend(bool createDirectory = true)
@@ -124,7 +124,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             {
                 Directory.Create();
             }
-            return LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
+            return RetryHelper.Retry(() => _file.Open(FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
         }
 
         public Stream Open(bool createDirectory = true)
@@ -133,7 +133,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             {
                 Directory.Create();
             }
-            return LocalFileProvider.Retry(() => _file.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite));
+            return RetryHelper.Retry(() => _file.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite));
         }
     }
 }

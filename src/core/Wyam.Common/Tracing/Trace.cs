@@ -109,6 +109,10 @@ namespace Wyam.Common.Tracing
             }
         }
 
+        /// <summary>
+        /// Indents all trace messages until the returned <see cref="IIndentedTraceEvent"/> is disposed.
+        /// </summary>
+        /// <returns>A <see cref="IIndentedTraceEvent"/> that should be disposed when indenting is complete.</returns>
         public static IIndentedTraceEvent WithIndent() => new IndentedTraceEvent();
 
         SourceLevels ITrace.Level

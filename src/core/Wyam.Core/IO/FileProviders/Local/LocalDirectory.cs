@@ -42,15 +42,15 @@ namespace Wyam.Core.IO.FileProviders.Local
             _directory = new DirectoryInfo(_path.FullPath);
         }
 
-        public void Create() => LocalFileProvider.Retry(() => _directory.Create());
+        public void Create() => RetryHelper.Retry(() => _directory.Create());
 
-        public void Delete(bool recursive) => LocalFileProvider.Retry(() => _directory.Delete(recursive));
+        public void Delete(bool recursive) => RetryHelper.Retry(() => _directory.Delete(recursive));
 
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            LocalFileProvider.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new LocalDirectory(directory.FullName)));
+            RetryHelper.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new LocalDirectory(directory.FullName)));
 
         public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            LocalFileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new LocalFile(file.FullName)));
+            RetryHelper.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new LocalFile(file.FullName)));
 
         public IDirectory GetDirectory(DirectoryPath path)
         {

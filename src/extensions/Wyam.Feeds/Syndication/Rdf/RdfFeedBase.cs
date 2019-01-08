@@ -51,20 +51,19 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_image == null)
-                {
-                    _image = new RdfImage();
-                }
-
-                return _image;
+                return _image ?? (_image = new RdfImage());
             }
-            set { _image = value; }
+
+            set
+            {
+                _image = value;
+            }
         }
 
         [XmlIgnore]
         public bool ImageSpecified
         {
-            get { return (_image != null && !_image.IsEmpty()); }
+            get { return _image?.IsEmpty() == false; }
             set { }
         }
 
@@ -77,20 +76,19 @@ namespace Wyam.Feeds.Syndication.Rdf
         {
             get
             {
-                if (_textInput == null)
-                {
-                    _textInput = new RdfTextInput();
-                }
-
-                return _textInput;
+                return _textInput ?? (_textInput = new RdfTextInput());
             }
-            set { _textInput = value; }
+
+            set
+            {
+                _textInput = value;
+            }
         }
 
         [XmlIgnore]
         public bool TextInputSpecified
         {
-            get { return (_textInput != null && !_textInput.IsEmpty()); }
+            get { return _textInput?.IsEmpty() == false; }
             set { }
         }
     }

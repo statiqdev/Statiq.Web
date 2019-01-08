@@ -93,13 +93,13 @@ namespace Wyam.Feeds.Syndication.Rdf
             }
         }
 
-        [XmlElement("item", Namespace=NamespaceRss10)]
-        public readonly List<RdfItem> Items = new List<RdfItem>();
+        [XmlElement("item", Namespace = NamespaceRss10)]
+        public List<RdfItem> Items { get; } = new List<RdfItem>();
 
         [XmlIgnore]
         public bool ItemsSpecified
         {
-            get { return (Items.Count > 0); }
+            get { return Items.Count > 0; }
             set { }
         }
 
@@ -137,7 +137,7 @@ namespace Wyam.Feeds.Syndication.Rdf
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
         {
-            namespaces.Add("", NamespaceRss10);
+            namespaces.Add(string.Empty, NamespaceRss10);
             namespaces.Add("rdf", NamespaceRdf);
 
             Channel.AddNamespaces(namespaces);

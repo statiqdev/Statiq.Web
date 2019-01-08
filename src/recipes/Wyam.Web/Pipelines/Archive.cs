@@ -63,7 +63,7 @@ namespace Wyam.Web.Pipelines
                     {
                         new Execute(ctx =>
                             new GroupByMany(settings.Group, new Documents().FromPipelines(settings.Pipelines))
-                                .WithComparer(settings.CaseInsensitiveGroupComparer != null && settings.CaseInsensitiveGroupComparer.Invoke<bool>(ctx) ? StringComparer.OrdinalIgnoreCase : null)
+                                .WithComparer(settings.CaseInsensitiveGroupComparer?.Invoke<bool>(ctx) == true ? StringComparer.OrdinalIgnoreCase : null)
                                 .WithEmptyOutputIfNoGroups()),
                         new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                         new ForEach((IModule)GetIndexPageModules(

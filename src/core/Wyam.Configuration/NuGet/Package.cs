@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Common;
-using NuGet.Versioning;
 using NuGet.Configuration;
-using NuGet.Protocol.Core.Types;
-using System.Threading;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
+using NuGet.Versioning;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Configuration.NuGet
@@ -30,8 +30,15 @@ namespace Wyam.Configuration.NuGet
 
         private NuGetVersion _versionMatch;
 
-        public Package(NuGetFramework currentFramework, string packageId, IReadOnlyList<SourceRepository> sourceRepositories,
-            string versionRange, bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
+        public Package(
+            NuGetFramework currentFramework,
+            string packageId,
+            IReadOnlyList<SourceRepository> sourceRepositories,
+            string versionRange,
+            bool getLatest,
+            bool allowPrereleaseVersions,
+            bool allowUnlisted,
+            bool exclusive)
         {
             if (packageId == null)
             {
@@ -59,8 +66,11 @@ namespace Wyam.Configuration.NuGet
             _exclusive = exclusive;
         }
 
-        public async Task ResolveVersion(SourceRepository localRepository,
-            IReadOnlyList<SourceRepository> remoteRepositories, bool updatePackages, ILogger logger)
+        public async Task ResolveVersion(
+            SourceRepository localRepository,
+            IReadOnlyList<SourceRepository> remoteRepositories,
+            bool updatePackages,
+            ILogger logger)
         {
             string versionRangeString = _versionRange == null ? string.Empty : " " + _versionRange;
             Trace.Verbose($"Resolving package version for {_packageId}{versionRangeString} (with dependencies)");
@@ -79,7 +89,7 @@ namespace Wyam.Configuration.NuGet
             {
                 // The package either wasn't installed locally, the local version didn't match, or we requested a package update
                 // Get the latest remote version, but only if we actually have remote repositories
-                if (sourceRepositories != null && sourceRepositories.Count > 0)
+                if (sourceRepositories?.Count > 0)
                 {
                     versionMatch = await GetLatestMatchingVersion(sourceRepositories, logger);
                 }
@@ -114,9 +124,14 @@ namespace Wyam.Configuration.NuGet
                     ResolutionContext resolutionContext = new ResolutionContext(
                         DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
                     INuGetProjectContext projectContext = new NuGetProjectContext();
-                    await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
-                        packageIdentity, resolutionContext, projectContext,
-                        sourceRepositories, Array.Empty<SourceRepository>(), CancellationToken.None);
+                    await packageManager.InstallPackageAsync(
+                        packageManager.PackagesFolderNuGetProject,
+                        packageIdentity,
+                        resolutionContext,
+                        projectContext,
+                        sourceRepositories,
+                        Array.Empty<SourceRepository>(),
+                        CancellationToken.None);
                     Trace.Verbose($"Installed package {_packageId} {_versionMatch.ToNormalizedString()}");
                 }
             }
@@ -149,7 +164,7 @@ namespace Wyam.Configuration.NuGet
                         _packageId, _currentFramework, sourceCacheContext, logger, CancellationToken.None);
                     return dependencyInfo
                         .Select(x => x.Version)
-                        .Where(x => x != null && (_versionRange == null || _versionRange.Satisfies(x)))
+                        .Where(x => x != null && (_versionRange?.Satisfies(x) != false))
                         .DefaultIfEmpty()
                         .Max();
                 }

@@ -24,10 +24,10 @@ namespace Wyam.Feeds.Syndication.Rdf
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Title) &&
-                   string.IsNullOrEmpty(Description) &&
-                   string.IsNullOrEmpty(Link) &&
-                   string.IsNullOrEmpty(Name);
+            return string.IsNullOrEmpty(Title)
+                   && string.IsNullOrEmpty(Description)
+                   && string.IsNullOrEmpty(Link)
+                   && string.IsNullOrEmpty(Name);
         }
     }
 }

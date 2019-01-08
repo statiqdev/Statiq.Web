@@ -101,13 +101,13 @@ namespace Wyam.Core.Tests.Execution
                 new Execute(
                     (x, ctx) => new[]
                     {
-                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString())),
-                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString()))
+                        ctx.GetDocument(x, ctx.GetContentStream(c++.ToString())),
+                        ctx.GetDocument(x, ctx.GetContentStream(c++.ToString()))
                     }, false),
                 new Execute(
                     (x, ctx) => new[]
                     {
-                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString()))
+                        ctx.GetDocument(x, ctx.GetContentStream(c++.ToString()))
                     }, false),
                 new Core.Modules.Metadata.Meta("Content", (x, y) => x.Content));
 

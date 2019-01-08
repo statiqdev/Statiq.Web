@@ -22,8 +22,6 @@ namespace Wyam.Feeds.Syndication.Extensions
         /// <summary>
         /// Gets and sets the values for DublinCore extensions
         /// </summary>
-        /// <param name="term"></param>
-        /// <returns></returns>
         public string this[TermName term]
         {
             get
@@ -32,10 +30,13 @@ namespace Wyam.Feeds.Syndication.Extensions
                 {
                     return null;
                 }
-
                 return _dcTerms[term].InnerText;
             }
-            set { Add(term, value); }
+
+            set
+            {
+                Add(term, value);
+            }
         }
 
         public ICollection<TermName> Terms => _dcTerms.Keys;
@@ -59,12 +60,14 @@ namespace Wyam.Feeds.Syndication.Extensions
                         ExtensibleBase.ConvertToString(date.Value) :
                         null;
                 }
-                catch {}
+                catch
+                {
+                }
             }
 
             XmlElement element = NodeCreator.CreateElement(
                 Prefix,
-                term.ToString().ToLowerInvariant(), //TODO: use the XmlEnumAttribute to convert the term name
+                term.ToString().ToLowerInvariant(), // TODO: use the XmlEnumAttribute to convert the term name
                 Namespace);
 
             element.InnerText = value;

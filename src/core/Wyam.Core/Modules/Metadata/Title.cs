@@ -66,12 +66,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="title">A delegate that must return a string.</param>
         public Title(DocumentConfig title)
         {
-            if (title == null)
-            {
-                throw new ArgumentNullException(nameof(title));
-            }
-
-            _title = title;
+            _title = title ?? throw new ArgumentNullException(nameof(title));
         }
 
         /// <summary>

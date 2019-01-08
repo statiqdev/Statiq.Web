@@ -52,8 +52,8 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlIgnore]
         public bool HasValue =>
             (Length > 0)
-            || !string.IsNullOrEmpty(Url)
-            && !string.IsNullOrEmpty(Type);
+            || (!string.IsNullOrEmpty(Url)
+            && !string.IsNullOrEmpty(Type));
 
         Uri IUriProvider.Uri => _url;
     }

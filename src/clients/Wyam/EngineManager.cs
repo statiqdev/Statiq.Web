@@ -47,7 +47,7 @@ namespace Wyam
 
             // Set folders
             Engine.FileSystem.RootPath = _configOptions.RootPath;
-            if (_configOptions.InputPaths != null && _configOptions.InputPaths.Count > 0)
+            if (_configOptions.InputPaths?.Count > 0)
             {
                 // Clear existing default paths if new ones are set
                 // and reverse the inputs so the last one is first to match the semantics of multiple occurrence single options

@@ -23,7 +23,7 @@ namespace Wyam
                 return null;
             }
 
-            string urlPath = virtualDirectory == null ? string.Empty : virtualDirectory.FullPath;
+            string urlPath = server.VirtualDirectory == null ? string.Empty : server.VirtualDirectory;
             Trace.Information($"Preview server listening at http://localhost:{port}{urlPath} and serving from path {path}"
                 + (liveReload ? " with LiveReload support" : string.Empty));
             return server;

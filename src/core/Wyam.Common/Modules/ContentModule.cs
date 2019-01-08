@@ -64,7 +64,8 @@ namespace Wyam.Common.Modules
             {
                 return context
                     .Execute(_modules, inputs.Count == 1 ? inputs : null)
-                    .SelectMany(context,
+                    .SelectMany(
+                        context,
                         x => inputs.SelectMany(context, y => Execute(x.Content, y, context)));
             }
             return inputs.SelectMany(context, x => Execute(_content.GetValue(x, context), x, context));

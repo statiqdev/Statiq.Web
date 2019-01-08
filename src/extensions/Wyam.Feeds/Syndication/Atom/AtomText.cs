@@ -15,26 +15,15 @@ namespace Wyam.Feeds.Syndication.Atom
         private string _mediaType = null;
         private string _value = null;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public AtomText()
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="text"></param>
         public AtomText(string text)
         {
             _value = text;
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="xhtml"></param>
         public AtomText(XmlNode xhtml)
         {
             XhtmlValue = xhtml;
@@ -44,7 +33,11 @@ namespace Wyam.Feeds.Syndication.Atom
         [XmlIgnore]
         public AtomTextType Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
+
             set
             {
                 _type = value;
@@ -93,7 +86,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return _value;
             }
-            set { _value = value; }
+
+            set
+            {
+                _value = value;
+            }
         }
 
         /// <summary>

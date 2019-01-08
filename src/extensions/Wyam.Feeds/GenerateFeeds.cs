@@ -70,14 +70,14 @@ namespace Wyam.Feeds
         private ContextConfig _feedCopyright = ctx => ctx.String(FeedKeys.Copyright) ?? DateTime.UtcNow.Year.ToString();
 
         private DocumentConfig _itemId = (doc, ctx) => ctx.GetLink(doc, true);
-        private DocumentConfig _itemTitle = (doc, ctx) => doc.String(FeedKeys.Title);
-        private DocumentConfig _itemDescription = (doc, ctx) => doc.String(FeedKeys.Description) ?? doc.String(FeedKeys.Excerpt);
-        private DocumentConfig _itemAuthor = (doc, ctx) => doc.String(FeedKeys.Author);
-        private DocumentConfig _itemPublished = (doc, ctx) => doc.String(FeedKeys.Published);
-        private DocumentConfig _itemUpdated = (doc, ctx) => doc.String(FeedKeys.Updated);
+        private DocumentConfig _itemTitle = (doc, _) => doc.String(FeedKeys.Title);
+        private DocumentConfig _itemDescription = (doc, _) => doc.String(FeedKeys.Description) ?? doc.String(FeedKeys.Excerpt);
+        private DocumentConfig _itemAuthor = (doc, _) => doc.String(FeedKeys.Author);
+        private DocumentConfig _itemPublished = (doc, _) => doc.String(FeedKeys.Published);
+        private DocumentConfig _itemUpdated = (doc, _) => doc.String(FeedKeys.Updated);
         private DocumentConfig _itemLink = (doc, ctx) => ctx.GetLink(doc, true);
         private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, FeedKeys.Image, true);
-        private DocumentConfig _itemContent = (doc, ctx) => doc.String(FeedKeys.Content);
+        private DocumentConfig _itemContent = (doc, _) => doc.String(FeedKeys.Content);
         private DocumentConfig _itemThreadLink = null;
         private DocumentConfig _itemThreadCount = null;
         private DocumentConfig _itemThreadUpdated = null;

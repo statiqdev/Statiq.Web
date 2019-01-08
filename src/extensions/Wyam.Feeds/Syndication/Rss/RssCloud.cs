@@ -36,13 +36,21 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlAttribute("port")]
         public int Port
         {
-            get { return _port; }
+            get
+            {
+                return _port;
+            }
+
             set
             {
                 if (value <= 0)
+                {
                     _port = int.MinValue;
+                }
                 else
+                {
                     _port = value;
+                }
             }
         }
 
@@ -81,11 +89,11 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public bool IsEmpty()
         {
-            return string.IsNullOrEmpty(Domain) &&
-                   Port <= 0 &&
-                   string.IsNullOrEmpty(Path) &&
-                   string.IsNullOrEmpty(RegisterProcedure) &&
-                   string.IsNullOrEmpty(Protocol);
+            return string.IsNullOrEmpty(Domain)
+                   && Port <= 0
+                   && string.IsNullOrEmpty(Path)
+                   && string.IsNullOrEmpty(RegisterProcedure)
+                   && string.IsNullOrEmpty(Protocol);
         }
     }
 }

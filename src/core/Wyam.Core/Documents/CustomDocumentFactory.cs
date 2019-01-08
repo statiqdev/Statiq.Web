@@ -10,7 +10,8 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Core.Documents
 {
-    public class CustomDocumentFactory<T> : IDocumentFactory where T : CustomDocument, new()
+    public class CustomDocumentFactory<T> : IDocumentFactory
+        where T : CustomDocument, new()
     {
         private readonly IDocumentFactory _documentFactory;
 
@@ -24,7 +25,10 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(null, _documentFactory.GetDocument(context));
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source,
+        public IDocument GetDocument(
+            IExecutionContext context,
+            IDocument sourceDocument,
+            FilePath source,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
@@ -32,31 +36,45 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument,
-            string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument GetDocument(
+            IExecutionContext context,
+            IDocument sourceDocument,
+            string content,
+            IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
             IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, content, items);
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream,
-            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(
+            IExecutionContext context,
+            IDocument sourceDocument,
+            FilePath source,
+            Stream stream,
+            IEnumerable<KeyValuePair<string, object>> items = null,
+            bool disposeStream = true)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
             IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, source, stream, items, disposeStream);
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream,
-            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(
+            IExecutionContext context,
+            IDocument sourceDocument,
+            Stream stream,
+            IEnumerable<KeyValuePair<string, object>> items = null,
+            bool disposeStream = true)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
             IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, stream, items, disposeStream);
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument,
+        public IDocument GetDocument(
+            IExecutionContext context,
+            IDocument sourceDocument,
             IEnumerable<KeyValuePair<string, object>> items)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;

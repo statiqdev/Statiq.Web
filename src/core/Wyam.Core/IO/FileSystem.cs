@@ -35,7 +35,8 @@ namespace Wyam.Core.IO
 
         public DirectoryPath RootPath
         {
-            get { return _rootPath; }
+            get => _rootPath;
+
             set
             {
                 if (value == null)
@@ -56,27 +57,27 @@ namespace Wyam.Core.IO
 
         public DirectoryPath OutputPath
         {
-            get { return _outputPath; }
+            get
+            {
+                return _outputPath;
+            }
+
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(OutputPath));
-                }
-                _outputPath = value;
+                _outputPath = value ?? throw new ArgumentNullException(nameof(OutputPath));
             }
         }
 
         public DirectoryPath TempPath
         {
-            get { return _tempPath; }
+            get
+            {
+                return _tempPath;
+            }
+
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(TempPath));
-                }
-                _tempPath = value;
+                _tempPath = value ?? throw new ArgumentNullException(nameof(TempPath));
             }
         }
 
@@ -268,7 +269,8 @@ namespace Wyam.Core.IO
                         // The globber doesn't support absolute paths, so get the root directory of this path (including provider)
                         IDirectory rootDirectory = GetDirectory(filePath.Root);
                         FilePath relativeFilePath = filePath.RootRelative.Collapse();
-                        return Tuple.Create(rootDirectory,
+                        return Tuple.Create(
+                            rootDirectory,
                             negated ? ('!' + relativeFilePath.FullPath) : relativeFilePath.FullPath);
                     }
                     return Tuple.Create(directory, x);

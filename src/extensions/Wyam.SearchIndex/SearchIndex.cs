@@ -106,11 +106,7 @@ namespace Wyam.SearchIndex
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
         public SearchIndex(DocumentConfig searchIndexItem, FilePath stopwordsPath = null, bool enableStemming = false)
         {
-            if (searchIndexItem == null)
-            {
-                throw new ArgumentNullException(nameof(searchIndexItem));
-            }
-            _searchIndexItem = searchIndexItem;
+            _searchIndexItem = searchIndexItem ?? throw new ArgumentNullException(nameof(searchIndexItem));
             _stopwordsPath = stopwordsPath;
             _enableStemming = enableStemming;
         }
@@ -168,11 +164,7 @@ namespace Wyam.SearchIndex
         /// <returns>The current module instance.</returns>
         public SearchIndex WithPath(ContextConfig path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            _path = path;
+            _path = path ?? throw new ArgumentNullException(nameof(path));
             return this;
         }
 
@@ -185,11 +177,7 @@ namespace Wyam.SearchIndex
         /// <returns>The current module instance.</returns>
         public SearchIndex WithScript(Func<StringBuilder, IExecutionContext, string> script)
         {
-            if (script == null)
-            {
-                throw new ArgumentNullException(nameof(script));
-            }
-            _script = script;
+            _script = script ?? throw new ArgumentNullException(nameof(script));
             return this;
         }
 
@@ -201,7 +189,7 @@ namespace Wyam.SearchIndex
                 .Where(x => !string.IsNullOrEmpty(x?.Title) && !string.IsNullOrEmpty(x.Content))
                 .ToArray();
 
-            if ( searchIndexItems.Length == 0 )
+            if (searchIndexItems.Length == 0)
             {
                 Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
                 return Array.Empty<IDocument>();
@@ -222,12 +210,12 @@ namespace Wyam.SearchIndex
                 }
                 metadata = new MetadataItems
                 {
-                    {Keys.RelativeFilePath, outputPath},
-                    {Keys.WritePath, outputPath}
+                    { Keys.RelativeFilePath, outputPath },
+                    { Keys.WritePath, outputPath }
                 };
             }
 
-            return new []{ context.GetDocument(context.GetContentStream(script), metadata) };
+            return new[] { context.GetDocument(context.GetContentStream(script), metadata) };
         }
 
         private StringBuilder BuildScript(IList<ISearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
@@ -244,7 +232,7 @@ var searchModule = function() {{
 
             for (int i = 0; i < searchIndexItems.Count; ++i)
             {
-                var itm = searchIndexItems[i];
+                ISearchIndexItem itm = searchIndexItems[i];
 
                 // Get the URL and skip if not valid
                 string url = itm.GetLink(context, _includeHost);
@@ -279,7 +267,7 @@ var searchModule = function() {{
         this.ref('id');
 
         this.pipeline.remove(lunr.stopWordFilter);
-        {(_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);")}
+        {(_enableStemming ? string.Empty : "this.pipeline.remove(lunr.stemmer);")}
         documents.forEach(function (doc) {{ this.add(doc) }}, this)
     }});
 ");
@@ -326,7 +314,7 @@ var searchModule = function() {{
                 if (stopwordsFile.Exists)
                 {
                     stopwords = stopwordsFile.ReadAllText()
-                        .Split(new [] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(f => f.Trim().ToLowerInvariant())
                         .Where(f => f.Length > 1)
                         .ToArray();

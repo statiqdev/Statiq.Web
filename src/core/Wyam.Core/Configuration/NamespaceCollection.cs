@@ -25,7 +25,7 @@ namespace Wyam.Core.Configuration
                 "System.Linq",
                 "Wyam.Core.Execution",
                 "Wyam.Core.Configuration",
-                "Wyam.Core.Documents"  // For custom document type support
+                "Wyam.Core.Documents" // For custom document type support
             });
 
             // Add all public namespaces from Wyam.Common

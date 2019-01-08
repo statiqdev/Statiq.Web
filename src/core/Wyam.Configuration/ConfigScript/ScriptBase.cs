@@ -43,7 +43,9 @@ namespace Wyam.Configuration.ConfigScript
             set { _engine.ContentStreamFactory = value; }
         }
 
-        public void SetCustomDocumentType<T>() where T : CustomDocument, new() =>
+        public void SetCustomDocumentType<T>()
+            where T : CustomDocument, new()
+            =>
             _engine.DocumentFactory = new CustomDocumentFactory<T>(_engine.DocumentFactory);
     }
 }

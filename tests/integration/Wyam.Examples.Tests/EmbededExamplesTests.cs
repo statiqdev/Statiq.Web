@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,17 @@ using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Configuration;
 using Wyam.Core.Execution;
+
+[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1310", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1515", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
 
 namespace Wyam.Examples.Tests
 {

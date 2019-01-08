@@ -25,7 +25,6 @@ namespace Wyam.Feeds.Syndication.Atom
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="text"></param>
         public AtomCategory(string term)
         {
             _term = term;

@@ -31,12 +31,12 @@ namespace Wyam.Configuration.NuGet
 
             // Construct the package reference and dependencies
             string id = GetAttributeValue(element, IdAttributeName);
-            NuGetVersion version;
-            if (!NuGetVersion.TryParse(GetAttributeValue(element, VersionAttributeName), out version))
+            if (!NuGetVersion.TryParse(GetAttributeValue(element, VersionAttributeName), out NuGetVersion version))
             {
                 throw new ArgumentException($@"Package element has invalid ""{VersionAttributeName}"" attribute");
             }
-            PackageReference = new PackageReference(new PackageIdentity(id, version),
+            PackageReference = new PackageReference(
+                new PackageIdentity(id, version),
                 NuGetFramework.Parse(GetAttributeValue(element, TargetFrameworkAttributeName)));
             _dependencies = element.Elements(PackageElementName).Select(x => new CachedPackage(x)).ToList();
         }
@@ -47,7 +47,8 @@ namespace Wyam.Configuration.NuGet
             _dependencies = new List<CachedPackage>();
 
             // Create the element
-            Element = new XElement(PackageElementName,
+            Element = new XElement(
+                PackageElementName,
                 new XAttribute(IdAttributeName, identity.Id),
                 new XAttribute(VersionAttributeName, identity.Version));
             if (targetFramework.IsSpecificFramework)

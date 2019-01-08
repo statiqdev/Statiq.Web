@@ -29,11 +29,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="metadata">The object to add as metadata.</param>
         public Meta(string key, object metadata)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            _key = key;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
             _metadata = new ConfigHelper<object>(metadata);
         }
 
@@ -45,11 +41,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="metadata">A delegate that returns the object to add as metadata.</param>
         public Meta(string key, ContextConfig metadata)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            _key = key;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
             _metadata = new ConfigHelper<object>(metadata);
         }
 
@@ -61,11 +53,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="metadata">A delegate that returns the object to add as metadata.</param>
         public Meta(string key, DocumentConfig metadata)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            _key = key;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
             _metadata = new ConfigHelper<object>(metadata);
         }
 
@@ -137,7 +125,8 @@ namespace Wyam.Core.Modules.Metadata
                                 }
                             }
                         }
-                        return context.GetDocument(input,
+                        return context.GetDocument(
+                            input,
                             _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata);
                     });
                 }
@@ -145,13 +134,13 @@ namespace Wyam.Core.Modules.Metadata
                 // Execute the modules once and apply to each input document
                 foreach (IDocument result in context.Execute(_modules))
                 {
-
                     foreach (KeyValuePair<string, object> kvp in result)
                     {
                         metadata[kvp.Key] = kvp.Value;
                     }
                 }
-                return inputs.Select(context, input => context.GetDocument(input,
+                return inputs.Select(context, input => context.GetDocument(
+                    input,
                     _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata));
             }
 

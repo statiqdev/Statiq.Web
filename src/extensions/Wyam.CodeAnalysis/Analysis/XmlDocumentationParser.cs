@@ -31,16 +31,22 @@ namespace Wyam.CodeAnalysis.Analysis
         public string Summary { get; private set; } = string.Empty;
         public string Returns { get; private set; } = string.Empty;
         public string Value { get; private set; } = string.Empty;
+
         public IReadOnlyList<ReferenceComment> Exceptions { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> Permissions { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> Params { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<ReferenceComment> TypeParams { get; private set; }
             = ImmutableArray<ReferenceComment>.Empty;
+
         public IReadOnlyList<string> SeeAlso { get; private set; }
             = ImmutableArray<string>.Empty;
+
         public IReadOnlyDictionary<string, IReadOnlyList<OtherComment>> OtherComments { get; private set; }
             = ImmutableDictionary<string, IReadOnlyList<OtherComment>>.Empty;
 
@@ -117,11 +123,17 @@ namespace Wyam.CodeAnalysis.Analysis
                                         _processActions.Add(() => Permissions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "param":
-                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName,
+                                        _processActions.Add(() => Params = GetReferenceComments(
+                                            group,
+                                            false,
+                                            elementName,
                                             (_symbol as IMethodSymbol)?.Parameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     case "typeparam":
-                                        _processActions.Add(() => TypeParams = GetReferenceComments(group, false, elementName,
+                                        _processActions.Add(() => TypeParams = GetReferenceComments(
+                                            group,
+                                            false,
+                                            elementName,
                                             (_symbol as IMethodSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? (_symbol as INamedTypeSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     default:
@@ -172,8 +184,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             XDocument document = XDocument.Parse($"<root>{xml}</root>", LoadOptions.PreserveWhitespace);
             XElement root = document.Root;
-            if (root != null
-                && root.Elements().Count() == 1
+            if (root?.Elements().Count() == 1
                 && string.Equals(root.Elements().First().Name.LocalName, "member", StringComparison.OrdinalIgnoreCase))
             {
                 root = root.Elements().First();
@@ -355,7 +366,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     ISymbol implementationSymbol = symbol.ContainingType.FindImplementationForInterfaceMember(x);
                     return symbol.Equals(implementationSymbol)
-                           || (overriddenMethodSymbol != null && overriddenMethodSymbol.Equals(implementationSymbol));
+                           || (overriddenMethodSymbol?.Equals(implementationSymbol) == true);
                 });
             if (interfaceSymbol != null
                 && inheritedSymbolCommentIds.Add(interfaceSymbol.GetDocumentationCommentId()))
@@ -414,7 +425,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     string name = keyIsCref
                         ? GetRefNameAndLink(element, out link)
                         : (element.Attribute("name")?.Value ?? string.Empty);
-                    if (validNames != null && !validNames.Contains(name))
+                    if (validNames?.Contains(name) == false)
                     {
                         return null;
                     }
@@ -559,14 +570,14 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Get all the lines of the code element
                 XmlReader reader = codeElement.CreateReader();
                 reader.MoveToContent();
-                List<string> lines = reader.ReadInnerXml().Split(new [] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
+                List<string> lines = reader.ReadInnerXml().Split(new[] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
 
                 // Trim start and end lines
-                while (lines[0].Trim() == string.Empty)
+                while (lines[0].Trim()?.Length == 0)
                 {
                     lines.RemoveAt(0);
                 }
-                while (lines[lines.Count - 1].Trim() == string.Empty)
+                while (lines[lines.Count - 1].Trim()?.Length == 0)
                 {
                     lines.RemoveAt(lines.Count - 1);
                 }
@@ -584,7 +595,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Remove the padding, replacing the nodes in the original element to preserve any attributes
                 if (padding > 0)
                 {
-                    string newInnerXml = string.Join("\n",
+                    string newInnerXml = string.Join(
+                        "\n",
                         lines.Select(x => padding < x.Length ? x.Substring(padding) : string.Empty));
                     XElement newCodeElement = XElement.Parse($"<code>{newInnerXml}</code>");
                     codeElement.ReplaceNodes(newCodeElement.Nodes().Cast<object>().ToArray());
@@ -610,7 +622,7 @@ namespace Wyam.CodeAnalysis.Analysis
             foreach (XElement listElement in parentElement.Elements("list").ToList())
             {
                 XAttribute typeAttribute = listElement.Attribute("type");
-                if (typeAttribute != null && typeAttribute.Value == "table")
+                if (typeAttribute?.Value == "table")
                 {
                     ProcessListElementTable(listElement, typeAttribute);
                 }
@@ -624,7 +636,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private void ProcessListElementList(XElement listElement, XAttribute typeAttribute)
         {
             // Number or bullet
-            if (typeAttribute != null && typeAttribute.Value == "number")
+            if (typeAttribute?.Value == "number")
             {
                 listElement.Name = "ol";
             }

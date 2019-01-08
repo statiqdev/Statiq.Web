@@ -45,7 +45,7 @@ namespace Wyam.Configuration.ConfigScript
             {
                 // Method (standard or extension)
                 ParameterSyntax firstParameter = ((MethodDeclarationSyntax)node).ParameterList.Parameters.FirstOrDefault();
-                if (firstParameter != null && firstParameter.GetFirstToken().Kind() == SyntaxKind.ThisKeyword)
+                if (firstParameter?.GetFirstToken().Kind() == SyntaxKind.ThisKeyword)
                 {
                     Add(node.ToFullString(), _extensionMethodDeclarations);
                 }

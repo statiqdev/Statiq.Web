@@ -36,8 +36,11 @@ namespace Wyam.Configuration.NuGet
         }
 
         // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances
-        public override Task<bool> InstallPackageAsync(PackageIdentity packageIdentity, DownloadResourceResult downloadResourceResult,
-            INuGetProjectContext nuGetProjectContext, CancellationToken token)
+        public override Task<bool> InstallPackageAsync(
+            PackageIdentity packageIdentity,
+            DownloadResourceResult downloadResourceResult,
+            INuGetProjectContext nuGetProjectContext,
+            CancellationToken token)
         {
             _installedPackages.AddPackage(packageIdentity, _currentFramework);
             Trace.Verbose($"Installing package or dependency {packageIdentity.Id} {(packageIdentity.HasVersion ? packageIdentity.Version.ToNormalizedString() : string.Empty)}");
@@ -87,11 +90,10 @@ namespace Wyam.Configuration.NuGet
             {
                 // Only show a verbose message if there were no reference items (I.e., it's probably a content-only package or a metapackage and not a mismatch)
                 Trace.Verbose($"Could not find any reference items in package {packageIdentify}");
-
             }
             else
             {
-                Trace.Warning($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.TargetFramework.DotNetFrameworkName))})");
+                Trace.Verbose($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.TargetFramework.DotNetFrameworkName))})");
             }
         }
 
@@ -113,19 +115,18 @@ namespace Wyam.Configuration.NuGet
             }
         }
 
-        // Probably going to hell for using a region
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
-        #region MSBuildNuGetProjectSystemUtility
 
-        private static FrameworkSpecificGroup GetMostCompatibleGroup(NuGetFramework projectTargetFramework,
+        private static FrameworkSpecificGroup GetMostCompatibleGroup(
+            NuGetFramework projectTargetFramework,
             IEnumerable<FrameworkSpecificGroup> itemGroups)
         {
-            var reducer = new FrameworkReducer();
-            var mostCompatibleFramework
+            FrameworkReducer reducer = new FrameworkReducer();
+            NuGetFramework mostCompatibleFramework
                 = reducer.GetNearest(projectTargetFramework, itemGroups.Select(i => i.TargetFramework));
             if (mostCompatibleFramework != null)
             {
-                var mostCompatibleGroup
+                FrameworkSpecificGroup mostCompatibleGroup
                     = itemGroups.FirstOrDefault(i => i.TargetFramework.Equals(mostCompatibleFramework));
 
                 if (IsValid(mostCompatibleGroup))
@@ -141,14 +142,12 @@ namespace Wyam.Configuration.NuGet
         {
             if (frameworkSpecificGroup != null)
             {
-                return (frameworkSpecificGroup.HasEmptyFolder
-                     || frameworkSpecificGroup.Items.Any()
-                     || !frameworkSpecificGroup.TargetFramework.Equals(NuGetFramework.AnyFramework));
+                return frameworkSpecificGroup.HasEmptyFolder
+                    || frameworkSpecificGroup.Items.Any()
+                    || !frameworkSpecificGroup.TargetFramework.Equals(NuGetFramework.AnyFramework);
             }
 
             return false;
         }
-
-        #endregion MSBuildNuGetProjectSystemUtility
     }
 }

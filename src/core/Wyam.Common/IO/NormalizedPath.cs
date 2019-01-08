@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Execution;
@@ -100,12 +101,10 @@ namespace Wyam.Common.IO
                 FullPath = FullPath.TrimEnd('/');
             }
 
-#if !UNIX
-            if (FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))
             {
                 FullPath = string.Concat(FullPath, "/");
             }
-#endif
 
             // Absolute path?
             switch (pathKind)
@@ -130,7 +129,7 @@ namespace Wyam.Common.IO
             {
                 FileProvider = DefaultFileProvider;
             }
-            else if (providerAndPath.Item1 != null && !providerAndPath.Item1.IsAbsoluteUri)
+            else if (providerAndPath.Item1?.IsAbsoluteUri == false)
             {
                 throw new ArgumentException("The provider URI must always be absolute");
             }
@@ -183,7 +182,7 @@ namespace Wyam.Common.IO
             }
 
             // If we got a relative URI, then just use that as the path
-            if (uriPath != null && !uriPath.IsAbsoluteUri)
+            if (uriPath?.IsAbsoluteUri == false)
             {
                 return new Tuple<Uri, string>(null, uriPath.ToString());
             }
@@ -316,7 +315,7 @@ namespace Wyam.Common.IO
                 stack.Push(segment);
             }
             string collapsed = string.Join("/", stack.Reverse());
-            return collapsed == string.Empty ? "." : collapsed;
+            return collapsed?.Length == 0 ? "." : collapsed;
         }
 
         /// <summary>

@@ -24,7 +24,8 @@ namespace Wyam.Docs.Pipelines
 
         private static IModuleList GetModules() => new ModuleList
         {
-            new If(ctx => ctx.Documents[Docs.Api].Any(),
+            new If(
+                ctx => ctx.Documents[Docs.Api].Any(),
                 new Documents(Docs.Api),
                 new Razor.Razor()
                     .WithLayout("/_ApiLayout.cshtml"),

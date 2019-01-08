@@ -20,8 +20,10 @@ namespace Wyam.Configuration.Directives
         // Any changes to settings should also be made in Cake.Wyam
         public class Settings
         {
+#pragma warning disable SA1401 // Fields should be private
             public bool IgnoreKnownPackages;
             public string Recipe;
+#pragma warning restore SA1401 // Fields should be private
         }
 
         protected override void Define(ArgumentSyntax syntax, Settings settings)

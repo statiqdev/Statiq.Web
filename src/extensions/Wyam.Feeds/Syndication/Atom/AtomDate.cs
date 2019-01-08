@@ -12,10 +12,6 @@ namespace Wyam.Feeds.Syndication.Atom
     {
         private DateTime? _value;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="date"></param>
         public AtomDate(DateTime date)
         {
             _value = date;
@@ -32,7 +28,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return _value.Value;
             }
-            set { _value = value; }
+
+            set
+            {
+                _value = value;
+            }
         }
 
         [XmlIgnore]

@@ -19,6 +19,7 @@ namespace Wyam.Configuration.Directives
         // Any changes to settings should also be made in Cake.Wyam
         public class Settings
         {
+#pragma warning disable SA1401 // Fields should be private
             public bool Prerelease;
             public bool Unlisted;
             public bool Exclusive;
@@ -26,6 +27,7 @@ namespace Wyam.Configuration.Directives
             public bool Latest;
             public IReadOnlyList<string> Sources;
             public string Package;
+#pragma warning restore SA1401 // Fields should be private
         }
 
         protected override void Define(ArgumentSyntax syntax, Settings settings)
@@ -53,8 +55,14 @@ namespace Wyam.Configuration.Directives
         protected override void Process(Configurator configurator, Settings settings)
         {
             // Add the package to the repository (it'll actually get fetched later)
-            configurator.PackageInstaller.AddPackage(settings.Package, settings.Sources,
-                settings.VersionRange, settings.Latest, settings.Prerelease, settings.Unlisted, settings.Exclusive);
+            configurator.PackageInstaller.AddPackage(
+                settings.Package,
+                settings.Sources,
+                settings.VersionRange,
+                settings.Latest,
+                settings.Prerelease,
+                settings.Unlisted,
+                settings.Exclusive);
         }
     }
 }

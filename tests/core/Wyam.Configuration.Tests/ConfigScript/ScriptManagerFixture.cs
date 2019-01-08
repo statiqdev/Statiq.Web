@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
@@ -17,45 +18,45 @@ namespace Wyam.Configuration.Tests.ConfigScript
     {
         public class ParseTests : ScriptManagerFixture
         {
-            [TestCase(@"Pipelines.Add(Content())", @"Pipelines.Add(Content())")]
-            [TestCase(@"Pipelines.Add(Content(Content()))", @"Pipelines.Add(Content(Content()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc => @doc.Foo()))", @"Pipelines.Add(Content(@doc => @doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(), Foobar())", @"Pipelines.Add(Content(), Foobar())")]
+            [TestCase("Pipelines.Add(Content())", "Pipelines.Add(Content())")]
+            [TestCase("Pipelines.Add(Content(Content()))", "Pipelines.Add(Content(Content()))")]
+            [TestCase("Pipelines.Add(Content(@doc => @doc.Foo()))", "Pipelines.Add(Content(@doc => @doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(), Foobar())", "Pipelines.Add(Content(), Foobar())")]
             [TestCase(@"Pipelines.Add(Content(""foobar""))", @"Pipelines.Add(Content(""foobar""))")]
-            [TestCase(@"Pipelines.Add(Content((x) => x.Foo()))", @"Pipelines.Add(Content((x) => x.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo()))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc2.Foo()))", @"Pipelines.Add(Content((@doc2,_)=>@doc2.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content((int)@doc.Foo()))", @"Pipelines.Add(Content((@doc,_)=>(int)@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@ctx.Foo()))", @"Pipelines.Add(Content(@ctx=>@ctx.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content())))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content())))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content(@doc.Foo()))))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content(@doc.Foo()))))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content(@doc2.Foo()))))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content((@doc2,_)=>@doc2.Foo()))))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo(@ctx.Bar)))", @"Pipelines.Add(Content((@doc,@ctx)=>@doc.Foo(@ctx.Bar)))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo(@ctx2.Bar)))", @"Pipelines.Add(Content((@doc,@ctx2)=>@doc.Foo(@ctx2.Bar)))")]
+            [TestCase("Pipelines.Add(Content((x) => x.Foo()))", "Pipelines.Add(Content((x) => x.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo()))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@doc2.Foo()))", "Pipelines.Add(Content((@doc2,_)=>@doc2.Foo()))")]
+            [TestCase("Pipelines.Add(Content((int)@doc.Foo()))", "Pipelines.Add(Content((@doc,_)=>(int)@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@ctx.Foo()))", "Pipelines.Add(Content(@ctx=>@ctx.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo(Content())))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content())))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo(Content(@doc.Foo()))))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content(@doc.Foo()))))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo(Content(@doc2.Foo()))))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo(Content((@doc2,_)=>@doc2.Foo()))))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo(@ctx.Bar)))", "Pipelines.Add(Content((@doc,@ctx)=>@doc.Foo(@ctx.Bar)))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo(@ctx2.Bar)))", "Pipelines.Add(Content((@doc,@ctx2)=>@doc.Foo(@ctx2.Bar)))")]
             [TestCase(@"Pipelines.Add(Content(@doc[""foo""]))", @"Pipelines.Add(Content((@doc,_)=>@doc[""foo""]))")]
             [TestCase(@"Pipelines.Add(Content(@ctx[""foo""]))", @"Pipelines.Add(Content(@ctx=>@ctx[""foo""]))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo))")]
-            [TestCase(@"Pipelines.Add(Content().Where(@doc.Foo()))", @"Pipelines.Add(Content().Where((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content().Where().Where(@doc.Foo()))", @"Pipelines.Add(Content().Where().Where((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content().Where(5).Where(@doc.Foo()))", @"Pipelines.Add(Content().Where(5).Where((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo))")]
+            [TestCase("Pipelines.Add(Content().Where(@doc.Foo()))", "Pipelines.Add(Content().Where((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content().Where().Where(@doc.Foo()))", "Pipelines.Add(Content().Where().Where((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content().Where(5).Where(@doc.Foo()))", "Pipelines.Add(Content().Where(5).Where((@doc,_)=>@doc.Foo()))")]
             [TestCase(@"Pipelines.Add(Content().Where(@doc[""foo""]))", @"Pipelines.Add(Content().Where((@doc,_)=>@doc[""foo""]))")]
-            [TestCase(@"Pipelines.Add(Content().Where(@doc.Foo))", @"Pipelines.Add(Content().Where((@doc,_)=>@doc.Foo))")]
+            [TestCase("Pipelines.Add(Content().Where(@doc.Foo))", "Pipelines.Add(Content().Where((@doc,_)=>@doc.Foo))")]
             [TestCase(@"Pipelines.Add(Content(""foobar"").Where(@doc.Foo()))", @"Pipelines.Add(Content(""foobar"").Where((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.Foo()).Where(@doc.Foo()))", @"Pipelines.Add(Content((@doc,_)=>@doc.Foo()).Where((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(@doc.Foo()).Where(@doc.Foo()))", "Pipelines.Add(Content((@doc,_)=>@doc.Foo()).Where((@doc,_)=>@doc.Foo()))")]
             [TestCase(@"Pipelines.Add(Content(@doc[""foo""]).Where(@doc.Foo()))", @"Pipelines.Add(Content((@doc,_)=>@doc[""foo""]).Where((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(@doc.@Foo).Where(@doc.Foo()))", @"Pipelines.Add(Content((@doc,_)=>@doc.@Foo).Where((@doc,_)=>@doc.Foo()))")]
-            [TestCase(@"Pipelines.Add(Content(Bar(@doc.Foo())))", @"Pipelines.Add(Content((@doc,_)=>Bar(@doc.Foo())))")]
-            [TestCase(@"Pipelines.Add(Content(Bar(@ctx.Foo())))", @"Pipelines.Add(Content(@ctx=>Bar(@ctx.Foo())))")]
-            [TestCase(@"Pipelines.Add(Content(Bar(@ctx2.Foo())))", @"Pipelines.Add(Content(@ctx2=>Bar(@ctx2.Foo())))")]
-            [TestCase(@"Pipelines.Add(Content().Where(Bar(@doc.Foo())))", @"Pipelines.Add(Content().Where((@doc,_)=>Bar(@doc.Foo())))")]
-            [TestCase(@"Pipelines.Add(Content().Where(Bar(@ctx.Foo())))", @"Pipelines.Add(Content().Where(@ctx=>Bar(@ctx.Foo())))")]
+            [TestCase("Pipelines.Add(Content(@doc.@Foo).Where(@doc.Foo()))", "Pipelines.Add(Content((@doc,_)=>@doc.@Foo).Where((@doc,_)=>@doc.Foo()))")]
+            [TestCase("Pipelines.Add(Content(Bar(@doc.Foo())))", "Pipelines.Add(Content((@doc,_)=>Bar(@doc.Foo())))")]
+            [TestCase("Pipelines.Add(Content(Bar(@ctx.Foo())))", "Pipelines.Add(Content(@ctx=>Bar(@ctx.Foo())))")]
+            [TestCase("Pipelines.Add(Content(Bar(@ctx2.Foo())))", "Pipelines.Add(Content(@ctx2=>Bar(@ctx2.Foo())))")]
+            [TestCase("Pipelines.Add(Content().Where(Bar(@doc.Foo())))", "Pipelines.Add(Content().Where((@doc,_)=>Bar(@doc.Foo())))")]
+            [TestCase("Pipelines.Add(Content().Where(Bar(@ctx.Foo())))", "Pipelines.Add(Content().Where(@ctx=>Bar(@ctx.Foo())))")]
             [TestCase(@"Pipelines.Add(Content(Content(""*.md"").Where(@doc.Foo())))", @"Pipelines.Add(Content(Content(""*.md"").Where((@doc,_)=>@doc.Foo())))")]
             public void CorrectlyParsesScriptCode(string input, string output)
             {
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string usingStatements = "using Foo.Bar;";
+                const string usingStatements = "using Foo.Bar;";
                 string scriptCode =
 $@"#line 1
 {output}";
@@ -65,7 +66,7 @@ $@"#line 1
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -74,7 +75,7 @@ $@"#line 1
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public class Foo
 {
     int X { get; set; }
@@ -94,14 +95,14 @@ Pipelines.Add(Content());
 public class Baz
 {
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 13
 
 int x = 1 + 2;
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public class Foo
 {
@@ -126,7 +127,7 @@ public class Baz
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -135,7 +136,7 @@ public class Baz
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"using Red.Blue;
 using Yellow;
 
@@ -150,17 +151,17 @@ public string Self(string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string usingDirectives = @"using Red.Blue;
+                const string usingStatements = "using Foo.Bar;";
+                const string usingDirectives = @"using Red.Blue;
 using Yellow;
 ";
 
-                string scriptCode =
+                const string scriptCode =
 @"#line 8
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 3
 
 public static class Foo
@@ -168,7 +169,7 @@ public static class Foo
     public static string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 10
 
 public string Self(string x)
@@ -181,7 +182,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -190,7 +191,7 @@ public string Self(string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public static class Foo
 {
     public static string Bar(this string x) => x;
@@ -202,20 +203,20 @@ public string Self(string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 5
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public static class Foo
 {
     public static string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 7
 
 public string Self(string x)
@@ -228,7 +229,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -237,7 +238,7 @@ public string Self(string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"public static class Foo
 {
     public static string Bar(this string x) => x;
@@ -249,20 +250,20 @@ public static string Self(this string x)
 {
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 5
 
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 public static class Foo
 {
     public static string Bar(this string x) => x;
 }
 ";
-                string extensionMethodDeclarations =
+                const string extensionMethodDeclarations =
 @"#line 7
 
 public static string Self(this string x)
@@ -275,7 +276,7 @@ public static string Self(this string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -284,7 +285,7 @@ public static string Self(this string x)
                 // Given
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input =
+                const string input =
 @"// XYZ
 public class Foo
 {
@@ -301,14 +302,14 @@ public string Self(string x)
     // RTY
     return x.ToLower();
 }";
-                string usingStatements = "using Foo.Bar;";
-                string scriptCode =
+                const string usingStatements = "using Foo.Bar;";
+                const string scriptCode =
 @"#line 7
 
 // 123
 Pipelines.Add(Content());
 ";
-                string typeDeclarations =
+                const string typeDeclarations =
 @"#line 1
 // XYZ
 public class Foo
@@ -317,7 +318,7 @@ public class Foo
     public string Bar(this string x) => x;
 }
 ";
-                string methodDeclarations =
+                const string methodDeclarations =
 @"#line 10
 
 // QWE
@@ -332,7 +333,7 @@ public string Self(string x)
                 string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
+                actual.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             // Assumes just the Content module is used
@@ -418,7 +419,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(Content), memberNames);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
+                generated.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -440,7 +441,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
 
                 // Then
-                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
+                generated.ShouldBe(expected, StringCompareShould.IgnoreLineEndings);
             }
         }
 

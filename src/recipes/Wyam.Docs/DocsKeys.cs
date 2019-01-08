@@ -230,6 +230,13 @@ namespace Wyam.Docs
         public const string BlogPath = nameof(BlogPath);
 
         /// <summary>
+        /// Specifies the blog title.
+        /// The default value is <c>Blog</c>.
+        /// </summary>
+        /// <type><see cref="string"/></type>
+        public const string BlogTitle = nameof(BlogTitle);
+
+        /// <summary>
         /// Controls the parent path where API docs are placed. The default is "api".
         /// </summary>
         /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
@@ -342,5 +349,11 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ImplicitInheritDoc = nameof(ImplicitInheritDoc);
+
+        /// <summary>
+        /// Set to <c>true</c> to prepend a configured <c>LinkRoot</c> to all root-relative Markdown links.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string MarkdownPrependLinkRoot = nameof(MarkdownPrependLinkRoot);
     }
 }

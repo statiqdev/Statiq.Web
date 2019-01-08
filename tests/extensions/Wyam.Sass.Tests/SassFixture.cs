@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -24,7 +23,7 @@ namespace Wyam.Sass.Tests
             public void Convert()
             {
                 // Given
-                string input = @"
+                const string input = @"
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #333;
 
@@ -33,7 +32,7 @@ body {
   color: $primary-color;
 }";
 
-                string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
+                const string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
 
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddDirectory("/");
@@ -56,10 +55,10 @@ body {
                 Sass sass = new Sass().WithCompactOutputStyle();
 
                 // When
-                List<IDocument> results = sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                List<IDocument> results = sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] {output}));
+                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] { output }));
                 Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
             }
 
@@ -101,7 +100,7 @@ body {
             public void ConvertingBadSassFails()
             {
                 // Given
-                string input = @"
+                const string input = @"
 $font-stack:    Helvetica, sans-serif
 $primary-color: #333
 
@@ -132,7 +131,7 @@ body {
                 // When, Then
                 Assert.Catch<AggregateException>(() =>
                 {
-                    sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                    sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
                 });
             }
 
@@ -140,19 +139,19 @@ body {
             public void NestedImports()
             {
                 // Given
-                string outerImport = @"
+                const string outerImport = @"
 $font-stack:    Helvetica, sans-serif;";
-                string innerImport = @"
+                const string innerImport = @"
 @import 'outer-import.scss';
 $primary-color: #333;";
-                string input = @"
+                const string input = @"
 @import 'libs/_inner-import.scss';
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
 }";
-                string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
+                const string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
 
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddDirectory("/");
@@ -178,10 +177,10 @@ body {
                 Sass sass = new Sass().IncludeSourceComments(false).WithCompactOutputStyle();
 
                 // When
-                List<IDocument> results = sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                List<IDocument> results = sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] {output}));
+                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] { output }));
                 Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
             }
 
@@ -189,17 +188,17 @@ body {
             public void ImportWithoutExtension()
             {
                 // Given
-                string import = @"
+                const string import = @"
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #333;";
-                string input = @"
+                const string input = @"
 @import 'libs/_test-import';
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
 }";
-                string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
+                const string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
 
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddDirectory("/");
@@ -235,17 +234,17 @@ body {
             public void ImportWithoutPrefix()
             {
                 // Given
-                string import = @"
+                const string import = @"
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #333;";
-                string input = @"
+                const string input = @"
 @import 'libs/test-import.scss';
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
 }";
-                string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
+                const string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
 
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddDirectory("/");
@@ -281,17 +280,17 @@ body {
             public void ImportWithoutPrefixOrExtension()
             {
                 // Given
-                string import = @"
+                const string import = @"
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #333;";
-                string input = @"
+                const string input = @"
 @import 'libs/test-import';
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
 }";
-                string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
+                const string output = "body { font: 100% Helvetica, sans-serif; color: #333; }\n";
 
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddDirectory("/");

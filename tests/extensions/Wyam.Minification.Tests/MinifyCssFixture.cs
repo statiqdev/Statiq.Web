@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -21,7 +21,7 @@ namespace Wyam.Minification.Tests
             {
                 // Given
                 // Example taken from http://yui.github.io/yuicompressor/css.html
-                string input = @"
+                const string input = @"
 /*****
   Multi-line comment
   before a new class name
@@ -30,7 +30,7 @@ namespace Wyam.Minification.Tests
     /* comment in declaration block */
     font-weight: normal;
 }";
-                string output = @".classname{font-weight:normal}";
+                const string output = ".classname{font-weight:normal}";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyCss minifyCss = new MinifyCss();
@@ -39,7 +39,7 @@ namespace Wyam.Minification.Tests
                 IList<IDocument> results = minifyCss.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

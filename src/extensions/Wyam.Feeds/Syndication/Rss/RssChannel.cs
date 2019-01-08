@@ -17,12 +17,12 @@ namespace Wyam.Feeds.Syndication.Rss
     public class RssChannel : RssChannelBase
     {
         [XmlElement("item")]
-        public readonly List<RssItem> Items = new List<RssItem>();
+        public List<RssItem> Items { get; } = new List<RssItem>();
 
         [XmlIgnore]
         public bool ItemsSpecified
         {
-            get { return (Items.Count > 0); }
+            get { return Items.Count > 0; }
             set { }
         }
 

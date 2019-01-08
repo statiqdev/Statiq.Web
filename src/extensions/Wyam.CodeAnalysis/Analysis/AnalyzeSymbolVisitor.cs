@@ -131,7 +131,8 @@ namespace Wyam.CodeAnalysis.Analysis
             // Create the document (but not if none of the members would be included)
             if (ShouldIncludeSymbol(symbol, x => _symbolPredicate == null || x.GetMembers().Any(m => _symbolPredicate(m))))
             {
-                _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
+                _namespaceDisplayNameToDocument.AddOrUpdate(
+                    displayName,
                     _ => AddNamespaceDocument(symbol, true),
                     (_, existing) =>
                     {
@@ -334,7 +335,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private bool MemberPredicate(ISymbol symbol)
         {
             IPropertySymbol propertySymbol = symbol as IPropertySymbol;
-            if (propertySymbol != null && propertySymbol.IsIndexer)
+            if (propertySymbol?.IsIndexer == true)
             {
                 // Special case for indexers
                 return true;
@@ -342,11 +343,8 @@ namespace Wyam.CodeAnalysis.Analysis
             return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
         }
 
-        private bool OperatorPredicate(ISymbol symbol)
-        {
-            IMethodSymbol method = symbol as IMethodSymbol;
-            return method != null && (method.MethodKind == MethodKind.Conversion || method.MethodKind == MethodKind.UserDefinedOperator);
-        }
+        private bool OperatorPredicate(ISymbol symbol) =>
+            symbol is IMethodSymbol method && (method.MethodKind == MethodKind.Conversion || method.MethodKind == MethodKind.UserDefinedOperator);
 
         private IDocument AddMemberDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
         {
@@ -364,6 +362,7 @@ namespace Wyam.CodeAnalysis.Analysis
             {
                 { CodeAnalysisKeys.Symbol, _ => _namespaceDisplayNameToSymbols[displayName].ToImmutableList() },
                 { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
+
                 // We need to aggregate the results across all matching namespaces
                 { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetNamespaceMembers())) },
                 { CodeAnalysisKeys.MemberTypes, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetTypeMembers())) }
@@ -467,7 +466,7 @@ namespace Wyam.CodeAnalysis.Analysis
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements
-            metadata.AddRange(new []
+            metadata.AddRange(new[]
             {
                 new MetadataItem(CodeAnalysisKeys.CommentXml, documentationCommentXml),
                 new MetadataItem(CodeAnalysisKeys.Example, _ => xmlDocumentationParser.Process().Example),

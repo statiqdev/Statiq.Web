@@ -7,7 +7,6 @@ using Wyam.Common.IO;
 
 namespace Wyam.Images.Operations
 {
-
     internal class OutputAction
     {
         private readonly Action<Image<Rgba32>, Stream> _action;

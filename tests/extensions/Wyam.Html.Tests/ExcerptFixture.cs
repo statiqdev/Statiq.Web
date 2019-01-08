@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common;
+using Shouldly;
 using Wyam.Common.Documents;
-using Wyam.Common.Execution;
-using Wyam.Common.Meta;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Html.Tests
 {
@@ -25,7 +21,7 @@ namespace Wyam.Html.Tests
             public void ExcerptFirstParagraph()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -35,29 +31,22 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
-                {
-                    new KeyValuePair<string, object>("Excerpt", "<p>This is some Foobar text</p>")
-                })));
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("<p>This is some Foobar text</p>");
             }
 
             [Test]
             public void ExcerptAlternateQuerySelector()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -67,29 +56,22 @@ namespace Wyam.Html.Tests
                             <div>This is some other text</div>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt("div");
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
-                {
-                    new KeyValuePair<string, object>("Excerpt", "<div>This is some other text</div>")
-                })));
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("<div>This is some other text</div>");
             }
 
             [Test]
             public void ExcerptAlternateMetadataKey()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -99,29 +81,22 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt().WithMetadataKey("Baz");
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
-                {
-                    new KeyValuePair<string, object>("Baz", "<p>This is some Foobar text</p>")
-                })));
-                stream.Dispose();
+                results.Single()["Baz"].ShouldBe("<p>This is some Foobar text</p>");
             }
 
             [Test]
             public void ExcerptInnerHtml()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -131,29 +106,22 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt().WithOuterHtml(false);
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
-                {
-                    new KeyValuePair<string, object>("Excerpt", "This is some Foobar text")
-                })));
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("This is some Foobar text");
             }
 
             [Test]
             public void NoExcerptReturnsSameDocument()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -162,25 +130,22 @@ namespace Wyam.Html.Tests
                             <div>This is some Foobar text</div>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt("p");
 
                 // When
-                excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (Stream)null);
-                stream.Dispose();
+                results.Single().ShouldBe(document);
             }
 
             [Test]
             public void SeparatorInsideParagraph()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -190,35 +155,22 @@ namespace Wyam.Html.Tests
                             <p>This is other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                string result = null;
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .ReturnsForAnyArgs(
-                        x =>
-                        {
-                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
-                                .First(y => y.Key == "Excerpt")
-                                .Value;
-                            return null;
-                        });
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<p>This is some </p>", result);
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("<p>This is some </p>");
             }
 
             [Test]
             public void SeparatorBetweenParagraphs()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -230,35 +182,25 @@ namespace Wyam.Html.Tests
                             <p>This is some more text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                string result = null;
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .ReturnsForAnyArgs(
-                        x =>
-                        {
-                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
-                                .First(y => y.Key == "Excerpt")
-                                .Value;
-                            return null;
-                        });
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<p>This is some Foobar text</p>\n                            <p>This is some other text</p>", result);
-                stream.Dispose();
+                results.Single()["Excerpt"].ToString().ShouldBe(
+                    @"<p>This is some Foobar text</p>
+                            <p>This is some other text</p>",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void SeparatorInsideParagraphWithSiblings()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -268,35 +210,25 @@ namespace Wyam.Html.Tests
                             <p>This <b>is</b> some <!-- excerpt --><i>other</i> text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                string result = null;
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .ReturnsForAnyArgs(
-                        x =>
-                        {
-                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
-                                .First(y => y.Key == "Excerpt")
-                                .Value;
-                            return null;
-                        });
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<p>This is some Foobar text</p>\n                            <p>This <b>is</b> some </p>", result);
-                stream.Dispose();
+                results.Single()["Excerpt"].ToString().ShouldBe(
+                    @"<p>This is some Foobar text</p>
+                            <p>This <b>is</b> some </p>",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void AlternateSeparatorComment()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -306,35 +238,22 @@ namespace Wyam.Html.Tests
                             <p>This is other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                string result = null;
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .ReturnsForAnyArgs(
-                        x =>
-                        {
-                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
-                                .First(y => y.Key == "Excerpt")
-                                .Value;
-                            return null;
-                        });
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt().WithSeparators(new[] { "foo" });
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<p>This is some </p>", result);
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("<p>This is some </p>");
             }
 
             [Test]
             public void MultipleSeparatorComments()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -344,28 +263,15 @@ namespace Wyam.Html.Tests
                             <p>This is <!-- excerpt --> other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                string result = null;
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .ReturnsForAnyArgs(
-                        x =>
-                        {
-                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
-                                .First(y => y.Key == "Excerpt")
-                                .Value;
-                            return null;
-                        });
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IEnumerable<IDocument> results = excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<p>This is some </p>", result);
-                stream.Dispose();
+                results.Single()["Excerpt"].ShouldBe("<p>This is some </p>");
             }
         }
     }

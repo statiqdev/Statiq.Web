@@ -46,7 +46,11 @@ namespace Wyam.Feeds.Syndication.Rdf
                 string value = ConvertToString(_link);
                 return string.IsNullOrEmpty(value) ? string.Empty : value;
             }
-            set { _link = ConvertToUri(value); }
+
+            set
+            {
+                _link = ConvertToUri(value);
+            }
         }
 
         /// <summary>
@@ -63,7 +67,11 @@ namespace Wyam.Feeds.Syndication.Rdf
                 }
                 return _about;
             }
-            set { _about = string.IsNullOrEmpty(value) ? string.Empty : value; }
+
+            set
+            {
+                _about = string.IsNullOrEmpty(value) ? string.Empty : value;
+            }
         }
 
         Uri IUriProvider.Uri => _link;

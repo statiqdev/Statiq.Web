@@ -10,9 +10,15 @@ namespace Wyam.Razor
 {
     internal class ViewContext : Microsoft.AspNetCore.Mvc.Rendering.ViewContext
     {
-        public ViewContext(ActionContext actionContext, IView view, ViewDataDictionary viewData,
-            ITempDataDictionary tempData, TextWriter writer, HtmlHelperOptions htmlHelperOptions,
-            IDocument document, IExecutionContext executionContext)
+        public ViewContext(
+            ActionContext actionContext,
+            IView view,
+            ViewDataDictionary viewData,
+            ITempDataDictionary tempData,
+            TextWriter writer,
+            HtmlHelperOptions htmlHelperOptions,
+            IDocument document,
+            IExecutionContext executionContext)
             : base(actionContext, view, viewData, tempData, writer, htmlHelperOptions)
         {
             viewData[ViewDataKeys.WyamDocument] = document;

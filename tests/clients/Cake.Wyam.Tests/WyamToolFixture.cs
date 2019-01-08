@@ -1,17 +1,14 @@
-﻿using Cake.Core.Diagnostics;
+﻿using Cake.Common.Tools.DotNetCore;
+using Cake.Core.Diagnostics;
 using Cake.Testing.Fixtures;
-using NSubstitute;
 
 namespace Cake.Wyam.Tests
 {
     internal sealed class WyamToolFixture : ToolFixture<WyamSettings>
     {
-        public ICakeLog Log { get; set; }
-
         public WyamToolFixture()
-             : base("Wyam.exe")
+             : base("Wyam.dll")
         {
-            Log = Substitute.For<ICakeLog>();
         }
 
         protected override void RunTool()

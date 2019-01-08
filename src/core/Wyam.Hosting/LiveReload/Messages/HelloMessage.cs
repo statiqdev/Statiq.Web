@@ -9,5 +9,10 @@ namespace Wyam.Hosting.LiveReload.Messages
         public string ServerName { get; set; } = "Wyam";
 
         public string Command { get; set; } = "hello";
+
+        public HelloMessage(ICollection<string> protocols)
+        {
+            Protocols = protocols;
+        }
     }
 }

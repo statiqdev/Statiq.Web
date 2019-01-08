@@ -1,6 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
+
+[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
+[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1310", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1300", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1136", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1502", Justification = "Stop !")]
+[assembly: SuppressMessage("", "SA1307", Justification = "Stop !")]
 
 namespace Wyam.SwaggerCodeGen
 {

@@ -53,6 +53,7 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.ArchiveExcerpts" usage="Setting" />
     /// <metadata cref="BlogKeys.GenerateArchive" usage="Setting" />
     /// <metadata cref="BlogKeys.IgnoreFolders" usage="Setting" />
+    /// <metadata cref="BlogKeys.MarkdownPrependLinkRoot" usage="Setting" />
     /// <metadata cref="BlogKeys.Published" usage="Input" />
     /// <metadata cref="BlogKeys.Tags" usage="Input" />
     /// <metadata cref="BlogKeys.Lead" usage="Input" />
@@ -74,7 +75,8 @@ namespace Wyam.Blog
                     .Where(x => x != null),
                 MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
-                ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes)
+                ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
+                PrependLinkRoot = ctx => ctx.Bool(BlogKeys.MarkdownPrependLinkRoot)
             });
 
         /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
@@ -88,7 +90,8 @@ namespace Wyam.Blog
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
-                PostsPath = ctx => ctx.DirectoryPath(BlogKeys.PostsPath, ".").FullPath
+                PostsPath = ctx => ctx.DirectoryPath(BlogKeys.PostsPath, ".").FullPath,
+                PrependLinkRoot = ctx => ctx.Bool(BlogKeys.MarkdownPrependLinkRoot)
             });
 
         /// <summary>

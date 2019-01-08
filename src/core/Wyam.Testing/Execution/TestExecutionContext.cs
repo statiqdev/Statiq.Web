@@ -27,7 +27,7 @@ namespace Wyam.Testing.Execution
     /// <summary>
     /// An <see cref="IExecutionContext"/> that can be used for testing.
     /// </summary>
-    public class TestExecutionContext : IExecutionContext
+    public class TestExecutionContext : IExecutionContext, ITypeConversions
     {
         private readonly TestSettings _settings = new TestSettings();
 
@@ -95,6 +95,15 @@ namespace Wyam.Testing.Execution
             {
                 Source = source,
                 Content = GetContent(stream)
+            };
+        }
+
+        /// <inheritdoc/>
+        public IDocument GetDocument(FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return new TestDocument(items)
+            {
+                Source = source
             };
         }
 
@@ -173,14 +182,27 @@ namespace Wyam.Testing.Execution
         public Stream GetContentStream(string content = null) =>
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
 
+        public Dictionary<(Type Value, Type Result), Func<object, object>> TypeConversions { get; } = new Dictionary<(Type Value, Type Result), Func<object, object>>();
+
+        public void AddTypeConversion<T, TResult>(Func<T, TResult> typeConversion) => TypeConversions.Add((typeof(T), typeof(TResult)), x => typeConversion((T)x));
+
         /// <inheritdoc/>
         public bool TryConvert<T>(object value, out T result)
         {
+            // Check if there's a test-specific conversion
+            if (TypeConversions.TryGetValue((value?.GetType() ?? typeof(object), typeof(T)), out Func<object, object> typeConversion))
+            {
+                result = (T)typeConversion(value);
+                return true;
+            }
+
+            // Default conversion is just to cast
             if (value is T)
             {
                 result = (T)value;
                 return true;
             }
+
             result = default(T);
             return value == null;
         }
@@ -189,7 +211,6 @@ namespace Wyam.Testing.Execution
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) =>
             Execute(modules, inputs, null);
 
-        // Executes the module with an empty document containing the specified metadata items
         /// <inheritdoc/>
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) =>
             Execute(modules, null, items);
@@ -211,15 +232,18 @@ namespace Wyam.Testing.Execution
             return inputs.ToList();
         }
 
-        public Func<IJsEngine> JsEngineFunc = () =>
+        public Func<IJsEngine> JsEngineFunc { get; set; } = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
         };
 
         /// <inheritdoc/>
-        public IJsEnginePool GetJsEnginePool(Action<IJsEngine> initializer = null,
-            int startEngines = 10, int maxEngines = 25,
-            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) =>
+        public IJsEnginePool GetJsEnginePool(
+            Action<IJsEngine> initializer = null,
+            int startEngines = 10,
+            int maxEngines = 25,
+            int maxUsagesPerEngine = 100,
+            TimeSpan? engineTimeout = null) =>
             new TestJsEnginePool(JsEngineFunc, initializer);
 
         private class TestJsEnginePool : IJsEnginePool
@@ -264,7 +288,7 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) _settings).GetEnumerator();
+            return ((IEnumerable)_settings).GetEnumerator();
         }
 
         /// <inheritdoc/>

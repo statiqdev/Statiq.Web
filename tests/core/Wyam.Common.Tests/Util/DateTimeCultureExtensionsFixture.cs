@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Util;
@@ -171,7 +172,7 @@ namespace Wyam.Common.Tests.Util
             {
                 // Given
                 TestExecutionContext context = new TestExecutionContext();
-                CultureInfo culture = (CultureInfo) CultureInfo.GetCultureInfo("fr-FR").Clone();
+                CultureInfo culture = (CultureInfo)CultureInfo.GetCultureInfo("fr-FR").Clone();
                 culture.DateTimeFormat.ShortDatePattern = "ddd MMM";
                 context.Settings[Keys.DateTimeDisplayCulture] = culture;
                 DateTime dateTime = new DateTime(2000, 3, 1);
@@ -180,7 +181,7 @@ namespace Wyam.Common.Tests.Util
                 string result = dateTime.ToShortDateString(context);
 
                 // Then
-                Assert.That(result, Is.EqualTo("mer. mars"));
+                result.ShouldBe("mer. mars", StringCompareShould.IgnoreCase);
             }
         }
 

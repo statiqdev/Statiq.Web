@@ -19,7 +19,7 @@ namespace Wyam.Feeds.Syndication.Rss
         public const string MimeType = "application/rss+xml";
 
         private RssChannel _channel = null;
-        private Version _version = new Version(2,0);
+        private Version _version = new Version(2, 0);
 
         public RssFeed()
         {
@@ -199,7 +199,7 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
         {
-            namespaces.Add("", Namespace);
+            namespaces.Add(string.Empty, Namespace);
 
             Channel.AddNamespaces(namespaces);
 

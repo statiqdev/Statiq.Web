@@ -27,6 +27,7 @@ namespace Wyam.YouTube
     public class YouTube : IModule, IAsNewDocuments, IDisposable
     {
         private readonly YouTubeService _youtube;
+
         private readonly Dictionary<string, Func<IDocument, IExecutionContext, YouTubeService, object>> _requests
             = new Dictionary<string, Func<IDocument, IExecutionContext, YouTubeService, object>>();
 
@@ -79,12 +80,8 @@ namespace Wyam.YouTube
             {
                 throw new ArgumentException("Argument is null or empty", nameof(key));
             }
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
 
-            _requests[key] = request;
+            _requests[key] = request ?? throw new ArgumentNullException(nameof(request));
             return this;
         }
 

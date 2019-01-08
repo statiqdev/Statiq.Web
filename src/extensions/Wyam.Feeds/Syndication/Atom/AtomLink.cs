@@ -21,17 +21,10 @@ namespace Wyam.Feeds.Syndication.Atom
         private int _threadCount = 0;
         private AtomDate _threadUpdated;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public AtomLink()
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="link"></param>
         public AtomLink(string link)
         {
             Href = link;
@@ -96,7 +89,7 @@ namespace Wyam.Feeds.Syndication.Atom
                 try
                 {
                     // TODO: use XmlEnum values
-                    _relation = (AtomLinkRelation)Enum.Parse(typeof(AtomLinkRelation), value.Replace("-",""), true);
+                    _relation = (AtomLinkRelation)Enum.Parse(typeof(AtomLinkRelation), value.Replace("-", string.Empty), true);
                 }
                 catch
                 {
@@ -112,7 +105,6 @@ namespace Wyam.Feeds.Syndication.Atom
         {
             get
             {
-                // http://tools.ietf.org/html/rfc4685#section-4
                 string value = _type;
                 if (ThreadCount > 0 && string.IsNullOrEmpty(value))
                 {
@@ -120,7 +112,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return value;
             }
-            set { _type = string.IsNullOrEmpty(value) ? null : value; }
+
+            set
+            {
+                _type = string.IsNullOrEmpty(value) ? null : value;
+            }
         }
 
         [XmlAttribute("href")]
@@ -168,7 +164,7 @@ namespace Wyam.Feeds.Syndication.Atom
         [XmlIgnore]
         public bool ThreadCountSpecified
         {
-            get { return (Relation == AtomLinkRelation.Replies); }
+            get { return Relation == AtomLinkRelation.Replies; }
             set { }
         }
 

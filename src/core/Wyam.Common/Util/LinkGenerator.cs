@@ -4,10 +4,20 @@ using Wyam.Common.IO;
 
 namespace Wyam.Common.Util
 {
+    /// <summary>
+    /// Helps generate normalized links.
+    /// </summary>
     public static class LinkGenerator
     {
-        public static readonly string[] DefaultHidePages = {"index"};
-        public static readonly string[] DefaultHideExtensions = {".htm", ".html"};
+        /// <summary>
+        /// The default page names to hide in links.
+        /// </summary>
+        public static readonly string[] DefaultHidePages = { "index" };
+
+        /// <summary>
+        /// The default extensions to hide in links.
+        /// </summary>
+        public static readonly string[] DefaultHideExtensions = { ".htm", ".html" };
 
         /// <summary>
         /// Generates a normalized link given a path and other conditions.

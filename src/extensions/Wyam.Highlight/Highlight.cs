@@ -21,7 +21,7 @@ namespace Wyam.Highlight
     /// <remarks>
     /// <para>This module finds all &lt;pre&gt; &lt;code&gt; blocks and applies HighlightJs's syntax highlighting.</para>
     /// </remarks>
-    ///  <example>
+    /// <example>
     /// <code>
     /// Pipelines.Add("Highlight",
     ///     ReadFiles("*.html"),
@@ -84,7 +84,6 @@ namespace Wyam.Highlight
                 {
                     x.ExecuteFile(_highlightJsFile);
                 }
-
             }))
             {
                 return inputs.AsParallel().Select(context, input =>
@@ -114,10 +113,9 @@ namespace Wyam.Highlight
 
                                     try
                                     {
-
                                         if (language != null)
                                         {
-                                            engine.SetVariableValue("language", language.Replace("language-", ""));
+                                            engine.SetVariableValue("language", language.Replace("language-", string.Empty));
                                             engine.Execute("result = hljs.highlight(language, input)");
                                         }
                                         else

@@ -10,5 +10,5 @@
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
-  </ItemGroup>
+  </ItemGroup>  
 </Project>

@@ -16,12 +16,7 @@ namespace Wyam.Core.IO
 
         public FileProviderCollection(IFileProvider defaultFileProvider)
         {
-            if (defaultFileProvider == null)
-            {
-                throw new ArgumentNullException(nameof(defaultFileProvider));
-            }
-
-            _fileProviders[NormalizedPath.DefaultFileProvider.Scheme] = defaultFileProvider;
+            _fileProviders[NormalizedPath.DefaultFileProvider.Scheme] = defaultFileProvider ?? throw new ArgumentNullException(nameof(defaultFileProvider));
         }
 
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();
@@ -45,7 +40,7 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentNullException(nameof(scheme));
             }
-            if (scheme == string.Empty)
+            if (scheme?.Length == 0)
             {
                 throw new ArgumentException("Can not remove the default provider", nameof(scheme));
             }

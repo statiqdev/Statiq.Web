@@ -19,15 +19,11 @@ namespace Wyam.Razor
         private readonly ConcurrentBag<ExecutionChangeToken> _executionChangeTokens =
             new ConcurrentBag<ExecutionChangeToken>();
 
-        private readonly IReadOnlyFileSystem _fileSystem;
+        public IReadOnlyFileSystem WyamFileSystem { get; }
 
         public FileSystemFileProvider(IReadOnlyFileSystem fileSystem)
         {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystem));
-            }
-            _fileSystem = fileSystem;
+            WyamFileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         }
 
         public IFileInfo GetFileInfo(string subpath)
@@ -36,11 +32,7 @@ namespace Wyam.Razor
             {
                 return new NotFoundFileInfo(subpath);
             }
-            if (subpath.StartsWith("/", StringComparison.Ordinal))
-            {
-                subpath = subpath.Substring(1);
-            }
-            IFile file = _fileSystem.GetInputFile(subpath);
+            IFile file = WyamFileSystem.GetInputFile(subpath.TrimStart('/'));
             return new WyamFileInfo(file);
         }
 
@@ -50,7 +42,7 @@ namespace Wyam.Razor
             {
                 return new NotFoundDirectoryContents();
             }
-            IDirectory directory = _fileSystem.GetInputDirectory(subpath);
+            IDirectory directory = WyamFileSystem.GetInputDirectory(subpath);
             List<IFileInfo> fileInfos = new List<IFileInfo>();
             fileInfos.AddRange(directory.GetDirectories().Select(x => new WyamDirectoryInfo(x)));
             fileInfos.AddRange(directory.GetFiles().Select(x => new WyamFileInfo(x)));

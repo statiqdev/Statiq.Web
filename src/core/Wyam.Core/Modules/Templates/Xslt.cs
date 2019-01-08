@@ -99,7 +99,6 @@ namespace Wyam.Core.Modules.Templates
                         }
                         return context.GetDocument(input, context.GetContentStream(str.ToString()));
                     }
-
                 }
                 catch (Exception e)
                 {

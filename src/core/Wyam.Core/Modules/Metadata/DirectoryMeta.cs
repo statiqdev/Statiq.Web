@@ -86,12 +86,13 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns>The current module instance.</returns>
         public DirectoryMeta WithMetadataFile(FilePath metadataFileName, bool inherited = false, bool replace = false)
         {
-            return WithMetadataFile((x, y) => x.Source != null && x.Source.FileName.Equals(metadataFileName), inherited, replace);
+            return WithMetadataFile((x, _) => x.Source?.FileName.Equals(metadataFileName) == true, inherited, replace);
         }
 
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+#pragma warning disable RCS1008 // Use explicit type instead of 'var' (when the type is not obvious).
             // Find metadata files
             var metadataDictionary = inputs
                 .Where(input => input.Source != null)
@@ -119,11 +120,11 @@ namespace Wyam.Core.Modules.Metadata
                 .Where(x => x != null)
                 .ToLookup(x => x.Path)
                 .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+#pragma warning restore RCS1008 // Use explicit type instead of 'var' (when the type is not obvious).
 
             // Apply Metadata
             return inputs
-                .Where(input => input.Source != null)
-                .Where(input => _preserveMetadataFiles || !_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(input, context))) // ignore files that define Metadata if not preserved
+                .Where(input => input.Source != null && (_preserveMetadataFiles || !_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(input, context)))) // ignore files that define Metadata if not preserved
                 .Select(context, input =>
                 {
                     // First add the inherited metadata to the temp dictionary
@@ -132,7 +133,7 @@ namespace Wyam.Core.Modules.Metadata
                     if (inputPath != null)
                     {
                         DirectoryPath dir = input.Source.Directory.Collapse();
-                        while (dir != null && dir.FullPath.StartsWith(inputPath.FullPath))
+                        while (dir?.FullPath.StartsWith(inputPath.FullPath) == true)
                         {
                             sourcePaths.Add(dir);
                             dir = dir.Parent;
@@ -177,7 +178,7 @@ namespace Wyam.Core.Modules.Metadata
                         firstLevel = false;
                     }
 
-                    return newMetadata.Any() ? context.GetDocument(input, newMetadata) : input;
+                    return newMetadata.Count > 0 ? context.GetDocument(input, newMetadata) : input;
                 });
         }
 

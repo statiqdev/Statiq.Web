@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -17,8 +18,8 @@ namespace Wyam.Testing
         private readonly ConcurrentDictionary<string, TestTraceListener> _listeners =
             new ConcurrentDictionary<string, TestTraceListener>();
 
-        public TestTraceListener Listener => 
-            _listeners.TryGetValue(TestContext.CurrentContext.Test.ID, out var listener) ? listener : null;
+        public TestTraceListener Listener =>
+            _listeners.TryGetValue(TestContext.CurrentContext.Test.ID, out TestTraceListener listener) ? listener : null;
 
         [SetUp]
         public void BaseSetUp()

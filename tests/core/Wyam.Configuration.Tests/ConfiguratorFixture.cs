@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Execution;
 using Wyam.Testing;
@@ -21,7 +22,7 @@ namespace Wyam.Configuration.Tests
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 int z = 0;
 
 foo bar;
@@ -39,8 +40,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 4", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 4");
             }
 
             [Test]
@@ -49,7 +50,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     Content(true
         && @doc.Bool(""Key"") == false
@@ -71,8 +72,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 8");
             }
 
             [Test]
@@ -81,7 +82,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     Content(
         @doc.Bool(""Key"") == false
@@ -103,8 +104,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 8");
             }
 
             [Test]
@@ -113,7 +114,7 @@ foo bar;
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 Pipelines.Add(
     If(
         @doc.Bool(""Key""),
@@ -136,8 +137,8 @@ foo bar;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.ErrorMessages.Count);
-                StringAssert.StartsWith("Line 9", exception.ErrorMessages[0]);
+                exception.ErrorMessages.Count.ShouldBe(1);
+                exception.ErrorMessages[0].ShouldStartWith("Line 9");
             }
 
             [Test]
@@ -146,7 +147,7 @@ foo bar;
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
 public class MyDocument : CustomDocument
 {
     protected override CustomDocument Clone()
@@ -162,7 +163,7 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
+                engine.DocumentFactory.GetType().Name.ShouldBe("CustomDocumentFactory`1");
             }
 
             [Test]
@@ -171,7 +172,7 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
 public class MyDocument : CustomDocument
 {
     protected override CustomDocument Clone()
@@ -187,7 +188,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
+                engine.DocumentFactory.GetType().Name.ShouldBe("CustomDocumentFactory`1");
             }
 
             [Test]
@@ -196,7 +197,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Settings[""TestString""] = ""teststring"";
                     Settings[""TestInt""] = 1234;
                     Settings[""TestFloat""] = 1234.567;
@@ -207,10 +208,10 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("teststring", engine.Settings["TestString"]);
-                Assert.AreEqual(1234, engine.Settings["TestInt"]);
-                Assert.AreEqual(1234.567, engine.Settings["TestFloat"]);
-                Assert.AreEqual(true, engine.Settings["TestBool"]);
+                engine.Settings["TestString"].ShouldBe("teststring");
+                engine.Settings["TestInt"].ShouldBe(1234);
+                engine.Settings["TestFloat"].ShouldBe(1234.567);
+                engine.Settings["TestBool"].ShouldBe(true);
             }
 
             [Test]
@@ -219,7 +220,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Pipelines.Add(
                         new ReadFiles(""*.cshtml""),
 	                    new WriteFiles("".html""));
@@ -229,8 +230,8 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual(1, engine.Pipelines.Count);
-                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+                engine.Pipelines.Count.ShouldBe(1);
+                engine.Pipelines.Values.First().Count.ShouldBe(2);
             }
 
             [Test]
@@ -239,7 +240,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                string configScript = @"
+                const string configScript = @"
                     Pipelines.Add(
                         ReadFiles(""*.cshtml""),
 	                    WriteFiles("".html""));
@@ -249,8 +250,8 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual(1, engine.Pipelines.Count);
-                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+                engine.Pipelines.Count.ShouldBe(1);
+                engine.Pipelines.Values.First().Count.ShouldBe(2);
             }
 
             [Test]
@@ -270,7 +271,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(string.Empty);
 
                 // Then
-                Assert.AreEqual("Baz", engine.Settings["Foo"]);
+                engine.Settings["Foo"].ShouldBe("Baz");
             }
 
             [Test]
@@ -279,7 +280,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 RemoveListener();
                 Configurator configurator = GetConfigurator();
-                string configScript = @"
+                const string configScript = @"
 #recipe foo
 #recipe bar
 ";
@@ -297,34 +298,7 @@ SetCustomDocumentType<MyDocument>();
 
                 // Then
                 Assert.IsNotNull(exception);
-                StringAssert.Contains("Directive was previously specified", exception.Message);
-            }
-
-            [Test]
-            public void DoesNotThrowForEquivalentDirectiveValues()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-#recipe foo
-#recipe Foo
-";
-
-                // When
-                Exception exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.IsNotNull(exception);
-                StringAssert.DoesNotContain("Directive was previously specified", exception.Message);
+                exception.Message.ShouldContain("Directive was previously specified");
             }
         }
 
@@ -342,7 +316,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(2);
             }
 
             [Test]
@@ -357,7 +331,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(1);
             }
 
             [Test]
@@ -371,7 +345,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual(KnownRecipe.Blog.DefaultTheme, configurator.Theme);
+                configurator.Theme.ShouldBe(KnownRecipe.Blog.DefaultTheme);
             }
 
             [Test]
@@ -386,7 +360,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddRecipePackageAndSetTheme();
 
                 // Then
-                Assert.AreEqual("Foo", configurator.Theme);
+                configurator.Theme.ShouldBe("Foo");
             }
 
             [Test]
@@ -425,7 +399,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(2);
             }
 
             [Test]
@@ -440,7 +414,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+                configurator.PackageInstaller.PackageIds.Count.ShouldBe(1);
             }
 
             [Test]
@@ -452,7 +426,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
 
                 // When
-                Assert.Throws<Exception>(() => configurator.AddThemePackagesAndPath());
+                Should.Throw<Exception>(() => configurator.AddThemePackagesAndPath());
             }
 
             [Test]
@@ -491,7 +465,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.AddThemePackagesAndPath();
 
                 // Then
-                Assert.AreEqual(engine.FileSystem.InputPaths.First().FullPath, "../MyTheme");
+                engine.FileSystem.InputPaths[0].FullPath.ShouldBe("../MyTheme");
             }
         }
 

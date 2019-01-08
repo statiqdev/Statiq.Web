@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.CodeAnalysis.Analysis;
 using Wyam.Testing;
@@ -27,7 +23,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdefghi", result);
+                Assert.AreEqual("abcdefghi", result);
             }
 
             [Test]
@@ -43,7 +39,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdefghi", result);
+                Assert.AreEqual("abcdefghi", result);
             }
 
             [Test]
@@ -59,7 +55,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdef" + Environment.NewLine + "ghi", result);
+                Assert.AreEqual("abcdef" + Environment.NewLine + "ghi", result);
             }
 
             [Test]
@@ -75,7 +71,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "defghi", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "defghi", result);
             }
 
             [Test]
@@ -91,7 +87,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "1234defghi", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "1234defghi", result);
             }
 
             [Test]
@@ -107,7 +103,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "1234defxyz" + Environment.NewLine + "1234ghi", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "1234defxyz" + Environment.NewLine + "1234ghi", result);
             }
 
             [Test]
@@ -123,7 +119,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "1234def" + Environment.NewLine + "1234ghi", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "1234def" + Environment.NewLine + "1234ghi", result);
             }
 
             [Test]
@@ -139,7 +135,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdef" + Environment.NewLine + "1234ghi", result);
+                Assert.AreEqual("abcdef" + Environment.NewLine + "1234ghi", result);
             }
 
             [Test]
@@ -156,7 +152,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdef" + Environment.NewLine + "1234ghi" + Environment.NewLine + "1234xyz", result);
+                Assert.AreEqual("abcdef" + Environment.NewLine + "1234ghi" + Environment.NewLine + "1234xyz", result);
             }
 
             [Test]
@@ -177,7 +173,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "def" + Environment.NewLine + "1234ghi" + Environment.NewLine + "5jklm" + Environment.NewLine + "5n", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "def" + Environment.NewLine + "1234ghi" + Environment.NewLine + "5jklm" + Environment.NewLine + "5n", result);
             }
 
             [Test]
@@ -193,7 +189,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abcdef" + Environment.NewLine + "g", result);
+                Assert.AreEqual("abcdef" + Environment.NewLine + "g", result);
             }
 
             [Test]
@@ -211,7 +207,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "defg" + Environment.NewLine + "1234hij", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "defg" + Environment.NewLine + "1234hij", result);
             }
 
             [Test]
@@ -230,7 +226,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string result = builder.ToString();
 
                 // Then
-                Assert.AreEqual(@"abc" + Environment.NewLine + "1234def" + Environment.NewLine + "1234" + Environment.NewLine + "1234ghi", result);
+                Assert.AreEqual("abc" + Environment.NewLine + "1234def" + Environment.NewLine + "1234" + Environment.NewLine + "1234ghi", result);
             }
         }
     }

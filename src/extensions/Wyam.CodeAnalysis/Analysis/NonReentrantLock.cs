@@ -53,7 +53,7 @@ namespace Wyam.CodeAnalysis.Analysis
         /// <exception cref="LockRecursionException">The caller already holds the lock</exception>
         public void Wait(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.IsOwnedByMe)
+            if (IsOwnedByMe)
             {
                 throw new LockRecursionException();
             }
@@ -67,14 +67,14 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Fast path to try and avoid allocations in callback registration.
                 lock (_syncLock)
                 {
-                    if (!this.IsLocked)
+                    if (!IsLocked)
                     {
-                        this.TakeOwnership();
+                        TakeOwnership();
                         return;
                     }
                 }
 
-                cancellationTokenRegistration = cancellationToken.Register(s_cancellationTokenCanceledEventHandler, _syncLock, useSynchronizationContext: false);
+                cancellationTokenRegistration = cancellationToken.Register(CancellationTokenCanceledEventHandlerAction, _syncLock, useSynchronizationContext: false);
             }
 
             using (cancellationTokenRegistration)
@@ -82,15 +82,15 @@ namespace Wyam.CodeAnalysis.Analysis
                 // PERF: First spin wait for the lock to become available, but only up to the first planned yield.
                 // This additional amount of spinwaiting was inherited from SemaphoreSlim's implementation where
                 // it showed measurable perf gains in test scenarios.
-                SpinWait spin = new SpinWait();
-                while (this.IsLocked && !spin.NextSpinWillYield)
+                SpinWait spin = default(SpinWait);
+                while (IsLocked && !spin.NextSpinWillYield)
                 {
                     spin.SpinOnce();
                 }
 
                 lock (_syncLock)
                 {
-                    while (this.IsLocked)
+                    while (IsLocked)
                     {
                         // If cancelled, we throw. Trying to wait could lead to deadlock.
                         cancellationToken.ThrowIfCancellationRequested();
@@ -101,7 +101,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     }
 
                     // We now hold the lock
-                    this.TakeOwnership();
+                    TakeOwnership();
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             lock (_syncLock)
             {
-                this.ReleaseOwnership();
+                ReleaseOwnership();
 
                 // Release one waiter
                 Monitor.Pulse(_syncLock);
@@ -132,7 +132,7 @@ namespace Wyam.CodeAnalysis.Analysis
         /// <returns>True if the lock is currently held by the calling thread.</returns>
         public bool LockHeldByMe()
         {
-            return this.IsOwnedByMe;
+            return IsOwnedByMe;
         }
 
         /// <summary>
@@ -141,7 +141,10 @@ namespace Wyam.CodeAnalysis.Analysis
         /// <exception cref="InvalidOperationException">The lock is not currently held by the calling thread.</exception>
         public void AssertHasLock()
         {
-            if (!LockHeldByMe()) throw new Exception();
+            if (!LockHeldByMe())
+            {
+                throw new Exception();
+            }
         }
 
         /// <summary>
@@ -172,7 +175,7 @@ namespace Wyam.CodeAnalysis.Analysis
         /// </summary>
         private void TakeOwnership()
         {
-            Contract.Assert(!this.IsLocked);
+            Contract.Assert(!IsLocked);
             _owningThreadId = Environment.CurrentManagedThreadId;
         }
 
@@ -181,14 +184,14 @@ namespace Wyam.CodeAnalysis.Analysis
         /// </summary>
         private void ReleaseOwnership()
         {
-            Contract.Assert(this.IsOwnedByMe);
+            Contract.Assert(IsOwnedByMe);
             _owningThreadId = 0;
         }
 
         /// <summary>
         /// Action object passed to a cancellation token registration.
         /// </summary>
-        private static readonly Action<object> s_cancellationTokenCanceledEventHandler = CancellationTokenCanceledEventHandler;
+        private static readonly Action<object> CancellationTokenCanceledEventHandlerAction = CancellationTokenCanceledEventHandler;
 
         /// <summary>
         /// Callback executed when a cancellation token is canceled during a Wait.
@@ -205,7 +208,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public SemaphoreDisposer DisposableWait(CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.Wait(cancellationToken);
+            Wait(cancellationToken);
             return new SemaphoreDisposer(this);
         }
 

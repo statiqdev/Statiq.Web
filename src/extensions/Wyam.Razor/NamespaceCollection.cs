@@ -26,7 +26,7 @@ namespace Wyam.Razor
 
         public override bool Equals(object obj)
         {
-            var other = obj as NamespaceCollection;
+            NamespaceCollection other = obj as NamespaceCollection;
             return other != null && _namespaces.SequenceEqual(other._namespaces);
         }
 

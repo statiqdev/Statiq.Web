@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -25,7 +19,7 @@ namespace Wyam.Html.Tests
             public void NoReplacementReturnsSameDocument()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -49,7 +43,7 @@ namespace Wyam.Html.Tests
             public void EscapeWith()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -74,7 +68,7 @@ namespace Wyam.Html.Tests
                             </p>
                         </body>
                     </html>";
-                string output = @"<html>
+                const string output = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -114,7 +108,7 @@ namespace Wyam.Html.Tests
             public void EscapeNonStandard()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Foobar</title>
                         </head>
@@ -123,7 +117,7 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         </body>
                     </html>";
-                string output = @"&lt;html&gt;
+                const string output = @"&lt;html&gt;
                         &lt;head&gt;
                             &lt;title&gt;Foobar&lt;&#47;title&gt;
                         &lt;&#47;head&gt;

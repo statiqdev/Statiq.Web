@@ -108,7 +108,7 @@ namespace Wyam.Common.Configuration
 
         private static string GetErrorDetails(string errorDetails)
         {
-            if (errorDetails != null && !errorDetails.StartsWith(" "))
+            if (errorDetails?.StartsWith(" ") == false)
             {
                 errorDetails = " " + errorDetails;
             }

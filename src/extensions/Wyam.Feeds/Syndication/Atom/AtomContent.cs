@@ -13,24 +13,15 @@ namespace Wyam.Feeds.Syndication.Atom
     {
         private Uri _src = null;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public AtomContent() { }
+        public AtomContent()
+        {
+        }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="text"></param>
         public AtomContent(string text)
             : base(text)
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="xhtml"></param>
         public AtomContent(XmlNode xhtml)
             : base(xhtml)
         {
@@ -56,7 +47,11 @@ namespace Wyam.Feeds.Syndication.Atom
                 }
                 return base.Value;
             }
-            set { base.Value = value; }
+
+            set
+            {
+                base.Value = value;
+            }
         }
 
         Uri IUriProvider.Uri => _src;

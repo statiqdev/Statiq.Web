@@ -18,17 +18,14 @@ namespace Wyam.Feeds.Syndication.Rss
         private Uri _link = null;
         private string _description = null;
 
-        //optional
+        // optional
         private RssPerson _author = null;
         private Uri _comments = null;
         private RssEnclosure _enclosure = null;
         private RssGuid _guid = null;
-        private RssDate _pubDate;
-        private RssSource _source = null;
 
         // extensions
         private DublinCore _dublinCore = null;
-        private string _contentEncoded = null;
         private Uri _wfwComment = null;
         private Uri _wfwCommentRss = null;
         private int? _slashComments = null;
@@ -39,7 +36,6 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public RssItem(IFeedItem source)
         {
-
             // ** IFeedMetadata
 
             // ID
@@ -172,30 +168,29 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_author == null)
-                {
-                    _author = new RssPerson();
-                }
-
-                return _author;
+                return _author ?? (_author = new RssPerson());
             }
-            set { _author = value; }
+
+            set
+            {
+                _author = value;
+            }
         }
 
         [XmlIgnore]
         public bool AuthorSpecified
         {
-            get { return (_author != null && !_author.IsEmpty()); }
+            get { return _author?.IsEmpty() == false; }
             set { }
         }
 
         [XmlElement("category")]
-        public readonly List<RssCategory> Categories = new List<RssCategory>();
+        public List<RssCategory> Categories { get; } = new List<RssCategory>();
 
         [XmlIgnore]
         public bool CategoriesSpecified
         {
-            get { return (Categories.Count > 0); }
+            get { return Categories.Count > 0; }
             set { }
         }
 
@@ -215,19 +210,19 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_enclosure == null)
-                {
-                    _enclosure = new RssEnclosure();
-                }
-                return _enclosure;
+                return _enclosure ?? (_enclosure = new RssEnclosure());
             }
-            set { _enclosure = value; }
+
+            set
+            {
+                _enclosure = value;
+            }
         }
 
         [XmlIgnore]
         public bool EnclosureSpecified
         {
-            get { return (_enclosure != null) && _enclosure.HasValue; }
+            get { return _enclosure?.HasValue == true; }
             set { }
         }
 
@@ -236,55 +231,43 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (_guid == null)
-                {
-                    _guid = new RssGuid();
-                }
-                return _guid;
+                return _guid ?? (_guid = new RssGuid());
             }
-            set { _guid = value; }
+
+            set
+            {
+                _guid = value;
+            }
         }
 
         [XmlIgnore]
         public bool GuidSpecified
         {
-            get { return (_guid != null) && _guid.HasValue; }
+            get { return _guid?.HasValue == true; }
             set { }
         }
 
         [DefaultValue(null)]
         [XmlElement("pubDate")]
-        public RssDate PubDate
-        {
-            get { return _pubDate; }
-            set { _pubDate = value; }
-        }
+        public RssDate PubDate { get; set; }
 
         [XmlIgnore]
         public bool PubDateSpecified
         {
-            get { return _pubDate.HasValue; }
+            get { return PubDate.HasValue; }
             set { }
         }
 
         [DefaultValue(null)]
         [XmlElement("source")]
-        public RssSource Source
-        {
-            get { return _source; }
-            set { _source = value; }
-        }
+        public RssSource Source { get; set; } = null;
 
         /// <summary>
         /// Gets and sets the encoded content for this item
         /// </summary>
         [DefaultValue(null)]
-        [XmlElement(ContentEncodedElement, Namespace=ContentNamespace)]
-        public string ContentEncoded
-        {
-            get { return _contentEncoded; }
-            set { _contentEncoded = value; }
-        }
+        [XmlElement(ContentEncodedElement, Namespace = ContentNamespace)]
+        public string ContentEncoded { get; set; } = null;
 
         /// <summary>
         /// Gets and sets the Uri to which comments can be POSTed
@@ -315,21 +298,14 @@ namespace Wyam.Feeds.Syndication.Rss
         [XmlElement(SlashCommentsElement, Namespace=SlashNamespace)]
         public int SlashComments
         {
-            get
-            {
-                if (!_slashComments.HasValue)
-                {
-                    return 0;
-                }
-                return _slashComments.Value;
-            }
-            set { _slashComments = value; }
+            get => _slashComments ?? 0;
+            set => _slashComments = value;
         }
 
         [XmlIgnore]
         public bool SlashCommentsSpecified
         {
-            get { return _slashComments.HasValue; }
+            get => _slashComments.HasValue;
             set { }
         }
 
@@ -418,13 +394,13 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             get
             {
-                if (!_pubDate.HasValue)
+                if (!PubDate.HasValue)
                 {
                     string date = DublinCore[DublinCore.TermName.Date];
                     return ConvertToDateTime(date);
                 }
 
-                return _pubDate.Value;
+                return PubDate.Value;
             }
         }
 
@@ -442,8 +418,8 @@ namespace Wyam.Feeds.Syndication.Rss
                 }
 
                 string type = _enclosure.Type;
-                if (string.IsNullOrEmpty(type) ||
-                    !type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrEmpty(type)
+                    || !type.StartsWith("image", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return null;
                 }
@@ -454,17 +430,7 @@ namespace Wyam.Feeds.Syndication.Rss
 
         string IFeedItem.Content => ContentEncoded;
 
-        Uri IFeedItem.ThreadLink
-        {
-            get
-            {
-                if (_comments == null)
-                {
-                    return _wfwCommentRss;
-                }
-                return _comments;
-            }
-        }
+        Uri IFeedItem.ThreadLink => _comments ?? _wfwCommentRss;
 
         int? IFeedItem.ThreadCount
         {
@@ -482,7 +448,7 @@ namespace Wyam.Feeds.Syndication.Rss
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
         {
-            if (_contentEncoded != null)
+            if (ContentEncoded != null)
             {
                 namespaces.Add(ContentPrefix, ContentNamespace);
             }

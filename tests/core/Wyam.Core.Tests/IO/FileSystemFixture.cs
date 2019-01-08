@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Core.IO;
@@ -418,8 +417,8 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider fooProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider fooProvider = new TestFileProvider();
                 fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 DirectoryPath path = new DirectoryPath("/a/b/c");
@@ -436,8 +435,8 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider fooProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider fooProvider = new TestFileProvider();
                 fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 FilePath path = new FilePath("/a/b/c.txt");
@@ -454,8 +453,8 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider fooProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider fooProvider = new TestFileProvider();
                 fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 DirectoryPath path = new DirectoryPath("foo", "/a/b/c");
@@ -472,8 +471,8 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                IFileProvider defaultProvider = Substitute.For<IFileProvider>();
-                IFileProvider fooProvider = Substitute.For<IFileProvider>();
+                IFileProvider defaultProvider = new TestFileProvider();
+                IFileProvider fooProvider = new TestFileProvider();
                 fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 FilePath path = new FilePath("foo", "/a/b/c.txt");

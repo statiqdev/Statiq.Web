@@ -45,7 +45,7 @@ namespace Wyam.Docs
 
             // Link the type and type parameters seperatly for generic types
             IReadOnlyList<IDocument> typeArguments = metadata.DocumentList(CodeAnalysisKeys.TypeArguments);
-            if (typeArguments != null && typeArguments.Count > 0)
+            if (typeArguments?.Count > 0)
             {
                 // Link to the original definition of the generic type
                 metadata = metadata.Document(CodeAnalysisKeys.OriginalDefinition) ?? metadata;
@@ -54,7 +54,7 @@ namespace Wyam.Docs
                 {
                     // Get the type argument positions
                     int begin = name.IndexOf("<wbr>&lt;") + 9;
-                    int openParen = name.IndexOf("<wbr>(");
+                    int openParen = name.IndexOf("&gt;<wbr>(");
                     int end = name.LastIndexOf("&gt;<wbr>", openParen == -1 ? name.Length : openParen);  // Don't look past the opening paren if there is one
 
                     // Remove existing type arguments and insert linked type arguments (do this first to preserve original indexes)

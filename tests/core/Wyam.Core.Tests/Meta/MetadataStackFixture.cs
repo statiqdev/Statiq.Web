@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using NSubstitute;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Util;
 using Wyam.Core.Meta;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
 
 namespace Wyam.Core.Tests.Meta
 {
@@ -427,9 +427,9 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsListForList()
             {
                 // Given
-                IDocument a = Substitute.For<IDocument>();
-                IDocument b = Substitute.For<IDocument>();
-                IDocument c = Substitute.For<IDocument>();
+                IDocument a = new TestDocument();
+                IDocument b = new TestDocument();
+                IDocument c = new TestDocument();
                 MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<IDocument> { a, b, c } };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
@@ -445,7 +445,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsListForSingleDocument()
             {
                 // Given
-                IDocument a = Substitute.For<IDocument>();
+                IDocument a = new TestDocument();
                 MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = a };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 

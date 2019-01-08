@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
@@ -20,7 +21,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"A
+                const string configScript = @"A
 B
 C";
 
@@ -28,11 +29,12 @@ C";
                 directiveParser.Parse(configScript);
 
                 // Then
-                CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
-                Assert.AreEqual(
+                directiveParser.DirectiveValues.ShouldBeEmpty();
+                directiveParser.Code.ShouldBe(
                     @"A
 B
-C", directiveParser.Code);
+C",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -41,7 +43,7 @@ C", directiveParser.Code);
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"#valid a b c
+                const string configScript = @"#valid a b c
 #invalid a b c
 #validx y z
 A=
@@ -53,20 +55,23 @@ C";
                 directiveParser.Parse(configScript);
 
                 // Then
-                Assert.AreEqual(
+                directiveParser.Code.ShouldBe(
                     @"//#valid a b c
 #invalid a b c
 #validx y z
 A=
 =B
 //#valid   x y z  
-C", directiveParser.Code);
-                CollectionAssert.AreEqual(
-                    new[]
-                {
-                    Tuple.Create((int?)1, "valid", "a b c"),
-                    Tuple.Create((int?)6, "valid", "x y z")
-                }, directiveParser.DirectiveValues.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
+C", StringCompareShould.IgnoreLineEndings);
+
+                directiveParser.DirectiveValues
+                    .Select(x => Tuple.Create(x.Line, x.Name, x.Value))
+                    .ShouldBe(
+                        new[]
+                        {
+                            Tuple.Create((int?)1, "valid", "a b c"),
+                            Tuple.Create((int?)6, "valid", "x y z")
+                        });
             }
 
             [Test]
@@ -75,17 +80,18 @@ C", directiveParser.Code);
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
                 DirectiveParser directiveParser = new DirectiveParser(preprocessor);
-                string configScript = @"# valid a b c
+                const string configScript = @"# valid a b c
             A";
 
                 // When
                 directiveParser.Parse(configScript);
 
                 // Then
-                Assert.AreEqual(
+                directiveParser.Code.ShouldBe(
                     @"# valid a b c
-            A", directiveParser.Code);
-                CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
+            A",
+                    StringCompareShould.IgnoreLineEndings);
+                directiveParser.DirectiveValues.ShouldBeEmpty();
             }
         }
 

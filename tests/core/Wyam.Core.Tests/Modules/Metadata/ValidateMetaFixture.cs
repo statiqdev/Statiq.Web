@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Metadata
 {
@@ -19,11 +21,12 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void ExistenceOfKeyDoesNotThrow()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                document.Metadata.ContainsKey("Title").Returns(true);
-                string value;
-                document.MetadataAs<string>().TryGetValue("Title", out value).Returns(true);
+                IDocument document = new TestDocument(
+                    new MetadataItems
+                    {
+                        { "Title", "Foo" }
+                    });
+                IExecutionContext context = new TestExecutionContext();
                 ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title");
 
                 // When, Then
@@ -34,24 +37,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void AbsenceOfKeyThrows()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                document.Metadata.ContainsKey("Title").Returns(false);
-                ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title");
-
-                // When, Then
-                Assert.Throws<AggregateException>(() => validateMeta.Execute(new[] { document }, context).ToList());  // Make sure to materialize the result list
-            }
-
-            [Test]
-            public void CanNotConvertThrows()
-            {
-                // Given
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                document.Metadata.ContainsKey("Title").Returns(true);
-                string value;
-                document.MetadataAs<string>().TryGetValue("Title", out value).Returns(false);
+                IDocument document = new TestDocument();
+                IExecutionContext context = new TestExecutionContext();
                 ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title");
 
                 // When, Then
@@ -62,15 +49,12 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void FailedAssertionThrows()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                document.Metadata.ContainsKey("Title").Returns(true);
-                string value;
-                document.MetadataAs<string>().TryGetValue("Title", out value).Returns(x =>
-                {
-                    x[1] = "Foobar";
-                    return true;
-                });
+                IDocument document = new TestDocument(
+                    new MetadataItems
+                    {
+                        { "Title", "Foo" }
+                    });
+                IExecutionContext context = new TestExecutionContext();
                 ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title").WithAssertion(x => x == "Baz");
 
                 // When, Then
@@ -81,16 +65,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
             public void PassedAssertionDoesNotThrow()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                document.Metadata.ContainsKey("Title").Returns(true);
-                string value;
-                document.MetadataAs<string>().TryGetValue("Title", out value).Returns(x =>
-                {
-                    x[1] = "Foobar";
-                    return true;
-                });
-                ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title").WithAssertion(x => x == "Foobar");
+                IDocument document = new TestDocument(
+                    new MetadataItems
+                    {
+                        { "Title", "Foo" }
+                    });
+                IExecutionContext context = new TestExecutionContext();
+                ValidateMeta<string> validateMeta = new ValidateMeta<string>("Title").WithAssertion(x => x == "Foo");
 
                 // When, Then
                 Assert.DoesNotThrow(() => validateMeta.Execute(new[] { document }, context).ToList());  // Make sure to materialize the result list

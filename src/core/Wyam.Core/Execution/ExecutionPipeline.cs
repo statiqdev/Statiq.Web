@@ -47,7 +47,11 @@ namespace Wyam.Core.Execution
 
         public bool ProcessDocumentsOnce
         {
-            get { return _previouslyProcessedCache != null; }
+            get
+            {
+                return _previouslyProcessedCache != null;
+            }
+
             set
             {
                 if (!value)
@@ -104,8 +108,7 @@ namespace Wyam.Core.Execution
                 // Add new result documents to the cache
                 foreach (IDocument resultDocument in _clonedDocuments)
                 {
-                    List<IDocument> processedResultDocuments;
-                    if (_processedSources.TryGetValue(resultDocument.Source, out processedResultDocuments))
+                    if (_processedSources.TryGetValue(resultDocument.Source, out List<IDocument> processedResultDocuments))
                     {
                         processedResultDocuments.Add(resultDocument);
                     }
@@ -157,8 +160,7 @@ namespace Wyam.Core.Execution
                                 }
                                 else
                                 {
-                                    List<IDocument> processedDocuments;
-                                    if (!_previouslyProcessedCache.TryGetValue(resultDocument, out processedDocuments))
+                                    if (!_previouslyProcessedCache.TryGetValue(resultDocument, out List<IDocument> processedDocuments))
                                     {
                                         // This document was not previously processed, so add it to the current result and set up a list to track final results
                                         newDocuments.Add(resultDocument);
@@ -166,6 +168,7 @@ namespace Wyam.Core.Execution
                                         _previouslyProcessedCache.Set(resultDocument, processedDocuments);
                                         _processedSources.Add(resultDocument.Source, processedDocuments);
                                     }
+
                                     // Otherwise, this document was previously processed so don't add it to the results
                                 }
                             }
@@ -179,8 +182,11 @@ namespace Wyam.Core.Execution
                         // Set results in engine and trace
                         context.Engine.DocumentCollection.Set(Name, resultDocuments);
                         stopwatch.Stop();
-                        Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)",
-                            moduleName, stopwatch.ElapsedMilliseconds, resultDocuments.Length);
+                        Trace.Verbose(
+                            "Executed module {0} in {1} ms resulting in {2} output document(s)",
+                            moduleName,
+                            stopwatch.ElapsedMilliseconds,
+                            resultDocuments.Length);
                         inputDocuments = resultDocuments;
                     }
                     catch (Exception)
@@ -219,7 +225,7 @@ namespace Wyam.Core.Execution
                         return children ?? Enumerable.Empty<IDocument>();
                     }),
                     flattenedResultDocuments);
-            };
+            }
         }
 
         public void AddClonedDocument(IDocument document) => _clonedDocuments.Add(document);

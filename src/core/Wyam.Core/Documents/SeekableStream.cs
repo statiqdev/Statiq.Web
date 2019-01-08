@@ -109,7 +109,8 @@ namespace Wyam.Core.Documents
                 do
                 {
                     bytesToRead -= Read(buffer, 0, (bytesToRead >= buffer.Length) ? buffer.Length : bytesToRead);
-                } while ((bytesToRead > 0) && (!_endOfStream));
+                }
+                while ((bytesToRead > 0) && (!_endOfStream));
             }
             _memoryStream.Position = (newPosition <= _memoryStream.Length) ? newPosition : _memoryStream.Length;
             return 0;
@@ -139,7 +140,8 @@ namespace Wyam.Core.Documents
             {
                 bytesRead = _stream.Read(buffer, 0, buffer.Length);
                 _memoryStream.Write(buffer, 0, bytesRead);
-            } while (bytesRead != 0);
+            }
+            while (bytesRead != 0);
             _endOfStream = true;
         }
 

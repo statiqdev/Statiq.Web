@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Markdig;
-
-using NSubstitute;
-
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Testing;
@@ -25,13 +21,13 @@ namespace Wyam.Markdown.Tests
             public void RendersMarkdown()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -40,33 +36,31 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void CanUseExternalExtensionDirectly()
             {
-                IMarkdownExtension mockExtension = Substitute.For<IMarkdownExtension>();
-                Markdown markdown = new Markdown().UseExtension(mockExtension);
+                TestMarkdownExtension extension = new TestMarkdownExtension();
+                Markdown markdown = new Markdown().UseExtension(extension);
 
                 // When
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 markdown.Execute(new[] { new TestDocument(string.Empty) }, new TestExecutionContext()).ToList();  // Make sure to materialize the result list
 
                 // Then
-                // Setup will always be called during markdown pipeline setup.
-                mockExtension.Received().Setup(Arg.Any<MarkdownPipelineBuilder>());
+                extension.ReceivedSetup.ShouldBeTrue();
             }
 
             [Test]
             public void CanUseExternalExtension()
             {
-                string input = @"![Alt text](/path/to/img.jpg)";
-                string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
-".Replace(Environment.NewLine, "\n");
+                const string input = "![Alt text](/path/to/img.jpg)";
+                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
-                Type[] o = { typeof(ExternalMarkdownExtension) };
+                Type[] o = { typeof(TestMarkdownExtension) };
                 IEnumerable<Type> cast = o as IEnumerable<Type>;
                 Markdown markdown = new Markdown().UseExtensions(cast);
 
@@ -74,21 +68,22 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void CanUseMultipleExternalExtensions()
             {
-                const string input = @"![Alt text](/path/to/img.jpg)";
-                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>";
+                const string input = "![Alt text](/path/to/img.jpg)";
+                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>
+";
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Type[] o =
                 {
-                    typeof(ExternalMarkdownExtension),
-                    typeof(SecondExternalMarkdownExtension)
+                    typeof(TestMarkdownExtension),
+                    typeof(AlternateTestMarkdownExtension)
                 };
                 IEnumerable<Type> cast = o;
                 Markdown markdown = new Markdown().UseExtensions(cast);
@@ -97,16 +92,16 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();
 
                 // Then
-                Assert.That(results.Select(x => x.Content.Trim()), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void DoesNotRenderSpecialAttributesByDefault()
             {
                 // Given
-                string input = @"[link](url){#id .class}";
-                string output = @"<p><a href=""url"">link</a>{#id .class}</p>
-".Replace(Environment.NewLine, "\n");
+                const string input = "[link](url){#id .class}";
+                const string output = @"<p><a href=""url"">link</a>{#id .class}</p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -115,16 +110,16 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void DoesRenderSpecialAttributesIfExtensionsActive()
             {
                 // Given
-                string input = @"[link](url){#id .class}";
-                string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
-".Replace(Environment.NewLine, "\n");
+                const string input = "[link](url){#id .class}";
+                const string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseExtensions();
@@ -133,20 +128,20 @@ namespace Wyam.Markdown.Tests
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void DoesNotRenderDefinitionListWithoutExtensions()
             {
                 // Given
-                string input = @"Apple
+                const string input = @"Apple
 :   Pomaceous fruit of plants of the genus Malus in 
     the family Rosaceae.";
-                string output = @"<p>Apple
+                const string output = @"<p>Apple
 :   Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</p>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -155,22 +150,22 @@ the family Rosaceae.</p>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void DoesRenderDefintionListWithSpecificConfiguration()
             {
                 // Given
-                string input = @"Apple
+                const string input = @"Apple
 :   Pomaceous fruit of plants of the genus Malus in 
     the family Rosaceae.";
-                string output = @"<dl>
+                const string output = @"<dl>
 <dt>Apple</dt>
 <dd>Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</dd>
 </dl>
-".Replace(Environment.NewLine, "\n");
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseConfiguration("definitionlists");
@@ -179,16 +174,16 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void EscapesAtByDefault()
             {
                 // Given
-                string input = @"Looking @Good, Man!";
-                string output = @"<p>Looking &#64;Good, Man!</p>
-".Replace(Environment.NewLine, "\n");
+                const string input = "Looking @Good, Man!";
+                const string output = @"<p>Looking &#64;Good, Man!</p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -197,16 +192,16 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void UnescapesDoubleAt()
             {
                 // Given
-                string input = @"Looking @Good, \\@Man!";
-                string output = @"<p>Looking &#64;Good, @Man!</p>
-".Replace(Environment.NewLine, "\n");
+                const string input = @"Looking @Good, \\@Man!";
+                const string output = @"<p>Looking &#64;Good, @Man!</p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
@@ -215,16 +210,16 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void DoesNotEscapeAtIfDisabled()
             {
                 // Given
-                string input = @"Looking @Good, Man!";
-                string output = @"<p>Looking @Good, Man!</p>
-".Replace(Environment.NewLine, "\n");
+                const string input = "Looking @Good, Man!";
+                const string output = @"<p>Looking @Good, Man!</p>
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().EscapeAt(false);
@@ -233,21 +228,20 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void RendersMarkdownFromMetadata()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
-
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
@@ -259,21 +253,20 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.String("meta")), Is.EquivalentTo(new[] { output }));
+                results.Single().String("meta").ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
             public void RendersMarkdownFromMetadataToNewKey()
             {
                 // Given
-                string input = @"Line 1
+                const string input = @"Line 1
 *Line 2*
 # Line 3";
-                string output = @"<p>Line 1
+                const string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-".Replace(Environment.NewLine, "\n");
-
+";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
@@ -285,7 +278,7 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.String("meta2")), Is.EquivalentTo(new[] { output }));
+                results.Single().String("meta2").ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -300,7 +293,25 @@ the family Rosaceae.</dd>
                 IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results, Is.EquivalentTo(new[] { document }));
+                results.ShouldBe(new[] { document });
+            }
+
+            [Test]
+            public void UsePrependLinkRootSetting()
+            {
+                // Given
+                const string input = "This is a [link](/link.html)";
+                string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>" + Environment.NewLine;
+                TestExecutionContext context = new TestExecutionContext();
+                context.Settings[Keys.LinkRoot] = "/virtual-dir";
+                TestDocument document = new TestDocument(input);
+                Markdown markdown = new Markdown().PrependLinkRoot(true);
+
+                // When
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

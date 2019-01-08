@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using System.Reflection.Metadata;
 using ConcurrentCollections;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
@@ -33,7 +34,7 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentDictionary<string, (Assembly, bool)> _assembliesToLoad = new ConcurrentDictionary<string, (Assembly, bool)>();
 
         // The full name of assemblies that have already been reflected
-        private readonly HashSet<string> _reflectedAssemblyNames = new HashSet<string>();
+        private readonly ConcurrentHashSet<string> _reflectedAssemblyNames = new ConcurrentHashSet<string>();
 
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly AssemblyResolver _assemblyResolver;
@@ -320,7 +321,9 @@ namespace Wyam.Configuration.Assemblies
             Assembly assembly = null;
             try
             {
-                assembly = Assembly.ReflectionOnlyLoad(assemblyString);
+                // .NET Core doesn't support ReflectionOnlyLoad()
+                // assembly = Assembly.ReflectionOnlyLoad(assemblyString);
+                assembly = Assembly.Load(assemblyString);
             }
             catch (Exception ex)
             {
@@ -367,7 +370,9 @@ namespace Wyam.Configuration.Assemblies
             Assembly assembly = null;
             try
             {
-                assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
+                // .NET Core doesn't support ReflectionOnlyLoad() - not going to worry too much about this since it's going away soon
+                // assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
+                assembly = Assembly.LoadFrom(assemblyFile);
             }
             catch (Exception ex)
             {

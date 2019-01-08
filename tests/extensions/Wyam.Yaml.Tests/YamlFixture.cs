@@ -22,7 +22,7 @@ namespace Wyam.Yaml.Tests
             {
                 // Given
                 IExecutionContext context = new TestExecutionContext();
-                IDocument document = new TestDocument(@"A: 1");
+                IDocument document = new TestDocument("A: 1");
                 Yaml yaml = new Yaml("MyYaml");
 
                 // When

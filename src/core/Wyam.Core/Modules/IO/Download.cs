@@ -133,7 +133,7 @@ namespace Wyam.Core.Modules.IO
             {
                 string uri = r.Uri.ToString();
                 IDocument doc = context.GetDocument(
-                    new FilePath((Uri) null, uri, PathKind.Absolute),
+                    new FilePath((Uri)null, uri, PathKind.Absolute),
                     r.Stream,
                     new MetadataItems
                     {

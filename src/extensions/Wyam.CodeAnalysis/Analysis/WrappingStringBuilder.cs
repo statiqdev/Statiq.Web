@@ -32,7 +32,8 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (maxLineLength < 1)
             {
-                throw new ArgumentException(nameof(maxLineLength)
+                throw new ArgumentException(
+                    nameof(maxLineLength)
                     + " must be greater than 0.", nameof(maxLineLength));
             }
             _maxLineLength = maxLineLength;
@@ -50,16 +51,16 @@ namespace Wyam.CodeAnalysis.Analysis
             + (_segments.Count == 1 && _segments[0].Item3 ? 0 : _segments.Sum(x => x.Item1.Length));
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
             // Exclude the prefix content for the next line if there's nothing after it
             return _masterBuilder + (_segments.Count == 1 && _segments[0].Item3
-                ? string.Empty : string.Join("", _segments.Select(x => x.Item1)));
+                ? string.Empty : string.Concat(_segments.Select(x => x.Item1)));
         }
 
         public WrappingStringBuilder Append(string value, bool wrapBefore = false)
@@ -69,7 +70,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 throw new ArgumentNullException(nameof(value));
             }
 
-            if (value == string.Empty)
+            if (value?.Length == 0)
             {
                 return this;
             }
@@ -84,7 +85,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     // Found one, wrap it around
                     _masterBuilder.AppendLine(
-                        string.Join("", _segments.Take(wrapAt).Select(x => x.Item1)));
+                        string.Concat(_segments.Take(wrapAt).Select(x => x.Item1)));
                     _segments.RemoveRange(0, wrapAt);
                     if (!string.IsNullOrEmpty(NewLinePrefix))
                     {
@@ -111,7 +112,7 @@ namespace Wyam.CodeAnalysis.Analysis
             if (_segments.Count > 0)
             {
                 _masterBuilder.AppendLine(
-                    string.Join("", _segments.Select(x => x.Item1)));
+                    string.Concat(_segments.Select(x => x.Item1)));
                 _segments.Clear();
                 if (!string.IsNullOrEmpty(NewLinePrefix))
                 {

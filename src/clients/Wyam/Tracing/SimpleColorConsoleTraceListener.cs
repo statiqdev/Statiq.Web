@@ -6,8 +6,13 @@ namespace Wyam.Tracing
 {
     // A special trace listener that shows colors in the console and doesn't output the source name or event id
     // This was helpful: http://blog.flimflan.com/ASimpleColorConsoleTraceListener.html
-    internal class SimpleColorConsoleTraceListener : ConsoleTraceListener
+    internal class SimpleColorConsoleTraceListener : TextWriterTraceListener
     {
+        public SimpleColorConsoleTraceListener()
+            : base(Console.Out)
+        {
+        }
+
         private readonly Dictionary<TraceEventType, Tuple<ConsoleColor, ConsoleColor?>> _eventColors
             = new Dictionary<TraceEventType, Tuple<ConsoleColor, ConsoleColor?>>
             {

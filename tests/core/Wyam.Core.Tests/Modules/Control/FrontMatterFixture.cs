@@ -400,8 +400,8 @@ YY")
                     @"AA
 BB
 ", frontMatterContent);
-                Assert.AreEqual(@"XX", documents.First().Content);
-                Assert.AreEqual(@"YY", documents.Skip(1).First().Content);
+                Assert.AreEqual("XX", documents.First().Content);
+                Assert.AreEqual("YY", documents.Skip(1).First().Content);
             }
 
             [Test]

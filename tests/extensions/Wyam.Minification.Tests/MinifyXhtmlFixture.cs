@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -20,7 +20,7 @@ namespace Wyam.Minification.Tests
             public void Minify()
             {
                 // Given
-                string input = @"<html>
+                const string input = @"<html>
                         <head>
                             <title>Title</title>
                         </head>
@@ -30,7 +30,7 @@ namespace Wyam.Minification.Tests
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                string output = @"<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br />some text</p></body></html>";
+                const string output = "<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br />some text</p></body></html>";
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyXhtml minifyXhtml = new MinifyXhtml();
@@ -39,7 +39,7 @@ namespace Wyam.Minification.Tests
                 IList<IDocument> results = minifyXhtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

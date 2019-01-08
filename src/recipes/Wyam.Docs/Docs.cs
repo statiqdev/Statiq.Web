@@ -60,9 +60,11 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.BlogAtomPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogRdfPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogTitle" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownPrependLinkRoot" usage="Setting" />
     /// <metadata cref="DocsKeys.Description" usage="Input" />
     /// <metadata cref="DocsKeys.Category" usage="Input" />
     /// <metadata cref="DocsKeys.Tags" usage="Input" />
@@ -105,7 +107,8 @@ namespace Wyam.Docs
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
-                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath
+                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath,
+                PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot)
             })
                 .InsertAfter(
                     BlogPosts.RazorPosts,
@@ -134,6 +137,7 @@ namespace Wyam.Docs
                 MarkdownConfiguration = ctx => ctx.String(DocsKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
+                PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot),
                 CreateTree = true,
                 TreePlaceholderFactory = TreePlaceholderFactory
             })
@@ -162,7 +166,7 @@ namespace Wyam.Docs
                 TemplateFile = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 PageSize = ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
-                Title = (doc, ctx) => "Blog",
+                Title = (doc, ctx) => ctx.Get(DocsKeys.BlogTitle, "Blog"),
                 RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}"
             });
 
@@ -363,6 +367,7 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
             engine.Settings[DocsKeys.BlogPath] = "blog";
+            engine.Settings[DocsKeys.BlogTitle] = "Blog";
             engine.Settings[DocsKeys.BlogPageSize] = 5;
             engine.Settings[DocsKeys.CategoryPageSize] = 5;
             engine.Settings[DocsKeys.TagPageSize] = 5;

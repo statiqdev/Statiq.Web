@@ -17,6 +17,6 @@
     }
     foreach(Tuple<string, string> page in pages)
     {
-        <li><a href="@page.Item2">@page.Item1</a></li>
+        <li><a href="@(page.Item2)">@(page.Item1)</a></li>
     }
 }

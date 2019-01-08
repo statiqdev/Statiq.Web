@@ -27,9 +27,11 @@ namespace Wyam.GitHub
     public class GitHub : IModule, IAsNewDocuments
     {
         private readonly Credentials _credentials;
-        private Uri _url;
+
         private readonly Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>> _requests
             = new Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>>();
+
+        private Uri _url;
 
         /// <summary>
         /// Creates a connection to the GitHub API with basic authenticated access.
@@ -122,12 +124,8 @@ namespace Wyam.GitHub
             {
                 throw new ArgumentException("Argument is null or empty", nameof(key));
             }
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
 
-            _requests[key] = request;
+            _requests[key] = request ?? throw new ArgumentNullException(nameof(request));
             return this;
         }
 

@@ -48,7 +48,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(
                     Keys.SitemapItem,
                     (d, c) => new SitemapItem(d[Keys.RelativeFilePath].ToString()));
-                var outputs = m.Execute(inputs, context);
+                IEnumerable<IDocument> outputs = m.Execute(inputs, context);
 
                 Func<string, string> formatter = null;
 
@@ -94,7 +94,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(
                     Keys.SitemapItem,
                     (d, c) => d[Keys.RelativeFilePath].ToString());
-                var outputs = m.Execute(inputs, context);
+                IEnumerable<IDocument> outputs = m.Execute(inputs, context);
 
                 Func<string, string> formatter = null;
 

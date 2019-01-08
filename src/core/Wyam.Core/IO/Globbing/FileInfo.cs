@@ -14,12 +14,7 @@ namespace Wyam.Core.IO.Globbing
 
         public FileInfo(IFile file)
         {
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-
-            _file = file;
+            _file = file ?? throw new ArgumentNullException(nameof(file));
         }
 
         public override string Name => _file.Path.Collapse().FileName.FullPath;

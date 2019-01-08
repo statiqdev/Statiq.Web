@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Buildalyzer;
 using Microsoft.CodeAnalysis;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.CodeAnalysis
@@ -32,20 +33,12 @@ namespace Wyam.CodeAnalysis
 
         protected ReadWorkspace(FilePath path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            _path = path;
+            _path = path ?? throw new ArgumentNullException(nameof(path));
         }
 
         protected ReadWorkspace(DocumentConfig path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            _pathDelegate = path;
+            _pathDelegate = path ?? throw new ArgumentNullException(nameof(path));
         }
 
         /// <summary>
@@ -95,11 +88,16 @@ namespace Wyam.CodeAnalysis
         protected internal static AnalyzerResult CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
         {
             log.GetStringBuilder().Clear();
-            AnalyzerResult result = analyzer.Build();
-            if (result.OverallSuccess == false)
+            Common.Tracing.Trace.Verbose($"Building project {analyzer.ProjectFile.Path}");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            AnalyzerResult result = analyzer.Build().FirstOrDefault();
+            sw.Stop();
+            Common.Tracing.Trace.Verbose($"Project {analyzer.ProjectFile.Path} built in {sw.ElapsedMilliseconds} ms");
+            if (result?.Succeeded != true)
             {
-                Trace.Error($"Could not compile project at {analyzer.ProjectFile.Path}");
-                Trace.Warning(log.ToString());
+                Common.Tracing.Trace.Error($"Could not compile project at {analyzer.ProjectFile.Path}");
+                Common.Tracing.Trace.Warning(log.ToString());
                 return null;
             }
             return result;
@@ -126,16 +124,16 @@ namespace Wyam.CodeAnalysis
                         .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
                         .SelectMany(project =>
                         {
-                            Trace.Verbose("Read project {0}", project.Name);
+                            Common.Tracing.Trace.Verbose("Read project {0}", project.Name);
                             string assemblyName = project.AssemblyName;
                             return project.Documents
                                 .AsParallel()
                                 .Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
                                 .Select(x => context.FileSystem.GetInputFile(x.FilePath))
-                                .Where(x => x.Exists && (_whereFile == null || _whereFile(x)) && (_extensions == null || _extensions.Contains(x.Path.Extension)))
+                                .Where(x => x.Exists && (_whereFile == null || _whereFile(x)) && (_extensions?.Contains(x.Path.Extension) != false))
                                 .Select(file =>
                                 {
-                                    Trace.Verbose($"Read file {file.Path.FullPath}");
+                                    Common.Tracing.Trace.Verbose($"Read file {file.Path.FullPath}");
                                     DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
                                     FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectFile.Path.Directory.GetRelativePath(file.Path);
                                     return context.GetDocument(file.Path, file.OpenRead(), new MetadataItems

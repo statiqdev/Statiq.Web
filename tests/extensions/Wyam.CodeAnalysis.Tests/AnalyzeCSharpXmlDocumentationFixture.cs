@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common;
 using Wyam.Common.Documents;
-using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis.Tests
 {
@@ -27,7 +19,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SingleLineSummary()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -57,7 +49,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MultiLineSummary()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -92,7 +84,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MultipleSummaryElements()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -117,7 +109,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NoSummary()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -140,7 +132,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -166,7 +158,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCElementAndInlineCssClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -192,7 +184,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCElementAndDeclaredCssClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -218,7 +210,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCElementAndInlineAndDeclaredCssClasses()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -244,7 +236,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithMultipleCElements()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -270,7 +262,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCodeElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -300,7 +292,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCodeElementAndCElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -332,7 +324,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithMultipleCodeElements()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -365,7 +357,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryOnPartialClasses()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -405,7 +397,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MethodWithParam()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -437,7 +429,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MethodWithMissingParam()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -464,7 +456,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MethodWithExceptionElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -503,7 +495,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MethodWithUnknownExceptionElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -538,7 +530,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ExceptionElementWithoutCref()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -570,7 +562,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MultipleExceptionElements()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -620,7 +612,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithBulletListElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -678,7 +670,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithNumberListElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -736,7 +728,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithTableListElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -794,7 +786,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithParaElements()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -821,7 +813,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithParaElementsAndNestedCElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -848,7 +840,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithSeeElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check <see cref=""Red""/> class</summary>
@@ -876,7 +868,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithSeeElementWithNotFoundSymbol()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check <see cref=""Blue""/> class</summary>
@@ -904,7 +896,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithSeeElementWithNonCompilationGenericSymbol()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check <see cref=""IEnumerable{string}""/> class</summary>
@@ -932,7 +924,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithSeeElementToMethod()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check <see cref=""Red.Blue""/> method</summary>
@@ -963,7 +955,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithUnknownSeeElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check <see cref=""Red""/> class</summary>
@@ -987,7 +979,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithSeealsoElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Check this out <seealso cref=""Red""/></summary>
@@ -1017,7 +1009,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void RootSeealsoElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <seealso cref=""Red""/>
@@ -1045,7 +1037,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void OtherCommentWithSeeElement()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <bar>Check <see cref=""Red""/> class</bar>
@@ -1075,7 +1067,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void MultipleOtherComments()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <bar>Circle</bar>
@@ -1116,7 +1108,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void OtherCommentsWithAttributes()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <bar a='x'>Circle</bar>
@@ -1159,7 +1151,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NoDocsForImplicitSymbols()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -1185,7 +1177,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void WithDocsForImplicitSymbols()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -1212,7 +1204,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ExternalInclude()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <include file=""Included.xml"" path=""//Test/*"" />
@@ -1236,7 +1228,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NamespaceSummary()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     /// <summary>This is a summary.</summary>
                     namespace Foo
                     {
@@ -1260,7 +1252,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void NamespaceSummaryWithNamespaceDocClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         class Green
@@ -1288,7 +1280,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromBaseClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1317,7 +1309,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ImplicitInheritFromBaseClass()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1345,7 +1337,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromCref()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1374,7 +1366,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void CircularInheritdoc()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1404,7 +1396,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void RecursiveInheritdoc()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1438,7 +1430,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritDoesNotOverrideExistingSummary()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>This is a summary.</summary>
@@ -1468,7 +1460,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromOverriddenMethod()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Green summary.</summary>
@@ -1501,7 +1493,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromOverriddenMethodWithParams()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Green summary.</summary>
@@ -1547,7 +1539,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromInterface()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Green summary.</summary>
@@ -1576,7 +1568,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromMultipleInterfaces()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Red summary.</summary>
@@ -1609,7 +1601,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromMultipleInterfacesWithMultipleMatches()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Red summary.</summary>
@@ -1643,7 +1635,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromImplementedMethod()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>Green summary.</summary>
@@ -1676,7 +1668,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromImplementedMethodIfOverride()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public interface IGreen
@@ -1712,7 +1704,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromBaseMethodIfOverrideAndInterface()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public interface IGreen
@@ -1749,7 +1741,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void InheritFromImplementedMethodIfIndirectOverride()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         public interface IGreen
@@ -1789,7 +1781,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void SummaryWithCdata()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <summary>
@@ -1817,7 +1809,7 @@ namespace Wyam.CodeAnalysis.Tests
             public void ExampleCodeWithCdata()
             {
                 // Given
-                string code = @"
+                const string code = @"
                     namespace Foo
                     {
                         /// <example>

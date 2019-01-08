@@ -45,12 +45,7 @@ namespace Wyam.Core.Modules.IO
         /// <param name="patterns">A delegate that returns one or more globbing patterns and/or absolute paths.</param>
         public CopyFiles(DocumentConfig patterns)
         {
-            if (patterns == null)
-            {
-                throw new ArgumentNullException(nameof(patterns));
-            }
-
-            _patternsDelegate = patterns;
+            _patternsDelegate = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         /// <summary>
@@ -62,12 +57,7 @@ namespace Wyam.Core.Modules.IO
         /// <param name="patterns">The globbing patterns and/or absolute paths to read.</param>
         public CopyFiles(params string[] patterns)
         {
-            if (patterns == null)
-            {
-                throw new ArgumentNullException(nameof(patterns));
-            }
-
-            _patterns = patterns;
+            _patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         /// <summary>
@@ -116,12 +106,7 @@ namespace Wyam.Core.Modules.IO
         /// <returns>The current module instance.</returns>
         public CopyFiles To(Func<IFile, IFile, FilePath> destinationPath)
         {
-            if (destinationPath == null)
-            {
-                throw new ArgumentNullException(nameof(destinationPath));
-            }
-
-            _destinationPath = destinationPath;
+            _destinationPath = destinationPath ?? throw new ArgumentNullException(nameof(destinationPath));
             return this;
         }
 
