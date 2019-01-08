@@ -16,9 +16,10 @@ namespace Wyam.Core.Modules.Control
     /// outputs without modification.
     /// </remarks>
     /// <category>Control</category>
-    public class If : IModule, IReadOnlyList<IModuleList>
+    public class If : IModule, IList<IfCondition>
     {
-        private readonly List<Condition> _conditions = new List<Condition>();
+        private readonly List<IfCondition> _conditions = new List<IfCondition>();
+
         private bool _withoutUnmatchedDocuments;
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
         public If(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Condition(predicate, modules));
+            _conditions.Add(new IfCondition(predicate, modules));
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="modules">The modules to execute on documents if the predicate is <c>true</c>.</param>
         public If(ContextConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Condition(predicate, modules));
+            _conditions.Add(new IfCondition(predicate, modules));
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Wyam.Core.Modules.Control
         /// <returns>The current module instance.</returns>
         public If ElseIf(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Condition(predicate, modules));
+            _conditions.Add(new IfCondition(predicate, modules));
             return this;
         }
 
@@ -67,7 +68,7 @@ namespace Wyam.Core.Modules.Control
         /// <returns>The current module instance.</returns>
         public If ElseIf(ContextConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Condition(predicate, modules));
+            _conditions.Add(new IfCondition(predicate, modules));
             return this;
         }
 
@@ -80,7 +81,7 @@ namespace Wyam.Core.Modules.Control
         /// <returns>The current module instance.</returns>
         public IModule Else(params IModule[] modules)
         {
-            _conditions.Add(new Condition(ctx => true, modules));
+            _conditions.Add(new IfCondition(modules));
             return this;
         }
 
@@ -103,12 +104,16 @@ namespace Wyam.Core.Modules.Control
         {
             List<IDocument> results = new List<IDocument>();
             IReadOnlyList<IDocument> documents = inputs;
-            foreach (Condition condition in _conditions)
+            foreach (IfCondition condition in _conditions)
             {
                 // Split the documents into ones that satisfy the predicate and ones that don't
                 List<IDocument> matched = new List<IDocument>();
                 List<IDocument> unmatched = new List<IDocument>();
-                if (condition.ContextConfig != null)
+                if (condition.IsFinalElse)
+                {
+                    matched.AddRange(documents);
+                }
+                else if (condition.ContextConfig != null)
                 {
                     if (condition.ContextConfig.Invoke<bool>(context, "while evaluating condition"))
                     {
@@ -119,11 +124,11 @@ namespace Wyam.Core.Modules.Control
                         unmatched.AddRange(documents);
                     }
                 }
-                else if (condition.ContextConfig == null)
+                else if (condition.DocumentConfig != null)
                 {
                     context.ForEach(documents, document =>
                     {
-                        if (condition.DocumentConfig?.Invoke<bool>(document, context, "while evaluating condition") != false)
+                        if (condition.DocumentConfig.Invoke<bool>(document, context, "while evaluating condition"))
                         {
                             matched.Add(document);
                         }
@@ -157,30 +162,43 @@ namespace Wyam.Core.Modules.Control
         public int Count => _conditions.Count;
 
         /// <inheritdoc />
-        public IModuleList this[int index] => _conditions[index];
+        public bool IsReadOnly => ((IList<IfCondition>)_conditions).IsReadOnly;
+
+        /// <inheritdoc />
+        IfCondition IList<IfCondition>.this[int index]
+        {
+            get => _conditions[index];
+            set => _conditions[index] = value;
+        }
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public IEnumerator<IModuleList> GetEnumerator() => _conditions.GetEnumerator();
+        public IEnumerator<IfCondition> GetEnumerator() => _conditions.GetEnumerator();
 
-        private class Condition : ModuleList
-        {
-            public DocumentConfig DocumentConfig { get; }
-            public ContextConfig ContextConfig { get; }
+        /// <inheritdoc />
+        public int IndexOf(IfCondition item) => _conditions.IndexOf(item);
 
-            public Condition(DocumentConfig documentConfig, IModule[] modules)
-                : base(modules)
-            {
-                DocumentConfig = documentConfig;
-            }
+        /// <inheritdoc />
+        public void Insert(int index, IfCondition item) => _conditions.Insert(index, item);
 
-            public Condition(ContextConfig contextConfig, IModule[] modules)
-                : base(modules)
-            {
-                ContextConfig = contextConfig;
-            }
-        }
+        /// <inheritdoc />
+        public void RemoveAt(int index) => _conditions.RemoveAt(index);
+
+        /// <inheritdoc />
+        public void Add(IfCondition item) => _conditions.Add(item);
+
+        /// <inheritdoc />
+        public void Clear() => _conditions.Clear();
+
+        /// <inheritdoc />
+        public bool Contains(IfCondition item) => _conditions.Contains(item);
+
+        /// <inheritdoc />
+        public void CopyTo(IfCondition[] array, int arrayIndex) => _conditions.CopyTo(array, arrayIndex);
+
+        /// <inheritdoc />
+        public bool Remove(IfCondition item) => _conditions.Remove(item);
     }
 }
