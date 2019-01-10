@@ -1,3 +1,11 @@
+# 2.1.2
+
+- [Feature] New extensions for `IModuleList` to make getting specific modules easier (#763)
+- [Feature] `If` module now exposes conditions and their modules (#761, thanks @ociaw)
+- [Fix] Fixed `BookSiteKeys.BookImage` references in the Velocity theme (#760, thanks @damccull)
+- [Feature] Improved the fakes in Wyam.Testing to allow for custom type conversions when needed
+- [Refactoring] `IExecutionContext.GetLink()` overloads now return the absolute URI if one is provided instead of trying to convert it to a relative link (#629)
+
 # 2.1.1
 
 - [Fix] Fixed a bug with early closure of HTTP response objects when validating links (#759)
