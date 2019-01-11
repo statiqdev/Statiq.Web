@@ -115,7 +115,7 @@
 							{
 								for(int c = 0 ; c < derivedTypes.Count ; c++)
 								{
-									hierarchy.AppendLine($"\tType-->Derived{c}[\"{System.Net.WebUtility.HtmlEncode(derivedTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]");							
+									hierarchy.AppendLine($"\tDerived{c}[\"{System.Net.WebUtility.HtmlEncode(derivedTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]-->Type");							
 									if(derivedTypes[c].ContainsKey(Keys.WritePath))
 									{
 										hierarchy.AppendLine($"\tclick Derived{c} \"{(Context.GetLink(derivedTypes[c].FilePath("WritePath")))}\"");
@@ -126,7 +126,7 @@
 							{
 								for(int c = 0 ; c < implementingTypes.Count ; c++)
 								{
-									hierarchy.AppendLine($"\tType-.->Implementing{c}[\"{System.Net.WebUtility.HtmlEncode(implementingTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]");			
+									hierarchy.AppendLine($"\tImplementing{c}[\"{System.Net.WebUtility.HtmlEncode(implementingTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]-.->Type");			
 									if(implementingTypes[c].ContainsKey(Keys.WritePath))
 									{
 										hierarchy.AppendLine($"\tclick Implementing{c} \"{(Context.GetLink(implementingTypes[c].FilePath("WritePath")))}\"");
