@@ -539,25 +539,30 @@ code a {
 
 /* Mermaid */
 .mermaid {
-  overflow: hidden;
-  visibility: hidden;
+  overflow: hidden !important;
+  visibility: hidden !important;
   &[data-processed="true"] {
-    visibility: visible;
+    visibility: visible !important;
+  }
+  min-height: 200px;
+
+  svg {
+    min-height: 200px;
   }
 }
 .node rect,
 .node circle,
 .node ellipse,
 .node polygon {
-  fill: lighten(@brand-primary, 50%);
-  stroke: #000;
+  fill: lighten(@brand-primary, 50%) !important;
+  stroke: #000 !important;
 }
 .type-node rect,
 .type-node circle,
 .type-node ellipse,
 .type-node polygon {
-  fill: lighten(@brand-primary, 30%);
-  stroke: #000;
+  fill: lighten(@brand-primary, 30%) !important;
+  stroke: #000 !important;
 }
 .cluster rect {
   fill: #f3f3f3 !important;

@@ -1,5 +1,8 @@
 # 2.1.2
 
+- [Fix] Fixed directional arrows in docs class diagrams (#765, thanks @gpriaulx)
+- [Feature] Improved large docs class diagrams by adding panning and zooming (#718)
+- [Fix] Fixed links in docs class diagrams (#719)
 - [Feature] New extensions for `IModuleList` to make getting specific modules easier (#763)
 - [Feature] `If` module now exposes conditions and their modules (#761, thanks @ociaw)
 - [Fix] Fixed `BookSiteKeys.BookImage` references in the Velocity theme (#760, thanks @damccull)

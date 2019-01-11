@@ -9,7 +9,6 @@
         <link rel="shortcut icon" href="@Context.GetLink("/assets/img/favicon.ico")" type="image/x-icon">
         <link rel="icon" href="@Context.GetLink("/assets/img/favicon.ico")" type="image/x-icon">
         <title>@Context.String(DocsKeys.Title, "Docs") - @ViewData[Keys.Title]</title>
-        <link href="@Context.GetLink("/assets/css/mermaid.css")" rel="stylesheet">
         <link href="@Context.GetLink("/assets/css/highlight.css")" rel="stylesheet">
         <link href="@Context.GetLink("/assets/css/bootstrap/bootstrap.css")" rel="stylesheet" />
         <link href="@Context.GetLink("/assets/css/adminlte/AdminLTE.css")" rel="stylesheet" />
@@ -24,6 +23,7 @@
         <script src="@Context.GetLink("/assets/js/jquery.slimscroll.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/jquery.sticky-kit.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/mermaid.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/svg-pan-zoom.min.js")"></script>
         <!--[if lt IE 9]>
         <script src="@Context.GetLink("/assets/js/html5shiv.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
@@ -152,22 +152,36 @@
                 $(document.body).removeClass('sidebar-open');
             });
             
-            $(document).load(function() {
+            $(document).ready(function() {
                 mermaid.initialize(
                 {
                     flowchart:
                     {
-                        htmlLabels: false,
-                        useMaxWidth:false
-                    }
-                });  
-                mermaid.init(undefined, ".mermaid")
+                        useMaxWidth: false
+                    },
+					startOnLoad: false,
+					cloneCssStyles: false
+                });     
+                mermaid.init(undefined, ".mermaid"); 
+
                 $('svg').addClass('img-responsive');
+
+				var target = document.querySelector(".mermaid svg");
+				if(target !== null)
+				{
+					const spz = svgPanZoom(target, {
+						zoomEnabled: true,
+						controlIconsEnabled: true,
+						fit: true,
+						center: true
+					});				
+				}
                 
                 $('pre code').each(function(i, block) {
                     hljs.highlightBlock(block);
                 });  
             });
+
             hljs.initHighlightingOnLoad();
 
             // Back to top
