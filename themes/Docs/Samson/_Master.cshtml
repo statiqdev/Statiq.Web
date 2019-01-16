@@ -162,19 +162,36 @@
 					startOnLoad: false,
 					cloneCssStyles: false
                 });     
-                mermaid.init(undefined, ".mermaid"); 
+                mermaid.init(undefined, ".mermaid");
 
-                $('svg').addClass('img-responsive');
+                // Remove the max-width setting that Mermaid sets
+                var mermaidSvg = $('.mermaid svg');
+                mermaidSvg.addClass('img-responsive');
+                mermaidSvg.css('max-width', '');
 
+                // Make it scrollable
 				var target = document.querySelector(".mermaid svg");
 				if(target !== null)
 				{
-					const spz = svgPanZoom(target, {
+					var panZoom = window.panZoom = svgPanZoom(target, {
 						zoomEnabled: true,
 						controlIconsEnabled: true,
 						fit: true,
-						center: true
-					});				
+						center: true,
+                        maxZoom: 20,
+                        zoomScaleSensitivity: 0.6
+					});			                          
+
+                    // Do the reset once right away to fit the diagram
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                    
+                    $(window).resize(function(){
+                        panZoom.resize();
+                        panZoom.fit();
+                        panZoom.center();
+                    });
 				}
                 
                 $('pre code').each(function(i, block) {

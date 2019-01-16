@@ -1,3 +1,7 @@
+# 2.2.0
+
+- [Fix] Fixed some quirks with the new diagram panning/zooming
+
 # 2.1.2
 
 - [Fix] Fixed directional arrows in docs class diagrams (#765, thanks @gpriaulx)
