@@ -1,5 +1,6 @@
 # 2.2.0
 
+- [Refactoring] Big performance improvement to the `AutoLink` module (#766)
 - [Fix] Fixed some quirks with the new diagram panning/zooming
 
 # 2.1.2

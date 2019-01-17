@@ -508,6 +508,42 @@ namespace Wyam.Html.Tests
             }
 
             [Test]
+            public void WordAtTheEndAfterPreviousWord()
+            {
+                // Given
+                const string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>sdfg asdf aasdf asf asdf asdf asdf aabc Fuzz bazz def efg baz x</p>
+                        </body>
+                    </html>";
+                const string output = @"<html><head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>sdfg asdf aasdf asf asdf asdf asdf aabc <a href=""http://www.google.com"">Fuzz</a> bazz def efg <a href=""http://www.yahoo.com"">baz</a> x</p>
+                        
+                    </body></html>";
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+                {
+                    { "Fuzz", "http://www.google.com" },
+                    { "baz", "http://www.yahoo.com" },
+                }).WithMatchOnlyWholeWord();
+
+                // When
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+            }
+
+            [Test]
             public void NonWholeWords()
             {
                 // Given
