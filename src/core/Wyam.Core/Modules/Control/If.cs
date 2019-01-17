@@ -165,7 +165,7 @@ namespace Wyam.Core.Modules.Control
         public bool IsReadOnly => ((IList<IfCondition>)_conditions).IsReadOnly;
 
         /// <inheritdoc />
-        IfCondition IList<IfCondition>.this[int index]
+        public IfCondition this[int index]
         {
             get => _conditions[index];
             set => _conditions[index] = value;
