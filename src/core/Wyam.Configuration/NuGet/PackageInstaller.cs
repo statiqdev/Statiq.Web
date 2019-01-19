@@ -35,7 +35,7 @@ namespace Wyam.Configuration.NuGet
             _fileSystem = fileSystem;
             _assemblyLoader = assemblyLoader;
             _currentFramework = GetCurrentFramework();
-            _settings = Settings.LoadDefaultSettings(fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            _settings = Settings.LoadDefaultSettings(fileSystem.RootPath.FullPath, null, new XPlatMachineWideSetting());
             _sourceRepositories = new SourceRepositoryProvider(_settings);
         }
 
