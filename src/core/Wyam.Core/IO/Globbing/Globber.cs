@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,6 +16,15 @@ namespace Wyam.Core.IO.Globbing
     /// </summary>
     public static class Globber
     {
+        private static readonly Lazy<bool> IsCaseInsensitiveFileSystem = new Lazy<bool>(() =>
+        {
+            string file = Path.GetTempPath() + Guid.NewGuid().ToString().ToLower();
+            File.CreateText(file).Close();
+            bool isCaseInsensitive = File.Exists(file.ToUpper());
+            File.Delete(file);
+            return isCaseInsensitive;
+        });
+
         private static readonly Regex HasBraces = new Regex(@"\{.*\}");
         private static readonly Regex NumericSet = new Regex(@"^\{(-?[0-9]+)\.\.(-?[0-9]+)\}");
 
@@ -37,7 +47,7 @@ namespace Wyam.Core.IO.Globbing
         {
             // Initially based on code from Reliak.FileSystemGlobbingExtensions (https://github.com/reliak/Reliak.FileSystemGlobbingExtensions)
 
-            Matcher matcher = new Matcher(StringComparison.Ordinal);
+            Matcher matcher = new Matcher(IsCaseInsensitiveFileSystem.Value ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
             // Expand braces
             IEnumerable<string> expandedPatterns = patterns
