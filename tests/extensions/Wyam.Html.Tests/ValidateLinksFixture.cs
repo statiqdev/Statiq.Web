@@ -32,8 +32,8 @@ namespace Wyam.Html.Tests
                 // Given
                 IDocument document = new TestDocument($"<html><head></head><body>{tag}</body></html>");
                 HtmlParser parser = new HtmlParser();
-                ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links =
-                    new ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>>();
+                ConcurrentDictionary<string, ConcurrentBag<(string source, string outerHtml)>> links =
+                    new ConcurrentDictionary<string, ConcurrentBag<(string source, string outerHtml)>>();
 
                 // When
                 ValidateLinks.GatherLinks(document, parser, links);
@@ -53,8 +53,8 @@ namespace Wyam.Html.Tests
                 // Given
                 IDocument document = new TestDocument($"<html><head>{tag}</head><body></body></html>");
                 HtmlParser parser = new HtmlParser();
-                ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>> links =
-                    new ConcurrentDictionary<string, ConcurrentBag<Tuple<FilePath, string>>>();
+                ConcurrentDictionary<string, ConcurrentBag<(string source, string outerHtml)>> links =
+                    new ConcurrentDictionary<string, ConcurrentBag<(string source, string outerHtml)>>();
 
                 // When
                 ValidateLinks.GatherLinks(document, parser, links);
