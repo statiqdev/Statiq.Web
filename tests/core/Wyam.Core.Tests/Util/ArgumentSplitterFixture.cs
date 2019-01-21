@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
-using Wyam.Configuration.Preprocessing;
+using Wyam.Core.Util;
 using Wyam.Testing;
 
-namespace Wyam.Configuration.Tests.Preprocessing
+namespace Wyam.Core.Tests.Util
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

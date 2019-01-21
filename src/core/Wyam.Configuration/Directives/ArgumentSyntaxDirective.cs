@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.Linq;
 using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
+using Wyam.Core.Util;
 
 namespace Wyam.Configuration.Directives
 {

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Configuration.Preprocessing
+namespace Wyam.Core.Util
 {
     // From http://stackoverflow.com/a/298990/807064
-    internal static class ArgumentSplitter
+    public static class ArgumentSplitter
     {
         public static IEnumerable<string> Split(string arguments)
         {
