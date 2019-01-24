@@ -7,7 +7,7 @@ namespace Wyam.Tracing
     internal class SimpleFileTraceListener : TextWriterTraceListener
     {
         public SimpleFileTraceListener(string fileName)
-            : base(fileName)
+            : base(File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
         {
             StreamWriter writer = Writer as StreamWriter;
             if (writer != null)

@@ -182,8 +182,7 @@ namespace Wyam.Html
                         // Enumerate all descendant text nodes not already in a link element
                         foreach (IText text in element.Descendents().OfType<IText>().Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                         {
-                            string newText;
-                            if (ReplaceStrings(text, links, out newText))
+                            if (ReplaceStrings(text, links, out string newText))
                             {
                                 // Only perform replacement if the text content changed
                                 replacements.Add(new KeyValuePair<IText, string>(text, newText));
@@ -217,132 +216,123 @@ namespace Wyam.Html
             });
         }
 
-        private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText)
+        private bool ReplaceStrings(IText textNode, IDictionary<string, string> map, out string newText)
         {
-            string s = text.Text;
-            Trie<char> lookup = new Trie<char>(map.Keys);
-            StringBuilder builder = new StringBuilder();
-            int lastIdx = -1;
-            Trie<char>.Node lastNode = lookup.Root;
-            int matchIdx = -1;
-            HashSet<Trie<char>.Node> badMatches = new HashSet<Trie<char>.Node>();
-            bool replaced = false;
-            for (int i = 0; i < s.Length + 1; i++)
+            string text = textNode.Text;
+            List<Segment> segments = new List<Segment>()
             {
-                if (i < s.Length)
+                new SubstringSegment(0, text.Length)
+            };
+
+            // Perform replacements
+            foreach (KeyValuePair<string, string> kvp in map.OrderByDescending(x => x.Key.Length))
+            {
+                int c = 0;
+                while (c < segments.Count)
                 {
-                    char chr = s[i];
-                    if (lastNode.HasNext(chr))
+                    int index = segments[c].IndexOf(kvp.Key, 0, ref text);
+                    while (index >= 0)
                     {
-                        // Partial match
-                        Trie<char>.Node matchNode = lastNode.Children[chr];
-                        if (!badMatches.Contains(matchNode))
+                        if (CheckWordSeparators(
+                            ref text,
+                            segments[c].StartIndex,
+                            segments[c].StartIndex + segments[c].Length - 1,
+                            index,
+                            index + kvp.Key.Length - 1))
                         {
-                            lastNode = matchNode;
-                            if (matchIdx == -1)
+                            // Insert the new content
+                            Segment replacing = segments[c];
+                            segments[c] = new ReplacedSegment(kvp.Value);
+
+                            // Insert segment before the match
+                            if (index > replacing.StartIndex)
                             {
-                                matchIdx = i;
+                                segments.Insert(c, new SubstringSegment(replacing.StartIndex, index - replacing.StartIndex));
+                                c++;
                             }
-                            continue;
+
+                            // Insert segment after the match
+                            int startIndex = index + kvp.Key.Length;
+                            int endIndex = replacing.StartIndex + replacing.Length;
+                            if (startIndex < endIndex)
+                            {
+                                Segment segment = new SubstringSegment(startIndex, endIndex - startIndex);
+                                if (c + 1 == segments.Count)
+                                {
+                                    segments.Add(segment);
+                                }
+                                else
+                                {
+                                    segments.Insert(c + 1, segment);
+                                }
+                            }
+
+                            // Go to the next segment
+                            index = -1;
+                        }
+                        else
+                        {
+                            index = segments[c].IndexOf(kvp.Key, index - segments[c].StartIndex + 1, ref text);
                         }
                     }
+                    c++;
                 }
-
-                if (lastNode.IsRoot && CheckWordSeparators(s, matchIdx, i - 1))
-                {
-                    // Complete match
-                    string key = new string(lastNode.Cumulative.ToArray());
-                    builder.Append(map[key]);  // New replacement content shouldn't be HTML encoded because it contains HTML like <a>
-                    replaced = true;
-                    i = i - 1;
-                    lastIdx = i;
-                }
-                else
-                {
-                    // No match
-                    if (matchIdx != -1)
-                    {
-                        // Backtrack to the last match start and don't consider this match
-                        i = matchIdx - 1;
-                        matchIdx = -1;
-                        badMatches.Add(lastNode);
-                        lastNode = lookup.Root;
-                        continue;
-                    }
-
-                    // Existing text content needs to be encoded since it was part of a text node
-                    builder.Append(WebUtility.HtmlEncode(i < s.Length
-                        ? s.Substring(lastIdx + 1, i - lastIdx)
-                        : s.Substring(lastIdx + 1)));
-                    lastIdx = i;
-                }
-                badMatches.Clear();
-                matchIdx = -1;
-                lastNode = lookup.Root;
             }
 
-            newText = replaced ? builder.ToString() : string.Empty;
+            // Join and escape non-replaced content
+            if (segments.Count > 0)
+            {
+                newText = string.Concat(segments.Select(x => x.GetText(ref text)));
+                return true;
+            }
 
-            return replaced;
+            newText = null;
+            return false;
         }
 
-        private bool CheckWordSeparators(string stringToCheck, int matchStartIndex, int matchEndIndex)
+        private bool CheckWordSeparators(ref string stringToCheck, int substringStartIndex, int substringEndIndex, int matchStartIndex, int matchEndIndex)
         {
             if (_matchOnlyWholeWord)
             {
-                return (matchStartIndex <= 0 || char.IsWhiteSpace(stringToCheck[matchStartIndex - 1]) || _startWordSeparators.Contains(stringToCheck[matchStartIndex - 1]))
-                    && (matchEndIndex >= stringToCheck.Length - 1 || char.IsWhiteSpace(stringToCheck[matchEndIndex + 1]) || _endWordSeparators.Contains(stringToCheck[matchEndIndex + 1]));
+                return (matchStartIndex <= substringStartIndex || char.IsWhiteSpace(stringToCheck[matchStartIndex - 1]) || _startWordSeparators.Contains(stringToCheck[matchStartIndex - 1]))
+                    && (matchEndIndex + 1 > substringEndIndex || char.IsWhiteSpace(stringToCheck[matchEndIndex + 1]) || _endWordSeparators.Contains(stringToCheck[matchEndIndex + 1]));
             }
             return true;
         }
 
-        private class Trie<T>
-            where T : IComparable<T>
+        private abstract class Segment
         {
-            public Node Root { get; }
+            public int StartIndex { get; protected set; } = -1;
+            public int Length { get; protected set; } = -1;
+            public virtual int IndexOf(string value, int startIndex, ref string search) => -1;
+            public abstract string GetText(ref string text);
+        }
 
-            public Trie(IEnumerable<IEnumerable<T>> elems)
+        private class SubstringSegment : Segment
+        {
+            public SubstringSegment(int startIndex, int length)
             {
-                Root = new Node(new T[0]);
-                foreach (IEnumerable<T> elem in elems)
-                {
-                    LoadSingle(elem);
-                }
+                StartIndex = startIndex;
+                Length = length;
             }
 
-            private void LoadSingle(IEnumerable<T> word)
+            public override int IndexOf(string value, int startIndex, ref string search) =>
+                search.IndexOf(value, StartIndex + startIndex, Length - startIndex);
+
+            public override string GetText(ref string text) =>
+                WebUtility.HtmlEncode(text.Substring(StartIndex, Length));
+        }
+
+        private class ReplacedSegment : Segment
+        {
+            private readonly string _text;
+
+            public ReplacedSegment(string text)
             {
-                Node lastNode = Root;
-                foreach (T chr in word)
-                {
-                    Node node;
-                    if (!lastNode.Children.TryGetValue(chr, out node))
-                    {
-                        node = new Node(lastNode.Cumulative.Concat(new[] { chr }));
-                        lastNode.Children[chr] = node;
-                    }
-                    lastNode = node;
-                }
-                lastNode.IsRoot = true;
+                _text = text;
             }
 
-            public class Node
-            {
-                public IEnumerable<T> Cumulative { get; }
-                public bool IsRoot { get; set; }
-                public IDictionary<T, Node> Children { get; }
-
-                public bool HasNext(T elem)
-                {
-                    return Children.Keys.Any(k => k.Equals(elem));
-                }
-
-                public Node(IEnumerable<T> cumulative)
-                {
-                    Cumulative = cumulative;
-                    Children = new Dictionary<T, Node>();
-                }
-            }
+            public override string GetText(ref string text) => _text;
         }
     }
 }
