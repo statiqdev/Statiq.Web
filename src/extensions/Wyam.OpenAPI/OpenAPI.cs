@@ -9,15 +9,6 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 
-[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
-[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
-
 namespace Wyam.OpenAPI
 {
     public class OpenAPI : IModule
@@ -38,29 +29,32 @@ namespace Wyam.OpenAPI
             _readerSetup = readerSetup;
         }
 
+#pragma warning disable SA1005 // Single line comments should begin with single space
+
         //public OpenAPI ComponentsWhere(OpenApiXml =>)
         //{
         //    return this;
         //}
+#pragma warning restore SA1005 // Single line comments should begin with single space
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs
                 .AsParallel()
                 .Select(context, input =>
                 {
-                    var readerSetting = new OpenApiReaderSettings();
+                    OpenApiReaderSettings readerSetting = new OpenApiReaderSettings();
                     _readerSetup(readerSetting);
 
                     OpenApiDiagnostic diagnostic = null;
                     try
                     {
-                        var openApiDocument = new OpenApiStringReader(readerSetting).Read(input.Content, out diagnostic);
-                        var documentMetadata = new Dictionary<string, object>() { { _key, openApiDocument } };
+                        OpenApiDocument openApiDocument = new OpenApiStringReader(readerSetting).Read(input.Content, out diagnostic);
+                        Dictionary<string, object> documentMetadata = new Dictionary<string, object>() { { _key, openApiDocument } };
                         return context.GetDocument(input, documentMetadata);
                     }
                     catch (Exception ex)
                     {
-                        var msg = string.Join(Environment.NewLine, diagnostic?.Errors.Select(e => e.Message).ToArray() ?? new string[0]);
+                        string msg = string.Join(Environment.NewLine, diagnostic?.Errors.Select(e => e.Message).ToArray() ?? new string[0]);
                         throw new Exception(msg, innerException: ex); // TODO, find another more precise exception type
                     }
                 })

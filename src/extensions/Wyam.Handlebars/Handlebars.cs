@@ -11,13 +11,6 @@ using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using HDN = HandlebarsDotNet;
 
-[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
-[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
-
 namespace Wyam.Handlebars
 {
     public class Handlebars : IModule
@@ -26,7 +19,7 @@ namespace Wyam.Handlebars
         {
             List<string> result = new List<string>();
 
-            var jsonSettings = new JsonSerializerSettings
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
             {
                 Error = (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args) =>
                 {
@@ -45,9 +38,9 @@ namespace Wyam.Handlebars
         {
             HDN.Handlebars.RegisterHelper("json", (writer, context, parameters) =>
             {
-                var value = (parameters.Length >= 1) ? parameters[0] : (object)context;
+                object value = (parameters.Length >= 1) ? parameters[0] : (object)context;
 
-                var json = Json(value, out var errors);
+                string json = Json(value, out string[] errors);
                 writer.WriteSafeString(json);
 
                 WriteErrors(writer, parameters, errors);
@@ -55,14 +48,14 @@ namespace Wyam.Handlebars
 
             HDN.Handlebars.RegisterHelper("yaml", (writer, context, parameters) =>
             {
-                var value = (parameters.Length >= 1) ? parameters[0] : (object)context;
-                var json = Json(value, out var errors);
-                var reader = new YamlDotNet.Serialization.DeserializerBuilder()
+                object value = (parameters.Length >= 1) ? parameters[0] : (object)context;
+                string json = Json(value, out string[] errors);
+                YamlDotNet.Serialization.Deserializer reader = new YamlDotNet.Serialization.DeserializerBuilder()
                     .Build();
 
-                var obj = reader.Deserialize<object>(json);
+                object obj = reader.Deserialize<object>(json);
 
-                var serializer = new YamlDotNet.Serialization.SerializerBuilder()
+                YamlDotNet.Serialization.Serializer serializer = new YamlDotNet.Serialization.SerializerBuilder()
                     .Build();
                 string yaml = serializer.Serialize(obj);
                 writer.WriteSafeString(yaml);
@@ -73,7 +66,7 @@ namespace Wyam.Handlebars
 
         private static void WriteErrors(TextWriter writer, object[] parameters, string[] errors)
         {
-            var writeErrors = (parameters.Length >= 2 && bool.TryParse(parameters[1].ToString(), out var parsed)) ? parsed : false;
+            bool writeErrors = (parameters.Length >= 2 && bool.TryParse(parameters[1].ToString(), out bool parsed)) ? parsed : false;
             if (writeErrors && errors.Length != 0)
             {
                 writer.WriteSafeString(
@@ -88,13 +81,17 @@ namespace Wyam.Handlebars
                 .AsParallel()
                 .Select(context, input =>
                 {
-                    var template = HDN.Handlebars.Compile(input.Content);
-                    var metadata = new Dictionary<string, object>();
-                    foreach (var meta in input.Metadata) metadata[meta.Key] = meta.Value;
+                    Func<object, string> template = HDN.Handlebars.Compile(input.Content);
+                    Dictionary<string, object> metadata = new Dictionary<string, object>();
+                    foreach (KeyValuePair<string, object> meta in input.Metadata)
+                    {
+                        metadata[meta.Key] = meta.Value;
+                    }
+
                     var templateValues = new { metadata, content = input.Content };
-                    var output = template(templateValues);
-                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(output));
-                    var document = context.GetDocument(input, stream);
+                    string output = template(templateValues);
+                    MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(output));
+                    IDocument document = context.GetDocument(input, stream);
                     return document;
                 })
                 .Where(x => x != null);

@@ -12,26 +12,6 @@ using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
 using HDN = HandlebarsDotNet;
 
-[assembly: SuppressMessage("", "RCS1008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1009", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1503", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
-[assembly: SuppressMessage("", "IDE0008", Justification = "Stop !")]
-[assembly: SuppressMessage("", "RCS1012", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1401", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1310", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1300", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1136", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1502", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1307", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1515", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1508", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1124", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1507", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1132", Justification = "Stop !")]
-[assembly: SuppressMessage("", "SA1005", Justification = "Stop !")]
-
 namespace Wyam.Handlebars.Tests
 {
     [TestFixture]
@@ -64,7 +44,7 @@ namespace Wyam.Handlebars.Tests
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -94,7 +74,7 @@ namespace Wyam.Handlebars.Tests
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -123,7 +103,7 @@ Serialisation errors :
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -150,7 +130,7 @@ content: '{{yaml}}'
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -177,7 +157,7 @@ Serialisation errors :
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -190,7 +170,7 @@ Serialisation errors :
             public void RenderOpenApiObject()
             {
                 // Given
-                var api = new OpenApiDocument
+                OpenApiDocument api = new OpenApiDocument
                 {
                     Info = new OpenApiInfo
                     {
@@ -253,7 +233,7 @@ Serialisation errors :
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "api", api } });
-                var handlebars = new Handlebars();
+                Handlebars handlebars = new Handlebars();
 
                 // When
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
