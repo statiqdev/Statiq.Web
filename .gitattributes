@@ -2,27 +2,26 @@
 * text=auto
 
 # Text files that should be normalized to LF in odb.
-*.cs     text eol=lf diff=csharp
-*.xaml   text eol=lf
-*.config text eol=lf
-*.c      text eol=lf
-*.h      text eol=lf
-*.cpp    text eol=lf
-*.hpp    text eol=lf
+*.cs     text diff=csharp
+*.xaml   text
+*.config text
+*.c      text
+*.h      text
+*.cpp    text
+*.hpp    text
 
 *.sln     text eol=crlf
-*.csproj  text eol=lf
-*.vcxproj text eol=lf
+*.csproj  text
+*.vcxproj text
 
-*.md       text eol=lf
-*.tt       text eol=lf
-*.sh       text eol=lf
-*.ps1      text eol=lf
-*.cmd      text eol=lf
+*.md       text
+*.tt       text
+*.sh       text
+*.ps1      text
+*.cmd      text
 *.bat      text eol=crlf
-*.markdown text eol=lf
-*.msbuild  text eol=lf
-
+*.markdown text
+*.msbuild  text
 
 # Binary files that should not be normalized or diffed
 *.png    binary
@@ -42,13 +41,13 @@
 *.7z     binary
 
 # Standard to msysgit
-*.doc	 diff=astextplain
-*.DOC	 diff=astextplain
+*.doc diff=astextplain
+*.DOC diff=astextplain
 *.docx diff=astextplain
 *.DOCX diff=astextplain
-*.dot  diff=astextplain
-*.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
-*.rtf	 diff=astextplain
-*.RTF	 diff=astextplain
+*.dot diff=astextplain
+*.DOT diff=astextplain
+*.pdf diff=astextplain
+*.PDF diff=astextplain
+*.rtf diff=astextplain
+*.RTF diff=astextplain
