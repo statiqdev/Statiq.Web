@@ -9,6 +9,9 @@ namespace Wyam.Core.IO.FileProviders.Local
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class LocalDirectory : IDirectory
     {
+        private static readonly LocalCaseSensitivityChecker _caseSensitivtyChecker
+            = new LocalCaseSensitivityChecker();
+
         private readonly DirectoryInfo _directory;
         private readonly DirectoryPath _path;
 
@@ -79,5 +82,7 @@ namespace Wyam.Core.IO.FileProviders.Local
 
             return new LocalFile(_path.CombineFile(path));
         }
+
+        public bool IsCaseSensitive => _caseSensitivtyChecker.IsCaseSensitive(this);
     }
 }

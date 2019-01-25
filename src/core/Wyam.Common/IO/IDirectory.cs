@@ -27,6 +27,11 @@ namespace Wyam.Common.IO
         IDirectory Parent { get; }
 
         /// <summary>
+        /// Indicates whether this directory (and files/directories under it) are case-sensitive.
+        /// </summary>
+        bool IsCaseSensitive { get; }
+
+        /// <summary>
         /// Creates the directory, including any necessary parent directories.
         /// </summary>
         void Create();

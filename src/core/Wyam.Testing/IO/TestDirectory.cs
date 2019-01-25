@@ -36,6 +36,8 @@ namespace Wyam.Testing.IO
             }
         }
 
+        public bool IsCaseSensitive => true;
+
         public void Create() => _fileProvider.Directories.Add(_path.FullPath);
 
         public void Delete(bool recursive) => _fileProvider.Directories.Remove(_path.FullPath);

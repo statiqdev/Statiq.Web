@@ -16,16 +16,6 @@ namespace Wyam.Core.IO.Globbing
     /// </summary>
     public static class Globber
     {
-        private static readonly Lazy<bool> IsCaseSensitiveFileSystem = new Lazy<bool>(() =>
-        {
-            // Based on https://stackoverflow.com/questions/430256/how-do-i-determine-whether-the-filesystem-is-case-sensitive-in-net
-            string file = Path.GetTempPath() + Guid.NewGuid().ToString().ToLower();
-            File.CreateText(file).Close();
-            bool isCaseInsensitive = File.Exists(file.ToUpper());
-            File.Delete(file);
-            return isCaseInsensitive;
-        });
-
         private static readonly Regex HasBraces = new Regex(@"\{.*\}");
         private static readonly Regex NumericSet = new Regex(@"^\{(-?[0-9]+)\.\.(-?[0-9]+)\}");
 
@@ -48,7 +38,7 @@ namespace Wyam.Core.IO.Globbing
         {
             // Initially based on code from Reliak.FileSystemGlobbingExtensions (https://github.com/reliak/Reliak.FileSystemGlobbingExtensions)
 
-            Matcher matcher = new Matcher(IsCaseSensitiveFileSystem.Value ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+            Matcher matcher = new Matcher(directory.IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 
             // Expand braces
             IEnumerable<string> expandedPatterns = patterns
