@@ -138,13 +138,13 @@ namespace Wyam.Json.Tests
                     { "JsonObject", _jsonObject }
                 });
                 GenerateJson generateJson = new GenerateJson("JsonObject").WithIndenting(false);
-                string nonIndentedJsonContent = _jsonContent.Replace(" ", string.Empty).Replace("\r\n", string.Empty);
+                string nonIndentedJsonContent = _jsonContent.Replace(" ", string.Empty).Replace("\n", string.Empty);
 
                 // When
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                results.Select(x => x.Content).Single().ToString().ShouldBe(nonIndentedJsonContent, StringCompareShould.IgnoreLineEndings);
+                results.Select(x => x.Content).Single().ShouldBe(nonIndentedJsonContent, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -162,7 +162,7 @@ namespace Wyam.Json.Tests
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                results.Select(x => x.Content).Single().ToString().ShouldBe(_camelCaseJsonContent, StringCompareShould.IgnoreLineEndings);
+                results.Select(x => x.Content).Single().Replace("\r\n", string.Empty).ShouldBe(_camelCaseJsonContent.Replace("\n", string.Empty), StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
