@@ -1,5 +1,9 @@
-# 2.2.0
+# 2.1.3
 
+- [Fix] Fixes for URL absolute link validation (#773, thanks @glennawatson)
+- [Refactoring] Changed line ending behavior for files in the repository and re-normalized line endings to LF (#772, thanks @glennawatson)
+- [Feature] Updates to the globber and file system abstractions to deal with file system case sensitivity better (#771, thanks @glennawatson)
+- [Fix] Allow the `If` module indexer to be accessed without casting (#769, thanks @ociaw)
 - [Refactoring] Big performance improvement to the `AutoLink` module (#766)
 - [Fix] Fixed some quirks with the new diagram panning/zooming
 
