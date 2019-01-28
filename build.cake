@@ -28,7 +28,7 @@
 #addin "Octokit"
 #tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
 #tool "nuget:?package=NuGet.CommandLine&version=4.9.2"
-#tool "AzurePipelines.TestLogger&version=1.0.0"
+#tool "AzurePipelines.TestLogger&version=1.0.1"
 
 using Octokit;
 
