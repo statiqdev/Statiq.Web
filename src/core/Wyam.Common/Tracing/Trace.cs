@@ -17,8 +17,9 @@ namespace Wyam.Common.Tracing
     public class Trace : ITrace
     {
         private static readonly TraceSource TraceSource = new TraceSource("Wyam", SourceLevels.Information);
+        private static readonly object ListenersLock = new object();
+
         private static int _indent = 0;
-        private static object _lock = new object();
 
         public static ITrace Current { get; } = new Trace();
 
@@ -34,7 +35,7 @@ namespace Wyam.Common.Tracing
 
         public static void AddListener(TraceListener listener)
         {
-            lock (_lock)
+            lock (ListenersLock)
             {
                 TraceSource.Listeners.Add(listener);
                 listener.IndentLevel = _indent;
@@ -43,7 +44,7 @@ namespace Wyam.Common.Tracing
 
         public static void RemoveListener(TraceListener listener)
         {
-            lock (_lock)
+            lock (ListenersLock)
             {
                 listener.IndentLevel = 0;
                 TraceSource.Listeners.Remove(listener);
@@ -52,7 +53,7 @@ namespace Wyam.Common.Tracing
 
         public static IEnumerable<TraceListener> GetListeners()
         {
-            lock (_lock)
+            lock (ListenersLock)
             {
                 return TraceSource.Listeners.OfType<TraceListener>().ToArray();
             }
@@ -101,9 +102,13 @@ namespace Wyam.Common.Tracing
                 if (value >= 0)
                 {
                     Interlocked.Exchange(ref _indent, value);
-                    foreach (TraceListener listener in TraceSource.Listeners)
+
+                    lock (ListenersLock)
                     {
-                        listener.IndentLevel = value;
+                        foreach (TraceListener listener in TraceSource.Listeners)
+                        {
+                            listener.IndentLevel = value;
+                        }
                     }
                 }
             }

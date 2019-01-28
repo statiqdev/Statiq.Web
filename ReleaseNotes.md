@@ -1,5 +1,6 @@
 # 2.1.3
 
+- [Fix] Fixes a possible concurrency bug when adding/removing trace loggers and indenting
 - [Fix] Fixes for URL absolute link validation (#773, thanks @glennawatson)
 - [Refactoring] Changed line ending behavior for files in the repository and re-normalized line endings to LF (#772, thanks @glennawatson)
 - [Feature] Updates to the globber and file system abstractions to deal with file system case sensitivity better (#771, thanks @glennawatson)
