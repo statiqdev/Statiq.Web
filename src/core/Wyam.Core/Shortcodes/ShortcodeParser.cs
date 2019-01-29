@@ -127,7 +127,7 @@ namespace Wyam.Core.Shortcodes
                             currentTag.Content.Remove(currentTag.Content.Length - _endDelimiter.Text.Length - 1, _endDelimiter.Text.Length + 1);
                             string name = new string(currentTag.Content.ToString().Trim().TakeWhile(x => !char.IsWhiteSpace(x)).ToArray());
 
-                            // Make sure it's the name name
+                            // Make sure it's the same name
                             if (name.Equals(shortcode.Name, StringComparison.OrdinalIgnoreCase))
                             {
                                 shortcode.Content = content.Remove(content.Length - _startDelimiter.Text.Length - 2, _startDelimiter.Text.Length + 2).ToString();
@@ -142,13 +142,14 @@ namespace Wyam.Core.Shortcodes
                                     shortcode.Finish(i);
                                     instances.Add(shortcode);
                                 }
+
+                                shortcode = null;
+                                content = null;
+                                style = null;
+                                justFinished = true;  // Makes sure we skip the look ahead on the index where we just finished
                             }
 
-                            shortcode = null;
-                            content = null;
                             currentTag = null;
-                            style = null;
-                            justFinished = true;  // Makes sure we skip the look ahead on the index where we just finished
                         }
                     }
 

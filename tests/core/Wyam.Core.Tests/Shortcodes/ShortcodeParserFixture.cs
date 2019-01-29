@@ -11,6 +11,7 @@ using Wyam.Testing;
 namespace Wyam.Core.Tests.Shortcodes
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ShortcodeParserFixture : BaseFixture
     {
         public class ParseTests : ShortcodeParserFixture
@@ -59,6 +60,26 @@ namespace Wyam.Core.Tests.Shortcodes
             [TestCase("{{%name%}}{{%/ name %}}", 0, 22)]
             [TestCase("{{% name %}}{{%/name%}}", 0, 22)]
             [TestCase("{{%name%}}{{%/name%}}", 0, 20)]
+            [TestCase("012{{% name %}}{{%/ name %}}xyz", 3, 27)]
+            [TestCase("012{{% name %}}{{%/ name %}} xyz", 3, 27)]
+            [TestCase("012 {{% name %}}{{%/ name %}}xyz", 4, 28)]
+            [TestCase("012 {{% name %}}{{%/ name %}} xyz", 4, 28)]
+            [TestCase("{{% name %}}abc{{%/ name %}}", 0, 27)]
+            [TestCase("{{%name%}}abc{{%/ name %}}", 0, 25)]
+            [TestCase("{{% name %}}abc{{%/name%}}", 0, 25)]
+            [TestCase("{{%name%}}abc{{%/name%}}", 0, 23)]
+            [TestCase("012{{% name %}}abc{{%/ name %}}xyz", 3, 30)]
+            [TestCase("012{{% name %}}abc{{%/ name %}} xyz", 3, 30)]
+            [TestCase("012 {{% name %}}abc{{%/ name %}}xyz", 4, 31)]
+            [TestCase("012 {{% name %}}abc{{%/ name %}} xyz", 4, 31)]
+            [TestCase("{{% name %}}{{%/ foo %}}{{%/ name %}}", 0, 36)]
+            [TestCase("{{% name %}}{{% foo %}}{{%/ foo %}}{{%/ name %}}", 0, 47)]
+            [TestCase("{{% name %}}abc{{%/ foo %}}xyz{{%/ name %}}", 0, 42)]
+            [TestCase("{{% name %}}abc{{% foo %}}def{{%/ foo %}}xyz{{%/ name %}}", 0, 56)]
+            [TestCase("{{% name %}}{{!/ foo !}}{{%/ name %}}", 0, 36)]
+            [TestCase("{{% name %}}{{! foo !}}{{!/ foo !}}{{%/ name %}}", 0, 47)]
+            [TestCase("{{% name %}}{{! foo !}}{{*/ foo *}}{{%/ name %}}", 0, 47)]
+            [TestCase("{{% name %}}abc{{* foo *}}def{{*/ foo *}}xyz{{%/ name %}}", 0, 56)]
             public void FindsClosingShortcode(string input, int firstIndex, int lastIndex)
             {
                 // Given
@@ -79,7 +100,9 @@ namespace Wyam.Core.Tests.Shortcodes
                 result.Single().LastIndex.ShouldBe(lastIndex);
             }
 
-            // Does not find different close name
+            // throw for unregistered shortcode name
+
+            // Throws for unnamed shortcodes
 
             // Finds different styles
 
