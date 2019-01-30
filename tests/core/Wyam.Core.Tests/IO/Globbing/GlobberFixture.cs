@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.IO;
 using Wyam.Core.IO.Globbing;
 using Wyam.Testing;
@@ -43,6 +44,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a", new[] { "foo/*{!r,}/*.txt" }, new[] { "/a/foo/baz/b.txt" })]
             [TestCase("/a/x", new[] { "../b/**/1/*.txt" }, new[] { "/a/b/c/1/2.txt" })]
             [TestCase("/a/b", new[] { "**/1/*.txt" }, new[] { "/a/b/c/1/2.txt" })]
+            [TestCase("/a", new[] { "x/*.{txt,xml,doc}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml", "/a/x/foo.doc" })]
             public void ShouldReturnMatchedFiles(string directoryPath, string[] patterns, string[] resultPaths)
             {
                 // Given
@@ -56,6 +58,53 @@ namespace Wyam.Core.Tests.IO.Globbing
                 // Then
                 CollectionAssert.AreEquivalent(resultPaths, matches.Select(x => x.Path.FullPath));
                 CollectionAssert.AreEquivalent(resultPaths, matchesReversedSlash.Select(x => x.Path.FullPath));
+            }
+
+            [Test]
+            public void DoubleWildcardShouldMatchZeroOrMorePathSegments()
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/root");
+                fileProvider.AddDirectory("/root/a");
+                fileProvider.AddDirectory("/root/a/b");
+                fileProvider.AddDirectory("/root/d");
+                fileProvider.AddFile("/root/a/x.txt");
+                fileProvider.AddFile("/root/a/b/x.txt");
+                fileProvider.AddFile("/root/d/x.txt");
+                IDirectory directory = fileProvider.GetDirectory("/");
+
+                // When
+                IEnumerable<IFile> matches = Globber.GetFiles(directory, "root/{a,}/**/x.txt");
+
+                // Then
+                matches.Select(x => x.Path.FullPath).ShouldBe(
+                    new[] { "/root/a/x.txt", "/root/a/b/x.txt", "/root/d/x.txt" }, true);
+            }
+
+            [Test]
+            public void WildcardShouldMatchZeroOrMore()
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/root");
+                fileProvider.AddDirectory("/root/a");
+                fileProvider.AddDirectory("/root/a/b");
+                fileProvider.AddDirectory("/root/d");
+                fileProvider.AddFile("/root/a/x.txt");
+                fileProvider.AddFile("/root/a/b/x.txt");
+                fileProvider.AddFile("/root/a/b/.txt");
+                fileProvider.AddFile("/root/d/x.txt");
+                IDirectory directory = fileProvider.GetDirectory("/");
+
+                // When
+                IEnumerable<IFile> matches = Globber.GetFiles(directory, "root/**/*.txt");
+
+                // Then
+                matches.Select(x => x.Path.FullPath).ShouldBe(
+                    new[] { "/root/a/x.txt", "/root/a/b/x.txt", "/root/a/b/.txt", "/root/d/x.txt" }, true);
             }
 
             [TestCase("/a/x", new[] { "../b/c/**/1/2/*.txt" }, new[] { "/a/b/c/d/e/1/2/3.txt" })]
