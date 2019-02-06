@@ -8,14 +8,10 @@ namespace Wyam.Core.Shortcodes
     {
         public StringBuilder Content { get; } = new StringBuilder();
         public int FirstIndex { get; }
-        public int LastWhiteSpace { get; }
-        public int LastNonWhiteSpace { get; }
 
-        public CurrentTag(int firstIndex, int lastWhiteSpace, int lastNonWhiteSpace)
+        public CurrentTag(int firstIndex)
         {
             FirstIndex = firstIndex;
-            LastWhiteSpace = lastWhiteSpace;
-            LastNonWhiteSpace = lastNonWhiteSpace;
         }
     }
 }

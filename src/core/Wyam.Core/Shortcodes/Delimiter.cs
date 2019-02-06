@@ -7,8 +7,6 @@ namespace Wyam.Core.Shortcodes
 {
     internal class Delimiter
     {
-        private static readonly char[] Styles = new[] { '%', '!', '*', '#' };
-
         private readonly bool _start;
 
         public string Text { get; }
@@ -21,11 +19,11 @@ namespace Wyam.Core.Shortcodes
             _start = start;
         }
 
-        public bool Locate(char c, bool closing, ref char? style)
+        public bool Locate(char c, bool isclosing)
         {
-            if (closing && _index == Text.Length + 1)
+            if (isclosing && _index == Text.Length)
             {
-                // Closing delimiter, check closing slash
+                // Closing tag, check closing slash
                 if (c == '/')
                 {
                     _index++;
@@ -35,28 +33,9 @@ namespace Wyam.Core.Shortcodes
                     _index = 0;
                 }
             }
-            else if ((_start && _index == Text.Length)
-                && ((style == null && Styles.Contains(c)) || (style != null && c == style)))
+            else if (_index < Text.Length && c == Text[_index])
             {
-                // Start delimiter, check style char
-                style = c;
-                _index++;
-            }
-            else if ((!_start && _index == 0)
-                && ((style == null && Styles.Contains(c)) || (style != null && c == style)))
-            {
-                // End delimiter, check style char
-                style = c;
-                _index++;
-            }
-            else if (_start && _index < Text.Length && c == Text[_index])
-            {
-                // Start delimiter, check text
-                _index++;
-            }
-            else if (!_start && _index > 0 && _index - 1 < Text.Length && c == Text[_index - 1])
-            {
-                // Start delimiter, check text
+                // Check delimiter char
                 _index++;
             }
             else
@@ -66,8 +45,8 @@ namespace Wyam.Core.Shortcodes
             }
 
             // Did we complete the end delimiter?
-            if ((closing && _index == Text.Length + 2)
-                || (!closing && _index == Text.Length + 1))
+            if ((isclosing && _index == Text.Length + 1)
+                || (!isclosing && _index == Text.Length))
             {
                 _index = 0;
                 return true;

@@ -9,9 +9,8 @@ namespace Wyam.Core.Shortcodes
 {
     internal class ShortcodeInstance
     {
-        public ShortcodeInstance(char style, int firstIndex, string name, string[] arguments, IShortcode shortcode)
+        public ShortcodeInstance(int firstIndex, string name, string[] arguments, IShortcode shortcode)
         {
-            Style = style;
             FirstIndex = firstIndex;
             Name = name;
             Arguments = arguments;
@@ -23,7 +22,6 @@ namespace Wyam.Core.Shortcodes
             LastIndex = lastIndex;
         }
 
-        public char Style { get; }
         public int FirstIndex { get; }
         public string Name { get; }
         public string[] Arguments { get; }

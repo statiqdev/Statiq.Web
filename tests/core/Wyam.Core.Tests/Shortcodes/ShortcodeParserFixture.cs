@@ -41,8 +41,6 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    "{{",
-                    "}}",
                     new Dictionary<string, Common.Shortcodes.IShortcode>
                     {
                         { "name", null }
@@ -85,8 +83,6 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    "{{",
-                    "}}",
                     new Dictionary<string, Common.Shortcodes.IShortcode>
                     {
                         { "name", null }
@@ -106,8 +102,6 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% %}}abc{{%/ %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    "{{",
-                    "}}",
                     new Dictionary<string, Common.Shortcodes.IShortcode>
                     {
                         { "bar", null }
@@ -123,8 +117,6 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    "{{",
-                    "}}",
                     new Dictionary<string, Common.Shortcodes.IShortcode>
                     {
                         { "bar", null }
@@ -134,7 +126,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 Should.Throw<ArgumentException>(() => parser.Parse(stream));
             }
 
-            // Finds different styles
+            // close tag with correct name but extra content throws
 
             // "{{ % %}}"
             // "{{% % }}" - also test space between style in end tag
@@ -146,6 +138,9 @@ namespace Wyam.Core.Tests.Shortcodes
             // "{{% name %}}"
             // "{{%name%}}"
             // "...{{% name %}}..."
+
+            // Alternate delimiters
+            // Same delimiters for open and close
         }
     }
 }
