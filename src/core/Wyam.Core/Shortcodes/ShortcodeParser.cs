@@ -107,7 +107,7 @@ namespace Wyam.Core.Shortcodes
                                 .Trim();
                             if (name.Any(x => char.IsWhiteSpace(x)))
                             {
-                                throw new ArgumentException("Closing shortcode tags should only consist of the shortcode name");
+                                throw new ShortcodeParserException("Closing shortcode tags should only consist of the shortcode name");
                             }
 
                             // Make sure it's the same name
@@ -127,6 +127,11 @@ namespace Wyam.Core.Shortcodes
 
                     i++;
                 }
+
+                if (shortcode != null)
+                {
+                    throw new ShortcodeParserException($"The shortcode {shortcode.Name} was not terminated");
+                }
             }
 
             return instances;
@@ -139,14 +144,14 @@ namespace Wyam.Core.Shortcodes
             string name = split.FirstOrDefault();
             if (name == null)
             {
-                throw new ArgumentException("Shortcode must have a name");
+                throw new ShortcodeParserException("Shortcode must have a name");
             }
             string[] arguments = split.Skip(1).ToArray();
 
             // Try to get the shortcode
             if (!_shortcodes.TryGetValue(name, out IShortcode shortcode))
             {
-                throw new ArgumentException($"A shortcode with the name {name} was not found");
+                throw new ShortcodeParserException($"A shortcode with the name {name} was not found");
             }
 
             return new ShortcodeInstance(firstIndex, name, arguments, shortcode);

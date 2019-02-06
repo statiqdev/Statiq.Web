@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Shouldly;
+using Wyam.Common.Shortcodes;
 using Wyam.Core.Shortcodes;
 using Wyam.Testing;
 
@@ -41,7 +42,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    new Dictionary<string, IShortcode>
                     {
                         { "name", null }
                     });
@@ -83,7 +84,74 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    new Dictionary<string, IShortcode>
+                    {
+                        { "name", null }
+                    });
+
+                // When
+                List<ShortcodeInstance> result = parser.Parse(stream);
+
+                // Then
+                result.Single().FirstIndex.ShouldBe(firstIndex);
+                result.Single().LastIndex.ShouldBe(lastIndex);
+            }
+
+            [TestCase("{{% foo %}}")]
+            [TestCase("{{%foo%}}")]
+            [TestCase("abc{{% foo %}}123")]
+            [TestCase("abc{{% foo %}}123{{% bar %}}")]
+            [TestCase("abc{{% foo %}}123{{%/ foo %}}456{{% bar %}}")]
+            [TestCase("abc{{% foo %}}123{{% bar %}}{{%/ bar %}}")]
+            public void ThrowsForUnterminatedShortcode(string input)
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                ShortcodeParser parser = new ShortcodeParser(
+                    new Dictionary<string, IShortcode>
+                    {
+                        { "foo", null },
+                        { "bar", null }
+                    });
+
+                // When, Then
+                Should.Throw<ShortcodeParserException>(() => parser.Parse(stream));
+            }
+
+            [TestCase("{{ name }}{{/ name }}", 0, 20, "{{", "}}")]
+            [TestCase("{{name}}{{/ name }}", 0, 18, "{{", "}}")]
+            [TestCase("{{ name }}abc{{/ name }}", 0, 23, "{{", "}}")]
+            [TestCase("012{{ name }}abc{{/ name }}xyz", 3, 26, "{{", "}}")]
+            [TestCase("{{ name }}abc{{%/ foo %}}xyz{{/ name }}", 0, 38, "{{", "}}")]
+            [TestCase("{{ name }}abc{{% foo %}}def{{%/ foo %}}xyz{{/ name }}", 0, 52, "{{", "}}")]
+            [TestCase("{{ name }}{{!/ foo !}}{{/ name }}", 0, 32, "{{", "}}")]
+            [TestCase("{ name }{/ name }", 0, 16, "{", "}")]
+            [TestCase("{name}{/ name }", 0, 14, "{", "}")]
+            [TestCase("{ name }abc{/ name }", 0, 19, "{", "}")]
+            [TestCase("012{ name }abc{/ name }xyz", 3, 22, "{", "}")]
+            [TestCase("{ name }abc{{%/ foo %}}xyz{/ name }", 0, 34, "{", "}")]
+            [TestCase("{ name }abc{{% foo %}}def{{%/ foo %}}xyz{/ name }", 0, 48, "{", "}")]
+            [TestCase("{ name }{{!/ foo !}}{/ name }", 0, 28, "{", "}")]
+            [TestCase("| name ||/ name |", 0, 16, "|", "|")]
+            [TestCase("|name||/ name |", 0, 14, "|", "|")]
+            [TestCase("| name |abc|/ name |", 0, 19, "|", "|")]
+            [TestCase("012| name |abc|/ name |xyz", 3, 22, "|", "|")]
+            [TestCase("| name |abc|/ foo |xyz|/ name |", 0, 30, "|", "|")]
+            [TestCase("| name |abc| foo |def|/ foo |xyz|/ name |", 0, 40, "|", "|")]
+            [TestCase("| name ||/ foo ||/ name |", 0, 24, "|", "|")]
+            public void SupportsAlternateDelimiters(
+                string input,
+                int firstIndex,
+                int lastIndex,
+                string startDelimiter,
+                string endDelimiter)
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                ShortcodeParser parser = new ShortcodeParser(
+                    startDelimiter,
+                    endDelimiter,
+                    new Dictionary<string, IShortcode>
                     {
                         { "name", null }
                     });
@@ -102,13 +170,13 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% %}}abc{{%/ %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    new Dictionary<string, IShortcode>
                     {
                         { "bar", null }
                     });
 
                 // When, Then
-                Should.Throw<ArgumentException>(() => parser.Parse(stream));
+                Should.Throw<ShortcodeParserException>(() => parser.Parse(stream));
             }
 
             [Test]
@@ -117,30 +185,29 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    new Dictionary<string, IShortcode>
                     {
                         { "bar", null }
                     });
 
                 // When, Then
-                Should.Throw<ArgumentException>(() => parser.Parse(stream));
+                Should.Throw<ShortcodeParserException>(() => parser.Parse(stream));
             }
 
-            // close tag with correct name but extra content throws
+            [Test]
+            public void ThrowsForExtraClosingContent()
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo bar %}}"));
+                ShortcodeParser parser = new ShortcodeParser(
+                    new Dictionary<string, IShortcode>
+                    {
+                        { "foo", null }
+                    });
 
-            // "{{ % %}}"
-            // "{{% % }}" - also test space between style in end tag
-            // "{{%%}}"
-            // "{{% %}}"
-            // "{{% name %}}{{%/ %}}
-
-            // Throws for unterminated shortcode
-            // "{{% name %}}"
-            // "{{%name%}}"
-            // "...{{% name %}}..."
-
-            // Alternate delimiters
-            // Same delimiters for open and close
+                // When, Then
+                Should.Throw<ShortcodeParserException>(() => parser.Parse(stream));
+            }
         }
     }
 }
