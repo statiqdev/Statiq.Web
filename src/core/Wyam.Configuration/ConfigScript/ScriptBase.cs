@@ -3,6 +3,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Shortcodes;
 using Wyam.Core.Documents;
 using Wyam.Core.Execution;
 
@@ -28,6 +29,8 @@ namespace Wyam.Configuration.ConfigScript
         public IFileSystem FileSystem => _engine.FileSystem;
 
         public ISettings Settings => _engine.Settings;
+
+        public IShortcodeCollection Shortcodes => _engine.Shortcodes;
 
         public string ApplicationInput => _engine.ApplicationInput;
 

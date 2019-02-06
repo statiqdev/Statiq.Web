@@ -15,14 +15,14 @@ namespace Wyam.Core.Shortcodes
 
         private readonly Delimiter _startDelimiter;
         private readonly Delimiter _endDelimiter;
-        private readonly Dictionary<string, IShortcode> _shortcodes;
+        private readonly IReadOnlyShortcodeCollection _shortcodes;
 
-        public ShortcodeParser(Dictionary<string, IShortcode> shortcodes)
+        public ShortcodeParser(IReadOnlyShortcodeCollection shortcodes)
             : this(DefaultStartDelimiter, DefaultEndDelimiter, shortcodes)
         {
         }
 
-        public ShortcodeParser(string startDelimiter, string endDelimiter, Dictionary<string, IShortcode> shortcodes)
+        public ShortcodeParser(string startDelimiter, string endDelimiter, IReadOnlyShortcodeCollection shortcodes)
         {
             _startDelimiter = new Delimiter(startDelimiter, true);
             _endDelimiter = new Delimiter(endDelimiter, false);
@@ -149,12 +149,12 @@ namespace Wyam.Core.Shortcodes
             string[] arguments = split.Skip(1).ToArray();
 
             // Try to get the shortcode
-            if (!_shortcodes.TryGetValue(name, out IShortcode shortcode))
+            if (!_shortcodes.Contains(name))
             {
                 throw new ShortcodeParserException($"A shortcode with the name {name} was not found");
             }
 
-            return new ShortcodeInstance(firstIndex, name, arguments, shortcode);
+            return new ShortcodeInstance(firstIndex, name, arguments);
         }
     }
 }

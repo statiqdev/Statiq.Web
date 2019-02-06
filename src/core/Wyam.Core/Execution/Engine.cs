@@ -8,6 +8,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Shortcodes;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Core.Caching;
@@ -15,6 +16,7 @@ using Wyam.Core.Configuration;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
 using Wyam.Core.Meta;
+using Wyam.Core.Shortcodes;
 using Wyam.Core.Tracing;
 
 namespace Wyam.Core.Execution
@@ -43,6 +45,7 @@ namespace Wyam.Core.Execution
 
         private readonly FileSystem _fileSystem = new FileSystem();
         private readonly Settings _settings = new Settings();
+        private readonly ShortcodeCollection _shortcodes = new ShortcodeCollection();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
 
@@ -69,6 +72,11 @@ namespace Wyam.Core.Execution
         /// Gets the settings.
         /// </summary>
         public ISettings Settings => _settings;
+
+        /// <summary>
+        /// Gets the shortcodes.
+        /// </summary>
+        public IShortcodeCollection Shortcodes => _shortcodes;
 
         /// <summary>
         /// Gets the pipelines.

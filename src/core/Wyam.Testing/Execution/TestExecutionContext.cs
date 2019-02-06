@@ -22,6 +22,7 @@ using Wyam.Testing.Configuration;
 using Wyam.Testing.Documents;
 using Wyam.Testing.IO;
 using Wyam.Testing.Meta;
+using Wyam.Testing.Shortcodes;
 
 namespace Wyam.Testing.Execution
 {
@@ -178,6 +179,8 @@ namespace Wyam.Testing.Execution
         public ISettings Settings => _settings;
 
         IReadOnlySettings IExecutionContext.Settings => Settings;
+
+        public IReadOnlyShortcodeCollection Shortcodes { get; set; } = new TestShortcodeCollection();
 
         /// <inheritdoc/>
         public Stream GetContentStream(string content = null) =>

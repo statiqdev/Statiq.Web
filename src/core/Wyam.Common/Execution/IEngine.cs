@@ -7,6 +7,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Shortcodes;
 
 namespace Wyam.Common.Execution
 {
@@ -29,6 +30,11 @@ namespace Wyam.Common.Execution
         /// Gets the pipelines.
         /// </summary>
         IPipelineCollection Pipelines { get; }
+
+        /// <summary>
+        /// Gets the shortcodes.
+        /// </summary>
+        IShortcodeCollection Shortcodes { get; }
 
         /// <summary>
         /// Gets the documents.

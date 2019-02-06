@@ -8,6 +8,7 @@ using Shouldly;
 using Wyam.Common.Shortcodes;
 using Wyam.Core.Shortcodes;
 using Wyam.Testing;
+using Wyam.Testing.Shortcodes;
 
 namespace Wyam.Core.Tests.Shortcodes
 {
@@ -42,7 +43,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "name", null }
                     });
@@ -84,7 +85,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "name", null }
                     });
@@ -108,7 +109,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "foo", null },
                         { "bar", null }
@@ -151,7 +152,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     startDelimiter,
                     endDelimiter,
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "name", null }
                     });
@@ -170,7 +171,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% %}}abc{{%/ %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "bar", null }
                     });
@@ -185,7 +186,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "bar", null }
                     });
@@ -200,7 +201,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo bar %}}"));
                 ShortcodeParser parser = new ShortcodeParser(
-                    new Dictionary<string, IShortcode>
+                    new TestShortcodeCollection
                     {
                         { "foo", null }
                     });

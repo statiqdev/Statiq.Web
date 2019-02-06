@@ -63,6 +63,11 @@ namespace Wyam.Common.Execution
         IReadOnlySettings Settings { get; }
 
         /// <summary>
+        /// Gets the available shortcodes.
+        /// </summary>
+        IReadOnlyShortcodeCollection Shortcodes { get; }
+
+        /// <summary>
         /// Gets the collection of all previously processed documents.
         /// </summary>
         IDocumentCollection Documents { get; }

@@ -52,6 +52,8 @@ namespace Wyam.Core.Execution
 
         public IReadOnlySettings Settings => Engine.Settings;
 
+        public IReadOnlyShortcodeCollection Shortcodes => Engine.Shortcodes;
+
         public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module, Settings);
 
         public string ApplicationInput => Engine.ApplicationInput;
