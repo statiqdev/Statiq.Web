@@ -14,6 +14,7 @@ using Wyam.Common.IO;
 using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Shortcodes;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Testing.Caching;
@@ -232,34 +233,55 @@ namespace Wyam.Testing.Execution
             return inputs.ToList();
         }
 
-        public Func<IJsEngine> JsEngineFunc { get; set; } = () =>
+        public IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+            => new ShortcodeResult(content, metadata);
+
+        private class ShortcodeResult : IShortcodeResult, IDisposable
+        {
+            private readonly Stream _content;
+
+            public IEnumerable<KeyValuePair<string, object>> Metadata { get; }
+
+            public ShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata)
+            {
+                _content = content ?? throw new ArgumentNullException(nameof(content));
+                Metadata = metadata;
+            }
+
+            public void Dispose()
+            {
+                _content.Dispose();
+            }
+        }
+
+        public Func<IJavaScriptEngine> JsEngineFunc { get; set; } = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
         };
 
         /// <inheritdoc/>
-        public IJsEnginePool GetJsEnginePool(
-            Action<IJsEngine> initializer = null,
+        public IJavaScriptEnginePool GetJavaScriptEnginePool(
+            Action<IJavaScriptEngine> initializer = null,
             int startEngines = 10,
             int maxEngines = 25,
             int maxUsagesPerEngine = 100,
             TimeSpan? engineTimeout = null) =>
             new TestJsEnginePool(JsEngineFunc, initializer);
 
-        private class TestJsEnginePool : IJsEnginePool
+        private class TestJsEnginePool : IJavaScriptEnginePool
         {
-            private readonly Func<IJsEngine> _engineFunc;
-            private readonly Action<IJsEngine> _initializer;
+            private readonly Func<IJavaScriptEngine> _engineFunc;
+            private readonly Action<IJavaScriptEngine> _initializer;
 
-            public TestJsEnginePool(Func<IJsEngine> engineFunc, Action<IJsEngine> initializer)
+            public TestJsEnginePool(Func<IJavaScriptEngine> engineFunc, Action<IJavaScriptEngine> initializer)
             {
                 _engineFunc = engineFunc;
                 _initializer = initializer;
             }
 
-            public IJsEngine GetEngine(TimeSpan? timeout = null)
+            public IJavaScriptEngine GetEngine(TimeSpan? timeout = null)
             {
-                IJsEngine engine = _engineFunc();
+                IJavaScriptEngine engine = _engineFunc();
                 _initializer?.Invoke(engine);
                 return engine;
             }
@@ -268,7 +290,7 @@ namespace Wyam.Testing.Execution
             {
             }
 
-            public void RecycleEngine(IJsEngine engine)
+            public void RecycleEngine(IJavaScriptEngine engine)
             {
                 throw new NotImplementedException();
             }

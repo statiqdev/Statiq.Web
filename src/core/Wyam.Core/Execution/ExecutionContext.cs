@@ -13,17 +13,18 @@ using JSPool;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
-using Wyam.Common.JavaScript;
+using Wyam.Common.Shortcodes;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.JavaScript;
 using Wyam.Core.Meta;
-using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
+using Wyam.Core.Shortcodes;
 
 namespace Wyam.Core.Execution
 {
@@ -191,18 +192,21 @@ namespace Wyam.Core.Execution
             return results;
         }
 
-        public IJsEnginePool GetJsEnginePool(
-            Action<IJsEngine> initializer = null,
+        public IJavaScriptEnginePool GetJavaScriptEnginePool(
+            Action<IJavaScriptEngine> initializer = null,
             int startEngines = 10,
             int maxEngines = 25,
             int maxUsagesPerEngine = 100,
             TimeSpan? engineTimeout = null) =>
-            new JsEnginePool(
+            new JavaScriptEnginePool(
                 initializer,
                 startEngines,
                 maxEngines,
                 maxUsagesPerEngine,
                 engineTimeout ?? TimeSpan.FromSeconds(5));
+
+        public IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+            => new ShortcodeResult(content, metadata);
 
         // IMetadata
 

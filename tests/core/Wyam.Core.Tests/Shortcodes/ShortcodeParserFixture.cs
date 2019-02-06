@@ -100,9 +100,39 @@ namespace Wyam.Core.Tests.Shortcodes
                 result.Single().LastIndex.ShouldBe(lastIndex);
             }
 
-            // throw for unregistered shortcode name
+            [Test]
+            public void ThrowsForUnnamedShortcodeName()
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% %}}abc{{%/ %}}"));
+                ShortcodeParser parser = new ShortcodeParser(
+                    "{{",
+                    "}}",
+                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    {
+                        { "bar", null }
+                    });
 
-            // Throws for unnamed shortcodes
+                // When, Then
+                Should.Throw<ArgumentException>(() => parser.Parse(stream));
+            }
+
+            [Test]
+            public void ThrowsForUnregisteredShortcodeName()
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("{{% foo %}}abc{{%/ foo %}}"));
+                ShortcodeParser parser = new ShortcodeParser(
+                    "{{",
+                    "}}",
+                    new Dictionary<string, Common.Shortcodes.IShortcode>
+                    {
+                        { "bar", null }
+                    });
+
+                // When, Then
+                Should.Throw<ArgumentException>(() => parser.Parse(stream));
+            }
 
             // Finds different styles
 

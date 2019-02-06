@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 
 namespace Wyam.Common.Shortcodes
 {
@@ -11,6 +11,6 @@ namespace Wyam.Common.Shortcodes
     /// </summary>
     public interface IShortcode
     {
-        string Render(string[] args, string content, IDocument document, IExecutionContext context);
+        IShortcodeResult Execute(string[] args, string content, IMetadata metadata, IExecutionContext context);
     }
 }

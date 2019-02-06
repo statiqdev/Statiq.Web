@@ -74,7 +74,7 @@ namespace Wyam.Highlight
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            using (IJsEnginePool enginePool = context.GetJsEnginePool(x =>
+            using (IJavaScriptEnginePool enginePool = context.GetJavaScriptEnginePool(x =>
             {
                 if (string.IsNullOrWhiteSpace(_highlightJsFile))
                 {
@@ -90,7 +90,7 @@ namespace Wyam.Highlight
                 {
                     // We materialize the list before exiting the using statement, so safe to access enginePool
                     // ReSharper disable once AccessToDisposedClosure
-                    using (IJsEngine engine = enginePool.GetEngine())
+                    using (IJavaScriptEngine engine = enginePool.GetEngine())
                     {
                         try
                         {

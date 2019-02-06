@@ -9,6 +9,7 @@ using Wyam.Common.IO;
 using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Shortcodes;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Common.Execution
@@ -213,7 +214,7 @@ namespace Wyam.Common.Execution
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> metadata);
 
         /// <summary>
-        /// Gets a new <see cref="IJsEnginePool"/>. The returned engine pool should be disposed
+        /// Gets a new <see cref="IJavaScriptEnginePool"/>. The returned engine pool should be disposed
         /// when no longer needed.
         /// </summary>
         /// <param name="initializer">
@@ -228,11 +229,22 @@ namespace Wyam.Common.Execution
         /// If an engine can not be acquired in this timeframe, an exception will be thrown.
         /// </param>
         /// <returns>A new JavaScript engine pool.</returns>
-        IJsEnginePool GetJsEnginePool(
-            Action<IJsEngine> initializer = null,
+        IJavaScriptEnginePool GetJavaScriptEnginePool(
+            Action<IJavaScriptEngine> initializer = null,
             int startEngines = 10,
             int maxEngines = 25,
             int maxUsagesPerEngine = 100,
             TimeSpan? engineTimeout = null);
+
+        /// <summary>
+        /// A factory method for use from inside an <see cref="IShortcode"/> to create an <see cref="IShortcodeResult"/>.
+        /// </summary>
+        /// <param name="content">
+        /// The content of the shortcode. The passed in stream will be disposed when the shortcode has been rendered.
+        /// Use <see cref="GetContentStream(string)"/> if you need to create a content stream from a string.
+        /// </param>
+        /// <param name="metadata">New metadata to be added to the document as a result of executing the shortcode.</param>
+        /// <returns>A shortcode result.</returns>
+        IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null);
     }
 }

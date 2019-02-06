@@ -7,17 +7,17 @@ using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Jint;
 using JSPool;
 using Wyam.Common.JavaScript;
-using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
+using IJavaScriptEngine = Wyam.Common.JavaScript.IJavaScriptEngine;
 
 namespace Wyam.Core.JavaScript
 {
-    internal class JsEnginePool : IJsEnginePool
+    internal class JavaScriptEnginePool : IJavaScriptEnginePool
     {
-        private readonly JsPool<JsEngine> _pool;
+        private readonly JsPool<JavaScriptEngine> _pool;
         private bool _disposed = false;
 
-        public JsEnginePool(
-            Action<IJsEngine> initializer,
+        public JavaScriptEnginePool(
+            Action<IJavaScriptEngine> initializer,
             int startEngines,
             int maxEngines,
             int maxUsagesPerEngine,
@@ -33,9 +33,9 @@ namespace Wyam.Core.JavaScript
                 JsEngineSwitcher.Instance.DefaultEngineName = JintJsEngine.EngineName;
             }
 
-            _pool = new JsPool<JsEngine>(new JsPoolConfig<JsEngine>
+            _pool = new JsPool<JavaScriptEngine>(new JsPoolConfig<JavaScriptEngine>
             {
-                EngineFactory = () => new JsEngine(JsEngineSwitcher.Instance.CreateDefaultEngine()),
+                EngineFactory = () => new JavaScriptEngine(JsEngineSwitcher.Instance.CreateDefaultEngine()),
                 Initializer = x => initializer?.Invoke(x),
                 StartEngines = startEngines,
                 MaxEngines = maxEngines,
@@ -51,15 +51,15 @@ namespace Wyam.Core.JavaScript
             _disposed = true;
         }
 
-        public IJsEngine GetEngine(TimeSpan? timeout = null) => new PooledJsEngine(_pool.GetEngine(timeout), _pool);
+        public IJavaScriptEngine GetEngine(TimeSpan? timeout = null) => new PooledJavaScriptEngine(_pool.GetEngine(timeout), _pool);
 
-        public void RecycleEngine(IJsEngine engine)
+        public void RecycleEngine(IJavaScriptEngine engine)
         {
             if (engine == null)
             {
                 throw new ArgumentNullException(nameof(engine));
             }
-            PooledJsEngine pooledEngine = engine as PooledJsEngine;
+            PooledJavaScriptEngine pooledEngine = engine as PooledJavaScriptEngine;
             if (pooledEngine == null)
             {
                 throw new ArgumentException("The specified engine was not from a pool");

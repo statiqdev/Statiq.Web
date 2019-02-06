@@ -10,7 +10,7 @@ namespace Wyam.Common.JavaScript
     /// Provides a shared pool of JavaScript engine instances. You should dispose the pool when
     /// no longer needed to properly dispose of any allocated engines.
     /// </summary>
-    public interface IJsEnginePool : IDisposable
+    public interface IJavaScriptEnginePool : IDisposable
     {
         /// <summary>
         /// Gets an engine from the pool. This engine should be disposed when you are finished with it.
@@ -24,13 +24,13 @@ namespace Wyam.Common.JavaScript
         /// specified when creating the pool.
         /// </param>
         /// <returns>A JavaScript engine.</returns>
-        IJsEngine GetEngine(TimeSpan? timeout = null);
+        IJavaScriptEngine GetEngine(TimeSpan? timeout = null);
 
         /// <summary>
         /// Disposes the specified engine and removes it from the pool. A new engine will be created in it's place.
         /// </summary>
         /// <param name="engine">The JavaScript engine.</param>
-        void RecycleEngine(IJsEngine engine);
+        void RecycleEngine(IJavaScriptEngine engine);
 
         /// <summary>
         /// Disposes all engines in this pool, and creates new engines in their place.

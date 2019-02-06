@@ -4,11 +4,11 @@ using System.Reflection;
 using System.Text;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Jint;
-using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
+using IJavaScriptEngine = Wyam.Common.JavaScript.IJavaScriptEngine;
 
 namespace Wyam.Testing.JavaScript
 {
-    public class TestJsEngine : IJsEngine
+    public class TestJsEngine : IJavaScriptEngine
     {
         private readonly JavaScriptEngineSwitcher.Core.IJsEngine _engine;
 
