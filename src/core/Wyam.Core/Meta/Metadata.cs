@@ -10,14 +10,14 @@ namespace Wyam.Core.Meta
 {
     internal abstract class Metadata : IMetadata
     {
-        protected internal Stack<IDictionary<string, object>> Stack { get; }
+        protected internal Stack<IReadOnlyDictionary<string, object>> Stack { get; }
 
         protected Metadata()
         {
-            Stack = new Stack<IDictionary<string, object>>();
+            Stack = new Stack<IReadOnlyDictionary<string, object>>();
         }
 
-        protected Metadata(Stack<IDictionary<string, object>> stack)
+        protected Metadata(Stack<IReadOnlyDictionary<string, object>> stack)
         {
             Stack = stack ?? throw new ArgumentNullException(nameof(stack));
         }
@@ -40,7 +40,7 @@ namespace Wyam.Core.Meta
                 throw new ArgumentNullException(nameof(key));
             }
             value = null;
-            IDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
+            IReadOnlyDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
             if (meta == null)
             {
                 return false;
@@ -58,7 +58,7 @@ namespace Wyam.Core.Meta
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            IDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
+            IReadOnlyDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
             if (meta == null)
             {
                 throw new KeyNotFoundException(nameof(key));

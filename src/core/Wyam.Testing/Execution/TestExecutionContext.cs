@@ -239,21 +239,16 @@ namespace Wyam.Testing.Execution
         public IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null)
             => new ShortcodeResult(content, metadata);
 
-        private class ShortcodeResult : IShortcodeResult, IDisposable
+        private class ShortcodeResult : IShortcodeResult
         {
-            private readonly Stream _content;
+            public Stream Stream { get; }
 
             public IEnumerable<KeyValuePair<string, object>> Metadata { get; }
 
-            public ShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata)
+            public ShortcodeResult(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata)
             {
-                _content = content ?? throw new ArgumentNullException(nameof(content));
+                Stream = stream ?? throw new ArgumentNullException(nameof(stream));
                 Metadata = metadata;
-            }
-
-            public void Dispose()
-            {
-                _content.Dispose();
             }
         }
 

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Diagnostics;
 
-namespace Wyam.Core.Documents
+namespace Wyam.Core.Util
 {
     internal class SeekableStream : Stream
     {

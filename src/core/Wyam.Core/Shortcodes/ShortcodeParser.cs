@@ -8,10 +8,14 @@ using Wyam.Core.Util;
 
 namespace Wyam.Core.Shortcodes
 {
+    /// <summary>
+    /// Parses a stream looking for shortcodes. This class is not thread-safe and maintains
+    /// state. A new instance should be created for each stream.
+    /// </summary>
     internal class ShortcodeParser
     {
-        public const string DefaultStartDelimiter = "{{%";
-        public const string DefaultEndDelimiter = "%}}";
+        public const string DefaultStartDelimiter = "<?%";
+        public const string DefaultEndDelimiter = "?>";
 
         private readonly Delimiter _startDelimiter;
         private readonly Delimiter _endDelimiter;
@@ -29,12 +33,12 @@ namespace Wyam.Core.Shortcodes
             _shortcodes = shortcodes;
         }
 
-        public List<ShortcodeInstance> Parse(Stream stream)
+        public List<ShortcodeLocation> Parse(Stream stream)
         {
-            List<ShortcodeInstance> instances = new List<ShortcodeInstance>();
+            List<ShortcodeLocation> locations = new List<ShortcodeLocation>();
 
             CurrentTag currentTag = null;
-            ShortcodeInstance shortcode = null;
+            ShortcodeLocation shortcode = null;
             StringBuilder content = null;
 
             using (TextReader reader = new StreamReader(stream))
@@ -64,17 +68,17 @@ namespace Wyam.Core.Shortcodes
                             if (currentTag.Content[currentTag.Content.Length - _endDelimiter.Text.Length - 1] == '/')
                             {
                                 // Self-closing
-                                shortcode = GetShortcodeInstance(
+                                shortcode = GetShortcodeLocation(
                                     currentTag.FirstIndex,
                                     currentTag.Content.ToString(0, currentTag.Content.Length - _endDelimiter.Text.Length - 1));
                                 shortcode.Finish(i);
-                                instances.Add(shortcode);
+                                locations.Add(shortcode);
                                 shortcode = null;
                             }
                             else
                             {
                                 // Look for a closing tag
-                                shortcode = GetShortcodeInstance(
+                                shortcode = GetShortcodeLocation(
                                     currentTag.FirstIndex,
                                     currentTag.Content.ToString(0, currentTag.Content.Length - _endDelimiter.Text.Length));
                                 content = new StringBuilder();
@@ -115,7 +119,7 @@ namespace Wyam.Core.Shortcodes
                             {
                                 shortcode.Content = content.ToString(0, content.Length - _startDelimiter.Text.Length - 1);
                                 shortcode.Finish(i);
-                                instances.Add(shortcode);
+                                locations.Add(shortcode);
 
                                 shortcode = null;
                                 content = null;
@@ -134,10 +138,10 @@ namespace Wyam.Core.Shortcodes
                 }
             }
 
-            return instances;
+            return locations;
         }
 
-        private ShortcodeInstance GetShortcodeInstance(int firstIndex, string tagContent)
+        private ShortcodeLocation GetShortcodeLocation(int firstIndex, string tagContent)
         {
             // Split the tag content into name and arguments
             IEnumerable<string> split = ArgumentSplitter.Split(tagContent);
@@ -154,7 +158,7 @@ namespace Wyam.Core.Shortcodes
                 throw new ShortcodeParserException($"A shortcode with the name {name} was not found");
             }
 
-            return new ShortcodeInstance(firstIndex, name, arguments);
+            return new ShortcodeLocation(firstIndex, name, arguments);
         }
     }
 }

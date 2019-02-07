@@ -12,6 +12,12 @@ namespace Wyam.Testing.Shortcodes
         {
         }
 
+        public IShortcode CreateInstance(string name) => (IShortcode)Activator.CreateInstance(this[name]);
+
+        public void Add<TShortcode>(string name)
+            where TShortcode : IShortcode =>
+            this[name] = typeof(TShortcode);
+
         public bool Contains(string name) => ContainsKey(name);
 
         IEnumerator<string> IEnumerable<string>.GetEnumerator() => Keys.GetEnumerator();

@@ -7,9 +7,9 @@ using Wyam.Core.Util;
 
 namespace Wyam.Core.Shortcodes
 {
-    internal class ShortcodeInstance
+    internal class ShortcodeLocation
     {
-        public ShortcodeInstance(int firstIndex, string name, string[] arguments)
+        public ShortcodeLocation(int firstIndex, string name, string[] arguments)
         {
             FirstIndex = firstIndex;
             Name = name;

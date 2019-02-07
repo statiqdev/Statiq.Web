@@ -19,27 +19,29 @@ namespace Wyam.Core.Meta
             Stack.Push(new Dictionary<string, object>(initialValues, StringComparer.OrdinalIgnoreCase));
         }
 
-        public void Add(KeyValuePair<string, object> item) => Stack.Peek().Add(item);
+        private IDictionary<string, object> GetDictionary() => (IDictionary<string, object>)Stack.Peek();
 
-        public void Clear() => Stack.Peek().Clear();
+        public void Add(KeyValuePair<string, object> item) => GetDictionary().Add(item);
+
+        public void Clear() => GetDictionary().Clear();
 
         public bool Contains(KeyValuePair<string, object> item) => Stack.Peek().Contains(item);
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-            => Stack.Peek().CopyTo(array, arrayIndex);
+            => GetDictionary().CopyTo(array, arrayIndex);
 
-        public bool Remove(KeyValuePair<string, object> item) => Stack.Peek().Remove(item);
+        public bool Remove(KeyValuePair<string, object> item) => GetDictionary().Remove(item);
 
         public bool IsReadOnly { get; } = false;
 
-        public void Add(string key, object value) => Stack.Peek().Add(key, value);
+        public void Add(string key, object value) => GetDictionary().Add(key, value);
 
-        public bool Remove(string key) => Stack.Peek().Remove(key);
+        public bool Remove(string key) => GetDictionary().Remove(key);
 
         object IDictionary<string, object>.this[string key]
         {
             get { return Stack.Peek()[key]; }
-            set { Stack.Peek()[key] = value; }
+            set { GetDictionary()[key] = value; }
         }
 
         public new object this[string key]
@@ -48,9 +50,9 @@ namespace Wyam.Core.Meta
             set { ((IDictionary<string, object>)this)[key] = value; }
         }
 
-        ICollection<string> IDictionary<string, object>.Keys => Stack.Peek().Keys;
+        ICollection<string> IDictionary<string, object>.Keys => GetDictionary().Keys;
 
-        ICollection<object> IDictionary<string, object>.Values => Stack.Peek().Values;
+        ICollection<object> IDictionary<string, object>.Values => GetDictionary().Values;
 
         ICollection<string> IMetadataDictionary.Keys => ((IDictionary<string, object>)this).Keys;
 

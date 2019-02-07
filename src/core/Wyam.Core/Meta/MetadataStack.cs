@@ -17,8 +17,8 @@ namespace Wyam.Core.Meta
         {
         }
 
-        internal MetadataStack(IEnumerable<IDictionary<string, object>> initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
-            : base(new Stack<IDictionary<string, object>>(initialMetadata))
+        internal MetadataStack(IEnumerable<IReadOnlyDictionary<string, object>> initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
+            : base(new Stack<IReadOnlyDictionary<string, object>>(initialMetadata))
         {
             if (items != null)
             {
