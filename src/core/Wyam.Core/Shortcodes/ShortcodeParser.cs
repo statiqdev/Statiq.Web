@@ -14,7 +14,7 @@ namespace Wyam.Core.Shortcodes
     /// </summary>
     internal class ShortcodeParser
     {
-        public const string DefaultStartDelimiter = "<?%";
+        public const string DefaultStartDelimiter = "<?#";
         public const string DefaultEndDelimiter = "?>";
 
         private readonly Delimiter _startDelimiter;

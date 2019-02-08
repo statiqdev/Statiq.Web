@@ -11,6 +11,6 @@ namespace Wyam.Common.Shortcodes
     /// </summary>
     public interface IShortcode
     {
-        IShortcodeResult Execute(string[] args, string content, IMetadata metadata, IExecutionContext context);
+        IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context);
     }
 }
