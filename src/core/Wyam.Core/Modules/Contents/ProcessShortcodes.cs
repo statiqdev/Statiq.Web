@@ -67,51 +67,64 @@ namespace Wyam.Core.Modules.Contents
                     .ToList();
 
                 // Construct a new stream with the shortcodes inserted
+                // We have to use all TextWriter/TextReaders over the streams to ensure consistent encoding
                 Stream resultStream = context.GetContentStream();
                 char[] buffer = new char[4096];
-                using (Stream inputStream = input.GetStream())
+                using (TextWriter writer = new StreamWriter(resultStream, Encoding.UTF8, 4096, true))
                 {
-                    using (TextWriter writer = new StreamWriter(resultStream))
+                    // The input stream will get disposed when the reader is
+                    Stream inputStream = input.GetStream();
+                    using (TextReader reader = new StreamReader(inputStream))
                     {
-                        using (TextReader reader = new StreamReader(inputStream))
+                        int position = 0;
+                        int length = 0;
+                        foreach (InsertingStreamLocation insertingLocation in insertingLocations)
                         {
-                            int position = 0;
-                            int length = 0;
-                            foreach (InsertingStreamLocation insertingLocation in insertingLocations)
+                            // Copy up to the start of this shortcode
+                            length = insertingLocation.FirstIndex - position;
+                            Read(reader, writer, length, ref buffer);
+                            position += length;
+
+                            // Copy the shortcode content to the result stream
+                            if (insertingLocation.Stream != null)
                             {
-                                // Copy up to the start of this shortcode
-                                length = insertingLocation.FirstIndex - position;
-                                Read(reader, writer, length, ref buffer);
-                                position += length;
-
-                                // Copy the shortcode content to the result stream
-                                insertingLocation.Stream.CopyTo(resultStream);
-
-                                // Skip the shortcode text
-                                length = insertingLocation.LastIndex - insertingLocation.FirstIndex + 1;
-                                Read(reader, null, length, ref buffer);
-                                position += length;
+                                // This will dispose the shortcode content stream when done
+                                using (TextReader insertingReader = new StreamReader(insertingLocation.Stream))
+                                {
+                                    Read(insertingReader, writer, null, ref buffer);
+                                }
                             }
-                        }
-                    }
 
-                    // Copy remaining
-                    inputStream.CopyTo(resultStream);
+                            // Skip the shortcode text
+                            length = insertingLocation.LastIndex - insertingLocation.FirstIndex + 1;
+                            Read(reader, null, length, ref buffer);
+                            position += length;
+                        }
+
+                        // Copy remaining
+                        Read(reader, writer, null, ref buffer);
+                    }
                 }
 
                 return context.GetDocument(input, resultStream);
             });
         }
 
-        private static void Read(TextReader reader, TextWriter writer, int length, ref char[] buffer)
+        // writer = null to just skip length in reader
+        // length = null to read to the end of reader
+        private static void Read(TextReader reader, TextWriter writer, int? length, ref char[] buffer)
         {
-            while (length > 0)
+            while (!length.HasValue || length > 0)
             {
-                int count = reader.ReadBlock(buffer, 0, length > buffer.Length ? buffer.Length : length);
+                int count = reader.ReadBlock(buffer, 0, !length.HasValue || length > buffer.Length ? buffer.Length : length.Value);
                 if (count > 0)
                 {
-                    length -= count;
+                    if (length.HasValue)
+                    {
+                        length -= count;
+                    }
                     writer?.Write(buffer, 0, count);
+                    writer?.Flush();
                 }
                 else
                 {

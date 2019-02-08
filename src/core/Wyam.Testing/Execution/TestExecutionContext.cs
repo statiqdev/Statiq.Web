@@ -180,7 +180,9 @@ namespace Wyam.Testing.Execution
 
         IReadOnlySettings IExecutionContext.Settings => Settings;
 
-        public IReadOnlyShortcodeCollection Shortcodes { get; set; } = new TestShortcodeCollection();
+        public IShortcodeCollection Shortcodes { get; set; } = new TestShortcodeCollection();
+
+        IReadOnlyShortcodeCollection IExecutionContext.Shortcodes => Shortcodes;
 
         /// <inheritdoc/>
         public Stream GetContentStream(string content = null) =>

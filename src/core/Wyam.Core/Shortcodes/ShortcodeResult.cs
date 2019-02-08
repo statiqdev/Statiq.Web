@@ -16,17 +16,14 @@ namespace Wyam.Core.Shortcodes
 
         public ShortcodeResult(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            if (!stream.CanRead)
+            if (stream?.CanRead == false)
             {
                 throw new ArgumentException("Shortcode stream must support reading.", nameof(stream));
             }
 
-            Stream = stream.CanSeek ? stream : new SeekableStream(stream, true);
+            Stream = stream == null
+                ? null
+                : (stream.CanSeek ? stream : new SeekableStream(stream, true));
             Metadata = metadata;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Wyam.Common.Shortcodes;
 
@@ -14,8 +15,14 @@ namespace Wyam.Core.Shortcodes
         public IShortcode CreateInstance(string name) => (IShortcode)Activator.CreateInstance(_shortcodes[name]);
 
         public void Add<TShortcode>(string name)
-            where TShortcode : IShortcode =>
+            where TShortcode : IShortcode
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Any(c => char.IsWhiteSpace(c)))
+            {
+                throw new ArgumentException(nameof(name));
+            }
             _shortcodes[name] = typeof(TShortcode);
+        }
 
         public int Count => _shortcodes.Count;
 
