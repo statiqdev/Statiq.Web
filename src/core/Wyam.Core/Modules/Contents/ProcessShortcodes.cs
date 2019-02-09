@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -65,6 +65,13 @@ namespace Wyam.Core.Modules.Contents
                         return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, result.Stream);
                     })
                     .ToList();
+
+                // Dispose any shortcodes that implement IDisposable
+                foreach (IDisposable disposableShortcode
+                    in shortcodes.Values.Select(x => x as IDisposable).Where(x => x != null))
+                {
+                    disposableShortcode.Dispose();
+                }
 
                 // Construct a new stream with the shortcodes inserted
                 // We have to use all TextWriter/TextReaders over the streams to ensure consistent encoding

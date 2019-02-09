@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +35,22 @@ namespace Wyam.Core.Tests.Modules.Contents
                 // Then
                 results.Single().Content.ShouldBe("123Foo456");
             }
+
+            [Test]
+            public void DisposesShortcode()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<DisposableShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Bar /?>456");
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                DisposableShortcode.Disposed.ShouldBeTrue();
+            }
         }
 
         public class TestShortcode : IShortcode
@@ -42,6 +58,27 @@ namespace Wyam.Core.Tests.Modules.Contents
             public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context)
             {
                 return context.GetShortcodeResult(context.GetContentStream("Foo"));
+            }
+        }
+
+        public class DisposableShortcode : IShortcode, IDisposable
+        {
+            public static bool Disposed { get; set; }
+
+            public DisposableShortcode()
+            {
+                // Make sure it resets
+                Disposed = false;
+            }
+
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context)
+            {
+                return context.GetShortcodeResult(context.GetContentStream("Foo"));
+            }
+
+            public void Dispose()
+            {
+                Disposed = true;
             }
         }
     }
