@@ -146,7 +146,7 @@ namespace Wyam.Core.Modules.Contents
             {
                 FirstIndex = firstIndex;
                 LastIndex = lastIndex;
-                Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+                Stream = stream;
             }
 
             public int FirstIndex { get; }
@@ -154,7 +154,4 @@ namespace Wyam.Core.Modules.Contents
             public Stream Stream { get; }
         }
     }
-
-    // TODO: test the metadata accumulates over multiple shortcodes
-    // TODO: test that document metadata is available to shortcode
 }

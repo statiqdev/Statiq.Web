@@ -249,7 +249,7 @@ namespace Wyam.Testing.Execution
 
             public ShortcodeResult(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata)
             {
-                Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+                Stream = stream;
                 Metadata = metadata;
             }
         }

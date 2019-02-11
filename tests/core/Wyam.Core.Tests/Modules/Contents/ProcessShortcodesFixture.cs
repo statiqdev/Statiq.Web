@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Common.Shortcodes;
 using Wyam.Core.Modules.Contents;
 using Wyam.Testing;
@@ -37,6 +38,22 @@ namespace Wyam.Core.Tests.Modules.Contents
             }
 
             [Test]
+            public void ShortcodeSupportsNullStreamResult()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<NullStreamShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Bar /?>456");
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123456");
+            }
+
+            [Test]
             public void DisposesShortcode()
             {
                 // Given
@@ -51,14 +68,76 @@ namespace Wyam.Core.Tests.Modules.Contents
                 // Then
                 DisposableShortcode.Disposed.ShouldBeTrue();
             }
+
+            [Test]
+            public void ShortcodesCanAddMetadata()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<AddsMetadataShortcode>("S1");
+                context.Shortcodes.Add<AddsMetadataShortcode2>("S2");
+                IDocument document = new TestDocument("123<?# S1 /?>456<?# S2 /?>789");
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123456789");
+                results.Single()["A"].ShouldBe("3");
+                results.Single()["B"].ShouldBe("2");
+                results.Single()["C"].ShouldBe("4");
+            }
+
+            [Test]
+            public void ShortcodesCanReadMetadata()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<ReadsMetadataShortcode>("S1");
+                context.Shortcodes.Add<ReadsMetadataShortcode>("S2");
+                IDocument document = new TestDocument("123<?# S1 /?>456<?# S2 /?>789<?# S1 /?>", new MetadataItems
+                {
+                    { "Foo", 10 }
+                });
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123456789");
+                results.Single()["Foo"].ShouldBe(13);
+            }
+
+            [Test]
+            public void ShortcodesPersistState()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<IncrementingShortcode>("S");
+                IDocument document = new TestDocument("123<?# S /?>456<?# S /?>789<?# S /?>");
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123456789");
+                results.Single()["Foo"].ShouldBe(22);
+            }
         }
 
         public class TestShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context)
-            {
-                return context.GetShortcodeResult(context.GetContentStream("Foo"));
-            }
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(context.GetContentStream("Foo"));
+        }
+
+        public class NullStreamShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(null);
         }
 
         public class DisposableShortcode : IShortcode, IDisposable
@@ -71,15 +150,51 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Disposed = false;
             }
 
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context)
-            {
-                return context.GetShortcodeResult(context.GetContentStream("Foo"));
-            }
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(context.GetContentStream("Foo"));
 
-            public void Dispose()
-            {
+            public void Dispose() =>
                 Disposed = true;
-            }
+        }
+
+        public class AddsMetadataShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(null, new MetadataItems
+                {
+                    { "A", "1" },
+                    { "B", "2" }
+                });
+        }
+
+        public class AddsMetadataShortcode2 : IShortcode
+        {
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(null, new MetadataItems
+                {
+                    { "A", "3" },
+                    { "C", "4" }
+                });
+        }
+
+        public class ReadsMetadataShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(null, new MetadataItems
+                {
+                    { $"Foo", document.Get<int>("Foo") + 1 }
+                });
+        }
+
+        public class IncrementingShortcode : IShortcode
+        {
+            private int _value = 20;
+
+            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(null, new MetadataItems
+                {
+                    { $"Foo", _value++ }
+                });
         }
     }
 }
