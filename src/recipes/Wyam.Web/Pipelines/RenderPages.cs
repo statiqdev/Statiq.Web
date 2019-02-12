@@ -10,6 +10,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Util;
+using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
@@ -33,6 +34,11 @@ namespace Wyam.Web.Pipelines
         /// Renders the pages.
         /// </summary>
         public const string Render = nameof(Render);
+
+        /// <summary>
+        /// Processes shortcodes.
+        /// </summary>
+        public const string Shortcodes = nameof(Shortcodes);
 
         /// <summary>
         /// Writes post-rendering metadata to the documents (such as headings and excerpts).
@@ -74,6 +80,10 @@ namespace Wyam.Web.Pipelines
                 Render,
                 new Razor.Razor()
                     .WithLayout(settings.Layout)
+            },
+            {
+                Shortcodes,
+                new Shortcodes()
             },
             {
                 WriteMetadata,

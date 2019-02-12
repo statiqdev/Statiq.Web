@@ -5,6 +5,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
@@ -80,8 +81,9 @@ namespace Wyam.Web.Pipelines
                     ctx => settings.WriteIfEmpty || settings.Pipelines.Any(x => ctx.Documents[x].Any()),
                     new Razor.Razor()
                         .IgnorePrefix(null)
-                        .WithLayout(settings.Layout))
-                        .WithoutUnmatchedDocuments()
+                        .WithLayout(settings.Layout),
+                    new Shortcodes())
+                    .WithoutUnmatchedDocuments()
             },
             {
                 WriteFiles,

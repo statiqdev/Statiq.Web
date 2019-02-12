@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
+using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.IO;
 using Wyam.Html;
@@ -29,6 +30,7 @@ namespace Wyam.Docs.Pipelines
                 new Documents(Docs.Api),
                 new Razor.Razor()
                     .WithLayout("/_ApiLayout.cshtml"),
+                new Shortcodes(),
                 new Headings(),
                 new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)),
                 new WriteFiles())

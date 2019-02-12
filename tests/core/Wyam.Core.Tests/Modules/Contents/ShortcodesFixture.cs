@@ -17,9 +17,9 @@ namespace Wyam.Core.Tests.Modules.Contents
 {
     [TestFixture]
     [NonParallelizable]
-    public class ProcessShortcodesFixture : BaseFixture
+    public class ShortcodesFixture : BaseFixture
     {
-        public class ExecuteTests : ProcessShortcodesFixture
+        public class ExecuteTests : ShortcodesFixture
         {
             [Test]
             public void ProcessesShortcode()
@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 TestExecutionContext context = new TestExecutionContext();
                 context.Shortcodes.Add<TestShortcode>("Bar");
                 IDocument document = new TestDocument("123<?# Bar /?>456");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -44,7 +44,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 TestExecutionContext context = new TestExecutionContext();
                 context.Shortcodes.Add<NullStreamShortcode>("Bar");
                 IDocument document = new TestDocument("123<?# Bar /?>456");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -61,7 +61,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 context.Shortcodes.Add<TestShortcode>("S1");
                 context.Shortcodes.Add<NullResultShortcode>("S2");
                 IDocument document = new TestDocument("123<?# S1 /?>456<?# S2 /?>789<?# S1 /?>");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -77,7 +77,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 TestExecutionContext context = new TestExecutionContext();
                 context.Shortcodes.Add<DisposableShortcode>("Bar");
                 IDocument document = new TestDocument("123<?# Bar /?>456");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -94,7 +94,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 context.Shortcodes.Add<AddsMetadataShortcode>("S1");
                 context.Shortcodes.Add<AddsMetadataShortcode2>("S2");
                 IDocument document = new TestDocument("123<?# S1 /?>456<?# S2 /?>789");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -117,7 +117,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 {
                     { "Foo", 10 }
                 });
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();
@@ -134,7 +134,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 TestExecutionContext context = new TestExecutionContext();
                 context.Shortcodes.Add<IncrementingShortcode>("S");
                 IDocument document = new TestDocument("123<?# S /?>456<?# S /?>789<?# S /?>");
-                ProcessShortcodes module = new ProcessShortcodes();
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();

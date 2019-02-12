@@ -30,7 +30,7 @@ namespace Wyam.Configuration.ConfigScript
 
         public ISettings Settings => _engine.Settings;
 
-        public IShortcodeCollection Shortcodes => _engine.Shortcodes;
+        public IShortcodeCollection ShortcodeCollection => _engine.Shortcodes;
 
         public string ApplicationInput => _engine.ApplicationInput;
 

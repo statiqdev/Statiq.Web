@@ -12,16 +12,16 @@ using Wyam.Core.Shortcodes;
 
 namespace Wyam.Core.Modules.Contents
 {
-    public class ProcessShortcodes : IModule
+    public class Shortcodes : IModule
     {
         private readonly string _startDelimiter = ShortcodeParser.DefaultStartDelimiter;
         private readonly string _endDelimiter = ShortcodeParser.DefaultEndDelimiter;
 
-        public ProcessShortcodes()
+        public Shortcodes()
         {
         }
 
-        public ProcessShortcodes(string startDelimiter, string endDelimiter)
+        public Shortcodes(string startDelimiter, string endDelimiter)
         {
             _startDelimiter = startDelimiter;
             _endDelimiter = endDelimiter;
