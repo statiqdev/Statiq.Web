@@ -9,6 +9,7 @@ using System.Text;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
+using Wyam.Common.Shortcodes;
 using Wyam.Configuration.Assemblies;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Configuration.NuGet;
@@ -174,6 +175,7 @@ namespace Wyam.Configuration
             CatalogClasses();
             AddNamespaces();
             AddFileProviders();
+            AddShortcodes();
             ApplyRecipe();
             SetMetadata();
 
@@ -328,6 +330,20 @@ namespace Wyam.Configuration
                 if (!string.IsNullOrEmpty(scheme))
                 {
                     _engine.FileSystem.FileProviders.Add(scheme, fileProvider);
+                }
+            }
+        }
+
+        private void AddShortcodes()
+        {
+            foreach (Type shortcode in ClassCatalog.GetClasses<IShortcode>())
+            {
+                _engine.Shortcodes.Add(shortcode);
+
+                // Special case for the meta shortcode to register with the name "="
+                if (shortcode.Equals(typeof(Core.Shortcodes.Metadata.Meta)))
+                {
+                    _engine.Shortcodes.Add("=", shortcode);
                 }
             }
         }

@@ -207,6 +207,9 @@ namespace Wyam.Core.Execution
                 maxUsagesPerEngine,
                 engineTimeout ?? TimeSpan.FromSeconds(5));
 
+        public IShortcodeResult GetShortcodeResult(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+            => GetShortcodeResult(content == null ? null : GetContentStream(content), metadata);
+
         public IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null)
             => new ShortcodeResult(content, metadata);
 

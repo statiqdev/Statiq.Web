@@ -27,6 +27,29 @@ namespace Wyam.Core.Shortcodes
             _shortcodes[name] = () => Activator.CreateInstance<TShortcode>();
         }
 
+        public void Add<TShortcode>()
+            where TShortcode : IShortcode =>
+            Add<TShortcode>(typeof(TShortcode).Name);
+
+        public void Add(string name, Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            if (!typeof(IShortcode).IsAssignableFrom(type))
+            {
+                throw new ArgumentException("The type must implement " + nameof(IShortcode), nameof(type));
+            }
+            if (string.IsNullOrWhiteSpace(name) || name.Any(c => char.IsWhiteSpace(c)))
+            {
+                throw new ArgumentException(nameof(name));
+            }
+            _shortcodes[name] = () => (IShortcode)Activator.CreateInstance(type);
+        }
+
+        public void Add(Type type) => Add(type?.Name, type);
+
         public void Add(string name, string result) =>
             Add(name, (args, content, doc, ctx) => result != null ? ctx.GetShortcodeResult(ctx.GetContentStream(result)) : null);
 

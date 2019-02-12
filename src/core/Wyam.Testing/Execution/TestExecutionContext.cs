@@ -238,6 +238,9 @@ namespace Wyam.Testing.Execution
             return inputs.ToList();
         }
 
+        public IShortcodeResult GetShortcodeResult(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+            => GetShortcodeResult(content == null ? null : GetContentStream(content), metadata);
+
         public IShortcodeResult GetShortcodeResult(Stream content, IEnumerable<KeyValuePair<string, object>> metadata = null)
             => new ShortcodeResult(content, metadata);
 

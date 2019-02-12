@@ -245,6 +245,17 @@ namespace Wyam.Common.Execution
         /// A factory method for use from inside an <see cref="IShortcode"/> to create an <see cref="IShortcodeResult"/>.
         /// </summary>
         /// <param name="content">
+        /// The content of the shortcode.
+        /// If you don't want the shortcode to add new content, you can use <c>null</c> for the content.
+        /// </param>
+        /// <param name="metadata">New metadata to be added to the document as a result of executing the shortcode.</param>
+        /// <returns>A shortcode result.</returns>
+        IShortcodeResult GetShortcodeResult(string content, IEnumerable<KeyValuePair<string, object>> metadata = null);
+
+        /// <summary>
+        /// A factory method for use from inside an <see cref="IShortcode"/> to create an <see cref="IShortcodeResult"/>.
+        /// </summary>
+        /// <param name="content">
         /// The content of the shortcode. The passed in stream will be disposed when the shortcode has been rendered.
         /// Use <see cref="GetContentStream(string)"/> if you need to create a content stream from a string.
         /// If you don't want the shortcode to add new content, you can use <c>null</c> for the content stream.

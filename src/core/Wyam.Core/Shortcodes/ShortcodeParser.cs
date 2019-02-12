@@ -33,6 +33,11 @@ namespace Wyam.Core.Shortcodes
             _shortcodes = shortcodes;
         }
 
+        /// <summary>
+        /// Identifies shortcode locations in a stream.
+        /// </summary>
+        /// <param name="stream">The stream to parse. This method will dispose the passed-in stream.</param>
+        /// <returns>All of the shortcode locations in the stream.</returns>
         public List<ShortcodeLocation> Parse(Stream stream)
         {
             List<ShortcodeLocation> locations = new List<ShortcodeLocation>();

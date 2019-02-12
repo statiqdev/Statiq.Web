@@ -17,6 +17,26 @@ namespace Wyam.Common.Shortcodes
             where TShortcode : IShortcode;
 
         /// <summary>
+        /// Adds a shortcode by type, infering the name from the type name.
+        /// </summary>
+        /// <typeparam name="TShortcode">The type of the shortcode to add.</typeparam>
+        void Add<TShortcode>()
+            where TShortcode : IShortcode;
+
+        /// <summary>
+        /// Adds a shortcode by type.
+        /// </summary>
+        /// <param name="name">The name of the shortcode.</param>
+        /// <param name="type">The type of the shortcode to add (must implement <see cref="IShortcode"/>).</param>
+        void Add(string name, Type type);
+
+        /// <summary>
+        /// Adds a shortcode by type, infering the name from the type name.
+        /// </summary>
+        /// <param name="type">The type of the shortcode to add (must implement <see cref="IShortcode"/>).</param>
+        void Add(Type type);
+
+        /// <summary>
         /// Adds a shortcode and specifies the result content.
         /// </summary>
         /// <param name="name">The name of the shortcode.</param>

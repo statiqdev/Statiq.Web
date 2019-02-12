@@ -33,11 +33,7 @@ namespace Wyam.Core.Modules.Contents
             {
                 // Parse the input stream looking for shortcodes
                 ShortcodeParser parser = new ShortcodeParser(_startDelimiter, _endDelimiter, context.Shortcodes);
-                List<ShortcodeLocation> locations;
-                using (Stream inputStream = input.GetStream())
-                {
-                    locations = parser.Parse(inputStream);
-                }
+                List<ShortcodeLocation> locations = parser.Parse(input.GetStream());  // The input stream will get disposed in the parser
 
                 // Return the original document if we didn't find any
                 if (locations.Count == 0)

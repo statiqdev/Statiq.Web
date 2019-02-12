@@ -21,6 +21,13 @@ namespace Wyam.Testing.Shortcodes
             where TShortcode : IShortcode =>
             this[name] = typeof(TShortcode);
 
+        public void Add<TShortcode>()
+            where TShortcode : IShortcode =>
+            Add<TShortcode>(typeof(TShortcode).Name);
+
+        public void Add(Type type) =>
+            this[type.Name] = type;
+
         public void Add(string name, string result) =>
             throw new NotImplementedException();
 
