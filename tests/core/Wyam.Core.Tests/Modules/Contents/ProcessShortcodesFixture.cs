@@ -54,6 +54,23 @@ namespace Wyam.Core.Tests.Modules.Contents
             }
 
             [Test]
+            public void ShortcodeSupportsNullResult()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<TestShortcode>("S1");
+                context.Shortcodes.Add<NullResultShortcode>("S2");
+                IDocument document = new TestDocument("123<?# S1 /?>456<?# S2 /?>789<?# S1 /?>");
+                ProcessShortcodes module = new ProcessShortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123Foo456789Foo");
+            }
+
+            [Test]
             public void DisposesShortcode()
             {
                 // Given
@@ -130,14 +147,19 @@ namespace Wyam.Core.Tests.Modules.Contents
 
         public class TestShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(context.GetContentStream("Foo"));
         }
 
         public class NullStreamShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(null);
+        }
+
+        public class NullResultShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) => null;
         }
 
         public class DisposableShortcode : IShortcode, IDisposable
@@ -150,7 +172,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Disposed = false;
             }
 
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(context.GetContentStream("Foo"));
 
             public void Dispose() =>
@@ -159,7 +181,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
         public class AddsMetadataShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(null, new MetadataItems
                 {
                     { "A", "1" },
@@ -169,7 +191,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
         public class AddsMetadataShortcode2 : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(null, new MetadataItems
                 {
                     { "A", "3" },
@@ -179,7 +201,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
         public class ReadsMetadataShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(null, new MetadataItems
                 {
                     { $"Foo", document.Get<int>("Foo") + 1 }
@@ -190,7 +212,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         {
             private int _value = 20;
 
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context) =>
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(null, new MetadataItems
                 {
                     { $"Foo", _value++ }

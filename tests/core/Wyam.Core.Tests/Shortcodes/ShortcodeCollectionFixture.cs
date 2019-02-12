@@ -80,7 +80,7 @@ namespace Wyam.Core.Tests.Shortcodes
 
         private class TestShortcode : IShortcode
         {
-            public IShortcodeResult Execute(string[] args, string content, IDocument document, IExecutionContext context)
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
             {
                 throw new NotImplementedException();
             }

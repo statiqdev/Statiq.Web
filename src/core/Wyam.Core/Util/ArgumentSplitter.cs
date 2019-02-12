@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core.Util
 {
-    // From http://stackoverflow.com/a/298990/807064
+    /// <summary>
+    /// Splits a string into quoted arguments delimited by spaces.
+    /// </summary>
+    /// <remarks>
+    /// From http://stackoverflow.com/a/298990/807064
+    /// </remarks>
     public static class ArgumentSplitter
     {
+        /// <summary>
+        /// Splits a string into quoted arguments delimited by spaces.
+        /// </summary>
+        /// <param name="arguments">The full string to split into arguments.</param>
+        /// <returns>Each quoted argument as delimited in the original string by spaces.</returns>
         public static IEnumerable<string> Split(string arguments)
         {
             bool inQuotes = false;

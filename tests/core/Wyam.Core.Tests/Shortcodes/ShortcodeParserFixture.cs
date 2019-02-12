@@ -45,7 +45,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "name", null }
+                        { "name", (Type)null }
                     });
 
                 // When
@@ -87,7 +87,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "name", null }
+                        { "name", (Type)null }
                     });
 
                 // When
@@ -111,8 +111,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "foo", null },
-                        { "bar", null }
+                        { "foo", (Type)null },
+                        { "bar", (Type)null }
                     });
 
                 // When, Then
@@ -154,7 +154,7 @@ namespace Wyam.Core.Tests.Shortcodes
                     endDelimiter,
                     new TestShortcodeCollection
                     {
-                        { "name", null }
+                        { "name", (Type)null }
                     });
 
                 // When
@@ -173,7 +173,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "bar", null }
+                        { "bar", (Type)null }
                     });
 
                 // When, Then
@@ -188,7 +188,7 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "bar", null }
+                        { "bar", (Type)null }
                     });
 
                 // When, Then
@@ -203,11 +203,71 @@ namespace Wyam.Core.Tests.Shortcodes
                 ShortcodeParser parser = new ShortcodeParser(
                     new TestShortcodeCollection
                     {
-                        { "foo", null }
+                        { "foo", (Type)null }
                     });
 
                 // When, Then
                 Should.Throw<ShortcodeParserException>(() => parser.Parse(stream));
+            }
+        }
+
+        public class SplitArgumentsTests : ShortcodeParserFixture
+        {
+            [Test]
+            public void ShouldIgnoreLeadingAndTrailingWhiteSpace()
+            {
+                // Given, When
+                KeyValuePair<string, string>[] result = ShortcodeParser.SplitArguments("  foo  fizz=buzz  ", 0).ToArray();
+
+                // Then
+                result.ShouldBe(new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>(null, "foo"),
+                    new KeyValuePair<string, string>("fizz", "buzz")
+                });
+            }
+
+            [TestCase("foo", null, "foo")]
+            [TestCase("=foo", null, "foo")]
+            [TestCase("foo=bar", "foo", "bar")]
+            [TestCase("\"fizz buzz\"=bar", "fizz buzz", "bar")]
+            [TestCase("foo=\"bar baz\"", "foo", "bar baz")]
+            [TestCase("\"fizz buzz\"=\"bar baz\"", "fizz buzz", "bar baz")]
+            [TestCase("\"fizz \\\" buzz\"=bar", "fizz \" buzz", "bar")]
+            [TestCase("foo=\"bar \\\" baz\"", "foo", "bar \" baz")]
+            [TestCase("\"fizz \\\" buzz\"=\"bar \\\" baz\"", "fizz \" buzz", "bar \" baz")]
+            [TestCase("\"fizz = buzz\"=bar", "fizz = buzz", "bar")]
+            [TestCase("foo=\"bar = baz\"", "foo", "bar = baz")]
+            [TestCase("\"fizz = buzz\"=\"bar = baz\"", "fizz = buzz", "bar = baz")]
+            public void ShouldSplitArguments(string arguments, string expectedKey, string expectedValue)
+            {
+                // Given, When
+                KeyValuePair<string, string>[] result = ShortcodeParser.SplitArguments(arguments, 0).ToArray();
+
+                // Then
+                result.ShouldBe(new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>(expectedKey, expectedValue)
+                });
+            }
+
+            [Test]
+            public void ShouldSplitComplexArguments()
+            {
+                // Given, When
+                KeyValuePair<string, string>[] result = ShortcodeParser.SplitArguments("foo \"abc 123\" fizz=buzz  \"qwe\"=\"try\"\r\nxyz=\"zyx\"  \"678=987\" goo=boo", 0).ToArray();
+
+                // Then
+                result.ShouldBe(new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>(null, "foo"),
+                    new KeyValuePair<string, string>(null, "abc 123"),
+                    new KeyValuePair<string, string>("fizz", "buzz"),
+                    new KeyValuePair<string, string>("qwe", "try"),
+                    new KeyValuePair<string, string>("xyz", "zyx"),
+                    new KeyValuePair<string, string>(null, "678=987"),
+                    new KeyValuePair<string, string>("goo", "boo")
+                });
             }
         }
     }

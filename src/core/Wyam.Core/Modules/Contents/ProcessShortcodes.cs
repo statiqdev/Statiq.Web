@@ -57,12 +57,12 @@ namespace Wyam.Core.Modules.Contents
                     .Select(x =>
                     {
                         IShortcodeResult result = shortcodes[x.Name].Execute(x.Arguments, x.Content, input, context);
-                        if (result.Metadata != null)
+                        if (result?.Metadata != null)
                         {
                             // Creating a new document is the easiest way to ensure all the metadata from shortcodes gets accumulated correctly
                             input = context.GetDocument(input, result.Metadata);
                         }
-                        return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, result.Stream);
+                        return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, result?.Stream);
                     })
                     .ToList();
 

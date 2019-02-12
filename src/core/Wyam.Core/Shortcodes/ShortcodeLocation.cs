@@ -9,7 +9,7 @@ namespace Wyam.Core.Shortcodes
 {
     internal class ShortcodeLocation
     {
-        public ShortcodeLocation(int firstIndex, string name, string[] arguments)
+        public ShortcodeLocation(int firstIndex, string name, KeyValuePair<string, string>[] arguments)
         {
             FirstIndex = firstIndex;
             Name = name;
@@ -23,7 +23,7 @@ namespace Wyam.Core.Shortcodes
 
         public int FirstIndex { get; }
         public string Name { get; }
-        public string[] Arguments { get; }
+        public KeyValuePair<string, string>[] Arguments { get; }
 
         public string Content { get; set; } = string.Empty;
 
