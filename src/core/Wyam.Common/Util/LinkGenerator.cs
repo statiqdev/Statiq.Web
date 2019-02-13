@@ -86,5 +86,28 @@ namespace Wyam.Common.Util
             string renderedLink = hasHost ? uri.AbsoluteUri : uri.AbsolutePath;
             return lowercase ? renderedLink.ToLowerInvariant() : renderedLink;
         }
+
+        /// <summary>
+        /// Checks if a string contains an absolute URI with a "http" or "https" scheme and returns it if it does.
+        /// </summary>
+        /// <param name="str">The string to check.</param>
+        /// <param name="absoluteUri">The resulting absolute URI.</param>
+        /// <returns><c>true</c> if the string contains an absolute URI, <c>false</c> otherwise.</returns>
+        public static bool TryGetAbsoluteHttpUri(string str, out string absoluteUri)
+        {
+            if (!string.IsNullOrWhiteSpace(str))
+            {
+                // Return the actual URI if it's absolute
+                if (Uri.TryCreate(str, UriKind.Absolute, out Uri uri)
+                    && (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)
+                        || uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)))
+                {
+                    absoluteUri = uri.ToString();
+                    return true;
+                }
+            }
+            absoluteUri = null;
+            return false;
+        }
     }
 }
