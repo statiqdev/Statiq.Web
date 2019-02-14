@@ -17,9 +17,8 @@ namespace Wyam.Core.Shortcodes.Html
     {
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
-            IMetadataDictionary arguments = ShortcodeHelper.GetArgsDictionary(
+            ConvertingDictionary arguments = args.ToDictionary(
                 context,
-                args,
                 "Path",
                 "IncludeHost",
                 "Host",

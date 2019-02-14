@@ -88,6 +88,9 @@ namespace Wyam.Testing.Documents
         /// <inhertdoc />
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
+        /// <inhertdoc />
+        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue(key, out value);
+
         public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
 
         /// <inhertdoc />

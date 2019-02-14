@@ -349,6 +349,9 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         public T Get<T>(string key, T defaultValue) => _settings.Get(key, defaultValue);
 
+        /// <inheritdoc/>
+        public bool TryGetValue<T>(string key, out T value) => _settings.TryGetValue(key, out value);
+
         public IMetadata GetMetadata(params string[] keys) => _settings.GetMetadata(keys);
     }
 }

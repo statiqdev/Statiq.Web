@@ -70,6 +70,8 @@ namespace Wyam.Core.Meta
 
         public T Get<T>(string key, T defaultValue) => MetadataAs<T>().Get(key, defaultValue);
 
+        public bool TryGetValue<T>(string key, out T value) => MetadataAs<T>().TryGetValue(key, out value);
+
         public object this[string key]
         {
             get

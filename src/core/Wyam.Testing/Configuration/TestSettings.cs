@@ -93,6 +93,9 @@ namespace Wyam.Testing.Configuration
         public T Get<T>(string key, T defaultValue) => _metadata.Get(key, defaultValue);
 
         /// <inheritdoc />
+        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue(key, out value);
+
+        /// <inheritdoc />
         public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
 
         /// <inheritdoc />

@@ -101,6 +101,27 @@ namespace Wyam.Testing.Meta
             return defaultValue;
         }
 
+        /// <inheritdoc />
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            value = default(T);
+            if (TryGetValue(key, out object obj))
+            {
+                // Check if there's a test-specific conversion
+                if (TypeConversions.TryGetValue((obj?.GetType() ?? typeof(object), typeof(T)), out Func<object, object> typeConversion))
+                {
+                    value = (T)typeConversion(obj);
+                    return true;
+                }
+
+                // Default conversion is just to cast
+                value = (T)obj;
+                return true;
+            }
+
+            return false;
+        }
+
         public Dictionary<(Type Value, Type Result), Func<object, object>> TypeConversions { get; } = new Dictionary<(Type Value, Type Result), Func<object, object>>();
 
         public void AddTypeConversion<T, TResult>(Func<T, TResult> typeConversion) => TypeConversions.Add((typeof(T), typeof(TResult)), x => typeConversion((T)x));

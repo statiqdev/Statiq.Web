@@ -11,9 +11,9 @@ using Wyam.Testing.Execution;
 namespace Wyam.Common.Tests.Shortcodes
 {
     [TestFixture]
-    public class ShortcodeHelperFixture : BaseFixture
+    public class ShortcodeExtensionsFixture : BaseFixture
     {
-        public class GetArgsDictionaryTests : ShortcodeHelperFixture
+        public class ToDictionaryTests : ShortcodeExtensionsFixture
         {
             [Test]
             public void MatchesInCorrectOrder()
@@ -28,7 +28,7 @@ namespace Wyam.Common.Tests.Shortcodes
                 };
 
                 // When
-                IMetadataDictionary dictionary = ShortcodeHelper.GetArgsDictionary(context, args, "A", "B", "C");
+                ConvertingDictionary dictionary = args.ToDictionary(context, "A", "B", "C");
 
                 // Then
                 dictionary.ShouldBe(
@@ -54,7 +54,7 @@ namespace Wyam.Common.Tests.Shortcodes
                 };
 
                 // When
-                IMetadataDictionary dictionary = ShortcodeHelper.GetArgsDictionary(context, args, "A", "B", "C");
+                ConvertingDictionary dictionary = args.ToDictionary(context, "A", "B", "C");
 
                 // Then
                 dictionary.ShouldBe(
@@ -80,7 +80,7 @@ namespace Wyam.Common.Tests.Shortcodes
                 };
 
                 // When
-                IMetadataDictionary dictionary = ShortcodeHelper.GetArgsDictionary(context, args, "A", "B", "C");
+                ConvertingDictionary dictionary = args.ToDictionary(context, "A", "B", "C");
 
                 // Then
                 dictionary.ShouldBe(
@@ -106,7 +106,7 @@ namespace Wyam.Common.Tests.Shortcodes
                 };
 
                 // When, Then
-                Should.Throw<ShortcodeArgumentException>(() => ShortcodeHelper.GetArgsDictionary(context, args, "A", "B", "C"));
+                Should.Throw<ShortcodeArgumentException>(() => args.ToDictionary(context, "A", "B", "C"));
             }
 
             [Test]
@@ -122,7 +122,7 @@ namespace Wyam.Common.Tests.Shortcodes
                 };
 
                 // When, Then
-                Should.Throw<ShortcodeArgumentException>(() => ShortcodeHelper.GetArgsDictionary(context, args, "A", "B", "C"));
+                Should.Throw<ShortcodeArgumentException>(() => args.ToDictionary(context, "A", "B", "C"));
             }
         }
     }

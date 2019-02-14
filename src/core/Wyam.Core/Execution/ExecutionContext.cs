@@ -241,6 +241,8 @@ namespace Wyam.Core.Execution
 
         public T Get<T>(string key, T defaultValue) => Settings.Get(key, defaultValue);
 
+        public bool TryGetValue<T>(string key, out T value) => Settings.TryGetValue(key, out value);
+
         public IMetadata GetMetadata(params string[] keys) => Settings.GetMetadata(keys);
     }
 }

@@ -56,6 +56,15 @@ namespace Wyam.Common.Meta
         T Get<T>(string key, T defaultValue);
 
         /// <summary>
+        /// Tries to get the value for the specified key.
+        /// </summary>
+        /// <typeparam name="T">The desired return type.</typeparam>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="value">The value of the key if it was found and could be converted to the desired return type.</param>
+        /// <returns><c>true</c> if the key was found and the value could be converted to the desired return type, <c>false</c> otherwise.</returns>
+        bool TryGetValue<T>(string key, out T value);
+
+        /// <summary>
         /// Gets a new <see cref="IMetadata"/> containing only the specified keys and their values. If a key is not present in the current
         /// metadata, it will be ignored and will not be copied to the new metadata object.
         /// </summary>
