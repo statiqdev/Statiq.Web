@@ -59,10 +59,7 @@ namespace Wyam.Core.Modules.Metadata
         {
             return inputs.AsParallel().SelectMany(context, input =>
             {
-                object existingValue;
-                bool hasExistingKey = input.TryGetValue(_fromKey, out existingValue);
-
-                if (hasExistingKey)
+                if (input.TryGetValue(_fromKey, out object existingValue))
                 {
                     if (_format != null)
                     {

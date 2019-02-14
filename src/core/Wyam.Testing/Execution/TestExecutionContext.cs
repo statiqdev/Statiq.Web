@@ -323,9 +323,6 @@ namespace Wyam.Testing.Execution
         public bool ContainsKey(string key) => _settings.ContainsKey(key);
 
         /// <inheritdoc/>
-        public bool TryGetValue(string key, out object value) => _settings.TryGetValue(key, out value);
-
-        /// <inheritdoc/>
         public object this[string key] => _settings[key];
 
         /// <inheritdoc/>
@@ -350,7 +347,10 @@ namespace Wyam.Testing.Execution
         public T Get<T>(string key, T defaultValue) => _settings.Get(key, defaultValue);
 
         /// <inheritdoc/>
-        public bool TryGetValue<T>(string key, out T value) => _settings.TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, out T value) => _settings.TryGetValue<T>(key, out value);
+
+        /// <inheritdoc/>
+        public bool TryGetValue(string key, out object value) => _settings.TryGetValue(key, out value);
 
         public IMetadata GetMetadata(params string[] keys) => _settings.GetMetadata(keys);
     }

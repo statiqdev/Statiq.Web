@@ -40,9 +40,6 @@ namespace Wyam.Core.Documents
         public bool ContainsKey(string key) => Document.ContainsKey(key);
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out object value) => Document.TryGetValue(key, out value);
-
-        /// <inheritdoc />
         public object this[string key] => Document[key];
 
         /// <inheritdoc />
@@ -67,7 +64,10 @@ namespace Wyam.Core.Documents
         public T Get<T>(string key, T defaultValue) => Document.Get(key, defaultValue);
 
         /// <inheritdoc />
-        public bool TryGetValue<T>(string key, out T value) => Document.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object value) => Document.TryGetValue(key, out value);
+
+        /// <inheritdoc />
+        public bool TryGetValue<T>(string key, out T value) => Document.TryGetValue<T>(key, out value);
 
         /// <inheritdoc />
         public IMetadata GetMetadata(params string[] keys) => Document.GetMetadata(keys);

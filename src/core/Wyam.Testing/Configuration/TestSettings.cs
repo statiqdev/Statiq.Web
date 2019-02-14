@@ -68,9 +68,6 @@ namespace Wyam.Testing.Configuration
         bool IReadOnlyDictionary<string, object>.ContainsKey(string key) => _metadata.ContainsKey(key);
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
-
-        /// <inheritdoc />
         object IDictionary<string, object>.this[string key]
         {
             get { return _metadata[key]; }
@@ -93,7 +90,10 @@ namespace Wyam.Testing.Configuration
         public T Get<T>(string key, T defaultValue) => _metadata.Get(key, defaultValue);
 
         /// <inheritdoc />
-        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue<T>(key, out value);
+
+        /// <inheritdoc />
+        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
 
         /// <inheritdoc />
         public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);

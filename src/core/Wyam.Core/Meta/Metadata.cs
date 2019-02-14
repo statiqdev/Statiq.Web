@@ -33,22 +33,6 @@ namespace Wyam.Core.Meta
             return Stack.Any(x => x.ContainsKey(key));
         }
 
-        public bool TryGetValue(string key, out object value)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            value = null;
-            IReadOnlyDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
-            if (meta == null)
-            {
-                return false;
-            }
-            value = GetValue(meta[key]);
-            return true;
-        }
-
         public object Get(string key, object defaultValue = null) =>
             TryGetValue(key, out object value) ? value : defaultValue;
 
@@ -70,7 +54,23 @@ namespace Wyam.Core.Meta
 
         public T Get<T>(string key, T defaultValue) => MetadataAs<T>().Get(key, defaultValue);
 
-        public bool TryGetValue<T>(string key, out T value) => MetadataAs<T>().TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            value = default(T);
+            IReadOnlyDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
+            if (meta == null)
+            {
+                return false;
+            }
+            object rawValue = GetValue(meta[key]);
+            return TypeHelper.TryConvert(rawValue, out value);
+        }
+
+        public bool TryGetValue(string key, out object value) => TryGetValue<object>(key, out value);
 
         public object this[string key]
         {

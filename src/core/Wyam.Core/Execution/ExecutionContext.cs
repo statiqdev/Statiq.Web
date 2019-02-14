@@ -223,8 +223,6 @@ namespace Wyam.Core.Execution
 
         public bool ContainsKey(string key) => Settings.ContainsKey(key);
 
-        public bool TryGetValue(string key, out object value) => Settings.TryGetValue(key, out value);
-
         public object this[string key] => Settings[key];
 
         public IEnumerable<string> Keys => Settings.Keys;
@@ -241,7 +239,9 @@ namespace Wyam.Core.Execution
 
         public T Get<T>(string key, T defaultValue) => Settings.Get(key, defaultValue);
 
-        public bool TryGetValue<T>(string key, out T value) => Settings.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object value) => Settings.TryGetValue(key, out value);
+
+        public bool TryGetValue<T>(string key, out T value) => Settings.TryGetValue<T>(key, out value);
 
         public IMetadata GetMetadata(params string[] keys) => Settings.GetMetadata(keys);
     }

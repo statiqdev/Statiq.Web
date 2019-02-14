@@ -21,13 +21,9 @@ namespace Wyam.Core.Meta
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
         {
             return _metadata
-                .Select(x =>
-                {
-                    T value;
-                    return TypeHelper.TryConvert(x.Value, out value)
-                        ? new KeyValuePair<string, T>?(new KeyValuePair<string, T>(x.Key, value))
-                        : null;
-                })
+                .Select(x => TypeHelper.TryConvert(x.Value, out T value)
+                    ? new KeyValuePair<string, T>?(new KeyValuePair<string, T>(x.Key, value))
+                    : null)
                 .Where(x => x.HasValue)
                 .Select(x => x.Value)
                 .GetEnumerator();
@@ -38,30 +34,15 @@ namespace Wyam.Core.Meta
             return GetEnumerator();
         }
 
-        public int Count
-        {
-            get
-            {
-                return _metadata.Count(x =>
-                {
-                    T value;
-                    return TypeHelper.TryConvert(x.Value, out value);
-                });
-            }
-        }
+        public int Count => _metadata.Count(x => TypeHelper.TryConvert(x.Value, out T value));
 
-        public bool ContainsKey(string key)
-        {
-            T value;
-            return TryGetValue(key, out value);
-        }
+        public bool ContainsKey(string key) => TryGetValue(key, out T value);
 
         public T this[string key]
         {
             get
             {
-                T value;
-                if (!TryGetValue(key, out value))
+                if (!TryGetValue(key, out T value))
                 {
                     throw new KeyNotFoundException("The key " + key + " was not found in metadata, use Get() to provide a default value.");
                 }
@@ -69,27 +50,14 @@ namespace Wyam.Core.Meta
             }
         }
 
-        public IEnumerable<string> Keys
-        {
-            get { return this.Select(x => x.Key); }
-        }
+        public IEnumerable<string> Keys => this.Select(x => x.Key);
 
-        public IEnumerable<T> Values
-        {
-            get { return this.Select(x => x.Value); }
-        }
+        public IEnumerable<T> Values => this.Select(x => x.Value);
 
-        public T Get(string key) =>
-            TryGetValue(key, out T value) ? value : default(T);
+        public T Get(string key) => TryGetValue(key, out T value) ? value : default(T);
 
-        public T Get(string key, T defaultValue) =>
-            TryGetValue(key, out T value) ? value : defaultValue;
+        public T Get(string key, T defaultValue) => TryGetValue(key, out T value) ? value : defaultValue;
 
-        public bool TryGetValue(string key, out T value)
-        {
-            value = default(T);
-            object untypedValue;
-            return _metadata.TryGetValue(key, out untypedValue) && TypeHelper.TryConvert(untypedValue, out value);
-        }
+        public bool TryGetValue(string key, out T value) => _metadata.TryGetValue(key, out value);
     }
 }

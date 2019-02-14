@@ -86,12 +86,10 @@ namespace Wyam.Common.Meta
             TryGetValue(key, out object value) ? value : defaultValue;
 
         /// <inheritdoc />
-        public T Get<T>(string key) =>
-            TryGetValue(key, out object value) && _context.TryConvert(value, out T result) ? result : default(T);
+        public T Get<T>(string key) => TryGetValue(key, out T value) ? value : default(T);
 
         /// <inheritdoc />
-        public T Get<T>(string key, T defaultValue) =>
-            TryGetValue(key, out object value) && _context.TryConvert(value, out T result) ? result : defaultValue;
+        public T Get<T>(string key, T defaultValue) => TryGetValue(key, out T value) ? value : defaultValue;
 
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _dictionary.GetEnumerator();
@@ -108,13 +106,13 @@ namespace Wyam.Common.Meta
             ((IDictionary<string, object>)_dictionary).Remove(item);
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out object value) => _dictionary.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object value) => TryGetValue<object>(key, out value);
 
         /// <inheritdoc />
-        public bool TryGetValue<T>(string key, out T result)
+        public bool TryGetValue<T>(string key, out T value)
         {
-            result = default(T);
-            return TryGetValue(key, out object value) && _context.TryConvert(value, out result);
+            value = default(T);
+            return _dictionary.TryGetValue(key, out object rawValue) && _context.TryConvert(rawValue, out value);
         }
 
         /// <inheritdoc />

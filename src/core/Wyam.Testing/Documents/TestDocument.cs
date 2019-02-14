@@ -71,9 +71,6 @@ namespace Wyam.Testing.Documents
         public bool ContainsKey(string key) => _metadata.ContainsKey(key);
 
         /// <inhertdoc />
-        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
-
-        /// <inhertdoc />
         public IMetadata<T> MetadataAs<T>() => _metadata.MetadataAs<T>();
 
         /// <inhertdoc />
@@ -89,7 +86,10 @@ namespace Wyam.Testing.Documents
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
         /// <inhertdoc />
-        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue<T>(key, out value);
+
+        /// <inhertdoc />
+        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
 
         public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
 

@@ -189,8 +189,6 @@ namespace Wyam.Core.Documents
 
         public bool ContainsKey(string key) => _metadata.ContainsKey(key);
 
-        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
-
         public object this[string key] => _metadata[key];
 
         public IEnumerable<string> Keys => _metadata.Keys;
@@ -207,7 +205,9 @@ namespace Wyam.Core.Documents
 
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
-        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, out T value) => _metadata.TryGetValue<T>(key, out value);
+
+        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
 
         public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
 
