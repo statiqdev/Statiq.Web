@@ -21,6 +21,17 @@ namespace Wyam.Common.Meta
         public static string String(this IMetadata metadata, string key, string defaultValue = null) => metadata.Get(key, defaultValue);
 
         /// <summary>
+        /// Formats a string value if it exists in the metadata, otherwise returns a default value.
+        /// </summary>
+        /// <param name="metadata">The metadata containing the value.</param>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="formatFunc">A formatting function to apply to the string value of the specified key.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found.</param>
+        /// <returns>The formatted value of the specified key if it exists or the specified default value.</returns>
+        public static string String(this IMetadata metadata, string key, Func<string, string> formatFunc, string defaultValue = null) =>
+            metadata.ContainsKey(key) ? formatFunc(metadata.String(key)) : defaultValue;
+
+        /// <summary>
         /// Gets the value for the specified key converted to a bool. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>

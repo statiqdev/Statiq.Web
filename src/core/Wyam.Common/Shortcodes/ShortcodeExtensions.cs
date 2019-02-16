@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Wyam.Common.Execution;
@@ -10,6 +11,43 @@ namespace Wyam.Common.Shortcodes
 {
     public static class ShortcodeExtensions
     {
+        /// <summary>
+        /// Validates that the arguments contain a single value and returns it.
+        /// </summary>
+        /// <param name="args">The original shortcode arguments.</param>
+        /// <returns>The single argument value.</returns>
+        public static string SingleValue(this KeyValuePair<string, string>[] args) =>
+            ToValueArray(args, 1)[0];
+
+        /// <summary>
+        /// Validates that the correct number of unnamed arguments have been used and returns them as an array.
+        /// </summary>
+        /// <param name="args">The original shortcode arguments.</param>
+        /// <param name="count">The count of expected arguments.</param>
+        /// <returns>The argument values.</returns>
+        public static string[] ToValueArray(this KeyValuePair<string, string>[] args, int count) =>
+            ToValueArray(args, count, count);
+
+        /// <summary>
+        /// Validates that the correct number of unnamed arguments have been used and returns them as an array.
+        /// </summary>
+        /// <param name="args">The original shortcode arguments.</param>
+        /// <param name="minimumCount">The minimum count of expected arguments.</param>
+        /// <param name="maximumCount">The maximum count of expected arguments.</param>
+        /// <returns>The argument values.</returns>
+        public static string[] ToValueArray(this KeyValuePair<string, string>[] args, int minimumCount, int maximumCount)
+        {
+            if (args.Length < minimumCount || args.Length > maximumCount)
+            {
+                throw new ArgumentException("Incorrect number of shortcode arguments");
+            }
+            if (args.Any(x => x.Key != null || x.Value == null))
+            {
+                throw new ArgumentException("Incorrect shortcode arguments");
+            }
+            return args.Select(x => x.Value).ToArray();
+        }
+
         /// <summary>
         /// Converts the shortcode arguments into a dictionary of named parameters.
         /// This will match un-named positional parameters with their expected position
