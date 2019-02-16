@@ -31,13 +31,13 @@ namespace Wyam.Sass
                 // Relative parent path and no available absolute path, try with the relative path
                 parentFilePath = new FilePath(parentPath);
             }
-            DirectoryPath containingPath = _fileSystem.GetContainingInputPath(parentFilePath);
-            if (containingPath == null)
-            {
-                // Couldn't find the containing path, give up at this point
-                return false;
-            }
-            FilePath parentRelativePath = containingPath.GetRelativePath(parentFilePath);
+
+            // Try to get the relative path to the parent file from inside the input virtual file system
+            // But if the parent file isn't under an input path, just use it directly
+            DirectoryPath containingInputPath = _fileSystem.GetContainingInputPath(parentFilePath);
+            FilePath parentRelativePath = containingInputPath != null
+                ? containingInputPath.GetRelativePath(parentFilePath)
+                : parentFilePath;
 
             // Find the requested file
             // ...as specified
