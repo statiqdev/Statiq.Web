@@ -30,6 +30,18 @@ namespace Wyam.Sass
     ///     WriteFiles(".css")
     /// );
     /// </code>
+    /// Another common pattern is building Bootstrap from npm sitting alongside your "input" folder in a "node_modules" folder. This can be accomplished with
+    /// a pipeline that looks similar to the following. It loads the Bootstrap Sass files that don't begin with "_" from the Bootstrap node module and then
+    /// outputs the results to a specific path under your output folder (in this case, "assets/css/bootstrap.css").
+    /// <code>
+    /// Pipelines.Add("Bootstrap",
+    ///     ReadFiles("../node_modules/bootstrap/scss/**/{!_,}*.scss"),
+    ///     Sass()
+    ///         .WithCompactOutputStyle(),
+    ///     WriteFiles((doc, ctx) => $"assets/css/{doc.String(Keys.RelativeFilePath)}")
+    ///         .UseWriteMetadata(false)
+    /// );
+    /// </code>
     /// </example>
     /// <metadata cref="Keys.SourceFilePath" usage="Input">The default key to use for determining the input document path.</metadata>
     /// <metadata cref="Keys.RelativeFilePath" usage="Input">If <see cref="Keys.SourceFilePath"/> is unavailable, this is used to guess at the source file path.</metadata>
