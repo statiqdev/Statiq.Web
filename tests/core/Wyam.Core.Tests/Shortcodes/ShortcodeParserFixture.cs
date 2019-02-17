@@ -165,6 +165,60 @@ namespace Wyam.Core.Tests.Shortcodes
                 result.Single().LastIndex.ShouldBe(lastIndex);
             }
 
+            [TestCase("<?# name ?>abc<?#/ name ?>", "abc")]
+            [TestCase("<?#name?>abc<?#/ name ?>", "abc")]
+            [TestCase("<?# name ?>abc<?#/name?>", "abc")]
+            [TestCase("<?#name?>abc<?#/name?>", "abc")]
+            [TestCase("012<?# name ?>abc<?#/ name ?>xyz", "abc")]
+            [TestCase("012<?# name ?>abc<?#/ name ?> xyz", "abc")]
+            [TestCase("012 <?# name ?>abc<?#/ name ?>xyz", "abc")]
+            [TestCase("012 <?# name ?>abc<?#/ name ?> xyz", "abc")]
+            [TestCase("<?# name ?>abc<?#/ foo ?>xyz<?#/ name ?>", "abc<?#/ foo ?>xyz")]
+            [TestCase("<?# name ?>abc<?# foo ?>def<?#/ foo ?>xyz<?#/ name ?>", "abc<?# foo ?>def<?#/ foo ?>xyz")]
+            [TestCase("<?# name ?>{{!/ foo !}}<?#/ name ?>", "{{!/ foo !}}")]
+            [TestCase("<?# name ?>{{! foo !}}{{!/ foo !}}<?#/ name ?>", "{{! foo !}}{{!/ foo !}}")]
+            [TestCase("<?# name ?>{{! foo !}}{{*/ foo *}}<?#/ name ?>", "{{! foo !}}{{*/ foo *}}")]
+            [TestCase("<?# name ?>abc{{* foo *}}def{{*/ foo *}}xyz<?#/ name ?>", "abc{{* foo *}}def{{*/ foo *}}xyz")]
+            public void FindsContent(string input, string content)
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                ShortcodeParser parser = new ShortcodeParser(
+                    new TestShortcodeCollection
+                    {
+                        { "name", (Type)null }
+                    });
+
+                // When
+                List<ShortcodeLocation> result = parser.Parse(stream);
+
+                // Then
+                result.Single().Content.ShouldBe(content);
+            }
+
+            [TestCase("<?# name ?><?abc?><?#/ name ?>", "abc")]
+            [TestCase("<?# name ?><? abc ?><?#/ name ?>", " abc ")]
+            [TestCase("<?# name ?> <?abc?> <?#/ name ?>", "abc")]
+            [TestCase("<?# name ?> <? abc ?> <?#/ name ?>", " abc ")]
+            [TestCase("<?# name ?><?#/ foo ?><?#/ name ?>", "#/ foo ")]
+            [TestCase("<?# name ?><?# foo ?><?#/ foo ?><?#/ name ?>", "# foo ?><?#/ foo ")]
+            public void TrimsProcessingInstructionFromContent(string input, string content)
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                ShortcodeParser parser = new ShortcodeParser(
+                    new TestShortcodeCollection
+                    {
+                        { "name", (Type)null }
+                    });
+
+                // When
+                List<ShortcodeLocation> result = parser.Parse(stream);
+
+                // Then
+                result.Single().Content.ShouldBe(content);
+            }
+
             [Test]
             public void ThrowsForUnnamedShortcodeName()
             {

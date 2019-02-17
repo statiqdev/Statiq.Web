@@ -13,7 +13,7 @@ using Wyam.Common.Util;
 
 namespace Wyam.Core.Shortcodes.Html
 {
-    public class Tweet : IShortcode
+    public class Twitter : IShortcode
     {
         // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };

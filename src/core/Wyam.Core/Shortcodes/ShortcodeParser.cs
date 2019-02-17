@@ -122,12 +122,25 @@ namespace Wyam.Core.Shortcodes
                             // Make sure it's the same name
                             if (name.Equals(shortcode.Name, StringComparison.OrdinalIgnoreCase))
                             {
-                                shortcode.Content = content.ToString(0, content.Length - _startDelimiter.Text.Length - 1);
+                                // If the content is contained within a processing instruction, trim that
+                                string shortcodeContent = content.ToString(0, content.Length - _startDelimiter.Text.Length - 1);
+                                string trimmedContent = shortcodeContent.Trim();
+                                if (trimmedContent.StartsWith("<?") && trimmedContent.EndsWith("?>"))
+                                {
+                                    shortcodeContent = trimmedContent.Substring(2, trimmedContent.Length - 4);
+                                }
+
+                                shortcode.Content = shortcodeContent;
                                 shortcode.Finish(i);
                                 locations.Add(shortcode);
 
                                 shortcode = null;
                                 content = null;
+                            }
+                            else
+                            {
+                                // It wasn't the same name, so add the tag content to the running content
+                                content.Append(currentTag.Content.ToString());
                             }
 
                             currentTag = null;
