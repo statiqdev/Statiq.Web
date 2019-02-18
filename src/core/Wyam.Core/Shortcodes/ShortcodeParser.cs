@@ -119,9 +119,6 @@ namespace Wyam.Core.Shortcodes
                                 throw new ShortcodeParserException("Closing shortcode tags should only consist of the shortcode name");
                             }
 
-                            // Ignore dashes in the name
-                            name = name.Replace("-", string.Empty);
-
                             // Make sure it's the same name
                             if (name.Equals(shortcode.Name, StringComparison.OrdinalIgnoreCase))
                             {
@@ -185,9 +182,6 @@ namespace Wyam.Core.Shortcodes
                 name = tagContent.Substring(0, nameLength);
                 arguments = SplitArguments(tagContent, nameLength + 1).ToArray();
             }
-
-            // Ignore dashes in the name
-            name = name.Replace("-", string.Empty);
 
             // Try to get the shortcode
             if (!_shortcodes.Contains(name))
