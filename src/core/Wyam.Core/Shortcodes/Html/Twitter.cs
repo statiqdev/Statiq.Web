@@ -24,7 +24,8 @@ namespace Wyam.Core.Shortcodes.Html
                 "Id",
                 "HideMedia",
                 "HideThread",
-                "Theme");
+                "Theme",
+                "OmitScript");
             arguments.RequireKeys("Id");
 
             // Create the url
@@ -41,7 +42,7 @@ namespace Wyam.Core.Shortcodes.Html
             {
                 query.Add($"theme={arguments.String("theme")}");
             }
-            if (_omitScript)
+            if (_omitScript || arguments.Bool("OmitScript"))
             {
                 query.Add("omit_script=true");
             }

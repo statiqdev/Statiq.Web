@@ -47,8 +47,18 @@ namespace Wyam.Common.Shortcodes
             {
                 throw new ArgumentException("Incorrect number of shortcode arguments");
             }
-            return args.Select(x => x.Key != null ? $"{x.Key}={x.Value}" : x.Value).ToArray();
+            return ToValueArray(args);
         }
+
+        /// <summary>
+        /// Returns arguments as an array.
+        /// This will collapse keys and values into a single argument value so that "=" doesn't have to be
+        /// escaped with quotes.
+        /// </summary>
+        /// <param name="args">The original shortcode arguments.</param>
+        /// <returns>The argument values.</returns>
+        public static string[] ToValueArray(this IEnumerable<KeyValuePair<string, string>> args) =>
+            args.Select(x => x.Key != null ? $"{x.Key}={x.Value}" : x.Value).ToArray();
 
         /// <summary>
         /// Converts the shortcode arguments into a dictionary of named parameters.
