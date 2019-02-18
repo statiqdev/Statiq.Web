@@ -9,6 +9,23 @@ using Wyam.Common.Util;
 
 namespace Wyam.Core.Shortcodes.Html
 {
+    /// <summary>
+    /// Embeds a GitHub gist.
+    /// </summary>
+    /// <example>
+    /// <para>
+    /// Example usage:
+    /// </para>
+    /// <code>
+    /// &lt;?# gist 10a2f6e0186fa34b8a7b4bd7d436785d /?&gt;
+    /// </code>
+    /// <para>
+    /// Example output:
+    /// </para>
+    /// <code>
+    /// &lt;script src=&quot;//gist.github.com/10a2f6e0186fa34b8a7b4bd7d436785d.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+    /// </code>
+    /// </example>
     public class Gist : IShortcode
     {
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)

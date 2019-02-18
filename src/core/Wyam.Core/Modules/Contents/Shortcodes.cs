@@ -12,21 +12,34 @@ using Wyam.Core.Shortcodes;
 
 namespace Wyam.Core.Modules.Contents
 {
+    /// <summary>
+    /// Renders shortcodes in the input documents.
+    /// </summary>
+    /// <category>Content</category>
     public class Shortcodes : IModule
     {
         private readonly string _startDelimiter = ShortcodeParser.DefaultStartDelimiter;
         private readonly string _endDelimiter = ShortcodeParser.DefaultEndDelimiter;
 
+        /// <summary>
+        /// Renders shortcodes in the input documents using the default start and end delimiters.
+        /// </summary>
         public Shortcodes()
         {
         }
 
+        /// <summary>
+        /// Renders shortcodes in the input documents using custom start and end delimiters.
+        /// </summary>
+        /// <param name="startDelimiter">The shortcode start delimiter.</param>
+        /// <param name="endDelimiter">The shortcode end delimiter.</param>
         public Shortcodes(string startDelimiter, string endDelimiter)
         {
             _startDelimiter = startDelimiter;
             _endDelimiter = endDelimiter;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(context, input =>
@@ -136,7 +149,7 @@ namespace Wyam.Core.Modules.Contents
             }
         }
 
-        public class InsertingStreamLocation
+        private class InsertingStreamLocation
         {
             public InsertingStreamLocation(int firstIndex, int lastIndex, Stream stream)
             {

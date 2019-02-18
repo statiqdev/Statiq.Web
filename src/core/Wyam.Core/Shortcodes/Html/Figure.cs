@@ -9,6 +9,39 @@ using Wyam.Common.Shortcodes;
 
 namespace Wyam.Core.Shortcodes.Html
 {
+    /// <summary>
+    /// Generates HTML5 <c>figure</c> elements.
+    /// </summary>
+    /// <remarks>
+    /// The content of this shortcode specifies a caption to output inside a nested <c>figcaption</c> element.
+    /// </remarks>
+    /// <example>
+    /// <para>
+    /// Example usage:
+    /// </para>
+    /// <code>
+    /// &lt;?# figure src="/assets/wyam.jpg" ?&gt;
+    /// Wyam Logo
+    /// &lt;?#/ figure ?&gt;
+    /// </code>
+    /// <para>
+    /// Example output:
+    /// </para>
+    /// <code>
+    /// &lt;figure&gt;
+    ///   &lt;img src=&quot;/assets/wyam.jpg&quot; /&gt;
+    ///   &lt;figcaption&gt;Wyam Logo&lt;/figcaption&gt;
+    /// &lt;/figure&gt;
+    /// </code>
+    /// </example>
+    /// <parameter name="Src">URL of the image to be displayed.</parameter>
+    /// <parameter name="Link">If the image needs to be hyperlinked, URL of the destination.</parameter>
+    /// <parameter name="Target">Optional <c>target</c> attribute for the URL if <c>Link</c> parameter is set.</parameter>
+    /// <parameter name="Rel">Optional <c>rel</c> attribute for the URL if <c>Link</c> parameter is set.</parameter>
+    /// <parameter name="Alt">Alternate text for the image if the image cannot be displayed.</parameter>
+    /// <parameter name="Class"><c>class</c> attribute to apply to the <c>figure</c> element.</parameter>
+    /// <parameter name="Height"><c>height</c> attribute of the image.</parameter>
+    /// <parameter name="Width"><c>width</c> attribute of the image.</parameter>
     public class Figure : IShortcode
     {
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)

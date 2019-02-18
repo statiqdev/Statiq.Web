@@ -14,8 +14,17 @@ using Wyam.Common.Util;
 namespace Wyam.Core.Shortcodes.Html
 {
     /// <summary>
-    /// Calls an oEmbed endpoint and renders the embedded content (see https://oembed.com/).S
+    /// Calls an oEmbed endpoint and renders the embedded content.
     /// </summary>
+    /// <remarks>
+    /// See https://oembed.com/ for details on the oEmbed standard and available endpoints.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;?# embed http://codepen.io/api/oembed?url=https://codepen.io/gingerdude/pen/JXwgdK&quot;format=json /?&gt;
+    /// </code>
+    /// </example>
+    /// <parameter>The URL to fetch the oEmbed response from.</parameter>
     public class Embed : IShortcode
     {
         // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
