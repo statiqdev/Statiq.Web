@@ -98,6 +98,31 @@ namespace Wyam.Core.Tests.Shortcodes
                 result.Single().LastIndex.ShouldBe(lastIndex);
             }
 
+            [TestCase("<?# foo-bar /?>", 0, 14)]
+            [TestCase("012<?# foo-bar /?>xyz", 3, 17)]
+            [TestCase("<?# foo-bar foo /?>", 0, 18)]
+            [TestCase("<?# foo-bar ?><?#/ foo-bar ?>", 0, 28)]
+            [TestCase("<?# foo-bar ?><?#/ foobar ?>", 0, 27)]
+            [TestCase("<?# foobar ?><?#/ foo-bar ?>", 0, 27)]
+            [TestCase("012 <?# foo-bar ?>abc<?#/ foo-bar ?>xyz", 4, 35)]
+            public void IgnoresDashesInName(string input, int firstIndex, int lastIndex)
+            {
+                // Given
+                Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                ShortcodeParser parser = new ShortcodeParser(
+                    new TestShortcodeCollection
+                    {
+                        { "FooBar", (Type)null }
+                    });
+
+                // When
+                List<ShortcodeLocation> result = parser.Parse(stream);
+
+                // Then
+                result.Single().FirstIndex.ShouldBe(firstIndex);
+                result.Single().LastIndex.ShouldBe(lastIndex);
+            }
+
             [TestCase("<?# foo ?>")]
             [TestCase("<?#foo?>")]
             [TestCase("abc<?# foo ?>123")]

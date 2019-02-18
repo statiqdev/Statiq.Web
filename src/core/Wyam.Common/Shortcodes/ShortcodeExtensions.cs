@@ -13,6 +13,8 @@ namespace Wyam.Common.Shortcodes
     {
         /// <summary>
         /// Validates that the arguments contain a single value and returns it.
+        /// This will collapse keys and values into a single argument value so that "=" doesn't have to be
+        /// escaped with quotes.
         /// </summary>
         /// <param name="args">The original shortcode arguments.</param>
         /// <returns>The single argument value.</returns>
@@ -21,6 +23,8 @@ namespace Wyam.Common.Shortcodes
 
         /// <summary>
         /// Validates that the correct number of unnamed arguments have been used and returns them as an array.
+        /// This will collapse keys and values into a single argument value so that "=" doesn't have to be
+        /// escaped with quotes.
         /// </summary>
         /// <param name="args">The original shortcode arguments.</param>
         /// <param name="count">The count of expected arguments.</param>
@@ -29,7 +33,9 @@ namespace Wyam.Common.Shortcodes
             ToValueArray(args, count, count);
 
         /// <summary>
-        /// Validates that the correct number of unnamed arguments have been used and returns them as an array.
+        /// Validates that the correct number of arguments have been used and returns them as an array.
+        /// This will collapse keys and values into a single argument value so that "=" doesn't have to be
+        /// escaped with quotes.
         /// </summary>
         /// <param name="args">The original shortcode arguments.</param>
         /// <param name="minimumCount">The minimum count of expected arguments.</param>
@@ -41,11 +47,7 @@ namespace Wyam.Common.Shortcodes
             {
                 throw new ArgumentException("Incorrect number of shortcode arguments");
             }
-            if (args.Any(x => x.Key != null || x.Value == null))
-            {
-                throw new ArgumentException("Incorrect shortcode arguments");
-            }
-            return args.Select(x => x.Value).ToArray();
+            return args.Select(x => x.Key != null ? $"{x.Key}={x.Value}" : x.Value).ToArray();
         }
 
         /// <summary>
