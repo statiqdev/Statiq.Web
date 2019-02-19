@@ -38,7 +38,7 @@ namespace Wyam.Html
         private const HttpStatusCode TooManyRequests = (HttpStatusCode)429;
 
         // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
-        private static HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 
         private bool _validateAbsoluteLinks;
         private bool _validateRelativeLinks = true;
