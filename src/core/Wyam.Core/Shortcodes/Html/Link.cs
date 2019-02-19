@@ -13,8 +13,26 @@ namespace Wyam.Core.Shortcodes.Html
     /// <summary>
     /// Renders a link from the given path, using default settings or specifying overrides as appropriate.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// &lt;?# Link "/foo/bar" /?&gt;
+    /// </code>
+    /// </example>
+    /// <parameter name="Path">The path to get a link for.</parameter>
+    /// <parameter name="IncludeHost">
+    /// If set to <c>true</c> the host configured in the output settings will
+    /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).
+    /// </parameter>
+    /// <parameter name="Host">The host to use for the link.</parameter>
+    /// <parameter name="Root">The root of the link. The value of this parameter is prepended to the path.</parameter>
+    /// <parameter name="Scheme">The scheme to use for the link (will override the <c>UseHttps</c> parameter).</parameter>
+    /// <parameter name="UseHttps">If set to <c>true</c>, HTTPS will be used as the scheme for the link.</parameter>
+    /// <parameter name="HideIndexPages">If set to <c>true</c>, "index.htm" and "index.html" file names will be hidden.</parameter>
+    /// <parameter name="HideExtensions">If set to <c>true</c>, extensions will be hidden.</parameter>
+    /// <parameter name="Lowercase">If set to <c>true</c>, links will be rendered in all lowercase.</parameter>
     public class Link : IShortcode
     {
+        /// <inheritdoc />
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             ConvertingDictionary arguments = args.ToDictionary(

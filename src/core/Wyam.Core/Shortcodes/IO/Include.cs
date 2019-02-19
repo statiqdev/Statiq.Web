@@ -12,10 +12,13 @@ namespace Wyam.Core.Shortcodes.IO
     /// Includes a file from the virtual file system.
     /// </summary>
     /// <remarks>
-    /// This shortcode accepts a single argument value with the path to the file to include.
+    /// The raw content of the file will be rendered where the shortcode appears.
+    /// If the file does not exist nothing will be rendered.
     /// </remarks>
+    /// <parameter>The path to the file to include.</parameter>
     public class Include : IShortcode
     {
+        /// <inheritdoc />
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IFile file = context.FileSystem.GetInputFile(new FilePath(args.SingleValue()));

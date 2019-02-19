@@ -20,9 +20,9 @@ namespace Wyam.Core.Shortcodes.Html
     /// Example usage:
     /// </para>
     /// <code>
-    /// &lt;?# figure src="/assets/wyam.jpg" ?&gt;
+    /// &lt;?# Figure Src="/assets/wyam.jpg" ?&gt;
     /// Wyam Logo
-    /// &lt;?#/ figure ?&gt;
+    /// &lt;?#/ Figure ?&gt;
     /// </code>
     /// <para>
     /// Example output:
@@ -44,6 +44,7 @@ namespace Wyam.Core.Shortcodes.Html
     /// <parameter name="Width"><c>width</c> attribute of the image.</parameter>
     public class Figure : IShortcode
     {
+        /// <inheritdoc />
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             ConvertingDictionary arguments = args.ToDictionary(

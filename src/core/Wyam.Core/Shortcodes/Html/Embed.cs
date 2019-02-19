@@ -21,7 +21,7 @@ namespace Wyam.Core.Shortcodes.Html
     /// </remarks>
     /// <example>
     /// <code>
-    /// &lt;?# embed http://codepen.io/api/oembed?url=https://codepen.io/gingerdude/pen/JXwgdK&quot;format=json /?&gt;
+    /// &lt;?# Embed http://codepen.io/api/oembed?url=https://codepen.io/gingerdude/pen/JXwgdK&quot;format=json /?&gt;
     /// </code>
     /// </example>
     /// <parameter>The URL to fetch the oEmbed response from.</parameter>
@@ -30,6 +30,7 @@ namespace Wyam.Core.Shortcodes.Html
         // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 
+        /// <inheritdoc />
         public virtual IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             string value = args.SingleValue();

@@ -17,7 +17,7 @@ namespace Wyam.Core.Shortcodes.Html
     /// Example usage:
     /// </para>
     /// <code>
-    /// &lt;?# gist 10a2f6e0186fa34b8a7b4bd7d436785d /?&gt;
+    /// &lt;?# Gist 10a2f6e0186fa34b8a7b4bd7d436785d /?&gt;
     /// </code>
     /// <para>
     /// Example output:
@@ -28,6 +28,7 @@ namespace Wyam.Core.Shortcodes.Html
     /// </example>
     public class Gist : IShortcode
     {
+        /// <inheritdoc />
         public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             ConvertingDictionary arguments = args.ToDictionary(
