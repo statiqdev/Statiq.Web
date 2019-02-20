@@ -1,3 +1,15 @@
+# 2.2.0
+
+- **[Breaking Change]** Removes BookSite and the Velocity theme (#764)
+- [Feature] Shortcodes! Take a look at [the docs](https://wyam.io/docs/concepts/shortcodes) for more information (#359)
+- [Feature] New `MirrorResources` module to download CDN links and mirror them locally (#781)
+- [Refactoring] New `IExecutionContext.HttpClient` and `IExecutionContext.GetHttpClient(HttpMessageHandler)` to manage a single shared `HttpClient` instance
+- [Refactoring] New support in `Wyam.Testing` and `TestExecutionContext` for testing modules that use a `HttpClient`
+- [Feature] New `IMetadata.String()` extension that takes a formatting function to apply if the key exists in the metadata
+- [Feature] New `IMetadata.TryGetValue<T>()` method to attempt getting a metadata value, but only if it can be converted/cast to `T`
+- [Feature] New `IMetadata` extension methods to make generating XML-to-LINQ trees from metadata values easier
+- [Fix] Fixed a bug when the `Sass` module processes Sass files that have includes which aren't under an `input` folder
+
 # 2.1.3
 
 - [Fix] Fixes a possible concurrency bug when adding/removing trace loggers and indenting
