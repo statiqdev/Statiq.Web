@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
@@ -90,6 +91,18 @@ namespace Wyam.Common.Execution
         /// <param name="content">Content to initialize the stream with.</param>
         /// <returns>A stream for document content.</returns>
         Stream GetContentStream(string content = null);
+
+        /// <summary>
+        /// Gets a shared <see cref="HttpClient"/> instance that should be used for all HTTP communication.
+        /// </summary>
+        HttpClient HttpClient { get; }
+
+        /// <summary>
+        /// Creates a new <see cref="HttpClient"/> instance that uses a custom message handler.
+        /// </summary>
+        /// <param name="handler">The message handler to use for this client.</param>
+        /// <returns>A new <see cref="HttpClient"/> instance.</returns>
+        HttpClient GetHttpClient(HttpMessageHandler handler);
 
         /// <summary>
         /// Gets a new document with default initial metadata.

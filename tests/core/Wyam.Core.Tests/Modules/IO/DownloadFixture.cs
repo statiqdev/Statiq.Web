@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.IO;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
-using Shouldly;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
@@ -30,8 +33,20 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 IDocument document = new TestDocument();
+                TestExecutionContext context = new TestExecutionContext
+                {
+                    HttpResponseFunc = (_, __) =>
+                    {
+                        HttpResponseMessage response = new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.OK,
+                            Content = new StringContent("Fizz")
+                        };
+                        response.Headers.Add("Foo", "Bar");
+                        return response;
+                    }
+                };
                 IModule download = new Download().WithUris("https://wyam.io/");
-                IExecutionContext context = new TestExecutionContext();
 
                 // When
                 IList<IDocument> results = download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -63,7 +78,19 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 IDocument document = new TestDocument();
-                IExecutionContext context = new TestExecutionContext();
+                TestExecutionContext context = new TestExecutionContext
+                {
+                    HttpResponseFunc = (_, __) =>
+                    {
+                        HttpResponseMessage response = new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.OK,
+                            Content = new StringContent("Fizz")
+                        };
+                        response.Headers.Add("Foo", "Bar");
+                        return response;
+                    }
+                };
                 IModule download = new Download().WithUris("https://wyam.io/", "https://github.com/Wyamio/Wyam");
 
                 // When
@@ -96,7 +123,17 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 IDocument document = new TestDocument();
-                IExecutionContext context = new TestExecutionContext();
+                TestExecutionContext context = new TestExecutionContext
+                {
+                    HttpResponseFunc = (_, __) =>
+                    {
+                        return new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.OK,
+                            Content = new ByteArrayContent(new byte[] { 0x01, 0x01 })
+                        };
+                    }
+                };
                 IModule download = new Download().WithUris("https://wyam.io/assets/img/logo.png");
 
                 // When
@@ -114,7 +151,17 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 IDocument document = new TestDocument();
-                IExecutionContext context = new TestExecutionContext();
+                TestExecutionContext context = new TestExecutionContext
+                {
+                    HttpResponseFunc = (_, __) =>
+                    {
+                        return new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.OK,
+                            Content = new ByteArrayContent(new byte[] { 0x01, 0x01 })
+                        };
+                    }
+                };
                 RequestHeaders header = new RequestHeaders();
                 header.Accept.Add("image/jpeg");
                 IModule download = new Download().WithUri("https://wyam.io/assets/img/logo.png", header);

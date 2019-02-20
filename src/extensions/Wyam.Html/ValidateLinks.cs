@@ -37,9 +37,6 @@ namespace Wyam.Html
         private const int MaxAbsoluteLinkRetry = 5;
         private const HttpStatusCode TooManyRequests = (HttpStatusCode)429;
 
-        // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
-
         private bool _validateAbsoluteLinks;
         private bool _validateRelativeLinks = true;
         private bool _asError;
@@ -127,7 +124,7 @@ namespace Wyam.Html
                     }
 
                     // Absolute
-                    if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !(await ValidateAbsoluteLink(uri).ConfigureAwait(false)))
+                    if (uri.IsAbsoluteUri && _validateAbsoluteLinks && !(await ValidateAbsoluteLink(uri, context).ConfigureAwait(false)))
                     {
                         AddOrUpdateFailure(link.Value, failures);
                     }
@@ -252,7 +249,7 @@ namespace Wyam.Html
             // Check the absolute URL just in case the user is using some sort of CNAME or something.
             if (Uri.TryCreate(context.GetLink() + uri, UriKind.Absolute, out Uri absoluteCheckUri))
             {
-                return await ValidateAbsoluteLink(absoluteCheckUri).ConfigureAwait(false);
+                return await ValidateAbsoluteLink(absoluteCheckUri, context).ConfigureAwait(false);
             }
 
             Trace.Verbose($"Validation failure for relative link {uri}: could not find output file at any of {string.Join(", ", checkPaths.Select(x => x.FullPath))}");
@@ -260,7 +257,7 @@ namespace Wyam.Html
         }
 
         // Internal for testing
-        internal static async Task<bool> ValidateAbsoluteLink(Uri uri)
+        internal static async Task<bool> ValidateAbsoluteLink(Uri uri, IExecutionContext context)
         {
             // If this is a mailto: link, it's sufficient just that it passed the Uri validation.
             if (uri.Scheme == Uri.UriSchemeMailto)
@@ -269,7 +266,7 @@ namespace Wyam.Html
             }
 
             // Perform request as HEAD
-            bool result = await ValidateAbsoluteLink(uri, HttpMethod.Head).ConfigureAwait(false);
+            bool result = await ValidateAbsoluteLink(uri, HttpMethod.Head, context).ConfigureAwait(false);
 
             if (result)
             {
@@ -277,10 +274,10 @@ namespace Wyam.Html
             }
 
             // Try one more time as GET
-            return await ValidateAbsoluteLink(uri, HttpMethod.Get).ConfigureAwait(false);
+            return await ValidateAbsoluteLink(uri, HttpMethod.Get, context).ConfigureAwait(false);
         }
 
-        private static async Task<bool> ValidateAbsoluteLink(Uri uri, HttpMethod method)
+        private static async Task<bool> ValidateAbsoluteLink(Uri uri, HttpMethod method, IExecutionContext context)
         {
             // Retry with exponential backoff links. This helps with websites like GitHub that will give us a 429 -- TooManyRequests.
             RetryPolicy<HttpResponseMessage> retryPolicy = Policy
@@ -290,7 +287,7 @@ namespace Wyam.Html
 
             try
             {
-                HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => _httpClient.SendAsync(new HttpRequestMessage(method, uri))).ConfigureAwait(false);
+                HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => context.HttpClient.SendAsync(new HttpRequestMessage(method, uri))).ConfigureAwait(false);
 
                 // Even with exponential backoff we have TooManyRequests, just skip, since we have to assume it's valid.
                 if (response.StatusCode == TooManyRequests)

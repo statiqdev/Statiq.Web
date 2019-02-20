@@ -61,7 +61,7 @@ namespace Wyam.Hosting.Tests
             {
                 BaseAddress = new Uri($"http://127.0.0.1:{port}/index.html")
             };
-            HttpResponseMessage response = await client.GetAsync("/");
+            HttpResponseMessage response = await client.GetAsync("/").ConfigureAwait(false);
 
             // When, Then
             response.IsSuccessStatusCode.ShouldBeTrue();
@@ -80,7 +80,7 @@ namespace Wyam.Hosting.Tests
             {
                 BaseAddress = new Uri($"http://localhost:{port}/")
             };
-            HttpResponseMessage response = await client.GetAsync("/");
+            HttpResponseMessage response = await client.GetAsync("/").ConfigureAwait(false);
 
             // When, Then
             response.IsSuccessStatusCode.ShouldBeTrue();

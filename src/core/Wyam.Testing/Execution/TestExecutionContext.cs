@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -187,6 +189,25 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         public Stream GetContentStream(string content = null) =>
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        /// <inheritdoc/>
+        public HttpClient HttpClient =>
+            new HttpClient(new TestHttpMessageHandler(HttpResponseFunc, null));
+
+        /// <inheritdoc/>
+        public HttpClient GetHttpClient(HttpMessageHandler handler) =>
+            new HttpClient(new TestHttpMessageHandler(HttpResponseFunc, handler));
+
+        /// <summary>
+        /// A message handler that should be used to register <see cref="HttpResponseMessage"/>
+        /// instances for a given request.
+        /// </summary>
+        public Func<HttpRequestMessage, HttpMessageHandler, HttpResponseMessage> HttpResponseFunc { get; set; }
+            = (_, __) => new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(string.Empty)
+            };
 
         public Dictionary<(Type Value, Type Result), Func<object, object>> TypeConversions { get; } = new Dictionary<(Type Value, Type Result), Func<object, object>>();
 

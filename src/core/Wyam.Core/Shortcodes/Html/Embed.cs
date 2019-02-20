@@ -27,16 +27,13 @@ namespace Wyam.Core.Shortcodes.Html
     /// <parameter>The URL to fetch the oEmbed response from.</parameter>
     public class Embed : IShortcode
     {
-        // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
-
         /// <inheritdoc />
         public virtual IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             string value = args.SingleValue();
 
             // Get the oEmbed response
-            HttpResponseMessage response = _httpClient.GetAsync(value).Result;
+            HttpResponseMessage response = context.HttpClient.GetAsync(value).Result;
             response.EnsureSuccessStatusCode();
             EmbedResponse embedResponse;
             if (response.Content.Headers.ContentType.MediaType == "application/json"

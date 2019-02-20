@@ -36,9 +36,6 @@ namespace Wyam.Html
         private const int MaxAbsoluteLinkRetry = 5;
         private const HttpStatusCode TooManyRequests = (HttpStatusCode)429;
 
-        // Cache the HttpClient as per recommended advice. Since this is short lived we don't have to worry about DNS issues.
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
-
         private readonly Func<Uri, FilePath> _pathFunc;
 
         /// <summary>
@@ -155,7 +152,7 @@ namespace Wyam.Html
                     .Handle<HttpRequestException>()
                     .OrResult<HttpResponseMessage>(r => r.StatusCode == TooManyRequests)
                     .WaitAndRetryAsync(MaxAbsoluteLinkRetry, attempt => TimeSpan.FromSeconds(0.1 * Math.Pow(2, attempt)));
-                HttpResponseMessage response = retryPolicy.ExecuteAsync(() => _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri))).Result;
+                HttpResponseMessage response = retryPolicy.ExecuteAsync(() => context.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri))).Result;
                 response.EnsureSuccessStatusCode();
 
                 // Copy the result to output

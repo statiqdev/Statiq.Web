@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,10 @@ namespace Wyam.Core.Execution
 {
     internal class ExecutionContext : IExecutionContext, IDisposable
     {
+        // Cache the HttpClient as recommended
+        // Since this is short lived we don't have to worry about DNS issues
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+
         private readonly ExecutionPipeline _pipeline;
 
         private bool _disposed;
@@ -99,6 +104,10 @@ namespace Wyam.Core.Execution
         public bool TryConvert<T>(object value, out T result) => TypeHelper.TryConvert(value, out result);
 
         public Stream GetContentStream(string content = null) => Engine.ContentStreamFactory.GetStream(this, content);
+
+        public HttpClient HttpClient => _httpClient;
+
+        public HttpClient GetHttpClient(HttpMessageHandler handler) => new HttpClient(handler);
 
         // GetDocument
 
