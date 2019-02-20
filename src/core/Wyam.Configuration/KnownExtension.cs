@@ -45,7 +45,6 @@
         public static readonly KnownExtension SolidStateTheme = new KnownExtension("Wyam.Blog.SolidState");
         public static readonly KnownExtension StellarTheme = new KnownExtension("Wyam.Blog.Stellar");
         public static readonly KnownExtension TrophyTheme = new KnownExtension("Wyam.Blog.Trophy");
-        public static readonly KnownExtension VelocityTheme = new KnownExtension("Wyam.BookSite.Velocity");
         public static readonly KnownExtension SamsonTheme = new KnownExtension("Wyam.Docs.Samson");
     }
 }

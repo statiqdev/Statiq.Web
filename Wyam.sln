@@ -140,8 +140,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{9B01F618-6
 		Wyam.sln.DotSettings = Wyam.sln.DotSettings
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.BookSite", "src\recipes\Wyam.BookSite\Wyam.BookSite.csproj", "{8A4FBE8F-B009-4EA7-B941-9B6406B4E55D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Web", "src\recipes\Wyam.Web\Wyam.Web.csproj", "{A4038D8B-40ED-4802-AA95-1E6171EF6036}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "recipes", "recipes", "{AC85A818-00B5-468B-A4F9-A8C90E493363}"

@@ -7,7 +7,6 @@
     {
         public static readonly KnownRecipe Blog = new KnownRecipe("Wyam.Blog", nameof(KnownTheme.CleanBlog));
         public static readonly KnownRecipe Docs = new KnownRecipe("Wyam.Docs", nameof(KnownTheme.Samson));
-        public static readonly KnownRecipe BookSite = new KnownRecipe("Wyam.BookSite", nameof(KnownTheme.Velocity));
 
         /// <summary>
         /// Gets the package that the recipe class is in. If the recipe is in the
