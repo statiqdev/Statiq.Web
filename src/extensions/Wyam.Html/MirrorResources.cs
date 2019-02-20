@@ -144,22 +144,25 @@ namespace Wyam.Html
             }
             string link = context.GetLink(path);
 
-            // Download the resource
-            Common.Tracing.Trace.Verbose($"Downloading resource from {uri} to {path.FullPath}");
-
-            // Retry with exponential backoff links. This helps with websites like GitHub that will give us a 429 -- TooManyRequests.
-            RetryPolicy<HttpResponseMessage> retryPolicy = Policy
-                .Handle<HttpRequestException>()
-                .OrResult<HttpResponseMessage>(r => r.StatusCode == TooManyRequests)
-                .WaitAndRetryAsync(MaxAbsoluteLinkRetry, attempt => TimeSpan.FromSeconds(0.1 * Math.Pow(2, attempt)));
-            HttpResponseMessage response = retryPolicy.ExecuteAsync(() => _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri))).Result;
-            response.EnsureSuccessStatusCode();
-
-            // Copy the result to output
+            // Download the resource, but only if we haven't already written it to disk
             IFile outputFile = context.FileSystem.GetOutputFile(path);
-            using (Stream outputStream = outputFile.OpenWrite())
+            if (!outputFile.Exists)
             {
-                response.Content.CopyToAsync(outputStream).Wait();
+                Common.Tracing.Trace.Verbose($"Downloading resource from {uri} to {path.FullPath}");
+
+                // Retry with exponential backoff links. This helps with websites like GitHub that will give us a 429 -- TooManyRequests.
+                RetryPolicy<HttpResponseMessage> retryPolicy = Policy
+                    .Handle<HttpRequestException>()
+                    .OrResult<HttpResponseMessage>(r => r.StatusCode == TooManyRequests)
+                    .WaitAndRetryAsync(MaxAbsoluteLinkRetry, attempt => TimeSpan.FromSeconds(0.1 * Math.Pow(2, attempt)));
+                HttpResponseMessage response = retryPolicy.ExecuteAsync(() => _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri))).Result;
+                response.EnsureSuccessStatusCode();
+
+                // Copy the result to output
+                using (Stream outputStream = outputFile.OpenWrite())
+                {
+                    response.Content.CopyToAsync(outputStream).Wait();
+                }
             }
 
             mirrorCache.Add(source, link);
