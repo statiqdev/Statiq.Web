@@ -152,7 +152,13 @@ namespace Wyam.Html
                     .Handle<HttpRequestException>()
                     .OrResult<HttpResponseMessage>(r => r.StatusCode == TooManyRequests)
                     .WaitAndRetryAsync(MaxAbsoluteLinkRetry, attempt => TimeSpan.FromSeconds(0.1 * Math.Pow(2, attempt)));
-                HttpResponseMessage response = retryPolicy.ExecuteAsync(() => context.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri))).Result;
+                HttpResponseMessage response = retryPolicy.ExecuteAsync(async () =>
+                {
+                    using (HttpClient httpClient = context.CreateHttpClient())
+                    {
+                        return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri)).ConfigureAwait(false);
+                    }
+                }).Result;
                 response.EnsureSuccessStatusCode();
 
                 // Copy the result to output

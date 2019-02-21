@@ -93,16 +93,17 @@ namespace Wyam.Common.Execution
         Stream GetContentStream(string content = null);
 
         /// <summary>
-        /// Gets a shared <see cref="HttpClient"/> instance that should be used for all HTTP communication.
+        /// Creates a <see cref="HttpClient"/> instance that should be used for all HTTP communication.
         /// </summary>
-        HttpClient HttpClient { get; }
+        /// <returns>A new <see cref="HttpClient"/> instance.</returns>
+        HttpClient CreateHttpClient();
 
         /// <summary>
         /// Creates a new <see cref="HttpClient"/> instance that uses a custom message handler.
         /// </summary>
         /// <param name="handler">The message handler to use for this client.</param>
         /// <returns>A new <see cref="HttpClient"/> instance.</returns>
-        HttpClient GetHttpClient(HttpMessageHandler handler);
+        HttpClient CreateHttpClient(HttpMessageHandler handler);
 
         /// <summary>
         /// Gets a new document with default initial metadata.

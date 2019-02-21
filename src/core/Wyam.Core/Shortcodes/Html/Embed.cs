@@ -33,29 +33,32 @@ namespace Wyam.Core.Shortcodes.Html
             string value = args.SingleValue();
 
             // Get the oEmbed response
-            HttpResponseMessage response = context.HttpClient.GetAsync(value).Result;
-            response.EnsureSuccessStatusCode();
             EmbedResponse embedResponse;
-            if (response.Content.Headers.ContentType.MediaType == "application/json"
-                || response.Content.Headers.ContentType.MediaType == "text/html")
+            using (HttpClient httpClient = context.CreateHttpClient())
             {
-                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(EmbedResponse));
-                using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+                HttpResponseMessage response = httpClient.GetAsync(value).Result;
+                response.EnsureSuccessStatusCode();
+                if (response.Content.Headers.ContentType.MediaType == "application/json"
+                    || response.Content.Headers.ContentType.MediaType == "text/html")
                 {
-                    embedResponse = (EmbedResponse)serializer.ReadObject(stream);
+                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(EmbedResponse));
+                    using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+                    {
+                        embedResponse = (EmbedResponse)serializer.ReadObject(stream);
+                    }
                 }
-            }
-            else if (response.Content.Headers.ContentType.MediaType == "text/xml")
-            {
-                DataContractSerializer serializer = new DataContractSerializer(typeof(EmbedResponse));
-                using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+                else if (response.Content.Headers.ContentType.MediaType == "text/xml")
                 {
-                    embedResponse = (EmbedResponse)serializer.ReadObject(stream);
+                    DataContractSerializer serializer = new DataContractSerializer(typeof(EmbedResponse));
+                    using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+                    {
+                        embedResponse = (EmbedResponse)serializer.ReadObject(stream);
+                    }
                 }
-            }
-            else
-            {
-                throw new InvalidDataException("Unknown content type for oEmbed response");
+                else
+                {
+                    throw new InvalidDataException("Unknown content type for oEmbed response");
+                }
             }
 
             // Switch based on type

@@ -31,9 +31,8 @@ namespace Wyam.Core.Execution
 {
     internal class ExecutionContext : IExecutionContext, IDisposable
     {
-        // Cache the HttpClient as recommended
-        // Since this is short lived we don't have to worry about DNS issues
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+        // Cache the HttpMessageHandler (the HttpClient is really just a thin wrapper around this)
+        private static readonly HttpMessageHandler _httpMessageHandler = new HttpClientHandler();
 
         private readonly ExecutionPipeline _pipeline;
 
@@ -105,9 +104,12 @@ namespace Wyam.Core.Execution
 
         public Stream GetContentStream(string content = null) => Engine.ContentStreamFactory.GetStream(this, content);
 
-        public HttpClient HttpClient => _httpClient;
+        public HttpClient CreateHttpClient() => CreateHttpClient(_httpMessageHandler);
 
-        public HttpClient GetHttpClient(HttpMessageHandler handler) => new HttpClient(handler);
+        public HttpClient CreateHttpClient(HttpMessageHandler handler) => new HttpClient(handler, false)
+        {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
 
         // GetDocument
 

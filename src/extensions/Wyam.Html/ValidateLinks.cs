@@ -287,7 +287,13 @@ namespace Wyam.Html
 
             try
             {
-                HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => context.HttpClient.SendAsync(new HttpRequestMessage(method, uri))).ConfigureAwait(false);
+                HttpResponseMessage response = await retryPolicy.ExecuteAsync(async () =>
+                {
+                    using (HttpClient httpClient = context.CreateHttpClient())
+                    {
+                        return await httpClient.SendAsync(new HttpRequestMessage(method, uri)).ConfigureAwait(false);
+                    }
+                }).ConfigureAwait(false);
 
                 // Even with exponential backoff we have TooManyRequests, just skip, since we have to assume it's valid.
                 if (response.StatusCode == TooManyRequests)

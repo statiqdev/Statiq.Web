@@ -191,11 +191,11 @@ namespace Wyam.Testing.Execution
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         /// <inheritdoc/>
-        public HttpClient HttpClient =>
+        public HttpClient CreateHttpClient() =>
             new HttpClient(new TestHttpMessageHandler(HttpResponseFunc, null));
 
         /// <inheritdoc/>
-        public HttpClient GetHttpClient(HttpMessageHandler handler) =>
+        public HttpClient CreateHttpClient(HttpMessageHandler handler) =>
             new HttpClient(new TestHttpMessageHandler(HttpResponseFunc, handler));
 
         /// <summary>
@@ -279,9 +279,7 @@ namespace Wyam.Testing.Execution
         }
 
         public Func<IJavaScriptEngine> JsEngineFunc { get; set; } = () =>
-        {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
-        };
 
         /// <inheritdoc/>
         public IJavaScriptEnginePool GetJavaScriptEnginePool(
