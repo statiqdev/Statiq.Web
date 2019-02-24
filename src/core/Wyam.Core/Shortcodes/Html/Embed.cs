@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -9,6 +10,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Shortcodes;
+using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 
 namespace Wyam.Core.Shortcodes.Html
@@ -21,22 +23,51 @@ namespace Wyam.Core.Shortcodes.Html
     /// </remarks>
     /// <example>
     /// <code>
-    /// &lt;?# Embed http://codepen.io/api/oembed?url=https://codepen.io/gingerdude/pen/JXwgdK&quot;format=json /?&gt;
+    /// &lt;?# Embed https://codepen.io/api/oembed https://codepen.io/gingerdude/pen/JXwgdK /?&gt;
     /// </code>
     /// </example>
-    /// <parameter>The URL to fetch the oEmbed response from.</parameter>
+    /// <parameter name="Endpoint">The oEmbed endpoint.</parameter>
+    /// <parameter name="Url">The embeded URL to fetch an embed for.</parameter>
+    /// <parameter name="Format">An optional format to use ("xml" or "json").</parameter>
     public class Embed : IShortcode
     {
         /// <inheritdoc />
         public virtual IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
-            string value = args.SingleValue();
+            ConvertingDictionary arguments = args.ToDictionary(
+                context,
+                "Endpoint",
+                "Url",
+                "Format");
+            arguments.RequireKeys("Endpoint", "Url");
+            return Execute(
+                arguments.String("Endpoint"),
+                arguments.String("Url"),
+                arguments.ContainsKey("Format")
+                    ? new string[] { $"format={arguments.String("Format")}" }
+                    : null,
+                context);
+        }
 
+        protected IShortcodeResult Execute(string endpoint, string url, IExecutionContext context) =>
+            Execute(endpoint, url, null, context);
+
+        protected IShortcodeResult Execute(string endpoint, string url, IEnumerable<string> query, IExecutionContext context)
+        {
             // Get the oEmbed response
             EmbedResponse embedResponse;
             using (HttpClient httpClient = context.CreateHttpClient())
             {
-                HttpResponseMessage response = httpClient.GetAsync(value).Result;
+                string request = $"{endpoint}?url={WebUtility.UrlEncode(url)}";
+                if (query != null)
+                {
+                    request += "&" + string.Join("&", query);
+                }
+                HttpResponseMessage response = httpClient.GetAsync(request).Result;
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Trace.Error($"Received 404 not found for oEmbed at {request}");
+                }
                 response.EnsureSuccessStatusCode();
                 if (response.Content.Headers.ContentType.MediaType == "application/json"
                     || response.Content.Headers.ContentType.MediaType == "text/html")
@@ -80,9 +111,9 @@ namespace Wyam.Core.Shortcodes.Html
             {
                 if (!string.IsNullOrEmpty(embedResponse.Title))
                 {
-                    return context.GetShortcodeResult($"<a href=\"{value}\">{embedResponse.Title}</a>");
+                    return context.GetShortcodeResult($"<a href=\"{url}\">{embedResponse.Title}</a>");
                 }
-                return context.GetShortcodeResult($"<a href=\"{value}\">{value}</a>");
+                return context.GetShortcodeResult($"<a href=\"{url}\">{url}</a>");
             }
 
             throw new InvalidDataException("Could not determine embedded content for oEmbed response");

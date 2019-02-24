@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -60,20 +61,11 @@ namespace Wyam.Core.Shortcodes.Html
             {
                 query.Add("omit_script=true");
             }
-            string queryString = query.Count > 0 ? "?" + string.Join("&", query) : null;
-            string url = $"https://publish.twitter.com/oembed?url=https://twitter.com/username/status/{arguments.String("Id")}{queryString}";
 
             // Omit the script on the next Twitter embed
             _omitScript = true;
 
-            return base.Execute(
-                new KeyValuePair<string, string>[]
-                {
-                    new KeyValuePair<string, string>(null, url)
-                },
-                content,
-                document,
-                context);
+            return Execute("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.String("Id")}", query, context);
         }
     }
 }

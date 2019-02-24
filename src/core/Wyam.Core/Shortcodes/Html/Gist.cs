@@ -26,6 +26,9 @@ namespace Wyam.Core.Shortcodes.Html
     /// &lt;script src=&quot;//gist.github.com/10a2f6e0186fa34b8a7b4bd7d436785d.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
     /// </code>
     /// </example>
+    /// <parameter name="Id">The ID of the gist.</parameter>
+    /// <parameter name="Username">The username that the gist is under (optional).</parameter>
+    /// <parameter name="File">The file within the gist to embed (optional).</parameter>
     public class Gist : IShortcode
     {
         /// <inheritdoc />
