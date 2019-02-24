@@ -88,13 +88,10 @@ namespace Wyam.Highlight
             {
                 return inputs.AsParallel().Select(context, input =>
                 {
-                    // We materialize the list before exiting the using statement, so safe to access enginePool
-                    // ReSharper disable once AccessToDisposedClosure
-                    using (IJavaScriptEngine engine = enginePool.GetEngine())
+                    try
                     {
-                        try
+                        using (Stream stream = input.GetStream())
                         {
-                            using (Stream stream = input.GetStream())
                             using (IHtmlDocument htmlDocument = parser.Parse(stream))
                             {
                                 foreach (AngleSharp.Dom.IElement element in htmlDocument.QuerySelectorAll(_codeQuerySelector))
@@ -105,43 +102,19 @@ namespace Wyam.Highlight
                                         continue;
                                     }
 
-                                    // Make sure to use TextContent, otherwise you'll get escaped html which highlight.js won't parse
-                                    engine.SetVariableValue("input", element.TextContent);
-
-                                    // Check if they specified a language in their code block
-                                    string language = element.ClassList.FirstOrDefault(i => i.StartsWith("language"));
-
                                     try
                                     {
-                                        if (language != null)
-                                        {
-                                            engine.SetVariableValue("language", language.Replace("language-", string.Empty));
-                                            engine.Execute("result = hljs.highlight(language, input)");
-                                        }
-                                        else
-                                        {
-                                            language = "(auto)"; // set this to auto in case there is an exception below
-                                            engine.Execute("result = hljs.highlightAuto(input)");
-                                            string detectedLanguage = engine.Evaluate<string>("result.language");
-                                            if (string.IsNullOrWhiteSpace(detectedLanguage) == false)
-                                            {
-                                                element.ClassList.Add("language-" + detectedLanguage);
-                                            }
-                                        }
-
-                                        element.ClassList.Add("hljs");
-                                        string formatted = engine.Evaluate<string>("result.value");
-                                        element.InnerHtml = formatted;
+                                        HighlightElement(enginePool, element);
                                     }
                                     catch (Exception innerEx)
                                     {
                                         if (innerEx.Message.Contains("Unknown language: ") && _warnOnMissingLanguage)
                                         {
-                                            Trace.Warning("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
+                                            Trace.Warning($"Exception while highlighting source code: {innerEx.Message}");
                                         }
                                         else
                                         {
-                                            Trace.Information("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
+                                            Trace.Information($"Exception while highlighting source code: {innerEx.Message}");
                                         }
                                     }
                                 }
@@ -155,13 +128,43 @@ namespace Wyam.Highlight
                                 }
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Trace.Warning("Exception while highlighting source code for {0}: {1}", input.SourceString(), ex.Message);
-                            return input;
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.Warning("Exception while highlighting source code for {0}: {1}", input.SourceString(), ex.Message);
+                        return input;
                     }
                 }).ToList();
+            }
+        }
+
+        internal static void HighlightElement(IJavaScriptEnginePool enginePool, AngleSharp.Dom.IElement element)
+        {
+            using (IJavaScriptEngine engine = enginePool.GetEngine())
+            {
+                // Make sure to use TextContent, otherwise you'll get escaped html which highlight.js won't parse
+                engine.SetVariableValue("input", element.TextContent);
+
+                // Check if they specified a language in their code block
+                string language = element.ClassList.FirstOrDefault(i => i.StartsWith("language"));
+                if (language != null)
+                {
+                    engine.SetVariableValue("language", language.Replace("language-", string.Empty));
+                    engine.Execute("result = hljs.highlight(language, input)");
+                }
+                else
+                {
+                    language = "(auto)"; // set this to auto in case there is an exception below
+                    engine.Execute("result = hljs.highlightAuto(input)");
+                    string detectedLanguage = engine.Evaluate<string>("result.language");
+                    if (!string.IsNullOrWhiteSpace(detectedLanguage))
+                    {
+                        element.ClassList.Add("language-" + detectedLanguage);
+                    }
+                }
+
+                element.ClassList.Add("hljs");
+                element.InnerHtml = engine.Evaluate<string>("result.value");
             }
         }
     }
