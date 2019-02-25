@@ -1,3 +1,13 @@
+# 2.2.1
+
+- [Feature] New `Highlight` shortcode
+- [Feature] New `YouTube` shortcode
+- [Feature] New `Giphy` shortcode
+- [Feature] New `CodePen` shortcode
+- [Feature] Improvements to `Sass` module processing of `@import` including a new `.WithImportPath()` delegate that can fine-tune import path locations
+- [Refactoring] Refactored `Embed` shortcode to make derived oEmbed shortcodes easier to implement
+- [Refactoring] Refactored `HttpClient` support in `ExecutionContext` to work more like `HttpClientFactory` by sharing a `HttpMessageHandler` instead of a `HttpClient` instance
+
 # 2.2.0
 
 - **[Breaking Change]** Removes BookSite and the Velocity theme (#764)
