@@ -50,8 +50,9 @@ namespace Wyam.Sass
     /// <category>Templates</category>
     public class Sass : IModule
     {
-        private readonly List<string> _includePaths = new List<string>();
+        private readonly List<DirectoryPath> _includePaths = new List<DirectoryPath>();
         private DocumentConfig _inputPath = DefaultInputPath;
+        private Func<string, string> _importPathFunc = null;
         private bool _includeSourceComments = false;
         private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
         private bool _generateSourceMap = false;
@@ -75,9 +76,20 @@ namespace Wyam.Sass
         /// </summary>
         /// <param name="paths">The paths to include.</param>
         /// <returns>The current instance.</returns>
-        public Sass WithIncludePaths(IEnumerable<string> paths)
+        public Sass WithIncludePaths(params DirectoryPath[] paths)
         {
             _includePaths.AddRange(paths);
+            return this;
+        }
+
+        /// <summary>
+        /// A delegate that processes the path in <c>@import</c> statements.
+        /// </summary>
+        /// <param name="importPathFunc">A delegate that should return the correct import path for a given import.</param>
+        /// <returns>The current instance.</returns>
+        public Sass WithImportPath(Func<string, string> importPathFunc)
+        {
+            _importPathFunc = importPathFunc;
             return this;
         }
 
@@ -147,7 +159,8 @@ namespace Wyam.Sass
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel()
+            return inputs
+                .AsParallel()
                 .SelectMany(context, input =>
                 {
                     Trace.Verbose($"Processing Sass for {input.SourceString()}");
@@ -162,7 +175,7 @@ namespace Wyam.Sass
                     string content = input.Content;
 
                     // Sass conversion
-                    FileImporter importer = new FileImporter(context.FileSystem);
+                    FileImporter importer = new FileImporter(context.FileSystem, _importPathFunc);
                     ScssOptions options = new ScssOptions
                     {
                         OutputStyle = _outputStyle,
@@ -171,7 +184,11 @@ namespace Wyam.Sass
                         InputFile = inputPath.FullPath,
                         TryImport = importer.TryImport
                     };
-                    options.IncludePaths.AddRange(_includePaths);
+                    options.IncludePaths.AddRange(
+                        _includePaths
+                            .Where(x => x != null)
+                            .Select(x => x.IsAbsolute ? x.FullPath : context.FileSystem.GetContainingInputPath(x)?.Combine(x)?.FullPath)
+                            .Where(x => x != null));
                     ScssResult result = Scss.ConvertToCss(content, options);
 
                     // Process the result

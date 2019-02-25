@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 
@@ -12,10 +13,12 @@ namespace Wyam.Sass
             = new ConcurrentDictionary<FilePath, FilePath>();
 
         private readonly IReadOnlyFileSystem _fileSystem;
+        private readonly Func<string, string> _importPathFunc;
 
-        public FileImporter(IReadOnlyFileSystem fileSystem)
+        public FileImporter(IReadOnlyFileSystem fileSystem, Func<string, string> importPathFunc)
         {
             _fileSystem = fileSystem;
+            _importPathFunc = importPathFunc;
         }
 
         public bool TryImport(string requestedFile, string parentPath, out string scss, out string map)
@@ -23,10 +26,25 @@ namespace Wyam.Sass
             scss = null;
             map = null;
 
+            // Modify the requested file if we have an import path function
+            string modifiedParentPath = null;
+            if (_importPathFunc != null)
+            {
+                requestedFile = _importPathFunc(requestedFile);
+                modifiedParentPath = _importPathFunc(parentPath);
+            }
+            if (string.IsNullOrWhiteSpace(requestedFile))
+            {
+                return false;
+            }
+
             // Get the input relative path to the parent file
+            // Make sure to try checking for a previously processed parent post-modification
             FilePath parentFilePath = new FilePath(parentPath);
             FilePath requestedFilePath = new FilePath(requestedFile);
-            if (parentFilePath.IsRelative && !_parentAbsolutePaths.TryGetValue(parentFilePath, out parentFilePath))
+            if (parentFilePath.IsRelative
+                && !_parentAbsolutePaths.TryGetValue(parentFilePath, out parentFilePath)
+                && (modifiedParentPath == null || !_parentAbsolutePaths.TryGetValue(modifiedParentPath, out parentFilePath)))
             {
                 // Relative parent path and no available absolute path, try with the relative path
                 parentFilePath = new FilePath(parentPath);
@@ -39,9 +57,25 @@ namespace Wyam.Sass
                 ? containingInputPath.GetRelativePath(parentFilePath)
                 : parentFilePath;
 
-            // Find the requested file
-            // ...as specified
+            // Find the requested file by first combining with the parent
             FilePath filePath = parentRelativePath.Directory.CombineFile(requestedFilePath);
+            if (GetFileVariations(filePath, requestedFilePath, out scss))
+            {
+                return true;
+            }
+
+            // That didn't work so try it again as a relative path from the input folder
+            if (!requestedFilePath.IsAbsolute && GetFileVariations(requestedFilePath, requestedFilePath, out scss))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool GetFileVariations(FilePath filePath, FilePath requestedFilePath, out string scss)
+        {
+            // ...as specified
             if (GetFile(filePath, requestedFilePath, out scss))
             {
                 return true;
