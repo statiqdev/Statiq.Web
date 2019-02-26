@@ -254,7 +254,7 @@ namespace Wyam.Html
                         Stream contentStream = context.GetContentStream();
                         using (StreamWriter writer = contentStream.GetWriter())
                         {
-                            heading.Element.ChildNodes.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                            heading.Element.ChildNodes.ToHtml(writer, ProcessingInstructionFormatter.Instance);
                             writer.Flush();
                             heading.Document = context.GetDocument(contentStream, metadata);
                         }

@@ -17,6 +17,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using AngleSharp;
 
 namespace Wyam.Html
 {
@@ -201,7 +202,7 @@ namespace Wyam.Html
                         Stream contentStream = context.GetContentStream();
                         using (StreamWriter writer = contentStream.GetWriter())
                         {
-                            htmlDocument.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                            htmlDocument.ToHtml(writer, ProcessingInstructionFormatter.Instance);
                             writer.Flush();
                             return context.GetDocument(input, contentStream);
                         }
