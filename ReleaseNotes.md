@@ -1,3 +1,10 @@
+# 2.2.2
+
+- [Feature] The `Include` shortcode now tracks what file it's been called from (including nested includes) and attempts to first resolve includes relative to the current file
+- [Feature] Shortcodes are now evaluated recursively and can be nested (but must use the same pre vs. post rendering delimiter as their parent)
+- [Feature] Shortcodes can now be evaluated _before_ rendering with the `<?! ... /?>` syntax as well as after rendering with the existing `<?# ... /?>` syntax
+- [Fix] Temporary workaround for shortcodes not working under certain conditions after HTML processing (#784)
+
 # 2.2.1
 
 - [Feature] New `Highlight` shortcode
