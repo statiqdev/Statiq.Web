@@ -34,7 +34,7 @@ namespace Wyam.Core.Shortcodes
         /// <summary>
         /// Identifies shortcode locations in a stream.
         /// </summary>
-        /// <param name="stream">The stream to parse. This method will dispose the passed-in stream.</param>
+        /// <param name="stream">The stream to parse. This method will not dispose the passed-in stream.</param>
         /// <returns>All of the shortcode locations in the stream.</returns>
         public List<ShortcodeLocation> Parse(Stream stream)
         {
@@ -44,7 +44,7 @@ namespace Wyam.Core.Shortcodes
             ShortcodeLocation shortcode = null;
             StringBuilder content = null;
 
-            using (TextReader reader = new StreamReader(stream))
+            using (TextReader reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true))
             {
                 int r;
                 int i = 0;

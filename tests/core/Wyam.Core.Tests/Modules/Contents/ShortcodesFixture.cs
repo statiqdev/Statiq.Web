@@ -39,6 +39,23 @@ namespace Wyam.Core.Tests.Modules.Contents
             }
 
             [Test]
+            public void ProcessesNestedShortcode()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<TestShortcode>("Nested");
+                context.Shortcodes.Add<NestedShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Bar /?>456");
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123ABCFooXYZ456");
+            }
+
+            [Test]
             public void ShortcodeSupportsNullStreamResult()
             {
                 // Given
@@ -150,6 +167,12 @@ namespace Wyam.Core.Tests.Modules.Contents
         {
             public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(context.GetContentStream("Foo"));
+        }
+
+        public class NestedShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(context.GetContentStream("ABC<?# Nested /?>XYZ"));
         }
 
         public class NullStreamShortcode : IShortcode

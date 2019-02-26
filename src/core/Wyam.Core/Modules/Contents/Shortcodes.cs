@@ -9,6 +9,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Shortcodes;
 using Wyam.Core.Meta;
 using Wyam.Core.Shortcodes;
+using Wyam.Core.Util;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -18,8 +19,8 @@ namespace Wyam.Core.Modules.Contents
     /// <category>Content</category>
     public class Shortcodes : IModule
     {
-        private readonly string _startDelimiter = ShortcodeParser.DefaultPostRenderStartDelimiter;
-        private readonly string _endDelimiter = ShortcodeParser.DefaultPostRenderEndDelimiter;
+        private readonly string _startDelimiter;
+        private readonly string _endDelimiter;
 
         /// <summary>
         /// Renders shortcodes in the input documents using the default start and end delimiters.
@@ -59,86 +60,129 @@ namespace Wyam.Core.Modules.Contents
         {
             return inputs.AsParallel().Select(context, input =>
             {
-                // Parse the input stream looking for shortcodes
-                ShortcodeParser parser = new ShortcodeParser(_startDelimiter, _endDelimiter, context.Shortcodes);
-                List<ShortcodeLocation> locations = parser.Parse(input.GetStream());  // The input stream will get disposed in the parser
-
-                // Return the original document if we didn't find any
-                if (locations.Count == 0)
+                Stream stream = input.GetStream();
+                if (ProcessShortcodes(stream, input, context, out IDocument result))
                 {
-                    return input;
+                    return result;
                 }
-
-                // Otherwise, create a shortcode instance for each named shortcode
-                Dictionary<string, IShortcode> shortcodes =
-                    locations
-                        .Select(x => x.Name)
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToDictionary(x => x, x => context.Shortcodes.CreateInstance(x), StringComparer.OrdinalIgnoreCase);
-
-                // Execute each of the shortcodes in order
-                List<InsertingStreamLocation> insertingLocations = locations
-                    .Select(x =>
-                    {
-                        IShortcodeResult result = shortcodes[x.Name].Execute(x.Arguments, x.Content, input, context);
-                        if (result?.Metadata != null)
-                        {
-                            // Creating a new document is the easiest way to ensure all the metadata from shortcodes gets accumulated correctly
-                            input = context.GetDocument(input, result.Metadata);
-                        }
-                        return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, result?.Stream);
-                    })
-                    .ToList();
-
-                // Dispose any shortcodes that implement IDisposable
-                foreach (IDisposable disposableShortcode
-                    in shortcodes.Values.Select(x => x as IDisposable).Where(x => x != null))
-                {
-                    disposableShortcode.Dispose();
-                }
-
-                // Construct a new stream with the shortcodes inserted
-                // We have to use all TextWriter/TextReaders over the streams to ensure consistent encoding
-                Stream resultStream = context.GetContentStream();
-                char[] buffer = new char[4096];
-                using (TextWriter writer = new StreamWriter(resultStream, Encoding.UTF8, 4096, true))
-                {
-                    // The input stream will get disposed when the reader is
-                    Stream inputStream = input.GetStream();
-                    using (TextReader reader = new StreamReader(inputStream))
-                    {
-                        int position = 0;
-                        int length = 0;
-                        foreach (InsertingStreamLocation insertingLocation in insertingLocations)
-                        {
-                            // Copy up to the start of this shortcode
-                            length = insertingLocation.FirstIndex - position;
-                            Read(reader, writer, length, ref buffer);
-                            position += length;
-
-                            // Copy the shortcode content to the result stream
-                            if (insertingLocation.Stream != null)
-                            {
-                                // This will dispose the shortcode content stream when done
-                                using (TextReader insertingReader = new StreamReader(insertingLocation.Stream))
-                                {
-                                    Read(insertingReader, writer, null, ref buffer);
-                                }
-                            }
-
-                            // Skip the shortcode text
-                            length = insertingLocation.LastIndex - insertingLocation.FirstIndex + 1;
-                            Read(reader, null, length, ref buffer);
-                            position += length;
-                        }
-
-                        // Copy remaining
-                        Read(reader, writer, null, ref buffer);
-                    }
-                }
-
-                return context.GetDocument(input, resultStream);
+                stream.Dispose();
+                return input;
             });
+        }
+
+        // The inputStream will be disposed if this returns <c>true</c> but will not otherwise
+        private bool ProcessShortcodes(Stream inputStream, IDocument input, IExecutionContext context, out IDocument result)
+        {
+            // Parse the input stream looking for shortcodes
+            ShortcodeParser parser = new ShortcodeParser(_startDelimiter, _endDelimiter, context.Shortcodes);
+            if (!inputStream.CanSeek)
+            {
+                inputStream = new SeekableStream(inputStream, true);
+            }
+            List<ShortcodeLocation> locations = parser.Parse(inputStream);
+
+            // Reset the position because we're going to use the stream again when we do replacements
+            inputStream.Position = 0;
+
+            // Return the original document if we didn't find any
+            if (locations.Count == 0)
+            {
+                result = null;
+                return false;
+            }
+
+            // Otherwise, create a shortcode instance for each named shortcode
+            Dictionary<string, IShortcode> shortcodes =
+                locations
+                    .Select(x => x.Name)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(x => x, x => context.Shortcodes.CreateInstance(x), StringComparer.OrdinalIgnoreCase);
+
+            // Execute each of the shortcodes in order
+            List<InsertingStreamLocation> insertingLocations = locations
+                .Select(x =>
+                {
+                    // Execute the shortcode
+                    IShortcodeResult shortcodeResult = shortcodes[x.Name].Execute(x.Arguments, x.Content, input, context);
+
+                    // Merge output metadata with the current input document
+                    // Creating a new document is the easiest way to ensure all the metadata from shortcodes gets accumulated correctly
+                    if (shortcodeResult?.Metadata != null)
+                    {
+                        input = context.GetDocument(input, shortcodeResult.Metadata);
+                    }
+
+                    // Recursively parse shortcodes
+                    Stream shortcodeResultStream = shortcodeResult?.Stream;
+                    if (shortcodeResultStream != null)
+                    {
+                        if (!shortcodeResultStream.CanSeek)
+                        {
+                            shortcodeResultStream = new SeekableStream(shortcodeResultStream, true);
+                        }
+                        if (ProcessShortcodes(shortcodeResultStream, input, context, out IDocument nestedResult))
+                        {
+                            input = nestedResult;
+                            shortcodeResultStream = nestedResult.GetStream();  // Will get disposed in the replacement operation below
+                        }
+                        else
+                        {
+                            shortcodeResultStream.Position = 0;
+                        }
+                        return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, shortcodeResultStream);
+                    }
+
+                    return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, null);
+                })
+                .ToList();
+
+            // Dispose any shortcodes that implement IDisposable
+            foreach (IDisposable disposableShortcode
+                in shortcodes.Values.Select(x => x as IDisposable).Where(x => x != null))
+            {
+                disposableShortcode.Dispose();
+            }
+
+            // Construct a new stream with the shortcode results inserted
+            // We have to use all TextWriter/TextReaders over the streams to ensure consistent encoding
+            Stream resultStream = context.GetContentStream();
+            char[] buffer = new char[4096];
+            using (TextWriter writer = new StreamWriter(resultStream, Encoding.UTF8, 4096, true))
+            {
+                // The input stream will get disposed when the reader is
+                using (TextReader reader = new StreamReader(inputStream))
+                {
+                    int position = 0;
+                    int length = 0;
+                    foreach (InsertingStreamLocation insertingLocation in insertingLocations)
+                    {
+                        // Copy up to the start of this shortcode
+                        length = insertingLocation.FirstIndex - position;
+                        Read(reader, writer, length, ref buffer);
+                        position += length;
+
+                        // Copy the shortcode content to the result stream
+                        if (insertingLocation.Stream != null)
+                        {
+                            // This will dispose the shortcode content stream when done
+                            using (TextReader insertingReader = new StreamReader(insertingLocation.Stream))
+                            {
+                                Read(insertingReader, writer, null, ref buffer);
+                            }
+                        }
+
+                        // Skip the shortcode text
+                        length = insertingLocation.LastIndex - insertingLocation.FirstIndex + 1;
+                        Read(reader, null, length, ref buffer);
+                        position += length;
+                    }
+
+                    // Copy remaining
+                    Read(reader, writer, null, ref buffer);
+                }
+            }
+            result = context.GetDocument(input, resultStream);
+            return true;
         }
 
         // writer = null to just skip length in reader

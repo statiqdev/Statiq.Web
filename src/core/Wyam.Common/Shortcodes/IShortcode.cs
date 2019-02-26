@@ -11,6 +11,13 @@ namespace Wyam.Common.Shortcodes
     /// <summary>
     /// Contains the code for a given shortcode (see the <c>Shortcodes</c> module).
     /// </summary>
+    /// <remarks>
+    /// Shortcode instances are created once-per-document and reused for the life of that document.
+    /// An exception is that nested shortcodes are always processed by a new instance of the shortcode
+    /// implementation (which remains in use for that nested content). If a shortcode class also
+    /// implements <see cref="IDisposable"/>, the shortcode will be disposed at the processing conclusion
+    /// of the document or nested content.
+    /// </remarks>
     public interface IShortcode
     {
         /// <summary>
