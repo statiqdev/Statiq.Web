@@ -29,10 +29,11 @@ namespace Wyam.Blog.Pipelines
                 new ReadFiles("_Tags.cshtml"),
                 new FrontMatter(
                     new Yaml.Yaml()),
+                new Shortcodes(true),
                 new Razor.Razor()
                     .IgnorePrefix(null)
                     .WithLayout("/_Layout.cshtml"),
-                new Shortcodes(),
+                new Shortcodes(false),
                 new WriteFiles((doc, ctx) => "tags/index.html"))
             .WithoutUnmatchedDocuments()
         };

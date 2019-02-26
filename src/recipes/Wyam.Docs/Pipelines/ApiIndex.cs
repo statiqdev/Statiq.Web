@@ -31,8 +31,9 @@ namespace Wyam.Docs.Pipelines
                 new Meta(Keys.RelativeFilePath, ctx => ctx.DirectoryPath(DocsKeys.ApiPath).CombineFile("index.html")),
                 new Meta(Keys.SourceFileName, "index.html"),
                 new Title("API"),
+                new Shortcodes(true),
                 new Razor.Razor(),
-                new Shortcodes(),
+                new Shortcodes(false),
                 new WriteFiles())
                 .WithoutUnmatchedDocuments()
         };

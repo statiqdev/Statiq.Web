@@ -79,10 +79,11 @@ namespace Wyam.Web.Pipelines
                 Render,
                 new If(
                     ctx => settings.WriteIfEmpty || settings.Pipelines.Any(x => ctx.Documents[x].Any()),
+                    new Shortcodes(true),
                     new Razor.Razor()
                         .IgnorePrefix(null)
                         .WithLayout(settings.Layout),
-                    new Shortcodes())
+                    new Shortcodes(false))
                     .WithoutUnmatchedDocuments()
             },
             {

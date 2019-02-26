@@ -28,9 +28,10 @@ namespace Wyam.Docs.Pipelines
             new If(
                 ctx => ctx.Documents[Docs.Api].Any(),
                 new Documents(Docs.Api),
+                new Shortcodes(true),
                 new Razor.Razor()
                     .WithLayout("/_ApiLayout.cshtml"),
-                new Shortcodes(),
+                new Shortcodes(false),
                 new Headings(),
                 new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)),
                 new WriteFiles())

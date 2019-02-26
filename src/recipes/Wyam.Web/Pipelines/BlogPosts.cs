@@ -73,6 +73,7 @@ namespace Wyam.Web.Pipelines
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new If(settings.ProcessIncludes, new Include()),
                     new FrontMatter(new Yaml.Yaml()),
+                    new Shortcodes(true),
                     new Execute(ctx => new Markdown.Markdown()
                         .UseConfiguration(settings.MarkdownConfiguration.Invoke<string>(ctx))
                         .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx))
@@ -86,7 +87,8 @@ namespace Wyam.Web.Pipelines
                     new ReadFiles(ctx => $"{settings.PostsPath.Invoke<string>(ctx)}/{{!_,!index,}}*.cshtml"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new If(settings.ProcessIncludes, new Include()),
-                    new FrontMatter(new Yaml.Yaml())
+                    new FrontMatter(new Yaml.Yaml()),
+                    new Shortcodes(true)
                 }
             },
             {

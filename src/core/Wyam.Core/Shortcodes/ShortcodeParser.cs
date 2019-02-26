@@ -14,17 +14,15 @@ namespace Wyam.Core.Shortcodes
     /// </summary>
     internal class ShortcodeParser
     {
-        public const string DefaultStartDelimiter = "<?#";
-        public const string DefaultEndDelimiter = "?>";
+        public const string DefaultPreRenderStartDelimiter = "<?!";
+        public const string DefaultPreRenderEndDelimiter = "?>";
+
+        public const string DefaultPostRenderStartDelimiter = "<?#";
+        public const string DefaultPostRenderEndDelimiter = "?>";
 
         private readonly Delimiter _startDelimiter;
         private readonly Delimiter _endDelimiter;
         private readonly IReadOnlyShortcodeCollection _shortcodes;
-
-        public ShortcodeParser(IReadOnlyShortcodeCollection shortcodes)
-            : this(DefaultStartDelimiter, DefaultEndDelimiter, shortcodes)
-        {
-        }
 
         public ShortcodeParser(string startDelimiter, string endDelimiter, IReadOnlyShortcodeCollection shortcodes)
         {

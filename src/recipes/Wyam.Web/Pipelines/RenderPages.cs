@@ -83,7 +83,7 @@ namespace Wyam.Web.Pipelines
             },
             {
                 Shortcodes,
-                new Shortcodes()
+                new Shortcodes(false)
             },
             {
                 WriteMetadata,

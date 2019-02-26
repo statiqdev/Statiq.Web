@@ -43,6 +43,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "name", (Type)null }
@@ -85,6 +87,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "name", (Type)null }
@@ -109,6 +113,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "foo", (Type)null },
@@ -184,6 +190,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "name", (Type)null }
@@ -207,6 +215,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "name", (Type)null }
@@ -225,6 +235,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("<?# ?>abc<?#/ ?>"));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "bar", (Type)null }
@@ -240,6 +252,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("<?# foo ?>abc<?#/ foo ?>"));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "bar", (Type)null }
@@ -255,6 +269,8 @@ namespace Wyam.Core.Tests.Shortcodes
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("<?# foo ?>abc<?#/ foo bar ?>"));
                 ShortcodeParser parser = new ShortcodeParser(
+                    ShortcodeParser.DefaultPostRenderStartDelimiter,
+                    ShortcodeParser.DefaultPostRenderEndDelimiter,
                     new TestShortcodeCollection
                     {
                         { "foo", (Type)null }

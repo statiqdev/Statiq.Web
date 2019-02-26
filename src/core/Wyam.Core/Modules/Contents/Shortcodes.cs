@@ -18,14 +18,29 @@ namespace Wyam.Core.Modules.Contents
     /// <category>Content</category>
     public class Shortcodes : IModule
     {
-        private readonly string _startDelimiter = ShortcodeParser.DefaultStartDelimiter;
-        private readonly string _endDelimiter = ShortcodeParser.DefaultEndDelimiter;
+        private readonly string _startDelimiter = ShortcodeParser.DefaultPostRenderStartDelimiter;
+        private readonly string _endDelimiter = ShortcodeParser.DefaultPostRenderEndDelimiter;
 
         /// <summary>
         /// Renders shortcodes in the input documents using the default start and end delimiters.
         /// </summary>
-        public Shortcodes()
+        /// <param name="preRender">
+        /// Indicates if the module is being executed pre-template-rendering (<c>true</c>)
+        /// or post-template-rendering (<c>false</c>). The default delimiters are different
+        /// depending on when the module is executed.
+        /// </param>
+        public Shortcodes(bool preRender = false)
         {
+            if (preRender)
+            {
+                _startDelimiter = ShortcodeParser.DefaultPreRenderStartDelimiter;
+                _endDelimiter = ShortcodeParser.DefaultPreRenderEndDelimiter;
+            }
+            else
+            {
+                _startDelimiter = ShortcodeParser.DefaultPostRenderStartDelimiter;
+                _endDelimiter = ShortcodeParser.DefaultPostRenderEndDelimiter;
+            }
         }
 
         /// <summary>
