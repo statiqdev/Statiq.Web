@@ -20,6 +20,9 @@ namespace Wyam.Core.Shortcodes
         public const string DefaultPostRenderStartDelimiter = "<?#";
         public const string DefaultPostRenderEndDelimiter = "?>";
 
+        public const string TrimStartDelimiter = "<?*";
+        public const string TrimEndDelimiter = "?>";
+
         private readonly Delimiter _startDelimiter;
         private readonly Delimiter _endDelimiter;
         private readonly IReadOnlyShortcodeCollection _shortcodes;
@@ -123,9 +126,11 @@ namespace Wyam.Core.Shortcodes
                                 // If the content is contained within a processing instruction, trim that
                                 string shortcodeContent = content.ToString(0, content.Length - _startDelimiter.Text.Length - 1);
                                 string trimmedContent = shortcodeContent.Trim();
-                                if (trimmedContent.StartsWith("<?") && trimmedContent.EndsWith("?>"))
+                                if (trimmedContent.StartsWith(TrimStartDelimiter) && trimmedContent.EndsWith(TrimEndDelimiter))
                                 {
-                                    shortcodeContent = trimmedContent.Substring(2, trimmedContent.Length - 4);
+                                    shortcodeContent = trimmedContent.Substring(
+                                        TrimStartDelimiter.Length,
+                                        trimmedContent.Length - (TrimStartDelimiter.Length + TrimEndDelimiter.Length));
                                 }
 
                                 shortcode.Content = shortcodeContent;

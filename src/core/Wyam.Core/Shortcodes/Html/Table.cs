@@ -18,8 +18,8 @@ namespace Wyam.Core.Shortcodes.Html
     /// column separated by new lines. Enclose columns in quotes if they contain a space.
     /// Note that since the content of a shortcode may get processed by template engines like
     /// Markdown and the content of this shortcode should not be, you probably want to wrap
-    /// the shortcode content in an XML processing instruction like <c>&lt;? ... ?&gt;</c>
-    /// so it "passes through" any template engines (see example below).
+    /// the shortcode content in the special XML processing instruction that will get trimmed
+    /// like <c>&lt;?* ... ?&gt;</c> so it "passes through" any template engines (see example below).
     /// </remarks>
     /// <example>
     /// <para>
@@ -27,7 +27,7 @@ namespace Wyam.Core.Shortcodes.Html
     /// </para>
     /// <code>
     /// &lt;?# Table Class=table HeaderRows=1 ?&gt;
-    /// &lt;?
+    /// &lt;?*
     /// Vehicle "Number Of Wheels"
     /// Bike 2
     /// Car 4

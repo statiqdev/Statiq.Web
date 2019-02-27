@@ -204,13 +204,15 @@ namespace Wyam.Core.Tests.Shortcodes
                 result.Single().Content.ShouldBe(content);
             }
 
-            [TestCase("<?# name ?><?abc?><?#/ name ?>", "abc")]
-            [TestCase("<?# name ?><? abc ?><?#/ name ?>", " abc ")]
-            [TestCase("<?# name ?> <?abc?> <?#/ name ?>", "abc")]
-            [TestCase("<?# name ?> <? abc ?> <?#/ name ?>", " abc ")]
-            [TestCase("<?# name ?><?#/ foo ?><?#/ name ?>", "#/ foo ")]
-            [TestCase("<?# name ?><?# foo ?><?#/ foo ?><?#/ name ?>", "# foo ?><?#/ foo ")]
-            public void TrimsProcessingInstructionFromContent(string input, string content)
+            [TestCase("<?# name ?><?*abc?><?#/ name ?>", "abc")]
+            [TestCase("<?# name ?><?* abc ?><?#/ name ?>", " abc ")]
+            [TestCase("<?# name ?> <?*abc?> <?#/ name ?>", "abc")]
+            [TestCase("<?# name ?> <?* abc ?> <?#/ name ?>", " abc ")]
+            [TestCase("<?# name ?><?#/ foo ?><?#/ name ?>", "<?#/ foo ?>")]
+            [TestCase("<?# name ?><?# foo ?><?#/ foo ?><?#/ name ?>", "<?# foo ?><?#/ foo ?>")]
+            [TestCase("<?# name ?><?*<?#/ foo ?>?><?#/ name ?>", "<?#/ foo ?>")]
+            [TestCase("<?# name ?><?*<?# foo ?><?#/ foo ?>?><?#/ name ?>", "<?# foo ?><?#/ foo ?>")]
+            public void TrimsWildcardProcessingInstructionFromContent(string input, string content)
             {
                 // Given
                 Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
