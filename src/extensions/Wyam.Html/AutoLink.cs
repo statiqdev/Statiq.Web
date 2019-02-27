@@ -220,9 +220,10 @@ namespace Wyam.Html
         private bool ReplaceStrings(IText textNode, IDictionary<string, string> map, out string newText)
         {
             string text = textNode.Text;
+            SubstringSegment originalSegment = new SubstringSegment(0, text.Length);
             List<Segment> segments = new List<Segment>()
             {
-                new SubstringSegment(0, text.Length)
+                originalSegment
             };
 
             // Perform replacements
@@ -281,7 +282,7 @@ namespace Wyam.Html
             }
 
             // Join and escape non-replaced content
-            if (segments.Count > 0)
+            if (segments.Count > 1 || (segments.Count == 1 && segments[0] != originalSegment))
             {
                 newText = string.Concat(segments.Select(x => x.GetText(ref text)));
                 return true;

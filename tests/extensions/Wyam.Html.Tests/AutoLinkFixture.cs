@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -39,7 +40,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results, Is.EquivalentTo(new[] { document }));
+                results.Single().ShouldBeSameAs(document);
             }
 
             [Test]
@@ -74,7 +75,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -109,7 +110,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -146,7 +147,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -181,7 +182,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -216,7 +217,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -251,7 +252,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -287,7 +288,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -325,7 +326,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -361,7 +362,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -397,7 +398,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -433,7 +434,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -468,7 +469,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -504,7 +505,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -540,7 +541,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -568,7 +569,7 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results, Is.EquivalentTo(new[] { document }));
+                results.Single().ShouldBeSameAs(document);
             }
 
             [TestCase("<li>Foo</li>", "<li>Foo</li>")]
@@ -603,7 +604,51 @@ namespace Wyam.Html.Tests
                 IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { expectedContent }));
+                results.Single().Content.ShouldBe(expectedContent);
+            }
+
+            [Test]
+            public void DoesNotRewriteOutsideQuerySelectorWhenNoReplacements()
+            {
+                // Given
+                string inputContent = $"<div>@x.Select(x => x) <code>Foo bar</code></div>";
+                string expectedContent = $"<div>@x.Select(x => x) <code>Foo bar</code></div>";
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(inputContent);
+                Dictionary<string, string> links = new Dictionary<string, string>();
+                AutoLink autoLink = new AutoLink(links)
+                    .WithQuerySelector("code")
+                    .WithMatchOnlyWholeWord()
+                    .WithStartWordSeparators('<')
+                    .WithEndWordSeparators('>');
+
+                // When
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                results.Single().Content.ShouldBe(expectedContent);
+            }
+
+            [Test]
+            public void NoReplacementWithQuerySelectorReturnsSameDocument()
+            {
+                // Given
+                string inputContent = $"<div>@x.Select(x => x) <code>Foo bar</code></div>";
+                string expectedContent = $"<div>@x.Select(x => x) <code>Foo bar</code></div>";
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(inputContent);
+                Dictionary<string, string> links = new Dictionary<string, string>();
+                AutoLink autoLink = new AutoLink(links)
+                    .WithQuerySelector("code")
+                    .WithMatchOnlyWholeWord()
+                    .WithStartWordSeparators('<')
+                    .WithEndWordSeparators('>');
+
+                // When
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                results.Single().ShouldBeSameAs(document);
             }
         }
     }
