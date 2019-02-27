@@ -20,9 +20,16 @@ namespace Wyam.Html
     /// Queries HTML content of the input documents and creates new documents with content and metadata from the results.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Once you provide a DOM query selector, the module creates new output documents
     /// for each query result and allows you to set the new document content and/or set new
     /// metadata based on the query result.
+    /// </para>
+    /// <para>
+    /// Note that because this module parses the document
+    /// content as standards-compliant HTML and outputs the formatted post-parsed DOM, you should
+    /// only place this module after all other template processing has been performed.
+    /// </para>
     /// </remarks>
     /// <metadata cref="HtmlKeys.OuterHtml" usage="Output"/>
     /// <metadata cref="HtmlKeys.InnerHtml" usage="Output"/>

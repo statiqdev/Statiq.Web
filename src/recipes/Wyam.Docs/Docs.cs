@@ -109,19 +109,7 @@ namespace Wyam.Docs
                 IncludeDateInPostPath = ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
                 PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath,
                 PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot)
-            })
-                .InsertAfter(
-                    BlogPosts.RazorPosts,
-                    new If(
-                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                        new AutoLink(TypeNamesToLink)
-                            .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord()
-                            .WithStartWordSeparators('<')
-                            .WithEndWordSeparators('>'),
-                        new If(
-                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                            new Replace("@", "&#64;"))));
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Pages" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
@@ -140,19 +128,7 @@ namespace Wyam.Docs
                 PrependLinkRoot = ctx => ctx.Bool(DocsKeys.MarkdownPrependLinkRoot),
                 CreateTree = true,
                 TreePlaceholderFactory = TreePlaceholderFactory
-            })
-                .InsertAfter(
-                    Pages.RazorFiles,
-                    new If(
-                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                        new AutoLink(TypeNamesToLink)
-                            .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord()
-                            .WithStartWordSeparators('<')
-                            .WithEndWordSeparators('>'),
-                        new If(
-                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                            new Replace("@", "&#64;"))));
+            });
 
         /// <summary>
         /// Generates the index pages for blog posts.
@@ -287,6 +263,15 @@ namespace Wyam.Docs
                         && doc.Document(Keys.Parent) == null)))
                 .InsertAfter(
                     RenderPages.WriteMetadata,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(TypeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>')))
+                .InsertAfter(
+                    RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
 
         /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
@@ -299,6 +284,15 @@ namespace Wyam.Docs
                 PublishedKey = DocsKeys.Published,
                 Layout = (doc, ctx) => "/_BlogPost.cshtml"
             })
+                .InsertAfter(
+                    RenderPages.WriteMetadata,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(TypeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>')))
                 .InsertAfter(
                     RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));

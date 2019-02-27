@@ -25,10 +25,17 @@ namespace Wyam.Html
     /// Mirrors external <c>link</c> and <c>script</c> resources locally.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// For each input document, looks for <c>link</c> and <c>script</c> elements that link to external
     /// resources and copies them locally, replacing the <c>link</c> and <c>script</c> links to the local path.
     /// To prevent local mirroring for specific <c>link</c> and <c>script</c> elements, add a
     /// <c>data-no-mirror</c> attribute.
+    /// </para>
+    /// <para>
+    /// Note that because this module parses the document
+    /// content as standards-compliant HTML and outputs the formatted post-parsed DOM, you should
+    /// only place this module after all other template processing has been performed.
+    /// </para>
     /// </remarks>
     /// <category>Input/Output</category>
     public class MirrorResources : IModule

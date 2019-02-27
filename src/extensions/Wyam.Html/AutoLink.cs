@@ -25,11 +25,18 @@ namespace Wyam.Html
     /// Replaces occurrences of specified strings with HTML links.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This module is smart enough to only look in specified HTML
     /// elements (p by default). You can supply an alternate query selector to
     /// narrow the search scope to different container elements or to those elements that contain
     /// (or don't contain) a CSS class, etc. It also won't generate an HTML link if the replacement
     /// text is already found in another link.
+    /// </para>
+    /// <para>
+    /// Note that because this module parses the document
+    /// content as standards-compliant HTML and outputs the formatted post-parsed DOM, you should
+    /// only place this module after all other template processing has been performed.
+    /// </para>
     /// </remarks>
     /// <category>Content</category>
     public class AutoLink : IModule

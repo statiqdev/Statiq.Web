@@ -21,6 +21,13 @@ namespace Wyam.Html
     /// Queries HTML content of the input documents and inserts new content into the elements that
     /// match a query selector.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Note that because this module parses the document
+    /// content as standards-compliant HTML and outputs the formatted post-parsed DOM, you should
+    /// only place this module after all other template processing has been performed.
+    /// </para>
+    /// </remarks>
     /// <category>Content</category>
     public class HtmlInsert : IModule
     {

@@ -19,7 +19,14 @@ namespace Wyam.Highlight
     /// Applies syntax highlighting to code blocks
     /// </summary>
     /// <remarks>
-    /// <para>This module finds all &lt;pre&gt; &lt;code&gt; blocks and applies HighlightJs's syntax highlighting.</para>
+    /// <para>
+    /// This module finds all &lt;pre&gt; &lt;code&gt; blocks and applies HighlightJs's syntax highlighting.
+    /// </para>
+    /// <para>
+    /// Note that because this module parses the document
+    /// content as standards-compliant HTML and outputs the formatted post-parsed DOM, you should
+    /// only place this module after all other template processing has been performed.
+    /// </para>
     /// </remarks>
     /// <example>
     /// <code>
