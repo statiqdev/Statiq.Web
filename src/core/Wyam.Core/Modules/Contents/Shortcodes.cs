@@ -116,18 +116,22 @@ namespace Wyam.Core.Modules.Contents
                     Stream shortcodeResultStream = shortcodeResult?.Stream;
                     if (shortcodeResultStream != null)
                     {
-                        if (!shortcodeResultStream.CanSeek)
+                        // Don't process nested shortcodes if it's the raw shortcode
+                        if (!x.Name.Equals(nameof(Core.Shortcodes.Contents.Raw), StringComparison.OrdinalIgnoreCase))
                         {
-                            shortcodeResultStream = new SeekableStream(shortcodeResultStream, true);
-                        }
-                        if (ProcessShortcodes(shortcodeResultStream, input, context, out IDocument nestedResult))
-                        {
-                            input = nestedResult;
-                            shortcodeResultStream = nestedResult.GetStream();  // Will get disposed in the replacement operation below
-                        }
-                        else
-                        {
-                            shortcodeResultStream.Position = 0;
+                            if (!shortcodeResultStream.CanSeek)
+                            {
+                                shortcodeResultStream = new SeekableStream(shortcodeResultStream, true);
+                            }
+                            if (ProcessShortcodes(shortcodeResultStream, input, context, out IDocument nestedResult))
+                            {
+                                input = nestedResult;
+                                shortcodeResultStream = nestedResult.GetStream();  // Will get disposed in the replacement operation below
+                            }
+                            else
+                            {
+                                shortcodeResultStream.Position = 0;
+                            }
                         }
                         return new InsertingStreamLocation(x.FirstIndex, x.LastIndex, shortcodeResultStream);
                     }

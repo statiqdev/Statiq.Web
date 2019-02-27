@@ -39,7 +39,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             }
 
             [Test]
-            public void ProcessesNestedShortcode()
+            public void ProcessesNestedShortcodeInResult()
             {
                 // Given
                 TestExecutionContext context = new TestExecutionContext();
@@ -53,6 +53,57 @@ namespace Wyam.Core.Tests.Modules.Contents
 
                 // Then
                 results.Single().Content.ShouldBe("123ABCFooXYZ456");
+            }
+
+            [Test]
+            public void ProcessesNestedShortcode()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<RawShortcode>("Foo");
+                context.Shortcodes.Add<TestShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Foo ?>ABC<?# Bar /?>XYZ<?#/ Foo ?>456");
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123ABCFooXYZ456");
+            }
+
+            [Test]
+            public void DoesNotProcessNestedRawShortcode()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<RawShortcode>("Raw");
+                context.Shortcodes.Add<TestShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Raw ?>ABC<?# Bar /?>XYZ<?#/ Raw ?>456");
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123ABC<?# Bar /?>XYZ456");
+            }
+
+            [Test]
+            public void DoesNotProcessDirectlyNestedRawShortcode()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Shortcodes.Add<RawShortcode>("Raw");
+                context.Shortcodes.Add<TestShortcode>("Bar");
+                IDocument document = new TestDocument("123<?# Raw ?><?# Bar /?><?#/ Raw ?>456");
+                Core.Modules.Contents.Shortcodes module = new Core.Modules.Contents.Shortcodes();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();
+
+                // Then
+                results.Single().Content.ShouldBe("123<?# Bar /?>456");
             }
 
             [Test]
@@ -173,6 +224,12 @@ namespace Wyam.Core.Tests.Modules.Contents
         {
             public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
                 context.GetShortcodeResult(context.GetContentStream("ABC<?# Nested /?>XYZ"));
+        }
+
+        public class RawShortcode : IShortcode
+        {
+            public IShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
+                context.GetShortcodeResult(context.GetContentStream(content));
         }
 
         public class NullStreamShortcode : IShortcode
