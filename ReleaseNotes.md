@@ -1,3 +1,10 @@
+# 2.2.3
+
+- [Feature] New `Raw` shortcode useful for escaping inner shortcode syntax
+- [Refactoring] Changes the special nested escape processing instruction for shortcodes from a standard processing instruction to `<?* ... ?>`
+- [Fix] Fixes a regression in `AutoLink` where a new document was being returned when it shouldn't have been (#786)
+- [Fix] Moved the `AutoLink` module in docs to execute after all template processing (#786)
+
 # 2.2.2
 
 - [Feature] The `Include` shortcode now tracks what file it's been called from (including nested includes) and attempts to first resolve includes relative to the current file
