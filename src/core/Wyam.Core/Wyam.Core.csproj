@@ -13,9 +13,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
-    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="2.2.0" />
-    <PackageReference Include="JavaScriptEngineSwitcher.Jint" Version="2.3.0" />
-    <PackageReference Include="jint" Version="2.10.3" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="3.0.0" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Jint" Version="3.0.0" />
     <PackageReference Include="JSPool" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="2.2.0" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />

@@ -27,15 +27,15 @@ namespace Wyam.Core.JavaScript
             // by checking the DefaultEngineName being set. If that's there we can safely assume
             // its been configured somehow (maybe via a configuration file). If not we'll wire up
             // Jint as the default engine.
-            if (string.IsNullOrWhiteSpace(JsEngineSwitcher.Instance.DefaultEngineName))
+            if (string.IsNullOrWhiteSpace(JsEngineSwitcher.Current.DefaultEngineName))
             {
-                JsEngineSwitcher.Instance.EngineFactories.Add(new JintJsEngineFactory());
-                JsEngineSwitcher.Instance.DefaultEngineName = JintJsEngine.EngineName;
+                JsEngineSwitcher.Current.EngineFactories.Add(new JintJsEngineFactory());
+                JsEngineSwitcher.Current.DefaultEngineName = JintJsEngine.EngineName;
             }
 
             _pool = new JsPool<JavaScriptEngine>(new JsPoolConfig<JavaScriptEngine>
             {
-                EngineFactory = () => new JavaScriptEngine(JsEngineSwitcher.Instance.CreateDefaultEngine()),
+                EngineFactory = () => new JavaScriptEngine(JsEngineSwitcher.Current.CreateDefaultEngine()),
                 Initializer = x => initializer?.Invoke(x),
                 StartEngines = startEngines,
                 MaxEngines = maxEngines,

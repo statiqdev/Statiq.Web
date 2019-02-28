@@ -12,8 +12,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="2.2.0" />
-    <PackageReference Include="JavaScriptEngineSwitcher.Jint" Version="2.3.0" />
-    <PackageReference Include="jint" Version="2.10.3" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="3.0.0" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Jint" Version="3.0.0" />
   </ItemGroup>
 </Project>

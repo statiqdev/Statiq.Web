@@ -14,18 +14,18 @@ namespace Wyam.Testing.JavaScript
 
         static TestJsEngine()
         {
-            JsEngineSwitcher.Instance.EngineFactories.Add(new JintJsEngineFactory());
-            JsEngineSwitcher.Instance.DefaultEngineName = JintJsEngine.EngineName;
+            JsEngineSwitcher.Current.EngineFactories.Add(new JintJsEngineFactory());
+            JsEngineSwitcher.Current.DefaultEngineName = JintJsEngine.EngineName;
         }
 
         public TestJsEngine()
         {
-            _engine = JsEngineSwitcher.Instance.CreateDefaultEngine();
+            _engine = JsEngineSwitcher.Current.CreateDefaultEngine();
         }
 
         public TestJsEngine(string engineName)
         {
-            _engine = JsEngineSwitcher.Instance.CreateEngine(engineName);
+            _engine = JsEngineSwitcher.Current.CreateEngine(engineName);
         }
 
         public void Dispose()
