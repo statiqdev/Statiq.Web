@@ -1,3 +1,7 @@
+# 2.2.4
+
+- [Feature] Updates JavaScriptEngineSwitcher to 3.0
+
 # 2.2.3
 
 - [Feature] New `Raw` shortcode useful for escaping inner shortcode syntax
