@@ -106,10 +106,17 @@ namespace Wyam.Core.Execution
 
         public HttpClient CreateHttpClient() => CreateHttpClient(_httpMessageHandler);
 
-        public HttpClient CreateHttpClient(HttpMessageHandler handler) => new HttpClient(handler, false)
+        public HttpClient CreateHttpClient(HttpMessageHandler handler)
         {
-            Timeout = TimeSpan.FromSeconds(60)
-        };
+            var client = new HttpClient(handler, false)
+            {
+                Timeout = TimeSpan.FromSeconds(60)
+            };
+
+            client.DefaultRequestHeaders.Add("User-Agent", "Wyam");
+            return client;
+        }
+        
 
         // GetDocument
 
