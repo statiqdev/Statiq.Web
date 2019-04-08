@@ -38,7 +38,7 @@ Wyam generally follows accepted .NET coding styles (see the [Framework Design Gu
 
 - Indent with 4 spaces, not tabs.
 - Prefix member names with an underscore (`_`).
-- Try to use explicit type names unless the type is extremly long (as can happen with generics) or overly complex, in which case the use of `var` is acceptable.
+- `var` is acceptable and preferred over explicit types.
 - Use the C# type aliases for types that have them, e.g. `int` instead of `Int32`, `string` instead of `String` etc.
 - Use meaningful names (regardless of length) and try not to use abbreviations in your type names.
 - Wrap `if`, `else` and `using` blocks (or blocks in general, really) in curly braces, even if it's a single line. The open and closing braces should go on their own line.
