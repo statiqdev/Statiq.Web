@@ -14,12 +14,17 @@ namespace Wyam.Core.Modules.IO
     /// Processes include statements to include files from the file system.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This module will look for include statements in the content of each document and
     /// will replace them with the content of the requested file from the file system.
     /// Include statements take the form <c>^"folder/file.ext"</c>. The given path will be
     /// converted to a <see cref="FilePath"/> and can be absolute or relative. If relative,
     /// it should be relative to the document source. You can escape the include syntax by
     /// prefixing the <c>^</c> with a forward slash <c>\</c>.
+    /// </para>
+    /// <para>
+    /// Since Wyam version 2.2.0, you can also use <see cref="Shortcodes.IO.Include"/> shortcode
+    /// </para>
     /// </remarks>
     /// <category>Input/Output</category>
     public class Include : IModule
