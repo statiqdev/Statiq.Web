@@ -207,7 +207,7 @@ namespace Wyam.Configuration.NuGet
                     }
                     catch (Exception ex)
                     {
-                        Trace.Verbose($"Exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
+                        Trace.Verbose($"Exception while installing packages: {(ex is AggregateException aex ? aex.Flatten() : ex)}");
                         Trace.Warning("Error while installing packages, attempting without remote repositories");
                         InstallPackages(packageManager, Array.Empty<SourceRepository>(), installedPackages);
                     }
@@ -230,7 +230,7 @@ namespace Wyam.Configuration.NuGet
         {
             foreach (Package package in _packages.Values)
             {
-                package.Install(installationRepositories, installedPackages, packageManager).Wait();
+                package.Install(installationRepositories, installedPackages, packageManager).GetAwaiter().GetResult();
             }
         }
     }
