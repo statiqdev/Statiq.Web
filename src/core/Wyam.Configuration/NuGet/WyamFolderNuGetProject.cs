@@ -33,6 +33,7 @@ namespace Wyam.Configuration.NuGet
             _assemblyLoader = assemblyLoader;
             _currentFramework = currentFramework;
             _installedPackages = installedPackages;
+            InternalMetadata[NuGetProjectMetadataKeys.TargetFramework] = _currentFramework;
         }
 
         // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances
