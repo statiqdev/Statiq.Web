@@ -7,10 +7,10 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cake.Core" Version="0.28.0">
+    <PackageReference Include="Cake.Core" Version="0.33.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Cake.Common" Version="0.28.0">
+    <PackageReference Include="Cake.Common" Version="0.33.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
