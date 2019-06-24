@@ -1,3 +1,11 @@
+# 2.2.5
+
+- [Refactoring] Updated to latest version of Markdig (#855, thanks @rchande)
+- [Refactoring] Updated Cake dependency to 0.33.0 (#823, thanks @devlead)
+- [Fix] NuGet restore now uses the correct target framework (#820, thanks @devlead)
+- [Fix] Sets a default user agent for the `HttpClient` (#802, thanks @SeanKilleen)
+- [Documentation] Enhances docs for the `Include` module and shortcode (#816, thanks @johanvergeer)
+
 # 2.2.4
 
 - [Feature] Updates JavaScriptEngineSwitcher to 3.0
