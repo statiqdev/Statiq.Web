@@ -22,7 +22,7 @@ namespace Wyam.Core.Modules.Contents
     /// </summary>
     /// <remarks>
     /// This module generates a sitemap from the input documents. The output document contains the sitemap XML as it's content.
-    /// You can supply a location for the each item in the sitemap as a <c>string</c> (with an optional function to format it
+    /// You can supply a location for each item in the sitemap as a <c>string</c> (with an optional function to format it
     /// into an absolute HTML path) or you can supply a <c>SitemapItem</c> for more control. You can also specify the
     /// <c>Hostname</c> metadata key (as a <c>string</c>) for each input document, which will be prepended to all locations.
     /// </remarks>
