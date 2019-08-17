@@ -1,3 +1,7 @@
+# 2.2.6
+
+- [Fix] Fixes for bugs related to package installation and signature verification
+
 # 2.2.5
 
 - [Refactoring] Updated to latest version of Markdig (#855, thanks @rchande)
