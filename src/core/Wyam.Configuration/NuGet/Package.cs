@@ -123,9 +123,16 @@ namespace Wyam.Configuration.NuGet
                 {
                     ResolutionContext resolutionContext = new ResolutionContext(
                         DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
-                    INuGetProjectContext projectContext = new NuGetProjectContext();
-                    projectContext.PackageExtractionContext.SignedPackageVerifierSettings =
-                        new global::NuGet.Packaging.Signing.SignedPackageVerifierSettings(true, true, true, true, true, true, true, true, true, false);
+                    INuGetProjectContext projectContext = new NuGetProjectContext
+                    {
+                        PackageExtractionContext = new global::NuGet.Packaging.PackageExtractionContext(
+                            global::NuGet.Packaging.PackageSaveMode.Defaultv3,
+                            global::NuGet.Packaging.XmlDocFileSaveMode.None,
+                            new NuGetLogger(),
+                            new global::NuGet.Packaging.Signing.PackageSignatureVerifier(
+                                Array.Empty<global::NuGet.Packaging.Signing.ISignatureVerificationProvider>()),
+                            new global::NuGet.Packaging.Signing.SignedPackageVerifierSettings(true, true, true, true, true, true, true, true, true, false))
+                    };
                     await packageManager.InstallPackageAsync(
                         packageManager.PackagesFolderNuGetProject,
                         packageIdentity,

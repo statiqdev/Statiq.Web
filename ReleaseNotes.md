@@ -1,3 +1,7 @@
+# 2.2.7
+
+- [Fix] Fix for the fix that fixes bugs related to package installation and signature verification
+
 # 2.2.6
 
 - [Fix] Fixes for bugs related to package installation and signature verification
