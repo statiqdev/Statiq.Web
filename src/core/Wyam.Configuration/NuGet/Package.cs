@@ -9,6 +9,7 @@ using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
+using NuGet.Packaging.Signing;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
@@ -101,7 +102,11 @@ namespace Wyam.Configuration.NuGet
             _versionMatch = versionMatch;
         }
 
-        public async Task Install(IReadOnlyList<SourceRepository> remoteRepositories, InstalledPackagesCache installedPackages, NuGetPackageManager packageManager)
+        public async Task Install(
+            IReadOnlyList<SourceRepository> remoteRepositories,
+            InstalledPackagesCache installedPackages,
+            NuGetPackageManager packageManager,
+            ISettings settings)
         {
             if (_versionMatch == null)
             {
@@ -123,15 +128,15 @@ namespace Wyam.Configuration.NuGet
                 {
                     ResolutionContext resolutionContext = new ResolutionContext(
                         DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
+                    ILogger logger = new NuGetLogger();
+                    ClientPolicyContext clientPolicyContext = ClientPolicyContext.GetClientPolicy(settings, logger);
                     INuGetProjectContext projectContext = new NuGetProjectContext
                     {
                         PackageExtractionContext = new global::NuGet.Packaging.PackageExtractionContext(
                             global::NuGet.Packaging.PackageSaveMode.Defaultv3,
                             global::NuGet.Packaging.XmlDocFileSaveMode.None,
-                            new NuGetLogger(),
-                            new global::NuGet.Packaging.Signing.PackageSignatureVerifier(
-                                Array.Empty<global::NuGet.Packaging.Signing.ISignatureVerificationProvider>()),
-                            new global::NuGet.Packaging.Signing.SignedPackageVerifierSettings(true, true, true, true, true, true, true, true, true, false))
+                            clientPolicyContext,
+                            logger)
                     };
                     await packageManager.InstallPackageAsync(
                         packageManager.PackagesFolderNuGetProject,

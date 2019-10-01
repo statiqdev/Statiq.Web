@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
@@ -35,7 +36,11 @@ namespace Wyam.Configuration.NuGet
             _fileSystem = fileSystem;
             _assemblyLoader = assemblyLoader;
             _currentFramework = GetCurrentFramework();
-            _settings = Settings.LoadDefaultSettings(fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            _settings = Settings.LoadDefaultSettings(fileSystem.RootPath.FullPath, null, new XPlatMachineWideSetting());
+            SettingsUtility.SetConfigValue(
+                _settings,
+                ConfigurationConstants.SignatureValidationMode,
+                nameof(SignatureValidationMode.Accept));
             _sourceRepositories = new SourceRepositoryProvider(_settings);
         }
 
@@ -230,7 +235,7 @@ namespace Wyam.Configuration.NuGet
         {
             foreach (Package package in _packages.Values)
             {
-                package.Install(installationRepositories, installedPackages, packageManager).GetAwaiter().GetResult();
+                package.Install(installationRepositories, installedPackages, packageManager, _settings).GetAwaiter().GetResult();
             }
         }
     }

@@ -1,3 +1,7 @@
+# 2.2.8
+
+- [Fix] Updated NuGet packages in an attempt to fix ongoing package installation and signature verification problems
+
 # 2.2.7
 
 - [Fix] Fix for the fix that fixes bugs related to package installation and signature verification
