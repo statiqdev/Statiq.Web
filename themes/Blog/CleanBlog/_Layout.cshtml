@@ -42,22 +42,6 @@
         <meta property="og:url" content="@Context.GetLink(Model, true)" />
         <!-- TODO: More social graph meta tags -->
 
-        <script src="@Context.GetLink("/assets/js/jquery.min.js")"></script>
-        <script src="@Context.GetLink("/assets/js/bootstrap.min.js")"></script>     
-        <script src="@Context.GetLink("/assets/js/highlight.pack.js")"></script>   
-        <script src="@Context.GetLink("/assets/js/clean-blog.js")"></script>
-        <script src="@Context.GetLink("/assets/js/d3.v3.min.js")"></script>
-        <script src="@Context.GetLink("/assets/js/trianglify.min.js")"></script>
-        <script src="@Context.GetLink("/assets/js/Please-compressed.js")"></script>
-        <script src="@Context.GetLink("/assets/js/background-check.min.js")"></script>
-                
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-                <script src="@Context.GetLink("/assets/js/html5shiv.js")"></script>
-                <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
-        <![endif]-->
-        
         @Html.Partial("_Head")
 
         </head>
@@ -129,6 +113,22 @@
                         @Html.Partial("_Footer")
                 </footer> 
 
+                <script src="@Context.GetLink("/assets/js/jquery.min.js")"></script>
+                <script src="@Context.GetLink("/assets/js/bootstrap.min.js")"></script>     
+                <script src="@Context.GetLink("/assets/js/highlight.pack.js")"></script>   
+                <script src="@Context.GetLink("/assets/js/clean-blog.js")"></script>
+                <script src="@Context.GetLink("/assets/js/d3.v3.min.js")"></script>
+                <script src="@Context.GetLink("/assets/js/trianglify.min.js")"></script>
+                <script src="@Context.GetLink("/assets/js/Please-compressed.js")"></script>
+                <script src="@Context.GetLink("/assets/js/background-check.min.js")"></script>
+
+                <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+                <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+                <!--[if lt IE 9]>
+                        <script src="@Context.GetLink("/assets/js/html5shiv.js")"></script>
+                        <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
+                <![endif]-->
+                
                 @Html.Partial("_Scripts")
                 <script>hljs.initHighlightingOnLoad();</script>
 
