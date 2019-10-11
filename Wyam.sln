@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam", "src\clients\Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
@@ -135,6 +135,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{9B01F618-6
 		README.md = README.md
 		RELEASE = RELEASE
 		ReleaseNotes.md = ReleaseNotes.md
+		SolutionInfo.cs = SolutionInfo.cs
 		stylecop.json = stylecop.json
 		wyam.ruleset = wyam.ruleset
 		Wyam.sln.DotSettings = Wyam.sln.DotSettings
@@ -150,7 +151,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.YouTube.Tests", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Images.Tests", "tests\extensions\Wyam.Images.Tests\Wyam.Images.Tests.csproj", "{0D8A9B33-A64E-42AF-8BD5-62C33D16AED3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Feeds.Tests", "tests\extensions\Wyam.Feeds.Tests\Wyam.Feeds.Tests.csproj", "{53711748-0274-4A01-B2DC-010DB2FD760F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Feeds.Tests", "tests\extensions\Wyam.Feeds.Tests\Wyam.Feeds.Tests.csproj", "{53711748-0274-4A01-B2DC-010DB2FD760F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
