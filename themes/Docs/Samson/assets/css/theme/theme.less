@@ -310,6 +310,26 @@ h1 {
   {
     background-color: transparent;
   }
+
+  &.sidebar-blog-tags {
+    text-align: center;
+    font-size: @font-size-small;
+    margin-top: 15px;
+    line-height: 1.8;
+    border-top: solid 1px @gray-lighter;
+    padding-top: 6px;
+    
+    li:not(.header) {
+      display: inline;
+    }
+    
+    li a {
+      white-space: nowrap;
+      display: inline;
+      padding: 5px;
+      border-radius: 6px;
+    }
+  }
 } 
     
 .table-striped tr
