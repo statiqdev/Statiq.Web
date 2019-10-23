@@ -1,0 +1,17 @@
+@model IDocument
+
+@{
+    var allTags = Model.Get<List<string>>(DocsKeys.Tags);
+    if (allTags != null && allTags.Any()) {
+        <hr />
+        <text>Tags:</text>
+        <ul class="inline">
+            @foreach(string tag in allTags.Distinct().OrderBy(x => x))
+            {
+                string link = tag.Replace(" ", "-").Replace("'", string.Empty);
+                <li><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/tag/{link}")">@tag</a></li>
+            }
+        </ul>
+        <hr />
+    }
+}
