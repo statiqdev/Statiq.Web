@@ -221,7 +221,11 @@ Task("Create-Theme-Packages")
                 Description = "A theme for the Wyam " + segments[segments.Length - 2] + " recipe.",
                 ProjectUrl = new Uri("https://wyam.io"),
                 IconUrl = new Uri("https://wyam.io/assets/img/logo-square-64.png"),
-                LicenseUrl = new Uri("https://github.com/Wyamio/Wyam/blob/master/LICENSE"),
+                License = new NuSpecLicense
+                    {
+                        Type = "file",
+                        Value = "LICENSE"
+                    },
                 Copyright = "Copyright 2017",
                 Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
                 RequireLicenseAcceptance = false,
@@ -236,6 +240,10 @@ Task("Create-Theme-Packages")
                     { 
                         Source = "**/*",
                         Target = "content"
+                    },
+                    new NuSpecContent
+                    {
+                        Source = "../../../LICENSE"
                     }                     
                 },
                 BasePath = themeDirectory,
