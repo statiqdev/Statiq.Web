@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Wyam Rules" Description="These rules apply to all Wyam projects with releasable source code and enforce consistent code quality guidelines." ToolsVersion="15.0">
-  <Include Path="daveaglick.ruleset" Action="Default" />
-  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
-    <Rule Id="SA1629" Action="None" />
-  </Rules>
-</RuleSet>

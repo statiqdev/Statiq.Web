@@ -1,3 +1,0 @@
-Color: Blue
----
-Item I

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "licensezero": [
+    {
+      "agentSignature": "e8fb818b0d41ae2275312a8477124dd983888a7bc16f1352713b90daeeea71270019b354d91b7f1b265dfda5cb9dcd485201ae24738b6ac55a5269a934559b0e",
+      "license": {
+        "homepage": "https://github.com/statiqdev",
+        "jurisdiction": "US-VA",
+        "name": "Dave Glick",
+        "projectID": "968702b6-a2b0-4042-9561-d1a98cc4f3fd",
+        "publicKey": "4947a9035aa92c06dd3c375ec91904998c58b8dd0de0781ddafddf101972acae",
+        "terms": "prosperity",
+        "version": "2.0.0"
+      },
+      "licensorSignature": "c69d8e8d2238b25d392ddfcf81119531128dd5c551b96eb783a64659173220ef2653075fdaf95b860c42b50eabeaacaf85605f506b06910a2b7e5de1f17d950d"
+    }
+  ]
+}

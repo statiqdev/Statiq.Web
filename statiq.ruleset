@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Statiq Rules" Description="These rules apply to all Statiq projects with releasable source code and enforce consistent code quality guidelines." ToolsVersion="15.0">
+  <Include Path="daveaglick.ruleset" Action="Default" />
+  <Rules AnalyzerId="Roslynator.CSharp.Analyzers" RuleNamespace="Roslynator.CSharp.Analyzers">
+    <Rule Id="RCS1090" Action="Hidden" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1629" Action="None" />
+  </Rules>
+</RuleSet>

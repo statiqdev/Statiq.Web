@@ -36,6 +36,7 @@
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
     <Rule Id="CS1591" Action="None" />
+    <Rule Id="CS4014" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0007" Action="None" />
@@ -87,7 +88,7 @@
     <Rule Id="RCS1043" Action="Hidden" />
     <Rule Id="RCS1044" Action="Warning" />
     <Rule Id="RCS1045" Action="None" />
-    <Rule Id="RCS1046" Action="None" />
+    <Rule Id="RCS1046" Action="Error" />
     <Rule Id="RCS1047" Action="Info" />
     <Rule Id="RCS1048" Action="Info" />
     <Rule Id="RCS1049" Action="Info" />

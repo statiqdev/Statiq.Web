@@ -1,9 +1,0 @@
-<h2>Classes</h2>
-<ul>
-	@foreach(IDocument symbolDocument in 
-		Documents.FromPipeline("Code")
-		.OrderBy(x => x.String("DisplayName")))
-	{
-		<li><a href="@(Context.GetLink(symbolDocument.FilePath("WritePath")))">@symbolDocument.String("DisplayName")</a> - @symbolDocument.String("Summary")</li>
-	}
-</ul>

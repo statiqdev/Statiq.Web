@@ -1,4 +1,0 @@
-Title: Boat
-Description: I'm on a boat!
----
-Donec ultricies quam diam, varius condimentum odio tristique eu. Vivamus sapien risus, pulvinar sed rhoncus eget, interdum vel eros. Donec gravida elit eget finibus rutrum. Aenean eget finibus odio. Curabitur ac semper nibh, in accumsan mi. Vivamus laoreet efficitur arcu, sit amet porttitor purus posuere in. Pellentesque ut urna fermentum, consequat velit sit amet, blandit eros. Ut tempor eros in tincidunt euismod. Pellentesque pharetra, tortor in vehicula tincidunt, purus arcu tristique arcu, at laoreet mi risus eu eros. Proin mattis odio ut ipsum facilisis venenatis. Donec non leo viverra, efficitur quam sit amet, vestibulum neque. Nullam posuere tortor vel fermentum vehicula. Nullam nec risus mattis, aliquet erat vel, maximus nisl. Nulla a ipsum eget nunc tristique euismod id vel lectus. Proin luctus fringilla lectus eu egestas.

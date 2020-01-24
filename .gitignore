@@ -31,9 +31,8 @@ ipch
 TestResult.xml
 /debug.log
 /packages.xml
-config.wyam.hash
-config.wyam.dll
 *.ncrunch*
 .*crunch*.local.xml
-/_NCrunch_Wyam
+/_NCrunch_Statiq.Framework
 .vscode
+*.pfx

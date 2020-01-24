@@ -1,8 +1,14 @@
 <Project>
   <Import Project="../Directory.Build.props" />
   <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\tests.ruleset</CodeAnalysisRuleSet>
     <!-- Treats projects as executables so things like unmanaged dependencies are copied to output -->
     <HasRuntimeOutput>true</HasRuntimeOutput>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="Shouldly" Version="3.0.2" />
+  </ItemGroup>
 </Project>

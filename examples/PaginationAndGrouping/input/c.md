@@ -1,3 +1,0 @@
-Color: Red
----
-Item C

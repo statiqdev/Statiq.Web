@@ -1,3 +1,0 @@
-Color: Green
----
-Item D
