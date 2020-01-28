@@ -5,7 +5,7 @@ using Statiq.Web;
 
 namespace TestBlog
 {
-    public class Program
+    public static class Program
     {
         public static async Task<int> Main(string[] args) =>
             await Bootstrapper.Factory

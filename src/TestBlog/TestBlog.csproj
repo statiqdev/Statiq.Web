@@ -3,7 +3,23 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
+    <DefaultItemExcludes>$(DefaultItemExcludes);output\**</DefaultItemExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="input\**" />
+    <Compile Remove="sass\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="input\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="sass\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Statiq.Web\Statiq.Web.csproj" />
@@ -16,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="input\" />
-    <Folder Include="theme\" />
   </ItemGroup>
 
 </Project>

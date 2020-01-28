@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statiq.Web", "src\Statiq.We
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E58D9954-583A-493C-B607-4AD2C4AED9A5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F4E54564-EFBB-4037-8B73-999146DC9439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBlog", "src\TestBlog\TestBlog.csproj", "{6EF72394-8441-4C57-9644-9E5B4626FE3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBlog", "tests\TestBlog\TestBlog.csproj", "{6EF72394-8441-4C57-9644-9E5B4626FE3B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5E7C4FDD-E45D-4FDD-95E4-9013A343CDFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,7 +31,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9AD88CBA-5E7F-4082-AC1A-5D0DD2FEE46B} = {E58D9954-583A-493C-B607-4AD2C4AED9A5}
-		{6EF72394-8441-4C57-9644-9E5B4626FE3B} = {F4E54564-EFBB-4037-8B73-999146DC9439}
+		{6EF72394-8441-4C57-9644-9E5B4626FE3B} = {E58D9954-583A-493C-B607-4AD2C4AED9A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFD0E489-F8EE-4626-91C8-92A8F7092907}
