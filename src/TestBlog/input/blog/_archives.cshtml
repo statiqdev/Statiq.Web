@@ -1,0 +1,21 @@
+﻿<div class="card">
+    <div class="card-header">Archives</div>
+    <div class="card-body">
+        @foreach (IGrouping<int, IDocument> yearGroup in Outputs[nameof(Statiq.Web.Pipelines.Content)]
+            .Flatten()
+            .FilterSources(Context, "blog/posts/*")
+            .GroupBy(doc => doc.GetDateTime("Published").Year)
+            .OrderByDescending(x => x.Key))
+        {            
+            <h5 class="card-title">@(yearGroup.Key)</h5>
+            <div class="card-text mb-2">
+            @foreach (IGrouping<(string, string), IDocument> monthGroup in yearGroup
+                .GroupBy(doc => (doc.GetDateTime("Published").ToString("MM"), doc.GetDateTime("Published").ToString("MMMM")))
+                .OrderBy(x => x.Key.Item1))
+            {
+                <div><a href="/blog/@(yearGroup.Key)/@(monthGroup.Key.Item1)">@monthGroup.Key.Item2 (@monthGroup.Count())</a></div>
+            }
+            </div>
+        }
+    </div>
+</div>

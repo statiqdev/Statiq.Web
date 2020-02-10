@@ -1,0 +1,9 @@
+﻿@inherits Statiq.Razor.StatiqRazorPage<IEnumerable<IDocument>>
+
+@foreach (IDocument post in Model)
+{
+    <div>
+        <h2 class="p-3 bg-light" style="border-left-color: #68217a; border-left-style: solid; border-left-width: 8px;"><a href="@Context.GetLink(post)">@post.GetString("Title")</a></h2>
+        @Html.Raw(await post.GetContentStringAsync())
+    </div>
+}

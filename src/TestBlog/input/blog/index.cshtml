@@ -1,11 +1,15 @@
-﻿@foreach(IDocument post in Outputs[nameof(Statiq.Web.Pipelines.Content)]
-    .Flatten()
-    .FilterSources(Context, "blog/posts/*")
-    .OrderByDescending(doc => doc.GetDateTime("Published"))
-    .Take(5))
-{
-    <div>
-        <h2><a href="@Context.GetLink(post)">@post.GetString("Title")</a></h2>
-        @Html.Raw(await post.GetContentStringAsync())
+﻿Title: Blog
+PageTitle: Recent Posts
+---
+<div class="row">
+    <div class="col-md-9">
+        @Html.Partial("_posts.cshtml", Outputs[nameof(Statiq.Web.Pipelines.Content)]
+            .Flatten()
+            .FilterSources(Context, "blog/posts/*")
+            .OrderByDescending(doc => doc.GetDateTime("Published"))
+            .Take(5))
     </div>
-}
+    <div class="col-md-3">
+        @Html.Partial("_archives.cshtml")
+    </div>
+</div>
