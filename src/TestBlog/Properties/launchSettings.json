@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestBlog": {
+      "commandName": "Project",
+      "commandLineArgs": "preview"
+    }
+  }
+}

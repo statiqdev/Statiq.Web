@@ -6,6 +6,7 @@
 [Pp]ackages/
 [Tt]ools/
 ![Tt]ools/packages.config
+[Oo]utput/
 nuget.exe
 *.com
 *.class

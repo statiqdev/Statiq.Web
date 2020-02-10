@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Statiq.App;
 using Statiq.Common;
@@ -9,29 +10,40 @@ using Statiq.Markdown;
 using Statiq.Razor;
 using Statiq.Yaml;
 
-namespace Statiq.Web
+namespace Statiq.Web.Pipelines
 {
-    public class Pages : Pipeline
+    public class Content : Pipeline
     {
-        public Pages()
+        public Content()
         {
             InputModules = new ModuleList
             {
-                new ReadFiles("**/{!_,}*.{cshtml,md}")
+                new ReadFiles("**/{!_,}*.{html,cshtml,md}")
             };
 
             ProcessModules = new ModuleList
             {
-                new CacheDocuments
+                new ProcessIncludes(),
+                new ExtractFrontMatter(new ParseYaml()),
+                new EnumerateValues(),
+
+                // TODO: Set published date from file name if not present
+                new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")))
                 {
-                    new ProcessIncludes(),
-                    new ExtractFrontMatter(new ParseYaml()),
-                    new ExecuteIf(
-                        Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")),
-                        new RenderMarkdown().UseExtensions()),
-                    new AddTitle(),
-                    new SetDestination(".html")
+                    new RenderMarkdown().UseExtensions()
                 },
+
+                new AddTitle(),
+
+                // TODO: Make this a configuration or something
+                new SetDestination(
+                    Config.FromDocument(
+                        doc => doc.Source.Directory.Segments.Last().SequenceEqual("posts".AsMemory())
+                            ? new DirectoryPath("blog")
+                                .Combine(new DirectoryPath(doc.Get<DateTime>("Published").ToString("yyyy/MM/dd")))
+                                .CombineFile(doc.Destination.FileName.ChangeExtension(".html"))
+                            : doc.Destination.ChangeExtension(".html"))),
+
                 new CreateTree().WithNesting(true, true)
             };
 
