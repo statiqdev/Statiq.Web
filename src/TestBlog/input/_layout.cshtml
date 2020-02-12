@@ -4,16 +4,22 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="/assets/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="/assets/css/styles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Open+Sans:400,400i,700,700i&display=swap" rel="stylesheet" data-no-mirror>
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/2901e6fa42.js" crossorigin="anonymous" data-no-mirror></script>
+
     <title>.NET Foundation - @Model.GetString(Keys.Title)</title>
 </head>
-    <body>
-        <div class="container d-flex flex-column">
+    <body class="d-flex flex-column">
+        <div class="container flex-grow-1 d-flex flex-column">
             <div class="py-3"><a href="/"><img src="https://www.dotnetfoundation.org/img/dotNetFoundationHorizontal.svg" /></a></div>
-            <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #68217a;">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -38,7 +44,7 @@
                 </div>
             </nav>
             <div class="my-3 flex-grow-1">
-                <h1 style="color: #68217a;">@(Model.GetString("PageTitle") ?? Model.GetString(Keys.Title))</h1>
+                <h1 class="text-primary">@(Model.GetString("PageTitle") ?? Model.GetString(Keys.Title))</h1>
                 <hr />
                 @RenderBody()
             </div>
@@ -53,9 +59,11 @@
                 </div>
             </div>
         </div>
-        <div class="mt-3 p-3 text-white" style="background-color: #68217a">
-            <div>© @DateTime.Today.Year .NET Foundation and Contributors.</div>
-            <div>You can <a href="https://github.com/dotnet/dotnetfoundation-website">contribute to this site on GitHub</a>.</div>
+        <div id="footer" class="mt-3 p-3 text-white bg-primary text-small">
+            <div class="container text-right">
+                <div>© @DateTime.Today.Year .NET Foundation and Contributors.</div>
+                <div>You can <a href="https://github.com/dotnet/dotnetfoundation-website"><i class="fas fa-pencil-alt"></i> contribute to this site on GitHub</a>.</div>
+            </div>
         </div>
     </body>
 </html>

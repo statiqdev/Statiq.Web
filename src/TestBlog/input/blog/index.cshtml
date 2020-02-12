@@ -6,7 +6,7 @@ PageTitle: Recent Posts
         @Html.Partial("_posts.cshtml", Outputs[nameof(Statiq.Web.Pipelines.Content)]
             .Flatten()
             .FilterSources(Context, "blog/posts/*")
-            .OrderByDescending(doc => doc.GetDateTime("Published"))
+            .OrderByDescending(doc => doc.GetPublishedDate(Context))
             .Take(5))
     </div>
     <div class="col-md-3">

@@ -8,6 +8,12 @@ namespace Statiq.Web
     public static class BootstrapperFactoryExtensions
     {
         public static Bootstrapper CreateWeb(this BootstrapperFactory factory, string[] args) =>
-            factory.CreateDefault(args).AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly);
+            factory
+                .CreateDefault(args)
+                .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
+                .AddSettingsIfNonExisting(new Dictionary<string, object>
+                {
+                    { WebKeys.MirrorResources, true }
+                });
     }
 }

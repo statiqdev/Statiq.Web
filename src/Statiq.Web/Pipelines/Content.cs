@@ -26,24 +26,12 @@ namespace Statiq.Web.Pipelines
                 new ProcessIncludes(),
                 new ExtractFrontMatter(new ParseYaml()),
                 new EnumerateValues(),
-
-                // TODO: Set published date from file name if not present
                 new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")))
                 {
                     new RenderMarkdown().UseExtensions()
                 },
-
                 new AddTitle(),
-
-                // TODO: Make this a configuration or something
-                new SetDestination(
-                    Config.FromDocument(
-                        doc => doc.Source.Directory.Segments.Last().SequenceEqual("posts".AsMemory())
-                            ? new DirectoryPath("blog")
-                                .Combine(new DirectoryPath(doc.Get<DateTime>("Published").ToString("yyyy/MM/dd")))
-                                .CombineFile(doc.Destination.FileName.ChangeExtension(".html"))
-                            : doc.Destination.ChangeExtension(".html"))),
-
+                new SetDestination(".html"),
                 new CreateTree().WithNesting(true, true)
             };
 
@@ -66,7 +54,10 @@ namespace Statiq.Web.Pipelines
                         }
                         return null;  // If no layout metadata, revert to default behavior
                     })),
-                new MirrorResources()
+                new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
+                {
+                    new MirrorResources()
+                }
             };
 
             OutputModules = new ModuleList

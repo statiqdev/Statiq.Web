@@ -7,8 +7,8 @@ Title: => $"Post Archive - {Current}"
         @Html.Partial("_posts.cshtml", Outputs[nameof(Statiq.Web.Pipelines.Content)]
             .Flatten()
             .FilterSources(Context, "blog/posts/*")
-            .Where(doc => doc.GetDateTime("Published").ToString("yyyy/MM").Equals(Model.GetString(Keys.Current)))
-            .OrderByDescending(doc => doc.GetDateTime("Published")))
+            .Where(doc => doc.GetPublishedDate(Context).ToString("yyyy/MM").Equals(Model.GetString(Keys.Current)))
+            .OrderByDescending(doc => doc.GetPublishedDate(Context)))
     </div>
     <div class="col-md-3">
         @Html.Partial("_archives.cshtml")

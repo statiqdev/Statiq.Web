@@ -5,6 +5,7 @@ using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Html;
+using Statiq.Less;
 using Statiq.Markdown;
 using Statiq.Razor;
 using Statiq.Yaml;

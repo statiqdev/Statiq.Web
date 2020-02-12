@@ -30,8 +30,4 @@
     <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="input\blog\posts\" />
-  </ItemGroup>
-
 </Project>
