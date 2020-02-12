@@ -1,3 +1,3 @@
-# Statiq Site
+# Statiq Web
 
 Stay tuned!
