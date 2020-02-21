@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <!--
   <ItemGroup>
     <PackageReference Include="Statiq.App" Version="1.0.0-alpha.25" />
     <PackageReference Include="Statiq.Html" Version="1.0.0-alpha.25" />
@@ -17,8 +18,8 @@
     <PackageReference Include="Statiq.Netlify" Version="1.0.0-alpha.25" />
     <PackageReference Include="Statiq.Feeds" Version="1.0.0-alpha.25" />
   </ItemGroup>
+  -->
 
-  <!--
   <ItemGroup>
     <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
@@ -33,6 +34,5 @@
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
   </ItemGroup>
-  -->
 
 </Project>

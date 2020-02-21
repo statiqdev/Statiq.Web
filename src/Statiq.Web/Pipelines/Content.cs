@@ -25,6 +25,7 @@ namespace Statiq.Web.Pipelines
             {
                 new ProcessIncludes(),
                 new ExtractFrontMatter(new ParseYaml()),
+                new FilterDocuments(Config.FromDocument(doc => !doc.ContainsKey(WebKeys.ArchiveSources) && !doc.ContainsKey(WebKeys.ArchiveFilter) && !doc.ContainsKey(WebKeys.ArchiveKey))),
                 new EnumerateValues(),
                 new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")))
                 {
@@ -32,13 +33,6 @@ namespace Statiq.Web.Pipelines
                 },
                 new AddTitle(),
                 new SetDestination(".html"),
-                new CreateTree().WithNesting(true, true)
-            };
-
-            TransformModules = new ModuleList
-            {
-                new FlattenTree(),
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))),
                 new RenderRazor()
                     .WithLayout(Config.FromDocument((doc, ctx) =>
                     {
@@ -48,7 +42,7 @@ namespace Statiq.Web.Pipelines
                         {
                             if (parent.ContainsKey(WebKeys.Layout))
                             {
-                                return parent.GetFilePath(WebKeys.Layout);
+                                return parent.GetPath(WebKeys.Layout);
                             }
                             parent = parent.GetParent(ctx.Inputs);
                         }
