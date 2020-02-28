@@ -32,9 +32,9 @@ namespace Statiq.Web
 
         public const string ArchiveDestination = nameof(ArchiveDestination);
 
-        public const string ArchiveOrder = nameof(ArchiveOrder);  // The key that should be sorted (or group key by default)
+        public const string ArchiveOrderKey = nameof(ArchiveOrderKey);  // The key that should be sorted
 
-        public const string ArchiveDescending = nameof(ArchiveDescending);  // Indicates the archive should be sorted in descending order
+        public const string ArchiveOrderDescending = nameof(ArchiveOrderDescending);  // Indicates the archive should be sorted in descending order
 
         /// <summary>
         /// Indicates the layout file that should be used for this document.

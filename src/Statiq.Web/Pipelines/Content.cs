@@ -25,14 +25,19 @@ namespace Statiq.Web.Pipelines
             {
                 new ProcessIncludes(),
                 new ExtractFrontMatter(new ParseYaml()),
-                new FilterDocuments(Config.FromDocument(doc => !doc.ContainsKey(WebKeys.ArchiveSources) && !doc.ContainsKey(WebKeys.ArchiveFilter) && !doc.ContainsKey(WebKeys.ArchiveKey))),
+                new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
                 new EnumerateValues(),
+                new AddTitle(),
+                new SetDestination(".html"),
                 new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")))
                 {
                     new RenderMarkdown().UseExtensions()
-                },
-                new AddTitle(),
-                new SetDestination(".html"),
+                }
+            };
+
+            PostProcessModules = new ModuleList
+            {
+                new ConcatDocuments(nameof(Archives)), // Render the archives documents here for consistency
                 new RenderRazor()
                     .WithLayout(Config.FromDocument((doc, ctx) =>
                     {
