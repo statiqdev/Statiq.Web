@@ -1,6 +1,6 @@
 <Project> 
   <PropertyGroup>
-    <InformationalVersion>1.0.0-alpha.2</InformationalVersion>
+    <InformationalVersion>1.0.0-alpha.3</InformationalVersion>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Product>Statiq Web</Product>
