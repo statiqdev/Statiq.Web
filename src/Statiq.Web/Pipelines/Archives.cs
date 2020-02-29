@@ -34,8 +34,10 @@ namespace Statiq.Web.Pipelines
                     {
                         ModuleList modules = new ModuleList();
 
-                        // Merge outputs from the pipeline(s) with the archive document so ArchiveFilter is on the actual candidate document
-                        modules.Add(new MergeDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()).Reverse());
+                        // Get outputs from the pipeline(s)
+                        modules.Add(
+                            new ReplaceDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()),
+                            new MergeMetadata(Config.FromValue(archiveDoc.Yield())).KeepExisting());
 
                         // Filter by document source
                         if (archiveDoc.ContainsKey(WebKeys.ArchiveSources))
@@ -63,29 +65,35 @@ namespace Statiq.Web.Pipelines
                             // Group by the archive key
                             modules.Add(
                                 new GroupDocuments(Config.FromDocument(doc => doc.GetList(WebKeys.ArchiveKey, new object[] { }))),
-                                new MergeDocuments(Config.FromValue<IEnumerable<IDocument>>(new[] { archiveDoc })).Reverse());
-                            modules.Add(GetTitleAndDestinationModules(archiveDoc)); // This will get rerun after pagination, but run it now so the top-level index has titles/destinations
+                                new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
 
-                            // Process the groups
-                            ModuleList groups = new ModuleList();
+                            // Paginate the groups
+                            ModuleList paginateGroups = new ModuleList();
                             if (archiveDoc.ContainsKey(WebKeys.ArchivePageSize))
                             {
-                                groups.Add(new ForEachDocument
+                                paginateGroups.Add(new ForEachDocument
                                 {
                                     // Paginate the group
                                     new ExecuteConfig(Config.FromDocument(groupDoc => new ModuleList
                                     {
-                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.GetDocumentList(Keys.Children))),
+                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.GetChildren())),
                                         new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize)),
-                                        new SetMetadata(Keys.GroupKey, groupDoc.Get(Keys.GroupKey)),
-                                        new MergeDocuments(Config.FromValue<IEnumerable<IDocument>>(new[] { archiveDoc })).Reverse()
+                                        new MergeMetadata(Config.FromValue(groupDoc.Yield())).KeepExisting(),
+                                        new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata()
                                     }))
                                 });
                             }
-                            groups.Add(GetTitleAndDestinationModules(archiveDoc));
+                            paginateGroups.Add(GetTitleAndDestinationModules(archiveDoc));
+
+                            // Create a top-level index
+                            // Make sure the pre-paginated group documents get a title and destination in case something references them
+                            // (they'll end up pointing to the first page if the group was paginated)
+                            ModuleList topLevel = new ModuleList(
+                                GetTitleAndDestinationModules(archiveDoc));
+                            topLevel.Add(GetTopLevelIndexModules(archiveDoc));
 
                             // Add the group modules and create a top-level index document in a branch
-                            modules.Add(new ExecuteBranch(groups).Branch(GetTopLevelIndexModules(archiveDoc)));
+                            modules.Add(new ExecuteBranch(paginateGroups).Branch(topLevel));
                         }
                         else
                         {
@@ -96,7 +104,7 @@ namespace Statiq.Web.Pipelines
                             {
                                 modules.Add(
                                     new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize)),
-                                    new MergeDocuments(Config.FromValue<IEnumerable<IDocument>>(new[] { archiveDoc })).Reverse());
+                                    new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
                                 modules.Add(GetTitleAndDestinationModules(archiveDoc));
                             }
                             else
@@ -115,6 +123,13 @@ namespace Statiq.Web.Pipelines
                         return modules;
                     }))
                 },
+            };
+
+            PostProcessModules = new ModuleList(Content.GetRenderModules());
+
+            OutputModules = new ModuleList
+            {
+                new WriteFiles()
             };
         }
 
@@ -143,7 +158,7 @@ namespace Statiq.Web.Pipelines
                     }
                     int index = doc.GetInt(Keys.Index);
                     return index <= 1 ? title : (title + $" (Page {index})");
-                })),
+                })).KeepExisting(false),
             new SetDestination(
                 Config.FromDocument(doc =>
                 {
@@ -153,9 +168,11 @@ namespace Statiq.Web.Pipelines
                     }
 
                     // Default destination
-                    NormalizedPath destination = archiveDoc.Destination
-                        .ChangeExtension(null)
-                        .Combine(NormalizedPath.ReplaceInvalidFileNameChars(doc.GetString(Keys.GroupKey)));
+                    NormalizedPath destination = archiveDoc.Destination.ChangeExtension(null);
+                    if (doc.ContainsKey(Keys.GroupKey))
+                    {
+                        destination.Combine(NormalizedPath.ReplaceInvalidFileNameChars(doc.GetString(Keys.GroupKey)));
+                    }
                     int index = doc.GetInt(Keys.Index);
                     if (index > 1)
                     {

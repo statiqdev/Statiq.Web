@@ -35,34 +35,35 @@ namespace Statiq.Web.Pipelines
                 }
             };
 
-            PostProcessModules = new ModuleList
-            {
-                new ConcatDocuments(nameof(Archives)), // Render the archives documents here for consistency
-                new RenderRazor()
-                    .WithLayout(Config.FromDocument((doc, ctx) =>
-                    {
-                        // Crawl up the tree looking for a layout
-                        IDocument parent = doc;
-                        while (parent != null)
-                        {
-                            if (parent.ContainsKey(WebKeys.Layout))
-                            {
-                                return parent.GetPath(WebKeys.Layout);
-                            }
-                            parent = parent.GetParent(ctx.Inputs);
-                        }
-                        return null;  // If no layout metadata, revert to default behavior
-                    })),
-                new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
-                {
-                    new MirrorResources()
-                }
-            };
+            PostProcessModules = new ModuleList(GetRenderModules());
 
             OutputModules = new ModuleList
             {
                 new WriteFiles()
             };
         }
+
+        public static IModule[] GetRenderModules() => new IModule[]
+        {
+            new RenderRazor()
+                .WithLayout(Config.FromDocument((doc, ctx) =>
+                {
+                    // Crawl up the tree looking for a layout
+                    IDocument parent = doc;
+                    while (parent != null)
+                    {
+                        if (parent.ContainsKey(WebKeys.Layout))
+                        {
+                            return parent.GetPath(WebKeys.Layout);
+                        }
+                        parent = parent.GetParent(ctx.Inputs);
+                    }
+                    return null;  // If no layout metadata, revert to default behavior
+                })),
+            new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
+            {
+                new MirrorResources()
+            }
+        };
     }
 }
