@@ -16,7 +16,7 @@ namespace Statiq.Web.Pipelines
     {
         public Archives()
         {
-            Dependencies.Add(nameof(Content));
+            Dependencies.AddRange(nameof(Content), nameof(Data));
 
             InputModules = new ModuleList
             {
@@ -115,7 +115,7 @@ namespace Statiq.Web.Pipelines
                         }
 
                         // Render any markdown content
-                        if (archiveDoc.MediaTypeEquals("text/markdown"))
+                        if (archiveDoc.MediaTypeEquals(MediaTypes.Markdown))
                         {
                             modules.Add(new RenderMarkdown().UseExtensions());
                         }

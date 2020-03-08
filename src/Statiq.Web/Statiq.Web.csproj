@@ -5,17 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Statiq.App" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Html" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Json" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Markdown" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Razor" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Sass" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Less" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Yaml" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Minification" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Netlify" Version="1.0.0-alpha.27" />
-    <PackageReference Include="Statiq.Feeds" Version="1.0.0-alpha.27" />
+    <PackageReference Include="Statiq.App" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Html" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Markdown" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Razor" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Sass" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Less" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Yaml" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Minification" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Netlify" Version="1.0.0-alpha.28" />
+    <PackageReference Include="Statiq.Feeds" Version="1.0.0-alpha.28" />
   </ItemGroup>
 
   <!--
@@ -24,7 +23,6 @@
     <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Html\Statiq.Html.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Json\Statiq.Json.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
     <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />

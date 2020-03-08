@@ -20,7 +20,7 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                new CopyFiles("**/*{!.html,!.cshtml,!.md,!.less,!.yml,!.scss,!.config,}")
+                new CopyFiles("**/*{!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}")
             };
         }
     }

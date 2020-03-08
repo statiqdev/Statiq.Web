@@ -29,9 +29,13 @@ namespace Statiq.Web.Pipelines
                 new EnumerateValues(),
                 new AddTitle(),
                 new SetDestination(".html"),
-                new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals("text/markdown")))
+                new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.Markdown)))
                 {
                     new RenderMarkdown().UseExtensions()
+                },
+                new ExecuteIf(Config.FromDocument(doc => !doc.ContainsKey(HtmlKeys.Excerpt)))
+                {
+                    new GenerateExcerpt() // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
                 }
             };
 

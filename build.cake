@@ -269,7 +269,6 @@ Task("Publish-Release")
     .WithCriteria(() => isRunningOnWindows)
     .Does(() =>
     {
-        /*
         var githubToken = EnvironmentVariable("STATIQ_GITHUB_TOKEN");
         if (string.IsNullOrEmpty(githubToken))
         {
@@ -280,7 +279,7 @@ Task("Publish-Release")
         {
             Credentials = new Credentials(githubToken)
         };
-        var release = github.Repository.Release.Create("statiqdev", "Web", new NewRelease("v" + semVersion) 
+        var release = github.Repository.Release.Create("statiqdev", "Statiq.Web", new NewRelease("v" + semVersion) 
         {
             Name = semVersion,
             Body = string.Join(Environment.NewLine, releaseNotes.Notes),
@@ -293,7 +292,6 @@ Task("Publish-Release")
         {
             var releaseAsset = github.Repository.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
         }
-        */
     });
     
 //////////////////////////////////////////////////////////////////////
