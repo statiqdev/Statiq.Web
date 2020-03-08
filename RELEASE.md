@@ -1,3 +1,5 @@
+# 1.0.0-alpha.4
+
 # 1.0.0-alpha.3
 
 - Added a new Feeds pipeline that creates RSS and Atom feeds based on a definition file.
