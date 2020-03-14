@@ -1,5 +1,8 @@
 # 1.0.0-alpha.4
 
+- Added `CreateTree`/`FlattenTree` to the Content pipeline.
+- Added support for ordering documents in the Content pipeline using the "Index" metadata value.
+
 # 1.0.0-alpha.3
 
 - Added a new Feeds pipeline that creates RSS and Atom feeds based on a definition file.
