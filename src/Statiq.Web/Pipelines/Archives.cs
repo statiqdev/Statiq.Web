@@ -8,6 +8,7 @@ using Statiq.Core;
 using Statiq.Html;
 using Statiq.Markdown;
 using Statiq.Razor;
+using Statiq.Web.Modules;
 using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
@@ -115,17 +116,17 @@ namespace Statiq.Web.Pipelines
                         }
 
                         // Render any markdown content
-                        if (archiveDoc.MediaTypeEquals(MediaTypes.Markdown))
-                        {
-                            modules.Add(new RenderMarkdown().UseExtensions());
-                        }
+                        modules.Add(new ProcessMarkup());
 
                         return modules;
                     }))
                 },
             };
 
-            PostProcessModules = new ModuleList(Content.GetRenderModules());
+            PostProcessModules = new ModuleList
+            {
+                new ProcessTemplates()
+            };
 
             OutputModules = new ModuleList
             {

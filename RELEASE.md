@@ -1,5 +1,6 @@
 # 1.0.0-alpha.4
 
+- Added shortcode support.
 - Added `CreateTree`/`FlattenTree` to the Content pipeline.
 - Added support for ordering documents in the Content pipeline using the "Index" metadata value.
 
