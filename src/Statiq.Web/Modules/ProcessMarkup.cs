@@ -12,7 +12,7 @@ namespace Statiq.Web.Modules
     /// <summary>
     /// Parent module that contains the modules used for processing markup languages like Markdown.
     /// </summary>
-    public class ProcessMarkup : ParentModule
+    public class ProcessMarkup : ForAllDocuments
     {
         public ProcessMarkup()
             : base(

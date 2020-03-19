@@ -12,7 +12,7 @@ namespace Statiq.Web.Modules
     /// <summary>
     /// Parent module that contains the modules used for processing full template languages like Razor.
     /// </summary>
-    public class ProcessTemplates : ParentModule
+    public class ProcessTemplates : ForAllDocuments
     {
         public ProcessTemplates()
             : base(
