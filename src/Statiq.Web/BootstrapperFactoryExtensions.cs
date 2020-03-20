@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Statiq.App;
+using Statiq.Common;
+using Statiq.Web.Shortcodes;
 
 namespace Statiq.Web
 {
@@ -14,6 +16,7 @@ namespace Statiq.Web
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
                     { WebKeys.MirrorResources, true }
-                });
+                })
+                .AddShortcode<ChildPages>();
     }
 }
