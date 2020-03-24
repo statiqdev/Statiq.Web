@@ -1,5 +1,7 @@
 # 1.0.0-alpha.4
 
+- Added support for setting archive document source.
+- Added the `GatherHeadings` module.
 - Added a `ChildPages` shortcode.
 - Added shortcode support.
 - Added `CreateTree`/`FlattenTree` to the Content pipeline.

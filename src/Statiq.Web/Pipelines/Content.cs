@@ -31,10 +31,8 @@ namespace Statiq.Web.Pipelines
                 new AddTitle(),
                 new SetDestination(".html"),
                 new ProcessMarkup(),
-                new ExecuteIf(Config.FromDocument(doc => !doc.ContainsKey(HtmlKeys.Excerpt)))
-                {
-                    new GenerateExcerpt() // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
-                },
+                new GenerateExcerpt(), // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
+                new GatherHeadings(),
                 new OrderDocuments(),
                 new CreateTree().WithNesting(true, true)
             };

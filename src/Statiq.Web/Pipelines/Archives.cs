@@ -38,6 +38,7 @@ namespace Statiq.Web.Pipelines
                         // Get outputs from the pipeline(s)
                         modules.Add(
                             new ReplaceDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()),
+                            new FlattenTree(),
                             new MergeMetadata(Config.FromValue(archiveDoc.Yield())).KeepExisting());
 
                         // Filter by document source
@@ -65,7 +66,8 @@ namespace Statiq.Web.Pipelines
                         {
                             // Group by the archive key
                             modules.Add(
-                                new GroupDocuments(Config.FromDocument(doc => doc.GetList(WebKeys.ArchiveKey, new object[] { }))),
+                                new GroupDocuments(Config.FromDocument(doc => doc.GetList(WebKeys.ArchiveKey, new object[] { })))
+                                        .WithSource(archiveDoc.Source),
                                 new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
 
                             // Paginate the groups
@@ -78,7 +80,8 @@ namespace Statiq.Web.Pipelines
                                     new ExecuteConfig(Config.FromDocument(groupDoc => new ModuleList
                                     {
                                         new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.GetChildren())),
-                                        new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize)),
+                                        new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize))
+                                            .WithSource(archiveDoc.Source),
                                         new MergeMetadata(Config.FromValue(groupDoc.Yield())).KeepExisting(),
                                         new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata()
                                     }))
@@ -104,7 +107,8 @@ namespace Statiq.Web.Pipelines
                             if (archiveDoc.ContainsKey(WebKeys.ArchivePageSize))
                             {
                                 modules.Add(
-                                    new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize)),
+                                    new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize))
+                                        .WithSource(archiveDoc.Source),
                                     new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
                                 modules.Add(GetTitleAndDestinationModules(archiveDoc));
                             }
