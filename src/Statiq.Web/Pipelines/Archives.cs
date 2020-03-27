@@ -65,8 +65,9 @@ namespace Statiq.Web.Pipelines
                         if (archiveDoc.ContainsKey(WebKeys.ArchiveKey))
                         {
                             // Group by the archive key
+                            string archiveKey = archiveDoc.GetRaw(WebKeys.ArchiveKey) as string;
                             modules.Add(
-                                new GroupDocuments(Config.FromDocument(doc => doc.GetList(WebKeys.ArchiveKey, new object[] { })))
+                                new GroupDocuments(Config.FromDocument(doc => doc.GetList(archiveKey ?? WebKeys.ArchiveKey, new object[] { })))
                                         .WithSource(archiveDoc.Source),
                                 new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
 

@@ -1,5 +1,6 @@
 # 1.0.0-alpha.4
 
+- Fixed a bug with `ArchiveKey` when using a string-based key.
 - Added support for setting archive document source.
 - Added the `GatherHeadings` module.
 - Added a `ChildPages` shortcode.
