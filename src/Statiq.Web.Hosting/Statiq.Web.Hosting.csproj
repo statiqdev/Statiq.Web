@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Statiq is a configurable static content generation framework. This library contains a server for use with static sites.</Description>
+    <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine Hosting WebHost</PackageTags>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="LiveReload\livereload.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\livereload.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(LocalReferences)' == 'true'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Statiq.Common" Version="$(StatiqFrameworkVersion)" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  
+</Project>

@@ -1,5 +1,11 @@
 # 1.0.0-alpha.4
 
+- Moved the preview and serve commands into Statiq.Web from Statiq.App.
+- Moved Statiq.Netifly into Statiq Web as Statiq.Web.Netlify from Statiq Framework. 
+- Moved Statiq.Azure into Statiq Web as Statiq.Web.Azure from Statiq Framework. 
+- Moved Statiq.Aws into Statiq Web as Statiq.Web.Aws from Statiq Framework. 
+- Moved Statiq.Hosting into Statiq Web as Statiq.Web.Hosting from Statiq Framework. 
+- Moved HTML-based shortcodes from Statiq.Core.
 - Fixed a bug with `ArchiveKey` when using a string-based key.
 - Added support for setting archive document source.
 - Added the `GatherHeadings` module.

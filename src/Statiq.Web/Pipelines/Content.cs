@@ -17,6 +17,8 @@ namespace Statiq.Web.Pipelines
     {
         public Content()
         {
+            Dependencies.Add(nameof(Data));
+
             InputModules = new ModuleList
             {
                 new ReadFiles("**/{!_,}*.{html,cshtml,md}")

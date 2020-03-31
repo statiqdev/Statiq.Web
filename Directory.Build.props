@@ -1,4 +1,12 @@
-<Project> 
+<Project>
+  
+  <PropertyGroup>
+    <!-- Controls whether references are local projects or NuGet packages -->
+    <LocalReferences>true</LocalReferences>    
+    <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
+    <StatiqFrameworkVersion>1.0.0-alpha.29</StatiqFrameworkVersion>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <InformationalVersion>1.0.0-alpha.4</InformationalVersion>
     <AssemblyVersion>1.0.0</AssemblyVersion>
@@ -20,17 +28,22 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
     <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="2.3.0" PrivateAssets="All" />
   </ItemGroup>
+  
   <ItemGroup>
-    <ProjectCapability Include="DynamicDependentFile"/>
-    <ProjectCapability Include="DynamicFileNesting"/>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
+  
 </Project>

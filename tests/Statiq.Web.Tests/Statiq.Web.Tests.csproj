@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Statiq.Web\Statiq.Web.csproj" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(LocalReferences)' == 'true'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Testing\Statiq.Testing.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Statiq.Testing" Version="$(StatiqFrameworkVersion)" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  
+</Project>

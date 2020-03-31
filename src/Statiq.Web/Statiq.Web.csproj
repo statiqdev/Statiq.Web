@@ -1,36 +1,45 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <!--
   <ItemGroup>
-    <PackageReference Include="Statiq.App" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Html" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Markdown" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Razor" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Sass" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Less" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Yaml" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Minification" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Netlify" Version="1.0.0-alpha.28" />
-    <PackageReference Include="Statiq.Feeds" Version="1.0.0-alpha.28" />
+    <ProjectReference Include="..\Statiq.Web.Aws\Statiq.Web.Aws.csproj" />
+    <ProjectReference Include="..\Statiq.Web.Azure\Statiq.Web.Azure.csproj" />
+    <ProjectReference Include="..\Statiq.Web.Hosting\Statiq.Web.Hosting.csproj" />
+    <ProjectReference Include="..\Statiq.Web.Netlify\Statiq.Web.Netlify.csproj" />
   </ItemGroup>
-  -->
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Html\Statiq.Html.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Less\Statiq.Less.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Yaml\Statiq.Yaml.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
-    <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
-  </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(LocalReferences)' == 'true'">  
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Html\Statiq.Html.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Less\Statiq.Less.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Yaml\Statiq.Yaml.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
+      </ItemGroup>      
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Statiq.App" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Html" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Markdown" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Razor" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Sass" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Less" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Yaml" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Minification" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Feeds" Version="$(StatiqFrameworkVersion)" />
+      </ItemGroup>      
+    </Otherwise>
+  </Choose>
 
 </Project>
