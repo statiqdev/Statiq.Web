@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>GitHub Pages deployment modules for Statiq.</Description>
+    <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine GitHub GitHubPages</PackageTags>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition=" '$(LocalReferences)' == 'true'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Statiq.Common" Version="$(StatiqFrameworkVersion)" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+  <ItemGroup>
+    <PackageReference Include="Octokit" Version="0.46.0" />
+  </ItemGroup>
+  
+</Project>

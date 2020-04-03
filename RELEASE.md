@@ -1,6 +1,8 @@
 # 1.0.0-alpha.4
 
+- Added a new DeployGitHubPages module.
 - Moved the preview and serve commands into Statiq.Web from Statiq.App.
+- Moved Statiq.GitHub into Statiq Web as Statiq.Web.GitHub from Statiq Framework. 
 - Moved Statiq.Netifly into Statiq Web as Statiq.Web.Netlify from Statiq Framework. 
 - Moved Statiq.Azure into Statiq Web as Statiq.Web.Azure from Statiq Framework. 
 - Moved Statiq.Aws into Statiq Web as Statiq.Web.Aws from Statiq Framework. 

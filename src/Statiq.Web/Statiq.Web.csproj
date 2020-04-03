@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Statiq.Web.Aws\Statiq.Web.Aws.csproj" />
     <ProjectReference Include="..\Statiq.Web.Azure\Statiq.Web.Azure.csproj" />
+    <ProjectReference Include="..\Statiq.Web.GitHub\Statiq.Web.GitHub.csproj" />
     <ProjectReference Include="..\Statiq.Web.Hosting\Statiq.Web.Hosting.csproj" />
     <ProjectReference Include="..\Statiq.Web.Netlify\Statiq.Web.Netlify.csproj" />
   </ItemGroup>
