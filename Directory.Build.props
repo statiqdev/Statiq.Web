@@ -2,9 +2,9 @@
   
   <PropertyGroup>
     <!-- Controls whether references are local projects or NuGet packages -->
-    <LocalReferences>true</LocalReferences>    
+    <LocalReferences>false</LocalReferences>    
     <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
-    <StatiqFrameworkVersion>1.0.0-alpha.29</StatiqFrameworkVersion>
+    <StatiqFrameworkVersion>1.0.0-beta.1</StatiqFrameworkVersion>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -14,7 +14,7 @@
     <Product>Statiq Web</Product>
     <Copyright>Copyright © Statiq/Dave Glick</Copyright>
     <Authors>Dave Glick, Other Awesome Contributors</Authors>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/statiqdev/Statiq.Web</PackageProjectUrl>
     <RepositoryUrl>https://github.com/statiqdev/Statiq.Web.git</RepositoryUrl>
@@ -30,7 +30,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
     <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
   

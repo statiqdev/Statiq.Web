@@ -95,7 +95,7 @@ Task("Copy-Files")
     .Does(() =>
     {
         CopyFiles("./src/**/bin/" + configuration + "/*/*", binDir);
-        CopyFiles(new FilePath[] { "LICENSE", "README.md", "RELEASE.md" }, buildDir);
+        CopyFiles(new FilePath[] { "LICENSE.md", "LICENSE-FAQ.md", "README.md", "RELEASE.md" }, buildDir);
     });
 
 Task("Run-Unit-Tests")

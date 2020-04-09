@@ -65,22 +65,14 @@ namespace Statiq.Web.GitHub
         /// </summary>
         /// <param name="branch">The branch to push changes to.</param>
         /// <returns>The current module instance.</returns>
-        public DeployGitHubPages ToBranch(Config<string> branch)
-        {
-            SetConfig(Branch, branch);
-            return this;
-        }
+        public DeployGitHubPages ToBranch(Config<string> branch) => (DeployGitHubPages)SetConfig(Branch, branch);
 
         /// <summary>
         /// The folder to deploy (defaults to the current output folder).
         /// </summary>
         /// <param name="path">The path of the folder to deploy.</param>
         /// <returns>The current module instance.</returns>
-        public DeployGitHubPages FromPath(Config<NormalizedPath> path)
-        {
-            SetConfig(SourcePath, path);
-            return this;
-        }
+        public DeployGitHubPages FromPath(Config<NormalizedPath> path) => (DeployGitHubPages)SetConfig(SourcePath, path);
 
         protected override async Task<IEnumerable<IDocument>> ExecuteConfigAsync(
             IDocument input,
