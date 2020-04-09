@@ -1,3 +1,5 @@
+# 1.0.0-alpha.5
+
 # 1.0.0-alpha.4
 
 - Added a new DeployGitHubPages module.
