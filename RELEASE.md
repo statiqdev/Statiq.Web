@@ -1,7 +1,7 @@
 # 1.0.0-alpha.5
 
 - Refactored the `ReadGitHub` module to take configuration values.
-- The "Content" pipeline now concatenates all documents from pipelines that declare themselves a dependency of it using `IPipeline.DependencyOf`.Config.FromSetting<string>("GITHUB_TOKEN")
+- The "Content" and "Data" pipelines now concatenate all documents from pipelines that declare themselves a dependency using `IPipeline.DependencyOf`.
 
 # 1.0.0-alpha.4
 
