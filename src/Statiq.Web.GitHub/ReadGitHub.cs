@@ -27,17 +27,25 @@ namespace Statiq.Web.GitHub
     /// </para>
     /// </remarks>
     /// <category>Metadata</category>
-    public class ReadGitHub : ConfigModule<Func<GitHubClient, Task<object>>>
+    public class ReadGitHub : MultiConfigModule
     {
-        private Credentials _credentials;
-        private Uri _url;
+        private const string Request = nameof(Request); // Func<GitHubClient, Task<object>>
+        private const string Url = nameof(Url);
+        private const string Username = nameof(Username);
+        private const string Password = nameof(Password);
+        private const string Token = nameof(Token);
 
         /// <summary>
         /// Submits a request to the GitHub client.
         /// </summary>
         /// <param name="request">A function with the request to make.</param>
         public ReadGitHub(Func<GitHubClient, Task<object>> request)
-            : base(request, false)
+            : base(
+                new Dictionary<string, IConfig>
+                {
+                    { Request, Config.FromValue(request) }
+                },
+                false)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
         }
@@ -47,13 +55,23 @@ namespace Statiq.Web.GitHub
         /// </summary>
         /// <param name="request">A function with the request to make.</param>
         public ReadGitHub(Func<IExecutionContext, GitHubClient, Task<object>> request)
-            : base(Config.FromContext(ctx => (Func<GitHubClient, Task<object>>)(gh => request(ctx, gh))), false)
+            : base(
+                  new Dictionary<string, IConfig>
+                  {
+                      { Request, Config.FromContext(ctx => (Func<GitHubClient, Task<object>>)(gh => request(ctx, gh))) }
+                  },
+                  false)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         public ReadGitHub(Func<IDocument, IExecutionContext, GitHubClient, Task<object>> request)
-            : base(Config.FromDocument((doc, ctx) => (Func<GitHubClient, Task<object>>)(gh => request(doc, ctx, gh))), false)
+            : base(
+                  new Dictionary<string, IConfig>
+                  {
+                      { Request, Config.FromDocument((doc, ctx) => (Func<GitHubClient, Task<object>>)(gh => request(doc, ctx, gh))) }
+                  },
+                  false)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
         }
@@ -64,9 +82,10 @@ namespace Statiq.Web.GitHub
         /// <param name="username">The username to use.</param>
         /// <param name="password">The password to use.</param>
         /// <returns>The current module instance.</returns>
-        public ReadGitHub WithCredentials(string username, string password)
+        public ReadGitHub WithCredentials(Config<string> username, Config<string> password)
         {
-            _credentials = new Credentials(username, password);
+            SetConfig(Username, username);
+            SetConfig(Password, password);
             return this;
         }
 
@@ -75,36 +94,36 @@ namespace Statiq.Web.GitHub
         /// </summary>
         /// <param name="token">The token to use.</param>
         /// <returns>The current module instance.</returns>
-        public ReadGitHub WithCredentials(string token)
-        {
-            _credentials = new Credentials(token);
-            return this;
-        }
+        public ReadGitHub WithCredentials(Config<string> token) => (ReadGitHub)SetConfig(Token, token);
 
         /// <summary>
         /// Specifies and alternate API URL (such as to an Enterprise GitHub endpoint).
         /// </summary>
         /// <param name="url">The URL to use.</param>
         /// <returns>The current module instance.</returns>
-        public ReadGitHub WithUrl(string url)
-        {
-            _url = new Uri(url);
-            return this;
-        }
+        public ReadGitHub WithUrl(Config<string> url) => (ReadGitHub)SetConfig(Url, url);
 
-        protected override async Task<IEnumerable<IDocument>> ExecuteConfigAsync(
-            IDocument input,
-            IExecutionContext context,
-            Func<GitHubClient, Task<object>> value)
+        protected override async Task<IEnumerable<IDocument>> ExecuteConfigAsync(IDocument input, IExecutionContext context, IMetadata values)
         {
-            GitHubClient github = new GitHubClient(new ProductHeaderValue("Statiq"), _url ?? GitHubClient.GitHubApiUrl);
-            if (_credentials != null)
+            // Create the client
+            string url = values.GetString(Url);
+            GitHubClient github = new GitHubClient(
+                new ProductHeaderValue("Statiq"),
+                string.IsNullOrEmpty(url) ? GitHubClient.GitHubApiUrl : new Uri(url));
+            if (values.TryGetValue(Token, out string token))
             {
-                github.Credentials = _credentials;
+                github.Credentials = new Credentials(token);
             }
-            object result = await value(github);
+            else if (values.TryGetValue(Username, out string username) && values.TryGetValue(Password, out string password))
+            {
+                github.Credentials = new Credentials(username, password);
+            }
+
+            // Get the results
+            Func<GitHubClient, Task<object>> request = values.Get<Func<GitHubClient, Task<object>>>(Request);
+            object result = await request(github);
             return result is IEnumerable results
-                ? results.Cast<object>().Where(x => x != null).Select(x => x.ToDocument())
+                ? results.Cast<object>().ToDocuments()
                 : result.ToDocument().Yield();
         }
     }
