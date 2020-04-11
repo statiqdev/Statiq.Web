@@ -26,6 +26,8 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
+                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Data")
+                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
                 new ProcessIncludes(),
                 new ExtractFrontMatter(new ParseYaml()),
                 new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),

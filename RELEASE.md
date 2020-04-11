@@ -1,5 +1,7 @@
 # 1.0.0-alpha.5
 
+- The "Content" pipeline now concatenates all documents from pipelines that declare themselves a dependency of it using `IPipeline.DependencyOf`.
+
 # 1.0.0-alpha.4
 
 - Added a new DeployGitHubPages module.
