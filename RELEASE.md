@@ -1,3 +1,5 @@
+# 1.0.0-alpha.6
+
 # 1.0.0-alpha.5
 
 - Refactored the `ReadGitHub` module to take configuration values.
