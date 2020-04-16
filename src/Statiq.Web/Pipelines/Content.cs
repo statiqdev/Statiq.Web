@@ -28,12 +28,20 @@ namespace Statiq.Web.Pipelines
             {
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Data")
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
-                new ProcessIncludes(),
-                new ExtractFrontMatter(new ParseYaml()),
+
+                // Process front matter and sidecar files
+                new ProcessMetadata(),
+
+                // Filter out archive documents (they'll get processed by the Archives pipeline)
                 new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
+
                 new EnumerateValues(),
                 new AddTitle(),
                 new SetDestination(".html"),
+                new ExecuteIf(Config.FromSetting(WebKeys.OptimizeContentFileNames, true))
+                {
+                    new OptimizeFileName()
+                },
                 new ProcessMarkup(),
                 new GenerateExcerpt(), // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
                 new GatherHeadings(),

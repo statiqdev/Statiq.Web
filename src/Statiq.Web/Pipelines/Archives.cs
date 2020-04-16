@@ -26,9 +26,12 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                new ProcessIncludes(),
-                new ExtractFrontMatter(new ParseYaml()),
+                // Process front matter and sidecar files
+                new ProcessMetadata(),
+
+                // Filter just to archive documents
                 new FilterDocuments(Config.FromDocument(IsArchive)),
+
                 new ForEachDocument
                 {
                     new ExecuteConfig(Config.FromDocument(archiveDoc =>

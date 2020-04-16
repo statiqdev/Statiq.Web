@@ -28,7 +28,12 @@ namespace Statiq.Web.Pipelines
                 new ExecuteSwitch(Config.FromDocument(doc => doc.ContentProvider.MediaType))
                     .Case(MediaTypes.Json, new ParseJson())
                     .Case(MediaTypes.Yaml, new ParseYaml()),
-                new FilterDocuments(Config.FromDocument(doc => !Feeds.IsFeed(doc)))
+                new FilterDocuments(Config.FromDocument(doc => !Feeds.IsFeed(doc))),
+                new SetDestination(),
+                new ExecuteIf(Config.FromSetting(WebKeys.OptimizeDataFileNames, true))
+                {
+                    new OptimizeFileName()
+                }
             };
 
             OutputModules = new ModuleList

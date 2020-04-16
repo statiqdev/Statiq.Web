@@ -1,5 +1,9 @@
 # 1.0.0-alpha.6
 
+- Refactored metadata processing into a new common `ProcessMetadata` module.
+- Added the `OptimizeFileName` module with `OptimizeContentFileNames` and `OptimizeDataFileNames` settings to control it.
+- Added the `SetDestination` module to the "Data" pipeline.
+
 # 1.0.0-alpha.5
 
 - Refactored the `ReadGitHub` module to take configuration values.

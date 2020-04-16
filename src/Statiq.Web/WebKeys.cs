@@ -14,6 +14,7 @@ namespace Statiq.Web
     public static class WebKeys
     {
         // Intended for use as global or document settings
+
         public const string Title = nameof(Title);
 
         public const string Description = nameof(Description);
@@ -23,6 +24,10 @@ namespace Statiq.Web
         public const string Image = nameof(Image);
 
         public const string Copyright = nameof(Copyright);
+
+        public const string OptimizeContentFileNames = nameof(OptimizeContentFileNames);
+
+        public const string OptimizeDataFileNames = nameof(OptimizeDataFileNames);
 
         /// <summary>
         /// The date the file or post was published.
