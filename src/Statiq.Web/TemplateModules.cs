@@ -1,21 +1,34 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Html;
 using Statiq.Markdown;
 using Statiq.Razor;
 
-namespace Statiq.Web.Modules
+namespace Statiq.Web
 {
-    /// <summary>
-    /// Parent module that contains the modules used for processing full template languages like Razor.
-    /// </summary>
-    public class ProcessTemplates : ForAllDocuments
+    public class TemplateModules
     {
-        public ProcessTemplates()
-            : base(
+        public const string Markdown = nameof(Markdown);
+        public const string Razor = nameof(Razor);
+        public const string Handlebars = nameof(Handlebars);
+
+        public List<TemplateModule> ProcessModules { get; } = new List<TemplateModule>
+        {
+            new TemplateModule(Markdown, MediaTypes.Markdown, new RenderMarkdown().UseExtensions())
+        };
+
+        public List<TemplateModule> PostProcessModules { get; } = new List<TemplateModule>()
+        {
+            new TemplateModule(
+                Razor,
+                true,
                 new RenderRazor()
                     .WithLayout(Config.FromDocument((doc, ctx) =>
                     {
@@ -31,13 +44,7 @@ namespace Statiq.Web.Modules
                             parent = parent.GetParent(ctx.Inputs);
                         }
                         return null;  // If no layout metadata, revert to default behavior
-                    })),
-                new ProcessShortcodes(),
-                new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
-                {
-                    new MirrorResources()
-                })
-        {
-        }
+                    })))
+        };
     }
 }

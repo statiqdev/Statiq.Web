@@ -15,7 +15,7 @@ namespace Statiq.Web.Pipelines
 {
     public class Content : Pipeline
     {
-        public Content()
+        public Content(TemplateModules templateModules)
         {
             Dependencies.Add(nameof(Data));
 
@@ -42,7 +42,7 @@ namespace Statiq.Web.Pipelines
                 {
                     new OptimizeFileName()
                 },
-                new ProcessMarkup(),
+                new RenderProcessTemplates(templateModules),
                 new GenerateExcerpt(), // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
                 new GatherHeadings(),
                 new OrderDocuments(),
@@ -53,7 +53,7 @@ namespace Statiq.Web.Pipelines
             {
                 new FlattenTree(),
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))), // Don't render placeholder pages
-                new ProcessTemplates()
+                new RenderPostProcessTemplates(templateModules)
             };
 
             OutputModules = new ModuleList

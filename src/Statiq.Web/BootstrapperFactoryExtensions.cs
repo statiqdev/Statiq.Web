@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Web.Commands;
@@ -21,7 +22,8 @@ namespace Statiq.Web
                 .CreateDefault(args)
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
-                .ConfigureEngine(x => x.FileSystem.InputPaths.Add("theme"))
+                .ConfigureEngine(engine => engine.FileSystem.InputPaths.Add("theme"))
+                .ConfigureServices(services => services.AddSingleton(new TemplateModules()))
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
                     { WebKeys.MirrorResources, true }
