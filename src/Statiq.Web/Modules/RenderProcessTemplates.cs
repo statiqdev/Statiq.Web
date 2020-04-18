@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 
 namespace Statiq.Web.Modules
 {
@@ -15,15 +9,13 @@ namespace Statiq.Web.Modules
     /// </summary>
     public class RenderProcessTemplates : ForAllDocuments
     {
-        public RenderProcessTemplates(TemplateModules templateModules)
+        public RenderProcessTemplates(Templates templates)
             : base(
                 new IModule[]
                 {
                     new ProcessShortcodes("!")
                 }
-                .Concat(templateModules.ProcessModules
-                    .Where(x => x != null)
-                    .Select(x => new ExecuteIf(x.Condition, x.Module)))
+                .Concat(templates.GetModules(Phase.Process))
                 .ToArray())
         {
         }

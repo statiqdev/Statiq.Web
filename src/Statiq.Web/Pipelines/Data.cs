@@ -33,7 +33,8 @@ namespace Statiq.Web.Pipelines
                 new ExecuteIf(Config.FromSetting(WebKeys.OptimizeDataFileNames, true))
                 {
                     new OptimizeFileName()
-                }
+                },
+                new LogMessage(Config.FromDocument(doc => doc.Destination.FullPath))
             };
 
             OutputModules = new ModuleList

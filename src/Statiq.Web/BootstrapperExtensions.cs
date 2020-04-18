@@ -25,16 +25,19 @@ namespace Statiq.Web
             return bootstrapper;
         }
 
+        public static Bootstrapper SetDefaultTemplate(this Bootstrapper bootstrapper, string defaultTemplate) =>
+            bootstrapper.ConfigureTemplates(templates => templates.DefaultTemplate = defaultTemplate);
+
         /// <summary>
         /// Configures the set of template modules.
         /// </summary>
         /// <param name="bootstrapper">The current bootstrapper.</param>
         /// <param name="action">The configuration action.</param>
         /// <returns>The bootstrapper.</returns>
-        public static Bootstrapper ConfigureTemplateModules(this Bootstrapper bootstrapper, Action<TemplateModules> action) =>
+        public static Bootstrapper ConfigureTemplates(this Bootstrapper bootstrapper, Action<Templates> action) =>
             bootstrapper.ConfigureServices(services =>
                 action(services
-                    .BuildServiceProvider()
-                    .GetRequiredService<TemplateModules>()));
+                    .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
+                    .GetRequiredService<Templates>()));
     }
 }

@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 
 namespace Statiq.Web.Modules
 {
@@ -18,11 +10,9 @@ namespace Statiq.Web.Modules
     /// </summary>
     public class RenderPostProcessTemplates : ForAllDocuments
     {
-        public RenderPostProcessTemplates(TemplateModules templateModules)
+        public RenderPostProcessTemplates(Templates templates)
             : base(
-                templateModules.PostProcessModules
-                    .Where(x => x != null)
-                    .Select(x => new ExecuteIf(x.Condition, x.Module))
+                templates.GetModules(Phase.PostProcess)
                     .Concat(new IModule[]
                     {
                         new ProcessShortcodes(),

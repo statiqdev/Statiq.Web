@@ -23,7 +23,7 @@ namespace Statiq.Web
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
                 .ConfigureEngine(engine => engine.FileSystem.InputPaths.Add("theme"))
-                .ConfigureServices(services => services.AddSingleton(new TemplateModules()))
+                .ConfigureServices(services => services.AddSingleton(new Templates()))
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
                     { WebKeys.MirrorResources, true }

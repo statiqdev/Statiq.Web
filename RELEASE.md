@@ -1,6 +1,8 @@
 # 1.0.0-alpha.6
 
-- Added a powerful capability to add, modify, and remove template modules like Markdown, Razor, etc. via a `Bootstrapper.ConfigureTemplateModules()` extension.
+- Added support for Handlebars for files with a ".hbs" or ".handlebars" extension.
+- Added ability to specify a default template via the `Bootstrapper.SetDefaultTemplate()` extension.
+- Added a powerful capability to add, modify, and remove template modules like Markdown, Razor, etc. via the `Bootstrapper.ConfigureTemplates()` extension.
 - Refactored metadata processing into a new common `ProcessMetadata` module.
 - Added the `OptimizeFileName` module with `OptimizeContentFileNames` and `OptimizeDataFileNames` settings to control it.
 - Added the `SetDestination` module to the "Data" pipeline.

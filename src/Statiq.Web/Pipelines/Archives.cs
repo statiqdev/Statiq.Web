@@ -15,7 +15,7 @@ namespace Statiq.Web.Pipelines
 {
     public class Archives : Pipeline
     {
-        public Archives(TemplateModules templateModules)
+        public Archives(Templates templates)
         {
             Dependencies.AddRange(nameof(Content), nameof(Data));
 
@@ -124,7 +124,7 @@ namespace Statiq.Web.Pipelines
                         }
 
                         // Render any markdown content
-                        modules.Add(new RenderProcessTemplates(templateModules));
+                        modules.Add(new RenderProcessTemplates(templates));
 
                         return modules;
                     }))
@@ -133,7 +133,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new RenderPostProcessTemplates(templateModules)
+                new RenderPostProcessTemplates(templates)
             };
 
             OutputModules = new ModuleList
