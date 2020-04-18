@@ -1,3 +1,5 @@
+# 1.0.0-alpha.7
+
 # 1.0.0-alpha.6
 
 - Added support for Handlebars for files with a ".hbs" or ".handlebars" extension.
