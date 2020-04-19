@@ -69,17 +69,25 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="FooterClass">The <c>class</c> attribute to apply to the <c>tfoot</c> element.</parameter>
     public class TableShortcode : SyncContentShortcode
     {
+        private const string Class = nameof(Class);
+        private const string HeaderRows = nameof(HeaderRows);
+        private const string FooterRows = nameof(FooterRows);
+        private const string HeaderCols = nameof(HeaderCols);
+        private const string HeaderClass = nameof(HeaderClass);
+        private const string BodyClass = nameof(BodyClass);
+        private const string FooterClass = nameof(FooterClass);
+
         /// <inheritdoc />
         public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary dictionary = args.ToDictionary(
-                "Class",
-                "HeaderRows",
-                "FooterRows",
-                "HeaderCols",
-                "HeaderClass",
-                "BodyClass",
-                "FooterClass");
+                Class,
+                HeaderRows,
+                FooterRows,
+                HeaderCols,
+                HeaderClass,
+                BodyClass,
+                FooterClass);
 
             string[] lines = content
                 .Trim()
@@ -90,11 +98,11 @@ namespace Statiq.Web.Shortcodes
             // Table
             XElement table = new XElement(
                 "table",
-                dictionary.XAttribute("class"));
+                dictionary.XAttribute(Class));
             int line = 0;
 
             // Header
-            int headerRows = dictionary.Get("HeaderRows", 0);
+            int headerRows = dictionary.Get(HeaderRows, 0);
             XElement header = null;
             for (int c = 0; c < headerRows && line < lines.Length; c++, line++)
             {
@@ -103,7 +111,7 @@ namespace Statiq.Web.Shortcodes
                 {
                     header = new XElement(
                         "thead",
-                        dictionary.XAttribute("class", "HeaderClass"));
+                        dictionary.XAttribute("class", HeaderClass));
                     table.Add(header);
                 }
 
@@ -119,7 +127,7 @@ namespace Statiq.Web.Shortcodes
             }
 
             // Body
-            int bodyRows = lines.Length - line - dictionary.Get("FooterRows", 0);
+            int bodyRows = lines.Length - line - dictionary.Get(FooterRows, 0);
             XElement body = null;
             for (int c = 0; c < bodyRows && line < lines.Length; c++, line++)
             {
@@ -128,7 +136,7 @@ namespace Statiq.Web.Shortcodes
                 {
                     body = new XElement(
                         "tbody",
-                        dictionary.XAttribute("class", "BodyClass"));
+                        dictionary.XAttribute("class", BodyClass));
                     table.Add(body);
                 }
 
@@ -137,7 +145,7 @@ namespace Statiq.Web.Shortcodes
                 body.Add(row);
 
                 // Add the columns
-                int th = dictionary.Get("HeaderCols", 0);
+                int th = dictionary.Get(HeaderCols, 0);
                 foreach (string col in ShortcodeHelper.SplitArguments(lines[line], 0).ToValueArray())
                 {
                     row.Add(new XElement(th-- > 0 ? "th" : "td", col));
@@ -153,7 +161,7 @@ namespace Statiq.Web.Shortcodes
                 {
                     footer = new XElement(
                         "tfoot",
-                        dictionary.XAttribute("class", "FooterClass"));
+                        dictionary.XAttribute("class", FooterClass));
                     table.Add(footer);
                 }
 
@@ -162,7 +170,7 @@ namespace Statiq.Web.Shortcodes
                 footer.Add(row);
 
                 // Add the columns
-                int th = dictionary.Get("HeaderCols", 0);
+                int th = dictionary.Get(HeaderCols, 0);
                 foreach (string col in ShortcodeHelper.SplitArguments(lines[line], 0).ToValueArray())
                 {
                     row.Add(new XElement(th-- > 0 ? "th" : "td", col));

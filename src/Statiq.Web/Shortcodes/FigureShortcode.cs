@@ -40,37 +40,46 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Width"><c>width</c> attribute of the image.</parameter>
     public class FigureShortcode : SyncContentShortcode
     {
+        private const string Src = nameof(Src);
+        private const string Link = nameof(Link);
+        private const string Target = nameof(Target);
+        private const string Rel = nameof(Rel);
+        private const string Alt = nameof(Alt);
+        private const string Class = nameof(Class);
+        private const string Height = nameof(Height);
+        private const string Width = nameof(Width);
+
         public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(
-                "Src",
-                "Link",
-                "Target",
-                "Rel",
-                "Alt",
-                "Class",
-                "Height",
-                "Width");
+                Src,
+                Link,
+                Target,
+                Rel,
+                Alt,
+                Class,
+                Height,
+                Width);
 
             XElement figure = new XElement(
                 "figure",
-                arguments.XAttribute("class"));
+                arguments.XAttribute(Class));
 
             // Image link
-            XElement imageLink = arguments.XElement("a", "link", x => new[]
+            XElement imageLink = arguments.XElement("a", Link, x => new[]
             {
                 new XAttribute("href", context.GetLink(x)),
-                arguments.XAttribute("target"),
-                arguments.XAttribute("rel")
+                arguments.XAttribute(Target),
+                arguments.XAttribute(Rel)
             });
 
             // Image
-            XElement image = arguments.XElement("img", "src", x => new[]
+            XElement image = arguments.XElement("img", Src, x => new[]
             {
                 new XAttribute("src", context.GetLink(x)),
-                arguments.XAttribute("alt"),
-                arguments.XAttribute("height"),
-                arguments.XAttribute("width")
+                arguments.XAttribute(Alt),
+                arguments.XAttribute(Height),
+                arguments.XAttribute(Width)
             });
             if (imageLink != null && image != null)
             {

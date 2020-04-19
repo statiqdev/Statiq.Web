@@ -19,34 +19,40 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="OmitScript">When set to <c>true</c>, the <c>script</c> element that contains the Twitter embed JavaScript code will not be rendered.</parameter>
     public class TwitterShortcode : EmbedShortcode
     {
+        private const string Id = nameof(Id);
+        private const string HideMedia = nameof(HideMedia);
+        private const string HideThread = nameof(HideThread);
+        private const string Theme = nameof(Theme);
+        private const string OmitScript = nameof(OmitScript);
+
         private bool _omitScript;
 
         /// <inheritdoc />
         public override async Task<IDocument> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(
-                "Id",
-                "HideMedia",
-                "HideThread",
-                "Theme",
-                "OmitScript");
-            arguments.RequireKeys("Id");
+                Id,
+                HideMedia,
+                HideThread,
+                Theme,
+                OmitScript);
+            arguments.RequireKeys(Id);
 
             // Create the url
             List<string> query = new List<string>();
-            if (arguments.GetBool("HideMedia"))
+            if (arguments.GetBool(HideMedia))
             {
                 query.Add("hide_media=true");
             }
-            if (arguments.GetBool("HideThread"))
+            if (arguments.GetBool(HideThread))
             {
                 query.Add("hide_thread=true");
             }
-            if (arguments.ContainsKey("Theme"))
+            if (arguments.ContainsKey(Theme))
             {
-                query.Add($"theme={arguments.GetString("theme")}");
+                query.Add($"theme={arguments.GetString(Theme)}");
             }
-            if (_omitScript || arguments.GetBool("OmitScript"))
+            if (_omitScript || arguments.GetBool(OmitScript))
             {
                 query.Add("omit_script=true");
             }
@@ -54,7 +60,7 @@ namespace Statiq.Web.Shortcodes
             // Omit the script on the next Twitter embed
             _omitScript = true;
 
-            return await ExecuteAsync("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString("Id")}", query, context);
+            return await ExecuteAsync("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString(Id)}", query, context);
         }
     }
 }

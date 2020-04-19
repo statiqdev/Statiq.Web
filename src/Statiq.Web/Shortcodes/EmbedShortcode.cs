@@ -26,6 +26,10 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Format">An optional format to use ("xml" or "json").</parameter>
     public class EmbedShortcode : Shortcode
     {
+        private const string Endpoint = nameof(Endpoint);
+        private const string Url = nameof(Url);
+        private const string Format = nameof(Format);
+
         public sealed override async Task<IEnumerable<IDocument>> ExecuteAsync(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
             (await ExecuteAsync(args, document, context)).Yield();
 
@@ -34,16 +38,13 @@ namespace Statiq.Web.Shortcodes
         /// </summary>
         public virtual async Task<IDocument> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
         {
-            IMetadataDictionary arguments = args.ToDictionary(
-                "Endpoint",
-                "Url",
-                "Format");
-            arguments.RequireKeys("Endpoint", "Url");
+            IMetadataDictionary arguments = args.ToDictionary(Endpoint, Url, Format);
+            arguments.RequireKeys(Endpoint, Url);
             return await ExecuteAsync(
-                arguments.GetString("Endpoint"),
-                arguments.GetString("Url"),
-                arguments.ContainsKey("Format")
-                    ? new string[] { $"format={arguments.GetString("Format")}" }
+                arguments.GetString(Endpoint),
+                arguments.GetString(Url),
+                arguments.ContainsKey(Format)
+                    ? new string[] { $"format={arguments.GetString(Format)}" }
                     : null,
                 context);
         }

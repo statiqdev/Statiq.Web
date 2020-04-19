@@ -26,22 +26,32 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Lowercase">If set to <c>true</c>, links will be rendered in all lowercase.</parameter>
     public class LinkShortcode : SyncContentShortcode
     {
+        private const string Path = nameof(Path);
+        private const string IncludeHost = nameof(IncludeHost);
+        private const string Host = nameof(Host);
+        private const string Root = nameof(Root);
+        private const string Scheme = nameof(Scheme);
+        private const string UseHttps = nameof(UseHttps);
+        private const string HideIndexPages = nameof(HideIndexPages);
+        private const string HideExtensions = nameof(HideExtensions);
+        private const string Lowercase = nameof(Lowercase);
+
         /// <inheritdoc />
         public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(
-                "Path",
-                "IncludeHost",
-                "Host",
-                "Root",
-                "Scheme",
-                "UseHttps",
-                "HideIndexPages",
-                "HideExtensions",
-                "Lowercase");
-            arguments.RequireKeys("Path");
+                Path,
+                IncludeHost,
+                Host,
+                Root,
+                Scheme,
+                UseHttps,
+                HideIndexPages,
+                HideExtensions,
+                Lowercase);
+            arguments.RequireKeys(Path);
 
-            string path = arguments.GetString("Path");
+            string path = arguments.GetString(Path);
             if (LinkGenerator.TryGetAbsoluteHttpUri(path, out string absoluteUri))
             {
                 return absoluteUri;
@@ -49,29 +59,29 @@ namespace Statiq.Web.Shortcodes
             NormalizedPath filePath = new NormalizedPath(path);
 
             // Use "Host" if it's provided, otherwise use Host setting if "IncludeHost" is true
-            string host = arguments.GetString("Host", arguments.GetBool("IncludeHost") ? context.Settings.GetString(Keys.Host) : null);
+            string host = arguments.GetString(Host, arguments.GetBool(IncludeHost) ? context.Settings.GetString(Keys.Host) : null);
 
             // Use "Root" if it's provided, otherwise LinkRoot setting
-            NormalizedPath root = arguments.GetPath("Root", context.Settings.GetPath(Keys.LinkRoot));
+            NormalizedPath root = arguments.GetPath(Root, context.Settings.GetPath(Keys.LinkRoot));
 
             // Use "Scheme" if it's provided, otherwise if "UseHttps" is true use "https" or use LinksUseHttps setting
-            string scheme = arguments.GetString("Scheme", arguments.ContainsKey("UseHttps")
-                ? (arguments.GetBool("UseHttps") ? "https" : null)
+            string scheme = arguments.GetString(Scheme, arguments.ContainsKey(UseHttps)
+                ? (arguments.GetBool(UseHttps) ? "https" : null)
                 : (context.Settings.GetBool(Keys.LinksUseHttps) ? "https" : null));
 
             // If "HideIndexPages" is provided and true use default hide pages, otherwise use default hide pages if LinkHideIndexPages is true
-            string[] hidePages = arguments.ContainsKey("HideIndexPages")
-                ? (arguments.GetBool("HideIndexPages") ? LinkGenerator.DefaultHidePages : null)
+            string[] hidePages = arguments.ContainsKey(HideIndexPages)
+                ? (arguments.GetBool(HideIndexPages) ? LinkGenerator.DefaultHidePages : null)
                 : (context.Settings.GetBool(Keys.LinkHideIndexPages) ? LinkGenerator.DefaultHidePages : null);
 
             // If "HideExtensions" is provided and true use default hide extensions, otherwise use default hide extensions if LinkHideExtensions is true
-            string[] hideExtensions = arguments.ContainsKey("HideExtensions")
-                ? (arguments.GetBool("HideExtensions") ? LinkGenerator.DefaultHideExtensions : null)
+            string[] hideExtensions = arguments.ContainsKey(HideExtensions)
+                ? (arguments.GetBool(HideExtensions) ? LinkGenerator.DefaultHideExtensions : null)
                 : (context.Settings.GetBool(Keys.LinkHideExtensions) ? LinkGenerator.DefaultHideExtensions : null);
 
             // If "Lowercase" is provided use that, otherwise use LinkLowercase setting
-            bool lowercase = arguments.ContainsKey("Lowercase")
-                ? arguments.GetBool("Lowercase")
+            bool lowercase = arguments.ContainsKey(Lowercase)
+                ? arguments.GetBool(Lowercase)
                 : context.Settings.GetBool(Keys.LinkLowercase);
 
             return LinkGenerator.GetLink(filePath, host, root, scheme, hidePages, hideExtensions, lowercase);

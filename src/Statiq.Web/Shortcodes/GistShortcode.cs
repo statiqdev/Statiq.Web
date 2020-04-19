@@ -26,16 +26,17 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="File">The file within the gist to embed (optional).</parameter>
     public class GistShortcode : SyncContentShortcode
     {
+        private const string Id = nameof(Id);
+        private const string Username = nameof(Username);
+        private const string File = nameof(File);
+
         /// <inheritdoc />
         public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
-            IMetadataDictionary arguments = args.ToDictionary(
-                "Id",
-                "Username",
-                "File");
-            arguments.RequireKeys("Id");
-            return $"<script src=\"//gist.github.com/{arguments.GetString("Username", x => x + "/")}{arguments.GetString("Id")}.js"
-                + $"{arguments.GetString("File", x => "?file=" + x)}\" type=\"text/javascript\"></script>";
+            IMetadataDictionary arguments = args.ToDictionary(Id, Username, File);
+            arguments.RequireKeys(Id);
+            return $"<script src=\"//gist.github.com/{arguments.GetString(Username, x => x + "/")}{arguments.GetString(Id)}.js"
+                + $"{arguments.GetString(File, x => "?file=" + x)}\" type=\"text/javascript\"></script>";
         }
     }
 }
