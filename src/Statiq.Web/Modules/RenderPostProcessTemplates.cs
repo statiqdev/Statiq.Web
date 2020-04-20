@@ -19,7 +19,8 @@ namespace Statiq.Web.Modules
                         new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
                         {
                             new MirrorResources()
-                        }
+                        },
+                        new ResolveXrefs()
                     })
                     .ToArray())
         {

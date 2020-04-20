@@ -26,7 +26,8 @@ namespace Statiq.Web
                 .ConfigureServices(services => services.AddSingleton(new Templates()))
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.MirrorResources, true }
+                    { WebKeys.MirrorResources, true },
+                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '_')) }
                 });
     }
 }

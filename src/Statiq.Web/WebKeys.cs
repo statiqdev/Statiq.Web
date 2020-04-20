@@ -122,7 +122,7 @@ namespace Statiq.Web
         public const string FeedItemThreadUpdated = nameof(FeedItemThreadUpdated);
 
         /// <summary>
-        /// Indicates that the data file (.json, .yaml, etc.) should be output (by defaut data files are not output).
+        /// Indicates that the data file (.json, .yaml, etc.) should be output (by default data files are not output).
         /// </summary>
         public const string OutputData = nameof(OutputData);
 
@@ -130,5 +130,12 @@ namespace Statiq.Web
         /// Indicates the layout file that should be used for this document.
         /// </summary>
         public const string Layout = nameof(Layout);
+
+        /// <summary>
+        /// Specifies the cross-reference ID of the current document. If not explicitly provided, it will default
+        /// to the title of the document with spaces replaced by underscores (which is derived from the source file name
+        /// if no <see cref="Title"/> metadata is defined for the document).
+        /// </summary>
+        public const string Xref = nameof(Xref);
     }
 }

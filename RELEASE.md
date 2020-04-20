@@ -1,5 +1,9 @@
 # 1.0.0-alpha.7
 
+- Added xref support for links like "xref:xyz" where "xyz" is the value of the "Xref" metadata, the document title with spaces converted to underscores if no "Xref" value is defined, or the source file name if neither of those are available.
+- Added `IExecutionContext.TryGetXrefDocument()` and `IExecutionContext.GetXrefDocument()` extension methods to get a document by xref.
+- Added `IExecutionContext.TryGetXrefLink()` and `IExecutionContext.GetXrefLink()` extension methods to get a document link by xref.
+
 # 1.0.0-alpha.6
 
 - Added support for Handlebars for files with a ".hbs" or ".handlebars" extension.
