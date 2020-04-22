@@ -1,5 +1,7 @@
 # 1.0.0-alpha.8
 
+- Refactored xref error messages to display for all documents at once (instead of one at a time).
+
 # 1.0.0-alpha.7
 
 - Added xref support for links like "xref:xyz" where "xyz" is the value of the "Xref" metadata, the document title with spaces converted to underscores if no "Xref" value is defined, or the source file name if neither of those are available.

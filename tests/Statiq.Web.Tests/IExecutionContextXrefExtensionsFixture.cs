@@ -36,11 +36,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefDocument("34", out IDocument result);
+                bool success = context.TryGetXrefDocument("34", out IDocument result, out string error);
 
                 // Then
                 success.ShouldBeTrue();
                 result.ShouldBe(b);
+                error.ShouldBeNull();
             }
 
             [Test]
@@ -70,11 +71,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefDocument("78", out IDocument result);
+                bool success = context.TryGetXrefDocument("78", out IDocument result, out string error);
 
                 // Then
                 success.ShouldBeTrue();
                 result.ShouldBe(child);
+                error.ShouldBeNull();
             }
 
             [Test]
@@ -91,11 +93,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefDocument("FOObar", out IDocument result);
+                bool success = context.TryGetXrefDocument("FOObar", out IDocument result, out string error);
 
                 // Then
                 success.ShouldBeTrue();
                 result.ShouldBe(a);
+                error.ShouldBeNull();
             }
 
             [Test]
@@ -112,10 +115,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefDocument("fizzbuzz", out IDocument result);
+                bool success = context.TryGetXrefDocument("fizzbuzz", out IDocument result, out string error);
 
                 // Then
                 success.ShouldBeFalse();
+                result.ShouldBeNull();
+                error.ShouldNotBeNullOrWhiteSpace();
             }
 
             [Test]
@@ -132,14 +137,16 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefDocument("fizzbuzz", out IDocument result);
+                bool success = context.TryGetXrefDocument("fizzbuzz", out IDocument result, out string error);
 
                 // Then
                 success.ShouldBeFalse();
+                result.ShouldBeNull();
+                error.ShouldNotBeNullOrWhiteSpace();
             }
 
             [Test]
-            public void ThrowsForAmbiguousMatches()
+            public void ReturnsFalseForAmbiguousMatches()
             {
                 // Given
                 TestDocument a = new TestDocument
@@ -159,9 +166,13 @@ namespace Statiq.Web.Tests
                     nameof(Pipelines.Content),
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
-                // When, Then
-                Should.Throw<ExecutionException>(() =>
-                    context.TryGetXrefDocument("12", out IDocument result));
+                // When
+                bool success = context.TryGetXrefDocument("12", out IDocument result, out string error);
+
+                // Then
+                success.ShouldBeFalse();
+                result.ShouldBeNull();
+                error.ShouldNotBeNullOrWhiteSpace();
             }
         }
 
@@ -201,10 +212,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefLink("fizzbuzz", out string link);
+                bool success = context.TryGetXrefLink("fizzbuzz", out string link, out string error);
 
                 // Then
                 success.ShouldBeFalse();
+                link.ShouldBeNull();
+                error.ShouldNotBeNullOrWhiteSpace();
             }
 
             [Test]
@@ -221,10 +234,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefLink("fizzbuzz", out string link);
+                bool success = context.TryGetXrefLink("fizzbuzz", out string link, out string error);
 
                 // Then
                 success.ShouldBeFalse();
+                link.ShouldBeNull();
+                error.ShouldNotBeNullOrWhiteSpace();
             }
 
             [Test]
@@ -241,11 +256,12 @@ namespace Statiq.Web.Tests
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
-                bool success = context.TryGetXrefLink("FOObar", out string link);
+                bool success = context.TryGetXrefLink("FOObar", out string link, out string error);
 
                 // Then
                 success.ShouldBeTrue();
                 link.ShouldBe("/a/b/c.html");
+                error.ShouldBeNull();
             }
         }
 

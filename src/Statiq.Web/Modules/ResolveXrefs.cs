@@ -1,20 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
+using Microsoft.Extensions.Logging;
 using Statiq.Common;
 using Statiq.Html;
 
 namespace Statiq.Web.Modules
 {
-    public class ResolveXrefs : ParallelModule
+    public class ResolveXrefs : Module
     {
         private static readonly HtmlParser HtmlParser = new HtmlParser();
 
-        protected override async Task<IEnumerable<Common.IDocument>> ExecuteInputAsync(Common.IDocument input, IExecutionContext context)
+        protected override async Task<IEnumerable<Common.IDocument>> ExecuteContextAsync(IExecutionContext context)
+        {
+            // Resolve the xrefs in parallel
+            IEnumerable<Common.IDocument> outputs = await context.Inputs.ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context));
+
+            // Throw if there were any errors (as evidenced by a null document return)
+            if (outputs.Any(x => x == null))
+            {
+                throw new ExecutionException("Encountered some invalid xrefs");
+            }
+
+            return outputs;
+        }
+
+        private static async Task<Common.IDocument> ResolveDocumentXrefsAsync(Common.IDocument input, IExecutionContext context)
         {
             IHtmlDocument htmlDocument = await input.ParseHtmlAsync(context, HtmlParser);
             if (htmlDocument != null)
@@ -36,7 +52,15 @@ namespace Statiq.Web.Modules
                             queryAndFragment = xref.Substring(queryAndFragmentIndex);
                             xref = xref.Substring(0, queryAndFragmentIndex);
                         }
-                        element.Attributes["href"].Value = context.GetXrefLink(xref) + queryAndFragment;
+                        if (context.TryGetXrefLink(xref, out string xrefLink, out string error))
+                        {
+                            element.Attributes["href"].Value = xrefLink + queryAndFragment;
+                        }
+                        else
+                        {
+                            input.LogError(error);
+                            return null;
+                        }
                         modifiedDocument = true;
                     }
                 }
@@ -50,13 +74,13 @@ namespace Statiq.Web.Modules
                         {
                             htmlDocument.ToHtml(writer, ProcessingInstructionFormatter.Instance);
                             writer.Flush();
-                            return input.Clone(context.GetContentProvider(contentStream, MediaTypes.Html)).Yield();
+                            return input.Clone(context.GetContentProvider(contentStream, MediaTypes.Html));
                         }
                     }
                 }
             }
 
-            return input.Yield();
+            return input;
         }
     }
 }
