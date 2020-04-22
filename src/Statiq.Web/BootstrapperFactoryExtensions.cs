@@ -27,6 +27,7 @@ namespace Statiq.Web
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
                     { WebKeys.MirrorResources, true },
+                    { WebKeys.ValidateRelativeLinks, true },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '_')) }
                 });
     }

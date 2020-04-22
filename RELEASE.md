@@ -1,5 +1,6 @@
 # 1.0.0-alpha.8
 
+- Added support for validating links.
 - Refactored xref error messages to display for all documents at once (instead of one at a time).
 
 # 1.0.0-alpha.7
