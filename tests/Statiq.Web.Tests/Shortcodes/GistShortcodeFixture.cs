@@ -27,10 +27,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 GistShortcode shortcode = new GistShortcode();
 
                 // When
-                string result = shortcode.Execute(args, null, document, context);
+                ShortcodeResult result = shortcode.Execute(args, null, document, context);
 
                 // Then
-                result.ShouldBe("<script src=\"//gist.github.com/def/abc.js?file=ghi\" type=\"text/javascript\"></script>");
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe("<script src=\"//gist.github.com/def/abc.js?file=ghi\" type=\"text/javascript\"></script>");
             }
 
             [Test]
@@ -46,10 +46,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 GistShortcode shortcode = new GistShortcode();
 
                 // When
-                string result = shortcode.Execute(args, null, document, context);
+                ShortcodeResult result = shortcode.Execute(args, null, document, context);
 
                 // Then
-                result.ShouldBe("<script src=\"//gist.github.com/abc.js?file=ghi\" type=\"text/javascript\"></script>");
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe("<script src=\"//gist.github.com/abc.js?file=ghi\" type=\"text/javascript\"></script>");
             }
 
             [Test]
@@ -65,10 +65,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 GistShortcode shortcode = new GistShortcode();
 
                 // When
-                string result = shortcode.Execute(args, null, document, context);
+                ShortcodeResult result = shortcode.Execute(args, null, document, context);
 
                 // Then
-                result.ShouldBe("<script src=\"//gist.github.com/def/abc.js\" type=\"text/javascript\"></script>");
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe("<script src=\"//gist.github.com/def/abc.js\" type=\"text/javascript\"></script>");
             }
         }
     }

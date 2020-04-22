@@ -24,14 +24,14 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Id">The ID of the gist.</parameter>
     /// <parameter name="Username">The username that the gist is under (optional).</parameter>
     /// <parameter name="File">The file within the gist to embed (optional).</parameter>
-    public class GistShortcode : SyncContentShortcode
+    public class GistShortcode : SyncShortcode
     {
         private const string Id = nameof(Id);
         private const string Username = nameof(Username);
         private const string File = nameof(File);
 
         /// <inheritdoc />
-        public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
+        public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(Id, Username, File);
             arguments.RequireKeys(Id);

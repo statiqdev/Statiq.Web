@@ -30,17 +30,21 @@ namespace Statiq.Web.Shortcodes
         private const string Url = nameof(Url);
         private const string Format = nameof(Format);
 
-        public sealed override async Task<IEnumerable<IDocument>> ExecuteAsync(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context) =>
-            (await ExecuteAsync(args, document, context)).Yield();
+        public sealed override async Task<ShortcodeResult> ExecuteAsync(
+            KeyValuePair<string, string>[] args,
+            string content,
+            IDocument document,
+            IExecutionContext context) =>
+            await ExecuteAsync(args, document, context);
 
         /// <summary>
         /// Shortcodes for specific oEmbed services should override this method and call one of the other execute helper methods.
         /// </summary>
-        public virtual async Task<IDocument> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
+        public virtual async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(Endpoint, Url, Format);
             arguments.RequireKeys(Endpoint, Url);
-            return await ExecuteAsync(
+            return await GetEmbedResultAsync(
                 arguments.GetString(Endpoint),
                 arguments.GetString(Url),
                 arguments.ContainsKey(Format)
@@ -49,10 +53,10 @@ namespace Statiq.Web.Shortcodes
                 context);
         }
 
-        protected async Task<IDocument> ExecuteAsync(string endpoint, string url, IExecutionContext context) =>
-            await ExecuteAsync(endpoint, url, null, context);
+        protected async Task<ShortcodeResult> GetEmbedResultAsync(string endpoint, string url, IExecutionContext context) =>
+            await GetEmbedResultAsync(endpoint, url, null, context);
 
-        protected async Task<IDocument> ExecuteAsync(string endpoint, string url, IEnumerable<string> query, IExecutionContext context)
+        protected async Task<ShortcodeResult> GetEmbedResultAsync(string endpoint, string url, IEnumerable<string> query, IExecutionContext context)
         {
             // Get the oEmbed response
             EmbedResponse embedResponse;
@@ -95,7 +99,7 @@ namespace Statiq.Web.Shortcodes
             // Switch based on type
             if (!string.IsNullOrEmpty(embedResponse.Html))
             {
-                return context.CreateDocument(await context.GetContentProviderAsync(embedResponse.Html));
+                return embedResponse.Html;
             }
             else if (embedResponse.Type == "photo")
             {
@@ -105,15 +109,15 @@ namespace Statiq.Web.Shortcodes
                 {
                     throw new InvalidDataException("Did not receive required oEmbed values for image type");
                 }
-                return context.CreateDocument(await context.GetContentProviderAsync($"<img src=\"{embedResponse.Url}\" width=\"{embedResponse.Width}\" height=\"{embedResponse.Height}\" />"));
+                return $"<img src=\"{embedResponse.Url}\" width=\"{embedResponse.Width}\" height=\"{embedResponse.Height}\" />";
             }
             else if (embedResponse.Type == "link")
             {
                 if (!string.IsNullOrEmpty(embedResponse.Title))
                 {
-                    return context.CreateDocument(await context.GetContentProviderAsync($"<a href=\"{url}\">{embedResponse.Title}</a>"));
+                    return $"<a href=\"{url}\">{embedResponse.Title}</a>";
                 }
-                return context.CreateDocument(await context.GetContentProviderAsync($"<a href=\"{url}\">{url}</a>"));
+                return $"<a href=\"{url}\">{url}</a>";
             }
 
             throw new InvalidDataException("Could not determine embedded content for oEmbed response");

@@ -30,10 +30,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 LinkShortcode shortcode = new LinkShortcode();
 
                 // When
-                string result = shortcode.Execute(args, string.Empty, document, context);
+                ShortcodeResult result = shortcode.Execute(args, string.Empty, document, context);
 
                 // Then
-                result.ShouldBe(expected);
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
             }
 
             [TestCase("http://foo.com/bar", "http://foo.com/bar")]
@@ -55,10 +55,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 LinkShortcode shortcode = new LinkShortcode();
 
                 // When
-                string result = shortcode.Execute(args, string.Empty, document, context);
+                ShortcodeResult result = shortcode.Execute(args, string.Empty, document, context);
 
                 // Then
-                result.ShouldBe(expected);
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
             }
 
             [TestCase("http://foo.com/bar", "http://foo.com/bar")]
@@ -80,10 +80,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 LinkShortcode shortcode = new LinkShortcode();
 
                 // When
-                string result = shortcode.Execute(args, string.Empty, document, context);
+                ShortcodeResult result = shortcode.Execute(args, string.Empty, document, context);
 
                 // Then
-                result.ShouldBe(expected);
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
             }
         }
     }

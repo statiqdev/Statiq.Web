@@ -67,7 +67,7 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="HeaderClass">The <c>class</c> attribute to apply to the <c>thead</c> element.</parameter>
     /// <parameter name="BodyClass">The <c>class</c> attribute to apply to the <c>tbody</c> element.</parameter>
     /// <parameter name="FooterClass">The <c>class</c> attribute to apply to the <c>tfoot</c> element.</parameter>
-    public class TableShortcode : SyncContentShortcode
+    public class TableShortcode : SyncShortcode
     {
         private const string Class = nameof(Class);
         private const string HeaderRows = nameof(HeaderRows);
@@ -78,7 +78,7 @@ namespace Statiq.Web.Shortcodes
         private const string FooterClass = nameof(FooterClass);
 
         /// <inheritdoc />
-        public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
+        public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary dictionary = args.ToDictionary(
                 Class,

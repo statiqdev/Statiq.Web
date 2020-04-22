@@ -33,10 +33,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 FigureShortcode shortcode = new FigureShortcode();
 
                 // When
-                string result = shortcode.Execute(args, "foo bar", document, context);
+                ShortcodeResult result = shortcode.Execute(args, "foo bar", document, context);
 
                 // Then
-                result.ShouldBe(
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(
                     @"<figure class=""jkl"">
   <a href=""/c/d"" target=""abc"" rel=""def"">
     <img src=""/a/b"" alt=""ghi"" height=""100px"" width=""200px"" />
@@ -63,10 +63,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 FigureShortcode shortcode = new FigureShortcode();
 
                 // When
-                string result = shortcode.Execute(args, "foo bar", document, context);
+                ShortcodeResult result = shortcode.Execute(args, "foo bar", document, context);
 
                 // Then
-                result.ShouldBe(
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(
                     @"<figure class=""jkl"">
   <img src=""/a/b"" alt=""ghi"" height=""100px"" width=""200px"" />
   <figcaption>foo bar</figcaption>
@@ -93,10 +93,10 @@ namespace Statiq.Web.Tests.Shortcodes
                 FigureShortcode shortcode = new FigureShortcode();
 
                 // When
-                string result = shortcode.Execute(args, "foo bar", document, context);
+                ShortcodeResult result = shortcode.Execute(args, "foo bar", document, context);
 
                 // Then
-                result.ShouldBe(
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(
                     @"<figure class=""jkl"">
   <figcaption>foo bar</figcaption>
 </figure>",

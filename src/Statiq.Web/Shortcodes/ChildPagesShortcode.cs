@@ -9,9 +9,9 @@ namespace Statiq.Web.Shortcodes
     /// <summary>
     /// Outputs the child pages of the current document.
     /// </summary>
-    public class ChildPagesShortcode : SyncContentShortcode
+    public class ChildPagesShortcode : SyncShortcode
     {
-        public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
+        public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("<div>");

@@ -31,10 +31,10 @@ l=m nop
                 TableShortcode shortcode = new TableShortcode();
 
                 // When
-                string result = shortcode.Execute(args, content, document, context);
+                ShortcodeResult result = shortcode.Execute(args, content, document, context);
 
                 // Then
-                result.ShouldBe(
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(
                     @"<table>
   <tbody>
     <tr>
@@ -97,10 +97,10 @@ l=m nop
                 TableShortcode shortcode = new TableShortcode();
 
                 // When
-                string result = shortcode.Execute(args, content, document, context);
+                ShortcodeResult result = shortcode.Execute(args, content, document, context);
 
                 // Then
-                result.ShouldBe(
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(
                     @"<table class=""tclass"">
   <thead class=""hclass"">
     <tr>

@@ -38,7 +38,7 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Class"><c>class</c> attribute to apply to the <c>figure</c> element.</parameter>
     /// <parameter name="Height"><c>height</c> attribute of the image.</parameter>
     /// <parameter name="Width"><c>width</c> attribute of the image.</parameter>
-    public class FigureShortcode : SyncContentShortcode
+    public class FigureShortcode : SyncShortcode
     {
         private const string Src = nameof(Src);
         private const string Link = nameof(Link);
@@ -49,7 +49,7 @@ namespace Statiq.Web.Shortcodes
         private const string Height = nameof(Height);
         private const string Width = nameof(Width);
 
-        public override string Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
+        public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(
                 Src,

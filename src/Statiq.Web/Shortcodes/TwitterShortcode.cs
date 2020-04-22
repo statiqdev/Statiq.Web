@@ -28,7 +28,7 @@ namespace Statiq.Web.Shortcodes
         private bool _omitScript;
 
         /// <inheritdoc />
-        public override async Task<IDocument> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
+        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
         {
             IMetadataDictionary arguments = args.ToDictionary(
                 Id,
@@ -60,7 +60,7 @@ namespace Statiq.Web.Shortcodes
             // Omit the script on the next Twitter embed
             _omitScript = true;
 
-            return await ExecuteAsync("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString(Id)}", query, context);
+            return await GetEmbedResultAsync("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString(Id)}", query, context);
         }
     }
 }
