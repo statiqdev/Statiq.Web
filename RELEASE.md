@@ -1,5 +1,7 @@
 # 1.0.0-alpha.9
 
+- Removed the `ChildPages` shortcode (it should really be part of the theme).
+
 # 1.0.0-alpha.8
 
 - Added support for validating links.
