@@ -1,5 +1,6 @@
 # 1.0.0-alpha.9
 
+- Fixed xref resolution to report all errors in a given document at once.
 - Changed the xref space placeholder character to a dash to match/roundtrip automatic file name titles.
 - Removed the `ChildPages` shortcode (it should really be part of the theme).
 

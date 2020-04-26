@@ -37,6 +37,7 @@ namespace Statiq.Web.Modules
             {
                 // Find and replace "xref:" in links
                 bool modifiedDocument = false;
+                bool errors = false;
                 foreach (IElement element in htmlDocument
                     .GetElementsByTagName("a")
                     .Where(x => x.HasAttribute("href")))
@@ -58,11 +59,18 @@ namespace Statiq.Web.Modules
                         }
                         else
                         {
+                            // Continue processing so we can report all the failures in a given document
                             input.LogError(error);
-                            return null;
+                            errors = true;
                         }
                         modifiedDocument = true;
                     }
+                }
+
+                // Exit if there were errors
+                if (errors)
+                {
+                    return null;
                 }
 
                 // Return a new document with the replacements if we performed any
