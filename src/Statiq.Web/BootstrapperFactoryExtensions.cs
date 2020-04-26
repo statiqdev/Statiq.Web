@@ -28,7 +28,7 @@ namespace Statiq.Web
                 {
                     { WebKeys.MirrorResources, true },
                     { WebKeys.ValidateRelativeLinks, true },
-                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '_')) }
+                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) }
                 });
     }
 }
