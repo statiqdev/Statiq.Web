@@ -1,3 +1,5 @@
+# 1.0.0-alpha.10
+
 # 1.0.0-alpha.9
 
 - Fixed xref resolution to report all errors in a given document at once.
