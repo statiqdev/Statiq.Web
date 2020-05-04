@@ -58,6 +58,14 @@ namespace Statiq.Web
         /// </summary>
         public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
 
+        /// <summary>
+        /// A <c>bool</c> that indicates the document should be excluded from the content or data
+        /// pipeline if <c>true</c>. The default value looks at <see cref="Published"/>
+        /// and filters out any future-dated content or data, though you can also define a value
+        /// for this setting directly for each document.
+        /// </summary>
+        public const string Excluded = nameof(Excluded);
+
         // Intended for use as document metadata
 
         public const string ArchivePipelines = nameof(ArchivePipelines);

@@ -32,6 +32,9 @@ namespace Statiq.Web.Pipelines
                 // Process front matter and sidecar files
                 new ProcessMetadata(),
 
+                // Filter out excluded documents
+                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
+
                 // Filter out archive documents (they'll get processed by the Archives pipeline)
                 new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
 

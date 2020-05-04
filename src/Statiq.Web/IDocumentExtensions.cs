@@ -12,7 +12,21 @@ namespace Statiq.Web
         /// then checking for a file name prefix of the form "yyyy/mm/dd-" (or the locale equivalent),
         /// then using the last modified date of the file.
         /// </summary>
-        public static DateTime GetPublishedDate(this IDocument document, IExecutionContext context)
+        /// <param name="document">The document to get the published date for.</param>
+        /// <param name="useLastModifiedDate"><c>true</c> to infer published date from the file last modified date, <c>false</c> otherwise.</param>
+        /// <returns>The published date of the document or <see cref="DateTime.Today"/> if a published date can't be determined.</returns>
+        public static DateTime GetPublishedDate(this IDocument document, bool useLastModifiedDate = true) => document.GetPublishedDate(IExecutionContext.Current, useLastModifiedDate);
+
+        /// <summary>
+        /// Gets the published date by first checking metadata for <see cref="WebKeys.Published"/>,
+        /// then checking for a file name prefix of the form "yyyy/mm/dd-" (or the locale equivalent),
+        /// then using the last modified date of the file.
+        /// </summary>
+        /// <param name="document">The document to get the published date for.</param>
+        /// <param name="context">The execution context.</param>
+        /// <param name="useLastModifiedDate"><c>true</c> to infer published date from the file last modified date, <c>false</c> otherwise.</param>
+        /// <returns>The published date of the document or <see cref="DateTime.Today"/> if a published date can't be determined.</returns>
+        public static DateTime GetPublishedDate(this IDocument document, IExecutionContext context, bool useLastModifiedDate = true)
         {
             _ = document ?? throw new ArgumentNullException(nameof(document));
             _ = context ?? throw new ArgumentNullException(nameof(context));
@@ -33,10 +47,13 @@ namespace Statiq.Web
                 }
 
                 // Check file modified date
-                IFile file = context.FileSystem.GetFile(document.Source);
-                if (file != null)
+                if (useLastModifiedDate)
                 {
-                    return file.LastWriteTime;
+                    IFile file = context.FileSystem.GetFile(document.Source);
+                    if (file != null)
+                    {
+                        return file.LastWriteTime;
+                    }
                 }
             }
 

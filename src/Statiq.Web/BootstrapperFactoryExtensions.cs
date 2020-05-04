@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
-using Statiq.Web.Commands;
-using Statiq.Web.Shortcodes;
 
 namespace Statiq.Web
 {
@@ -28,7 +25,8 @@ namespace Statiq.Web
                 {
                     { WebKeys.MirrorResources, true },
                     { WebKeys.ValidateRelativeLinks, true },
-                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) }
+                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
+                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetPublishedDate(false) > DateTime.Today.AddDays(1)) } // Add +1 days so the threshold is midnight on the current day
                 });
     }
 }
