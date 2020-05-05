@@ -1,6 +1,7 @@
 # 1.0.0-alpha.10
 
-- Added a new `GenerateSitemap` key and `Sitemap` pipeline to generate sitemap files by default.
+- Added new `ContentFiles` and `DataFiles` settings to control the file globbing patterns.
+- Added a new `GenerateSitemap` setting and `Sitemap` pipeline to generate sitemap files by default.
 - Added a new `Excluded` key that indicates a document should be filtered out of the content or data pipeline.
 - Fixed a bug with feeds not flattening the content document tree.
 

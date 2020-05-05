@@ -23,6 +23,8 @@ namespace Statiq.Web
                 .ConfigureServices(services => services.AddSingleton(new Templates()))
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
+                    { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
+                    { WebKeys.DataFiles, "**/{!_,}*.{json,yaml,yml}" },
                     { WebKeys.MirrorResources, true },
                     { WebKeys.ValidateRelativeLinks, true },
                     { WebKeys.GenerateSitemap, true },

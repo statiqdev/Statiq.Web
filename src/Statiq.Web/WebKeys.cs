@@ -13,33 +13,26 @@ namespace Statiq.Web
 {
     public static class WebKeys
     {
-        // Intended for use as global or document settings
+        // Global
 
-        public const string Title = nameof(Title);
+        /// <summary>
+        /// The globbing pattern(s) that will be used to read content files.
+        /// </summary>
+        public const string ContentFiles = nameof(ContentFiles);
 
-        public const string Description = nameof(Description);
-
-        public const string Author = nameof(Author);
-
-        public const string Image = nameof(Image);
-
-        public const string Copyright = nameof(Copyright);
+        /// <summary>
+        /// The globbing pattern(s) that will be used to read data files.
+        /// </summary>
+        public const string DataFiles = nameof(DataFiles);
 
         public const string OptimizeContentFileNames = nameof(OptimizeContentFileNames);
 
         public const string OptimizeDataFileNames = nameof(OptimizeDataFileNames);
 
         /// <summary>
-        /// The date the file or post was published.
+        /// Indicates that a sitemap file should be generated if <c>true</c> (the default).
         /// </summary>
-        /// <remarks>
-        /// If you want to use a different metadata key to represent published dates you can
-        /// globally fetch a value from a different key by setting <see cref="Published"/>
-        /// in settings to an evaluated metadata script like <c>=> SomeOtherKey</c>.
-        /// </remarks>
-        public const string Published = nameof(Published);
-
-        public const string Updated = nameof(Updated);
+        public const string GenerateSitemap = nameof(GenerateSitemap);
 
         public const string MirrorResources = nameof(MirrorResources);
 
@@ -58,6 +51,30 @@ namespace Statiq.Web
         /// </summary>
         public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
 
+        // Document
+
+        public const string Title = nameof(Title);
+
+        public const string Description = nameof(Description);
+
+        public const string Author = nameof(Author);
+
+        public const string Image = nameof(Image);
+
+        public const string Copyright = nameof(Copyright);
+
+        /// <summary>
+        /// The date the file or post was published.
+        /// </summary>
+        /// <remarks>
+        /// If you want to use a different metadata key to represent published dates you can
+        /// globally fetch a value from a different key by setting <see cref="Published"/>
+        /// in settings to an evaluated metadata script like <c>=> SomeOtherKey</c>.
+        /// </remarks>
+        public const string Published = nameof(Published);
+
+        public const string Updated = nameof(Updated);
+
         /// <summary>
         /// A <c>bool</c> that indicates the document should be excluded from the content or data
         /// pipeline if <c>true</c>. The default value looks at <see cref="Published"/>
@@ -65,13 +82,6 @@ namespace Statiq.Web
         /// for this setting directly for each document.
         /// </summary>
         public const string Excluded = nameof(Excluded);
-
-        /// <summary>
-        /// Indicates that a sitemap file should be generated if <c>true</c> (the default).
-        /// </summary>
-        public const string GenerateSitemap = nameof(GenerateSitemap);
-
-        // Intended for use as document metadata
 
         public const string ArchivePipelines = nameof(ArchivePipelines);
 
