@@ -25,6 +25,7 @@ namespace Statiq.Web
                 {
                     { WebKeys.MirrorResources, true },
                     { WebKeys.ValidateRelativeLinks, true },
+                    { WebKeys.GenerateSitemap, true },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetPublishedDate(false) > DateTime.Today.AddDays(1)) } // Add +1 days so the threshold is midnight on the current day
                 });

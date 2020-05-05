@@ -42,7 +42,7 @@ namespace Statiq.Web
                                 {
                                     return parent.GetPath(WebKeys.Layout);
                                 }
-                                parent = parent.GetParent(ctx.Inputs);
+                                parent = parent.GetParent();
                             }
                             return null;  // If no layout metadata, revert to default behavior
                         }))),

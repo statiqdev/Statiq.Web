@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;

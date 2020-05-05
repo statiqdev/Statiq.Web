@@ -66,6 +66,11 @@ namespace Statiq.Web
         /// </summary>
         public const string Excluded = nameof(Excluded);
 
+        /// <summary>
+        /// Indicates that a sitemap file should be generated if <c>true</c> (the default).
+        /// </summary>
+        public const string GenerateSitemap = nameof(GenerateSitemap);
+
         // Intended for use as document metadata
 
         public const string ArchivePipelines = nameof(ArchivePipelines);
