@@ -1,5 +1,8 @@
 # 1.0.0-alpha.10
 
+- Added a new `RenderPostProcessTemplates` key that prevents running post-processing templates like Razor.
+- Added a new `ShouldOutput` key that controls outputting a particular document to disk (but doesn't remove it from the pipeline like `Excluded` does).
+- Added support for directory metadata (by default as `_directory.yaml` files).
 - Added new `ContentFiles` and `DataFiles` settings to control the file globbing patterns.
 - Added a new `GenerateSitemap` setting and `Sitemap` pipeline to generate sitemap files by default.
 - Added a new `Excluded` key that indicates a document should be filtered out of the content or data pipeline.

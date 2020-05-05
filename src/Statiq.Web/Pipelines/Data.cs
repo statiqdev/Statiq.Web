@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
+using Statiq.Web.Modules;
 using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
@@ -16,6 +11,8 @@ namespace Statiq.Web.Pipelines
     {
         public Data()
         {
+            Dependencies.Add(nameof(DirectoryMetadata));
+
             InputModules = new ModuleList
             {
                 new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.DataFiles))
@@ -25,6 +22,9 @@ namespace Statiq.Web.Pipelines
             {
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above)
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
+
+                // Apply directory metadata
+                new ApplyDirectoryMetadata(),
 
                 // Parse the content into metadata depending on the content type
                 new ExecuteSwitch(Config.FromDocument(doc => doc.ContentProvider.MediaType))
@@ -46,7 +46,7 @@ namespace Statiq.Web.Pipelines
 
             OutputModules = new ModuleList
             {
-                new FilterDocuments(Config.FromSetting<bool>(WebKeys.OutputData)),
+                new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput)),
                 new WriteFiles()
             };
         }

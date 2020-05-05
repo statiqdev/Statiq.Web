@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 using Statiq.Web.Modules;
-using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
@@ -18,7 +11,7 @@ namespace Statiq.Web.Pipelines
     {
         public Content(Templates templates)
         {
-            Dependencies.Add(nameof(Data));
+            Dependencies.AddRange(nameof(Data), nameof(DirectoryMetadata));
 
             InputModules = new ModuleList
             {
@@ -29,6 +22,9 @@ namespace Statiq.Web.Pipelines
             {
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Data")
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
+
+                // Apply directory metadata
+                new ApplyDirectoryMetadata(),
 
                 // Process front matter and sidecar files
                 new ProcessMetadata(),
@@ -62,6 +58,7 @@ namespace Statiq.Web.Pipelines
 
             OutputModules = new ModuleList
             {
+                new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true)),
                 new WriteFiles()
             };
         }

@@ -25,6 +25,11 @@ namespace Statiq.Web
         /// </summary>
         public const string DataFiles = nameof(DataFiles);
 
+        /// <summary>
+        /// The globbing pattern(s) that will be used to read directory metadata.
+        /// </summary>
+        public const string DirectoryMetadataFiles = nameof(DirectoryMetadataFiles);
+
         public const string OptimizeContentFileNames = nameof(OptimizeContentFileNames);
 
         public const string OptimizeDataFileNames = nameof(OptimizeDataFileNames);
@@ -160,9 +165,10 @@ namespace Statiq.Web
         public const string FeedItemThreadUpdated = nameof(FeedItemThreadUpdated);
 
         /// <summary>
-        /// Indicates that the data file (.json, .yaml, etc.) should be output (by default data files are not output).
+        /// Indicates that the content or data file should be output.
+        /// By default content files are output and data files are not.
         /// </summary>
-        public const string OutputData = nameof(OutputData);
+        public const string ShouldOutput = nameof(ShouldOutput);
 
         /// <summary>
         /// Indicates the layout file that should be used for this document.
@@ -175,5 +181,21 @@ namespace Statiq.Web
         /// if no <see cref="Title"/> metadata is defined for the document).
         /// </summary>
         public const string Xref = nameof(Xref);
+
+        /// <summary>
+        /// Used with directory metadata to indicate if the metadata should be applied
+        /// recursively to files in child directories (the default is <c>true</c>).
+        /// </summary>
+        public const string Recursive = nameof(Recursive);
+
+        /// <summary>
+        /// Indicates that post-process templates should be rendered (the default is <c>true</c>).
+        /// </summary>
+        /// <remarks>
+        /// Set this to <c>false</c> for a document to prevent rendering post-process templates such as Razor.
+        /// This can be helpful when you have small bits of content like Markdown that you want to render
+        /// as HTML but not as an entire page so that it can be included in other pages.
+        /// </remarks>
+        public const string RenderPostProcessTemplates = nameof(RenderPostProcessTemplates);
     }
 }

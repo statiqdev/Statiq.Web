@@ -16,10 +16,13 @@ namespace Statiq.Web.Pipelines
             {
                 new ExecuteIf(Config.FromSetting<bool>(WebKeys.GenerateSitemap))
                 {
-                    new ConcatDocuments(nameof(Content)),
+                    new ConcatDocuments(nameof(Content))
+                    {
+                        new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true))
+                    },
                     new ConcatDocuments(nameof(Data))
                     {
-                        new FilterDocuments(Config.FromSetting<bool>(WebKeys.OutputData))
+                        new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput))
                     },
                     new ConcatDocuments(nameof(Archives)),
                     new FlattenTree(),

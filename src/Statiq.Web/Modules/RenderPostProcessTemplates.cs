@@ -12,17 +12,22 @@ namespace Statiq.Web.Modules
     {
         public RenderPostProcessTemplates(Templates templates)
             : base(
-                templates.GetModules(Phase.PostProcess)
-                    .Concat(new IModule[]
+                new IModule[]
+                {
+                    new ExecuteIf(
+                        Config.FromDocument(WebKeys.RenderPostProcessTemplates, true),
+                        templates.GetModules(Phase.PostProcess))
+                }
+                .Concat(new IModule[]
+                {
+                    new ProcessShortcodes(),
+                    new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
                     {
-                        new ProcessShortcodes(),
-                        new ExecuteIf(Config.FromSetting<bool>(WebKeys.MirrorResources))
-                        {
-                            new MirrorResources()
-                        },
-                        new ResolveXrefs()
-                    })
-                    .ToArray())
+                        new MirrorResources()
+                    },
+                    new ResolveXrefs()
+                })
+                .ToArray())
         {
         }
     }
