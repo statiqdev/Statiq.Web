@@ -19,7 +19,7 @@ namespace Statiq.Web
                 .CreateDefault(args)
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
-                .ConfigureEngine(engine => engine.FileSystem.InputPaths.Add("theme"))
+                .ConfigureEngine(engine => engine.FileSystem.InputPaths.Add("theme/input"))
                 .ConfigureServices(services => services.AddSingleton(new Templates()))
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {

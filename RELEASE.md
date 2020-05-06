@@ -1,5 +1,8 @@
+# 1.0.0-alpha.11
+
 # 1.0.0-alpha.10
 
+- Changed the default theme input path to "theme/input" in preparation for work on dedicated theme folders (see #891).
 - Added a new `RenderPostProcessTemplates` key that prevents running post-processing templates like Razor.
 - Added a new `ShouldOutput` key that controls outputting a particular document to disk (but doesn't remove it from the pipeline like `Excluded` does).
 - Added support for directory metadata (by default as `_directory.yaml` files).
