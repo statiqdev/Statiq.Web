@@ -15,8 +15,21 @@ namespace Statiq.Web
         /// <param name="args">The command line arguments.</param>
         /// <returns>A bootstrapper.</returns>
         public static Bootstrapper CreateWeb(this BootstrapperFactory factory, string[] args) =>
-            factory
-                .CreateDefault(args)
+            factory.CreateDefault(args).AddWeb();
+
+        /// <summary>
+        /// Adds Statiq Web functionality to an existing bootstrapper.
+        /// This method does not need to be called if using <see cref="CreateWeb(BootstrapperFactory, string[])"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is useful when you want to add Statiq Web support to an existing bootstrapper,
+        /// for example because you created the bootstrapper without certain default functionality
+        /// by calling <see cref="Statiq.App.BootstrapperFactoryExtensions.CreateDefaultWithout(BootstrapperFactory, string[], DefaultFeatures)"/>.
+        /// </remarks>
+        /// <param name="boostrapper">The bootstrapper to add Statiq Web functionality to.</param>
+        /// <returns>The bootstrapper.</returns>
+        public static Bootstrapper AddWeb(this Bootstrapper boostrapper) =>
+            boostrapper
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
                 .ConfigureEngine(engine => engine.FileSystem.InputPaths.Add("theme/input"))

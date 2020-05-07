@@ -1,5 +1,7 @@
 # 1.0.0-alpha.12
 
+- Added a new `Bootstrapper.AddWeb()` extension to add Statiq Web functionality to an existing bootstrapper.
+
 # 1.0.0-alpha.11
 
 - Changed resource mirroring to be opt-in instead of opt-out (you now need to set `MirrorResources` to `true` to enable) (#896).
