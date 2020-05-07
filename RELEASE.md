@@ -1,3 +1,5 @@
+# 1.0.0-alpha.13
+
 # 1.0.0-alpha.12
 
 - Added a new `Bootstrapper.AddWeb()` extension to add Statiq Web functionality to an existing bootstrapper.
