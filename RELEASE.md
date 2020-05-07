@@ -1,3 +1,5 @@
+# 1.0.0-alpha.12
+
 # 1.0.0-alpha.11
 
 - Changed resource mirroring to be opt-in instead of opt-out (you now need to set `MirrorResources` to `true` to enable) (#896).
