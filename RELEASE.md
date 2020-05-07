@@ -1,5 +1,6 @@
 # 1.0.0-alpha.11
 
+- Changed resource mirroring to be opt-in instead of opt-out (you now need to set `MirrorResources` to `true` to enable) (#896).
 - Fix to filter tree placeholder pages out of the `Sitemap` pipeline (#895).
 
 # 1.0.0-alpha.10

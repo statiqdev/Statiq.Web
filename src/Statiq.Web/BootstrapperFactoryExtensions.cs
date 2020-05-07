@@ -26,7 +26,6 @@ namespace Statiq.Web
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
                     { WebKeys.DataFiles, "**/{!_,}*.{json,yaml,yml}" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
-                    { WebKeys.MirrorResources, true },
                     { WebKeys.ValidateRelativeLinks, true },
                     { WebKeys.GenerateSitemap, true },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
