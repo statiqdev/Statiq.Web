@@ -1,5 +1,7 @@
 # 1.0.0-alpha.11
 
+- Fix to filter tree placeholder pages out of the `Sitemap` pipeline (#895).
+
 # 1.0.0-alpha.10
 
 - Changed the default theme input path to "theme/input" in preparation for work on dedicated theme folders (see #891).

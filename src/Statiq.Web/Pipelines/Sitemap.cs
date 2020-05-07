@@ -26,6 +26,7 @@ namespace Statiq.Web.Pipelines
                     },
                     new ConcatDocuments(nameof(Archives)),
                     new FlattenTree(),
+                    new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))),
                     new GenerateSitemap()
                 }
             };
