@@ -1,7 +1,7 @@
 using System;
 using Statiq.Common;
 
-namespace Statiq.Aws
+namespace Statiq.Web.Aws
 {
     internal class MetaFieldMapping
     {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NetlifySharp;
 using Statiq.Common;
 
-namespace Statiq.Netlify
+namespace Statiq.Web.Netlify
 {
     public class DeployNetlifySite : MultiConfigModule
     {

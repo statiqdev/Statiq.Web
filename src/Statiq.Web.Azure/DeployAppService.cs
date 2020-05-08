@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;
 
-namespace Statiq.Azure
+namespace Statiq.Web.Azure
 {
     /// <summary>
     /// Deploys output files to Azure App Service using a zip file.

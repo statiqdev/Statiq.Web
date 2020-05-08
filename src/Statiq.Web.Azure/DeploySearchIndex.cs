@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Statiq.Common;
 
-namespace Statiq.Azure
+namespace Statiq.Web.Azure
 {
     /// <summary>
     /// Deploys an Azure Search Service index from the input document metadata.
