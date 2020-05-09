@@ -21,7 +21,7 @@ namespace Statiq.Web.Pipelines
 
             InputModules = new ModuleList
             {
-                new ReadFiles("**/{!_,}*.{html,cshtml,md}")
+                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles))
             };
 
             ProcessModules = new ModuleList
