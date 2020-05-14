@@ -1,5 +1,6 @@
 # 1.0.0-alpha.13
 
+- Fixed a bug in the preview command that exited on failures.
 - Changed preview server to listen to any hostname/IP on the specified port (this allows use from services like Gitpod).
 - Renamed the root namespaces of the extension libraries brought over from Statiq Framework to match new project names.
 

@@ -51,10 +51,9 @@ namespace Statiq.Web.Commands
             // Execute the engine for the first time
             using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
             {
-                if (!await engineManager.ExecuteAsync(cancellationTokenSource))
-                {
-                    return (int)ExitCode.ExecutionError;
-                }
+                exitCode = await engineManager.ExecuteAsync(cancellationTokenSource)
+                    ? ExitCode.Normal
+                    : ExitCode.ExecutionError;
             }
 
             // Start the preview server
@@ -148,7 +147,7 @@ namespace Statiq.Web.Commands
                     {
                         if (existingResetCacheSetting == null)
                         {
-                            ConfigurationSettings.Remove(Keys.ResetCache);
+                            ConfigurationSettings[Keys.ResetCache] = false;
                         }
                         {
                             ConfigurationSettings[Keys.ResetCache] = existingResetCacheSetting;
