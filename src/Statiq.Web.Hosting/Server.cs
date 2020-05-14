@@ -106,7 +106,7 @@ namespace Statiq.Web.Hosting
                     }
                 })
                 .UseKestrel()
-                .UseUrls($"http://localhost:{port}")
+                .ConfigureKestrel(x => x.ListenAnyIP(port))
                 .Configure(ConfigureApp)
                 .Build();
         }

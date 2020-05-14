@@ -1,5 +1,6 @@
 # 1.0.0-alpha.13
 
+- Changed preview server to listen to any hostname/IP on the specified port (this allows use from services like Gitpod).
 - Renamed the root namespaces of the extension libraries brought over from Statiq Framework to match new project names.
 
 # 1.0.0-alpha.12

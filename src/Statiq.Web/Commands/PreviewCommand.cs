@@ -231,7 +231,7 @@ namespace Statiq.Web.Commands
             }
 
             string urlPath = server.VirtualDirectory ?? string.Empty;
-            logger.LogInformation($"Preview server listening at http://localhost:{port}{urlPath} and serving from path {path}"
+            logger.LogInformation($"Preview server listening at http://localhost:{port}{urlPath} (on any hostname/IP) and serving from path {path}"
                 + (liveReload ? " with LiveReload support" : string.Empty));
             return server;
         }
