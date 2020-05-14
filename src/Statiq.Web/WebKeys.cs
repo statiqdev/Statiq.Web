@@ -1,14 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Statiq.App;
-using Statiq.Common;
-using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
-using Statiq.Yaml;
-
 namespace Statiq.Web
 {
     public static class WebKeys
@@ -88,75 +77,75 @@ namespace Statiq.Web
         /// </summary>
         public const string Excluded = nameof(Excluded);
 
-		/// <summary>
-		/// The pipeline(s) to get documents for the archive from.
-		/// Defaults to the <c>Content<c> pipeline if not defined.
-		/// </summary>
+        /// <summary>
+        /// The pipeline(s) to get documents for the archive from.
+        /// Defaults to the <c>Content</c> pipeline if not defined.
+        /// </summary>
         public const string ArchivePipelines = nameof(ArchivePipelines);
 
-		/// <summary>
-		/// A globbing pattern to filter documents from the
-		/// archive pipeline(s) based on source path (or all documents from the pipeline(s) if not defined).
-		/// </summary>
+        /// <summary>
+        /// A globbing pattern to filter documents from the
+        /// archive pipeline(s) based on source path (or all documents from the pipeline(s) if not defined).
+        /// </summary>
         public const string ArchiveSources = nameof(ArchiveSources);
 
-		/// <summary>
-		/// An additional metadata filter for documents from the
-		/// archive pipeline(s) that should return a <c>bool</c>.
-		/// </summary>
+        /// <summary>
+        /// An additional metadata filter for documents from the
+        /// archive pipeline(s) that should return a <c>bool</c>.
+        /// </summary>
         public const string ArchiveFilter = nameof(ArchiveFilter);
 
-		/// <summary>
-		/// The key to use for generating archive groups. The
-		/// source documents will be grouped by the key value(s).
-		/// If this is not defined, only a single archive index
-		/// with the source documents will be generated.
-		/// </summary>
+        /// <summary>
+        /// The key to use for generating archive groups. The
+        /// source documents will be grouped by the key value(s).
+        /// If this is not defined, only a single archive index
+        /// with the source documents will be generated.
+        /// </summary>
         public const string ArchiveKey = nameof(ArchiveKey);
 
-		/// <summary>
-		/// The number of items on each group page (or all group items if not defined).
-		/// </summary>
-		/// <remarks>
-		/// The current page index is stored in the <c>Index</c> metadata value.
-		/// </remarks>
+        /// <summary>
+        /// The number of items on each group page (or all group items if not defined).
+        /// </summary>
+        /// <remarks>
+        /// The current page index is stored in the <c>Index</c> metadata value.
+        /// </remarks>
         public const string ArchivePageSize = nameof(ArchivePageSize);
 
-		/// <summary>
-		/// The title of each group output document.
-		/// </summary>
-		/// <remarks>
-		/// This is usually a computed value (starting with a
-		/// <c>=&gt;</c>) that calculates the title based
-		/// on the group key. If this value is not specified, the
-		/// default title will be "[Archive Title] - [Group Key] (Page [Index (If Paged)])".
-		/// </remarks>
+        /// <summary>
+        /// The title of each group output document.
+        /// </summary>
+        /// <remarks>
+        /// This is usually a computed value (starting with a
+        /// <c>=&gt;</c>) that calculates the title based
+        /// on the group key. If this value is not specified, the
+        /// default title will be "[Archive Title] - [Group Key] (Page [Index (If Paged)])".
+        /// </remarks>
         public const string ArchiveTitle = nameof(ArchiveTitle);
 
-		/// <summary>
-		/// The destination path of each group output document.
-		/// </summary>
-		/// <remarks>
-		/// This is usually a computed value (starting with a
-		/// <c>=&gt;</c>) that calculates the destination based
-		/// on the group key. If this value is not specified, the
-		/// default group destination will be
-		/// "[Archive File Path]/[Archive File Name]/[Group Key]/[Index (If Paged)].html".
-		/// The destination path of the archive index follows
-		/// normal destination calculation and will be placed at
-		/// the same relative path as the archive file or can be
-		/// changed with metadata like <c>DestinationPath</c>.
-		/// </remarks>
+        /// <summary>
+        /// The destination path of each group output document.
+        /// </summary>
+        /// <remarks>
+        /// This is usually a computed value (starting with a
+        /// <c>=&gt;</c>) that calculates the destination based
+        /// on the group key. If this value is not specified, the
+        /// default group destination will be
+        /// "[Archive File Path]/[Archive File Name]/[Group Key]/[Index (If Paged)].html".
+        /// The destination path of the archive index follows
+        /// normal destination calculation and will be placed at
+        /// the same relative path as the archive file or can be
+        /// changed with metadata like <c>DestinationPath</c>.
+        /// </remarks>
         public const string ArchiveDestination = nameof(ArchiveDestination);
 
-		/// <summary>
-		/// The metadata key that sorting should be based on.
-		/// </summary>
+        /// <summary>
+        /// The metadata key that sorting should be based on.
+        /// </summary>
         public const string ArchiveOrderKey = nameof(ArchiveOrderKey);
 
-		/// <summary>
-		/// Indicates the archive should be sorted in descending order.
-		/// </summary>
+        /// <summary>
+        /// Indicates the archive should be sorted in descending order.
+        /// </summary>
         public const string ArchiveOrderDescending = nameof(ArchiveOrderDescending);
 
         public const string FeedPipelines = nameof(FeedPipelines);
