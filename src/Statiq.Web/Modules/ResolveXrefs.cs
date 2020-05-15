@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,19 +19,32 @@ namespace Statiq.Web.Modules
 
         protected override async Task<IEnumerable<Common.IDocument>> ExecuteContextAsync(IExecutionContext context)
         {
-            // Resolve the xrefs in parallel
-            IEnumerable<Common.IDocument> outputs = await context.Inputs.ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context));
+            // Key = source, Value = tag HTML
+            ConcurrentDictionary<string, ConcurrentBag<string>> failures =
+                new ConcurrentDictionary<string, ConcurrentBag<string>>();
 
-            // Throw if there were any errors (as evidenced by a null document return)
-            if (outputs.Any(x => x == null))
+            // Resolve the xrefs in parallel
+            IEnumerable<Common.IDocument> outputs = await context.Inputs
+                .ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context, failures));
+
+            // Report failures and throw if there are any
+            if (failures.Count > 0)
             {
+                int failureCount = failures.Sum(x => x.Value.Count);
+                string failureMessage = string.Join(
+                    Environment.NewLine,
+                    failures.Select(x => $"{x.Key}{Environment.NewLine} - {string.Join(Environment.NewLine + " - ", x.Value)}"));
+                context.LogError($"{failureCount} xref resolution failures:{Environment.NewLine}{failureMessage}");
                 throw new ExecutionException("Encountered some invalid xrefs");
             }
 
             return outputs;
         }
 
-        private static async Task<Common.IDocument> ResolveDocumentXrefsAsync(Common.IDocument input, IExecutionContext context)
+        private static async Task<Common.IDocument> ResolveDocumentXrefsAsync(
+            Common.IDocument input,
+            IExecutionContext context,
+            ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
             IHtmlDocument htmlDocument = await input.ParseHtmlAsync(context, HtmlParser);
             if (htmlDocument != null)
@@ -60,7 +74,14 @@ namespace Statiq.Web.Modules
                         else
                         {
                             // Continue processing so we can report all the failures in a given document
-                            input.LogError(error);
+                            failures.AddOrUpdate(
+                                input.Source.FullPath,
+                                _ => new ConcurrentBag<string> { error },
+                                (_, list) =>
+                                {
+                                    list.Add(error);
+                                    return list;
+                                });
                             errors = true;
                         }
                         modifiedDocument = true;

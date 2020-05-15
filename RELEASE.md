@@ -1,5 +1,7 @@
 # 1.0.0-alpha.14
 
+- Added better xref error messages.
+
 # 1.0.0-alpha.13
 
 - Fixed a bug in the preview command that exited on failures.
