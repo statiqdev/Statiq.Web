@@ -4,11 +4,11 @@
     <!-- Controls whether references are local projects or NuGet packages -->
     <LocalReferences>false</LocalReferences>    
     <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
-    <StatiqFrameworkVersion>1.0.0-beta.9</StatiqFrameworkVersion>
+    <StatiqFrameworkVersion>1.0.0-beta.10</StatiqFrameworkVersion>
   </PropertyGroup>
   
   <PropertyGroup>
-    <InformationalVersion>1.0.0-alpha.13</InformationalVersion>
+    <InformationalVersion>1.0.0-alpha.14</InformationalVersion>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Product>Statiq Web</Product>
