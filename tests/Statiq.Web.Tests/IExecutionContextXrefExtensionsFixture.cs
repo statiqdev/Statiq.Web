@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Shouldly;
 using Statiq.Common;
 using Statiq.Testing;
+using Statiq.Web.Pipelines;
 
 namespace Statiq.Web.Tests
 {
@@ -32,7 +33,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
                 // When
@@ -67,7 +68,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
                 // When
@@ -89,7 +90,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -111,7 +112,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -133,7 +134,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -163,7 +164,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a, b, c }.ToImmutableArray());
 
                 // When
@@ -188,7 +189,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When, Then
@@ -208,7 +209,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -230,7 +231,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -252,7 +253,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When
@@ -277,7 +278,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When, Then
@@ -294,7 +295,7 @@ namespace Statiq.Web.Tests
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { a }.ToImmutableArray());
 
                 // When, Then

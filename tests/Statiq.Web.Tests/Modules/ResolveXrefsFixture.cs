@@ -8,6 +8,7 @@ using Shouldly;
 using Statiq.Common;
 using Statiq.Testing;
 using Statiq.Web.Modules;
+using Statiq.Web.Pipelines;
 
 namespace Statiq.Web.Tests.Modules
 {
@@ -26,7 +27,7 @@ namespace Statiq.Web.Tests.Modules
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
                 TestDocument document = new TestDocument(
                     @"<html>
@@ -58,7 +59,7 @@ namespace Statiq.Web.Tests.Modules
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
                 TestDocument document = new TestDocument(
                     @"<html>
@@ -85,7 +86,7 @@ namespace Statiq.Web.Tests.Modules
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
                 TestDocument document = new TestDocument(
                     @"<html>
@@ -117,7 +118,7 @@ namespace Statiq.Web.Tests.Modules
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
                 TestDocument document = new TestDocument(
                     @"<html>
@@ -149,7 +150,7 @@ namespace Statiq.Web.Tests.Modules
                 };
                 TestExecutionContext context = new TestExecutionContext();
                 context.Outputs.Dictionary.Add(
-                    nameof(Pipelines.Content),
+                    nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
                 TestDocument document = new TestDocument(
                     @"<html>
