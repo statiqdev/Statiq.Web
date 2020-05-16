@@ -31,7 +31,7 @@ namespace Statiq.Web.Modules
                         .ToImmutableArray());
 
             // Iterate through all input documents in parallel
-            return context.Inputs.Select(input =>
+            IEnumerable<IDocument> results = context.Inputs.Select(input =>
             {
                 IDocument merged = input;
 
@@ -65,6 +65,7 @@ namespace Statiq.Web.Modules
 
                 return merged;
             });
+            return results;
         }
 
         private class DirectoryMetadataData
