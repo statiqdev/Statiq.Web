@@ -23,13 +23,8 @@ namespace Statiq.Web.Pipelines
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above)
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Apply directory metadata
-                new ApplyDirectoryMetadata(),
-
-                // Parse the content into metadata depending on the content type
-                new ExecuteSwitch(Config.FromDocument(doc => doc.ContentProvider.MediaType))
-                    .Case(MediaTypes.Json, new ParseJson())
-                    .Case(MediaTypes.Yaml, new ParseYaml()),
+                // Process directory metadata, sidecar files, front matter, and data content
+                new ProcessMetadata(),
 
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
@@ -37,6 +32,7 @@ namespace Statiq.Web.Pipelines
                 // Filter out feed documents (they'll get processed by the Feed pipeline)
                 new FilterDocuments(Config.FromDocument(doc => !Feeds.IsFeed(doc))),
 
+                // Set the destination and optimize filenames
                 new SetDestination(),
                 new ExecuteIf(Config.FromSetting(WebKeys.OptimizeDataFileNames, true))
                 {

@@ -1,5 +1,10 @@
 # 1.0.0-alpha.14
 
+- Added support for directory metadata for data files.
+- Added support for front matter in data files.
+- Added support for sidecar files as `_[filename].[json|yaml]`.
+- Added `ProcessSidecarFiles` setting to turn sidecar files off.
+- Added `ApplyDirectoryMetadata` setting to turn directory metadata off.
 - Added better xref error messages.
 
 # 1.0.0-alpha.13

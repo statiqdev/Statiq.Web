@@ -14,7 +14,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new ExecuteIf(Config.FromSetting<bool>(WebKeys.GenerateSitemap))
+                new ExecuteIf(Config.FromSetting(WebKeys.GenerateSitemap, true))
                 {
                     new ConcatDocuments(nameof(Content))
                     {

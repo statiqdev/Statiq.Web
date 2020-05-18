@@ -23,10 +23,7 @@ namespace Statiq.Web.Pipelines
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Data")
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Apply directory metadata
-                new ApplyDirectoryMetadata(),
-
-                // Process front matter and sidecar files
+                // Process directory metadata, sidecar files, and front matter
                 new ProcessMetadata(),
 
                 // Filter out excluded documents

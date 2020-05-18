@@ -9,6 +9,7 @@ using Statiq.Core;
 using Statiq.Html;
 using Statiq.Markdown;
 using Statiq.Razor;
+using Statiq.Web.Modules;
 using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
@@ -24,10 +25,7 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                // Parse the content into metadata depending on the content type
-                new ExecuteSwitch(Config.FromDocument(doc => doc.ContentProvider.MediaType))
-                    .Case(MediaTypes.Json, new ParseJson())
-                    .Case(MediaTypes.Yaml, new ParseYaml())
+                new ParseDataContent()
             };
         }
     }

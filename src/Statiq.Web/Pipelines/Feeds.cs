@@ -4,6 +4,7 @@ using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Feeds;
+using Statiq.Web.Modules;
 using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
@@ -21,10 +22,16 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                new ExecuteSwitch(Config.FromDocument(doc => doc.ContentProvider.MediaType))
-                    .Case(MediaTypes.Json, new ParseJson())
-                    .Case(MediaTypes.Yaml, new ParseYaml()),
+                // Process directory metadata, sidecar files, and front matter, and data content
+                new ProcessMetadata(),
+
+                // Filter out excluded documents
+                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
+
+                // Limit to feed documents
                 new FilterDocuments(Config.FromDocument(IsFeed)),
+
+                // Generate the feeds
                 new ForEachDocument
                 {
                     new ExecuteConfig(Config.FromDocument(feedDoc =>

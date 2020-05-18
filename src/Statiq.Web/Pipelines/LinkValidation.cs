@@ -19,7 +19,7 @@ namespace Statiq.Web.Pipelines
             {
                 new ReplaceDocuments(Dependencies.ToArray()),
                 new ValidateLinks()
-                    .ValidateRelativeLinks(Config.FromSetting<bool>(WebKeys.ValidateRelativeLinks))
+                    .ValidateRelativeLinks(Config.FromSetting(WebKeys.ValidateRelativeLinks, true))
                     .ValidateAbsoluteLinks(Config.FromSetting<bool>(WebKeys.ValidateAbsoluteLinks))
                     .AsError(Config.FromSetting<bool>(WebKeys.ValidateLinksAsError))
             };

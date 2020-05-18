@@ -24,6 +24,16 @@ namespace Statiq.Web
         public const string OptimizeDataFileNames = nameof(OptimizeDataFileNames);
 
         /// <summary>
+        /// Set to <c>false</c> to prevent processing directory metadata.
+        /// </summary>
+        public const string ApplyDirectoryMetadata = nameof(ApplyDirectoryMetadata);
+
+        /// <summary>
+        /// Set to <c>false</c> to prevent processing sidecar files.
+        /// </summary>
+        public const string ProcessSidecarFiles = nameof(ProcessSidecarFiles);
+
+        /// <summary>
         /// Indicates that a sitemap file should be generated if <c>true</c> (the default).
         /// </summary>
         public const string GenerateSitemap = nameof(GenerateSitemap);
