@@ -32,7 +32,9 @@ namespace Statiq.Web.Pipelines
                 // Filter out archive documents (they'll get processed by the Archives pipeline)
                 new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
 
+                // Enumerate metadata values
                 new EnumerateValues(),
+
                 new AddTitle(),
                 new SetDestination(".html"),
                 new ExecuteIf(Config.FromSetting(WebKeys.OptimizeContentFileNames, true))

@@ -1,5 +1,7 @@
 # 1.0.0-alpha.15
 
+- Added `Enumerate` support to data files.
+
 # 1.0.0-alpha.14
 
 - Added support for directory metadata for data files.

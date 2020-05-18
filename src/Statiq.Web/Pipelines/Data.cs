@@ -32,6 +32,9 @@ namespace Statiq.Web.Pipelines
                 // Filter out feed documents (they'll get processed by the Feed pipeline)
                 new FilterDocuments(Config.FromDocument(doc => !Feeds.IsFeed(doc))),
 
+                // Enumerate metadata values
+                new EnumerateValues(),
+
                 // Set the destination and optimize filenames
                 new SetDestination(),
                 new ExecuteIf(Config.FromSetting(WebKeys.OptimizeDataFileNames, true))

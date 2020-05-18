@@ -226,6 +226,27 @@ namespace Statiq.Web.Tests.Pipelines
             }
 
             [Test]
+            public async Task CloserMetadataOverridesDirectoryMetadata()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/a/b/c.json", "{ }" },
+                    { "/input/a/_directory.json", "{ \"Foo\": \"A\" }" },
+                    { "/input/a/b/_directory.json", "{ \"Foo\": \"B\" }" }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
+                document["Foo"].ShouldBe("B");
+            }
+
+            [Test]
             public async Task FiltersExcludedFiles()
             {
                 // Given
@@ -408,6 +429,31 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
                 (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+            }
+
+            [Test]
+            public async Task EnumeratesValues()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/a/b/c.json",
+                        @"Enumerate:
+  - Apple
+  - Orange
+---
+{ ""Foo"": ""Bar"" }"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                result.Outputs[nameof(Data)][Phase.Process].Select(x => x["Current"]).ShouldBe(new[] { "Apple", "Orange" }, true);
             }
         }
     }
