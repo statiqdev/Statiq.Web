@@ -1,5 +1,6 @@
 # 1.0.0-alpha.15
 
+- Added redirect support.
 - Added deployment support for Azure App Service.
 - Added deployment support for Netlify.
 - Added deployment support for GitHub Pages.

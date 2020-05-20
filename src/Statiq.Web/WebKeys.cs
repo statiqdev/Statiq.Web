@@ -2,7 +2,7 @@ namespace Statiq.Web
 {
     public static class WebKeys
     {
-        // Global
+        ////////// Global
 
         /// <summary>
         /// The globbing pattern(s) that will be used to read content files.
@@ -55,7 +55,17 @@ namespace Statiq.Web
         /// </summary>
         public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
 
-        // Document
+        /// <summary>
+        /// Generates META-REFRESH redirect pages (the default value is <c>true</c>).
+        /// </summary>
+        public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
+
+        /// <summary>
+        /// Generates a Netlify redirects file.
+        /// </summary>
+        public const string NetlifyRedirects = nameof(NetlifyRedirects);
+
+        ////////// Document
 
         public const string Title = nameof(Title);
 
@@ -86,6 +96,42 @@ namespace Statiq.Web
         /// for this setting directly for each document.
         /// </summary>
         public const string Excluded = nameof(Excluded);
+
+        /// <summary>
+        /// Indicates that the content or data file should be output.
+        /// By default content files are output and data files are not.
+        /// </summary>
+        public const string ShouldOutput = nameof(ShouldOutput);
+
+        /// <summary>
+        /// Indicates the layout file that should be used for this document.
+        /// </summary>
+        public const string Layout = nameof(Layout);
+
+        /// <summary>
+        /// Specifies the cross-reference ID of the current document. If not explicitly provided, it will default
+        /// to the title of the document with spaces replaced by underscores (which is derived from the source file name
+        /// if no <see cref="Title"/> metadata is defined for the document).
+        /// </summary>
+        public const string Xref = nameof(Xref);
+
+        /// <summary>
+        /// Used with directory metadata to indicate if the metadata should be applied
+        /// recursively to files in child directories (the default is <c>true</c>).
+        /// </summary>
+        public const string Recursive = nameof(Recursive);
+
+        /// <summary>
+        /// Indicates that post-process templates should be rendered (the default is <c>true</c>).
+        /// </summary>
+        /// <remarks>
+        /// Set this to <c>false</c> for a document to prevent rendering post-process templates such as Razor.
+        /// This can be helpful when you have small bits of content like Markdown that you want to render
+        /// as HTML but not as an entire page so that it can be included in other pages.
+        /// </remarks>
+        public const string RenderPostProcessTemplates = nameof(RenderPostProcessTemplates);
+
+        ////////// Archive
 
         /// <summary>
         /// The pipeline(s) to get documents for the archive from.
@@ -158,6 +204,8 @@ namespace Statiq.Web
         /// </summary>
         public const string ArchiveOrderDescending = nameof(ArchiveOrderDescending);
 
+        ////////// Feed
+
         public const string FeedPipelines = nameof(FeedPipelines);
 
         public const string FeedSources = nameof(FeedSources);
@@ -216,41 +264,7 @@ namespace Statiq.Web
 
         public const string FeedItemThreadUpdated = nameof(FeedItemThreadUpdated);
 
-        /// <summary>
-        /// Indicates that the content or data file should be output.
-        /// By default content files are output and data files are not.
-        /// </summary>
-        public const string ShouldOutput = nameof(ShouldOutput);
-
-        /// <summary>
-        /// Indicates the layout file that should be used for this document.
-        /// </summary>
-        public const string Layout = nameof(Layout);
-
-        /// <summary>
-        /// Specifies the cross-reference ID of the current document. If not explicitly provided, it will default
-        /// to the title of the document with spaces replaced by underscores (which is derived from the source file name
-        /// if no <see cref="Title"/> metadata is defined for the document).
-        /// </summary>
-        public const string Xref = nameof(Xref);
-
-        /// <summary>
-        /// Used with directory metadata to indicate if the metadata should be applied
-        /// recursively to files in child directories (the default is <c>true</c>).
-        /// </summary>
-        public const string Recursive = nameof(Recursive);
-
-        /// <summary>
-        /// Indicates that post-process templates should be rendered (the default is <c>true</c>).
-        /// </summary>
-        /// <remarks>
-        /// Set this to <c>false</c> for a document to prevent rendering post-process templates such as Razor.
-        /// This can be helpful when you have small bits of content like Markdown that you want to render
-        /// as HTML but not as an entire page so that it can be included in other pages.
-        /// </remarks>
-        public const string RenderPostProcessTemplates = nameof(RenderPostProcessTemplates);
-
-        // Deployment
+        ////////// Deployment
 
         public const string GitHubOwner = nameof(GitHubOwner);
 
