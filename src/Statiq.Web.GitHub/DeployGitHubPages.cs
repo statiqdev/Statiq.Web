@@ -14,6 +14,8 @@ namespace Statiq.Web.GitHub
     /// <category>Deployment</category>
     public class DeployGitHubPages : MultiConfigModule
     {
+        public const string DefaultBranch = "gh-pages";
+
         private const string Owner = nameof(Owner);
         private const string Name = nameof(Name);
         private const string Username = nameof(Username);
@@ -104,7 +106,7 @@ namespace Statiq.Web.GitHub
             }
 
             // Get the current head tree
-            string branch = values.GetString(Branch, "gh-pages");
+            string branch = values.GetString(Branch, DefaultBranch);
             Reference reference = await github.Git.Reference.Get(owner, name, "heads/" + branch);
             Commit commit = await github.Git.Commit.Get(owner, name, reference.Object.Sha);
 

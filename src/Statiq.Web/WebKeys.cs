@@ -249,5 +249,29 @@ namespace Statiq.Web
         /// as HTML but not as an entire page so that it can be included in other pages.
         /// </remarks>
         public const string RenderPostProcessTemplates = nameof(RenderPostProcessTemplates);
+
+        // Deployment
+
+        public const string GitHubOwner = nameof(GitHubOwner);
+
+        public const string GitHubName = nameof(GitHubName);
+
+        public const string GitHubUsername = nameof(GitHubUsername);
+
+        public const string GitHubPassword = nameof(GitHubPassword);
+
+        public const string GitHubToken = nameof(GitHubToken);
+
+        public const string GitHubBranch = nameof(GitHubBranch);
+
+        public const string NetlifySiteId = nameof(NetlifySiteId);
+
+        public const string NetlifyAccessToken = nameof(NetlifyAccessToken);
+
+        public const string AzureAppServiceSiteName = nameof(AzureAppServiceSiteName);
+
+        public const string AzureAppServiceUsername = nameof(AzureAppServiceUsername);
+
+        public const string AzureAppServicePassword = nameof(AzureAppServicePassword);
     }
 }

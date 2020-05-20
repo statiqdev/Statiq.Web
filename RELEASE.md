@@ -1,5 +1,8 @@
 # 1.0.0-alpha.15
 
+- Added deployment support for Azure App Service.
+- Added deployment support for Netlify.
+- Added deployment support for GitHub Pages.
 - Added `Enumerate` support to data files.
 
 # 1.0.0-alpha.14
