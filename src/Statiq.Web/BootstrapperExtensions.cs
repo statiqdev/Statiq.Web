@@ -1,16 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Web.Commands;
-using Statiq.Web.Shortcodes;
+using Statiq.Web.Modules;
 
 namespace Statiq.Web
 {
     public static class BootstrapperExtensions
     {
+        /// <summary>
+        /// Adds Statiq Web functionality to an existing bootstrapper.
+        /// This method does not need to be called if using <see cref="BootstrapperFactoryExtensions.CreateWeb(BootstrapperFactory, string[])"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is useful when you want to add Statiq Web support to an existing bootstrapper,
+        /// for example because you created the bootstrapper without certain default functionality
+        /// by calling <see cref="Statiq.App.BootstrapperFactoryExtensions.CreateDefaultWithout(BootstrapperFactory, string[], DefaultFeatures)"/>.
+        /// </remarks>
+        /// <param name="boostrapper">The bootstrapper to add Statiq Web functionality to.</param>
+        /// <returns>The bootstrapper.</returns>
+        public static Bootstrapper AddWeb(this Bootstrapper boostrapper) =>
+            boostrapper
+                .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
+                .AddHostingCommands()
+                .ConfigureServices(services => services
+                    .AddSingleton(new Templates())
+                    .AddSingleton(new ThemeManager()))
+                .ConfigureEngine(engine =>
+                {
+                    ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
+
+                    // Add theme paths from settings
+                    IReadOnlyList<NormalizedPath> settingsThemePaths = engine.Settings.GetList<NormalizedPath>(WebKeys.ThemePaths);
+                    if (settingsThemePaths?.Count > 0)
+                    {
+                        themeManager.ThemePaths.Clear();
+                        foreach (NormalizedPath settingsThemePath in settingsThemePaths)
+                        {
+                            themeManager.ThemePaths.Add(settingsThemePath);
+                        }
+                    }
+
+                    // Add theme input paths in reverse order so we insert into inputs in the same order
+                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
+                    {
+                        engine.FileSystem.InputPaths.Insert(0, themePath.Combine("input"));
+                    }
+                })
+                .AddSettingsIfNonExisting(new Dictionary<string, object>
+                {
+                    { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
+                    { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
+                    { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
+                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
+                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetPublishedDate(false) > DateTime.Today.AddDays(1)) } // Add +1 days so the threshold is midnight on the current day
+                });
+
         /// <summary>
         /// Adds the "preview" and "serve" commands (these are added by default when you
         /// call <see cref="BootstrapperFactoryExtensions.CreateWeb(BootstrapperFactory, string[])"/>.
@@ -39,6 +88,23 @@ namespace Statiq.Web
                 action(services
                     .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
                     .GetRequiredService<Templates>()));
+
+        public static Bootstrapper ConfigureThemePaths(this Bootstrapper bootstrapper, Action<PathCollection> action) =>
+            bootstrapper.ConfigureServices(services =>
+                action(services
+                    .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
+                    .GetRequiredService<ThemeManager>()
+                    .ThemePaths));
+
+        public static Bootstrapper AddThemePath(this Bootstrapper bootstrapper, NormalizedPath themePath) =>
+            bootstrapper.ConfigureThemePaths(paths => paths.Add(themePath));
+
+        public static Bootstrapper SetThemePath(this Bootstrapper bootstrapper, NormalizedPath themePath) =>
+            bootstrapper.ConfigureThemePaths(paths =>
+            {
+                paths.Clear();
+                paths.Add(themePath);
+            });
 
         public static Bootstrapper DeployToGitHubPages(
             this Bootstrapper bootstrapper,

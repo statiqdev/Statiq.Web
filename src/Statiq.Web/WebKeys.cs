@@ -65,6 +65,11 @@ namespace Statiq.Web
         /// </summary>
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
+        /// <summary>
+        /// Additional theme paths specified as settings.
+        /// </summary>
+        public const string ThemePaths = nameof(ThemePaths);
+
         ////////// Document
 
         public const string Title = nameof(Title);

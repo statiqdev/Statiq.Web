@@ -1,5 +1,7 @@
 # 1.0.0-alpha.16
 
+- Added support for theme paths and configuring them via the bootstrapper or settings.
+
 # 1.0.0-alpha.15
 
 - Added redirect support.
