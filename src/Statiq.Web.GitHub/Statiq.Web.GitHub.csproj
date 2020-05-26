@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>GitHub Pages deployment modules for Statiq.</Description>
+    <Description>GitHub modules for Statiq including GitHub Pages deployment support.</Description>
     <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine GitHub GitHubPages</PackageTags>
   </PropertyGroup>
 

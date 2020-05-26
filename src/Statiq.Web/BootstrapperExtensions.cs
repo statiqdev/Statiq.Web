@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
@@ -45,10 +46,30 @@ namespace Statiq.Web
                         }
                     }
 
-                    // Add theme input paths in reverse order so we insert into inputs in the same order
+                    // Iterate in reverse order so we start with the highest priority
                     foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
                     {
+                        // Inserting at 0 preserves the original order since we're iterating in reverse
                         engine.FileSystem.InputPaths.Insert(0, themePath.Combine("input"));
+
+                        // Build a configuration for each of the theme paths
+                        IDirectory themeDirectory = engine.FileSystem.GetRootDirectory(themePath);
+                        if (themeDirectory.Exists)
+                        {
+                            IConfigurationRoot configuration = new ConfigurationBuilder()
+                                .SetBasePath(themeDirectory.Path.FullPath)
+                                .AddJsonFile("themesettings.json", true)
+                                .AddJsonFile("statiq.json", true)
+                                .Build();
+                            foreach (KeyValuePair<string, string> config in configuration.AsEnumerable())
+                            {
+                                // Since we're iterating highest priority first, the first key will set and lower priority will be ignored
+                                if (!engine.Settings.ContainsKey(config.Key))
+                                {
+                                    engine.Settings[config.Key] = config.Value;
+                                }
+                            }
+                        }
                     }
                 })
                 .AddSettingsIfNonExisting(new Dictionary<string, object>

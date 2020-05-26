@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Statiq Web is a flexible static site generator.</Description>
+    <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

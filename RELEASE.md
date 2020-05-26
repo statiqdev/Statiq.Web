@@ -1,6 +1,8 @@
 # 1.0.0-alpha.16
 
-- Added support for theme paths and configuring them via the bootstrapper or settings.
+- Updated Statiq Framework to version [1.0.0-beta.13](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.13).
+- Added support for reading `themesettings.json` and `statiq.json` from the theme paths.
+- Added support for theme paths and configuring them via the bootstrapper and/or settings.
 
 # 1.0.0-alpha.15
 
