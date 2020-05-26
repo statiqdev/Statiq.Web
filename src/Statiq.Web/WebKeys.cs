@@ -70,6 +70,11 @@ namespace Statiq.Web
         /// </summary>
         public const string ThemePaths = nameof(ThemePaths);
 
+        /// <summary>
+        /// The level at which to gather headings for a document (this can be set globally or per-document).
+        /// </summary>
+        public const string GatherHeadingsLevel = nameof(GatherHeadingsLevel);
+
         ////////// Document
 
         public const string Title = nameof(Title);
