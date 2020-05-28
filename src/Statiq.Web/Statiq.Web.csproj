@@ -5,6 +5,10 @@
     <Description>Statiq Web is a flexible static site generator.</Description>
     <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="Statiq.Web.props" Pack="true" PackagePath="build\$(TargetFramework)\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Statiq.Web.Aws\Statiq.Web.Aws.csproj" />

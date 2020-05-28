@@ -1,0 +1,17 @@
+<Project>
+  <ItemGroup>
+    <Compile Remove="theme\**" />
+    <Compile Remove="extensions\**" />
+    <Compile Remove="archetypes\**" />
+  <ItemGroup>
+    <None Include="theme\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="extensions\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="archetypes\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
