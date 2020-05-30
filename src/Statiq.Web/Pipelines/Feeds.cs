@@ -5,7 +5,6 @@ using Statiq.Common;
 using Statiq.Core;
 using Statiq.Feeds;
 using Statiq.Web.Modules;
-using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
@@ -76,7 +75,7 @@ namespace Statiq.Web.Pipelines
                             .WithRssPath(feedDoc.GetBool(WebKeys.FeedRss, false) ? feedDoc.Destination.ChangeExtension("rss") : null)
                             .WithAtomPath(feedDoc.GetBool(WebKeys.FeedAtom, false) ? feedDoc.Destination.ChangeExtension("atom") : null)
                             .WithRdfPath(feedDoc.GetBool(WebKeys.FeedRdf, false) ? feedDoc.Destination.ChangeExtension("rdf") : null)
-                            .WithFeedId(feedDoc.Get<Uri>(WebKeys.FeedId))
+                            .WithFeedId(feedDoc.GetString(WebKeys.FeedId))
                             .WithFeedTitle(feedDoc.GetString(WebKeys.FeedTitle))
                             .WithFeedDescription(feedDoc.GetString(WebKeys.FeedDescription))
                             .WithFeedAuthor(feedDoc.GetString(WebKeys.FeedAuthor))
@@ -89,7 +88,7 @@ namespace Statiq.Web.Pipelines
                         // Set the per-item delegates (these would have been copied down to each document from the feed document in the MergeMetadata up above)
                         if (feedDoc.ContainsKey(WebKeys.FeedItemId))
                         {
-                            generateFeeds = generateFeeds.WithItemId(Config.FromDocument(doc => doc.Get<Uri>(WebKeys.FeedItemId)));
+                            generateFeeds = generateFeeds.WithItemId(Config.FromDocument(doc => doc.GetString(WebKeys.FeedItemId)));
                         }
                         if (feedDoc.ContainsKey(WebKeys.FeedItemTitle))
                         {
