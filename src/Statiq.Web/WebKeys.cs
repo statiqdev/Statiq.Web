@@ -38,6 +38,8 @@ namespace Statiq.Web
         /// </summary>
         public const string GenerateSitemap = nameof(GenerateSitemap);
 
+        public const string IncludeInSitemap = nameof(IncludeInSitemap);
+
         public const string MirrorResources = nameof(MirrorResources);
 
         /// <summary>
