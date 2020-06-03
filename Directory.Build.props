@@ -2,15 +2,16 @@
   
   <PropertyGroup>
     <!-- Controls whether references are local projects or NuGet packages -->
-    <LocalReferences>false</LocalReferences>    
+    <LocalReferences>true</LocalReferences>    
     <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
     <StatiqFrameworkVersion>1.0.0-beta.13</StatiqFrameworkVersion>
   </PropertyGroup>
   
   <PropertyGroup>
-    <InformationalVersion>1.0.0-alpha.17</InformationalVersion>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.0-alpha.17</Version>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <AssemblyVersion>$(Version.Split('-')[0])</AssemblyVersion>
+    <FileVersion>$(Version.Split('-')[0])</FileVersion>
     <Product>Statiq Web</Product>
     <Copyright>Copyright © Statiq/Dave Glick</Copyright>
     <Authors>Dave Glick, Other Awesome Contributors</Authors>
@@ -27,6 +28,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
   
   <ItemGroup>

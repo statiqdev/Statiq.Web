@@ -1,5 +1,6 @@
 # 1.0.0-alpha.17
 
+- Added a `IncludeInSitemap` setting to control whether a document should be included in the sitemap (#907, thanks @drmathias).
 - Fixed a bug that required feed items to have URI IDs when the specification indicates they can also be arbitrary strings (#906).
 - Added a props file to the Statiq.Web package to automatically set the default theme, extensions, and archetypes MSBuild props.
 - Updated Statiq Framework to version [1.0.0-beta.14](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.14).

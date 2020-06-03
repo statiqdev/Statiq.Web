@@ -1,5 +1,4 @@
 [Bb]in/
-[Bb]uild/
 [Oo]bj/
 [Dd]ebug/
 [Rr]elease/
@@ -7,6 +6,7 @@
 [Tt]ools/
 ![Tt]ools/packages.config
 [Oo]utput/
+[Aa]rtifacts/
 nuget.exe
 *.com
 *.class
