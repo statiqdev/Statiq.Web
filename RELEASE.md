@@ -1,3 +1,5 @@
+# 1.0.0-alpha.18
+
 # 1.0.0-alpha.17
 
 - Added a `IncludeInSitemap` setting to control whether a document should be included in the sitemap (#907, thanks @drmathias).

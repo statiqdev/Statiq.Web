@@ -13,7 +13,7 @@ namespace Statiq.Web.Build
     {
         private static readonly NormalizedPath ArtifactsFolder = "artifacts";
         private static readonly string GitHubOwner = "statiqdev";
-        private static readonly string GitHubName = "Statiq.Framework";
+        private static readonly string GitHubName = "Statiq.Web";
 
         private static readonly string BuildServer = nameof(BuildServer);
 
@@ -42,7 +42,6 @@ namespace Statiq.Web.Build
                     new ReadFiles("src/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("build")
-                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument(Config.FromContext(context =>
                             context.GetBool(BuildServer) || context.ExecutingPipelines.ContainsKey(nameof(Publish))
                                 ? "-p:ContinuousIntegrationBuild=\"true\"" // Perform a deterministic build if on the CI server or publishing
@@ -65,7 +64,6 @@ namespace Statiq.Web.Build
                     new ReadFiles("tests/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("test")
-                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithParallelExecution(false)
                         .LogOutput()
@@ -87,7 +85,6 @@ namespace Statiq.Web.Build
                     new ReadFiles("src/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("pack")
-                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument("--no-build")
                         .WithArgument("--no-restore")
                         .WithArgument("-o", Config.FromContext(ctx => ctx.FileSystem.GetOutputPath().FullPath), true)
