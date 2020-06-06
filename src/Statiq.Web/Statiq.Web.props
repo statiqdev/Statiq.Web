@@ -3,6 +3,7 @@
     <Compile Remove="theme\**" />
     <Compile Remove="extensions\**" />
     <Compile Remove="archetypes\**" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="theme\**">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
