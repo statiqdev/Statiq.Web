@@ -12,6 +12,8 @@ namespace Statiq.Web.Build
     public class Program
     {
         private static readonly NormalizedPath ArtifactsFolder = "artifacts";
+        private static readonly string GitHubOwner = "statiqdev";
+        private static readonly string GitHubName = "Statiq.Framework";
 
         private static readonly string BuildServer = nameof(BuildServer);
 
@@ -37,9 +39,10 @@ namespace Statiq.Web.Build
 
                 ProcessModules = new ModuleList
                 {
-                    new ReadFiles("src/*/*.csproj"),
+                    new ReadFiles("src/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("build")
+                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument(Config.FromContext(context =>
                             context.GetBool(BuildServer) || context.ExecutingPipelines.ContainsKey(nameof(Publish))
                                 ? "-p:ContinuousIntegrationBuild=\"true\"" // Perform a deterministic build if on the CI server or publishing
@@ -59,9 +62,10 @@ namespace Statiq.Web.Build
 
                 ProcessModules = new ModuleList
                 {
-                    new ReadFiles("tests/*/*.csproj"),
+                    new ReadFiles("tests/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("test")
+                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithParallelExecution(false)
                         .LogOutput()
@@ -80,9 +84,10 @@ namespace Statiq.Web.Build
                 ProcessModules = new ModuleList
                 {
                     new ThrowExceptionIf(Config.ContainsSettings("DAVIDGLICK_CERTPASS").IsFalse(), "DAVIDGLICK_CERTPASS setting missing"),
-                    new ReadFiles("src/*/*.csproj"),
+                    new ReadFiles("src/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("pack")
+                        .WithArgument(Config.FromContext(context => $"-p:SolutionDir=\"{context.FileSystem.RootPath.FullPath}\""))
                         .WithArgument("--no-build")
                         .WithArgument("--no-restore")
                         .WithArgument("-o", Config.FromContext(ctx => ctx.FileSystem.GetOutputPath().FullPath), true)
@@ -133,14 +138,14 @@ namespace Statiq.Web.Build
                         string notes = string.Join(Environment.NewLine, lines.Skip(1).SkipWhile(x => string.IsNullOrWhiteSpace(x)));
 
                         ctx.LogInformation("Version " + version);
-                        ctx.LogInformation("Notes " + notes);
+                        ctx.LogInformation("Notes " + Environment.NewLine + notes);
 
                         // Add release to GitHub
                         GitHubClient github = new GitHubClient(new ProductHeaderValue("Statiq"))
                         {
                             Credentials = new Credentials(ctx.GetString("STATIQ_GITHUB_TOKEN"))
                         };
-                        Release release = await github.Repository.Release.Create("statiqdev", "Statiq.Web", new NewRelease("v" + version)
+                        Release release = await github.Repository.Release.Create(GitHubOwner, GitHubName, new NewRelease("v" + version)
                         {
                             Name = version,
                             Body = string.Join(Environment.NewLine, notes),
