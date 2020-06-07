@@ -1,3 +1,5 @@
+# 1.0.0-alpha.20
+
 # 1.0.0-alpha.19
 
 - Added the new `Statiq.Web.props` file to a `buildTransitive` folder in the package so it flows transitively to consumers.
