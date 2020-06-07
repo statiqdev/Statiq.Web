@@ -1,5 +1,7 @@
 # 1.0.0-alpha.19
 
+- Added the new `Statiq.Web.props` file to a `buildTransitive` folder in the package so it flows transitively to consumers.
+
 # 1.0.0-alpha.18
 
 - Bug fix for unclosed `<ItemGroup>` in the new props file (#909, thanks @drmathias).

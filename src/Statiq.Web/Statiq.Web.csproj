@@ -8,6 +8,7 @@
   
   <ItemGroup>
     <None Include="Statiq.Web.props" Pack="true" PackagePath="build\$(TargetFramework)\"/>
+    <None Include="Statiq.Web.props" Pack="true" PackagePath="buildTransitive\$(TargetFramework)\"/>
   </ItemGroup>
 
   <ItemGroup>
