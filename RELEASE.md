@@ -1,3 +1,5 @@
+# 1.0.0-alpha.19
+
 # 1.0.0-alpha.18
 
 - Bug fix for unclosed `<ItemGroup>` in the new props file (#909, thanks @drmathias).
