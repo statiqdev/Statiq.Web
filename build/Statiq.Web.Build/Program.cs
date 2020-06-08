@@ -22,7 +22,7 @@ namespace Statiq.Web.Build
             .CreateDefault(args)
             .ConfigureEngine(x =>
             {
-                x.FileSystem.RootPath /= "../../";
+                x.FileSystem.RootPath = new NormalizedPath(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.Parent.Parent;
                 x.FileSystem.OutputPath = x.FileSystem.RootPath / ArtifactsFolder;
                 x.FileSystem.InputPaths.Clear();
                 x.FileSystem.InputPaths.Add(x.FileSystem.RootPath);

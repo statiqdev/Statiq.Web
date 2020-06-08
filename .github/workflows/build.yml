@@ -1,0 +1,25 @@
+
+name: Build
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - name: Get Source
+        uses: actions/checkout@v2
+
+      - name: Install .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+
+      - name: Build and Test
+        run: dotnet run --project "build/Statiq.Web.Build/Statiq.Web.Build.csproj" -- test
