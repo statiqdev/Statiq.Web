@@ -1,3 +1,5 @@
+# 1.0.0-alpha.21
+
 # 1.0.0-alpha.20
 
 - Added `OutputPath` setting so the output path can be set from the command-line or configuration file.

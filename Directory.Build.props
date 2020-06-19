@@ -8,7 +8,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>1.0.0-alpha.20</Version>
+    <Version>1.0.0-alpha.21</Version>
     <InformationalVersion>$(Version)</InformationalVersion>
     <AssemblyVersion>$(Version.Split('-')[0])</AssemblyVersion>
     <FileVersion>$(Version.Split('-')[0])</FileVersion>
