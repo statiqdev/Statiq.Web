@@ -68,9 +68,24 @@ namespace Statiq.Web
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
         /// <summary>
-        /// Additional theme paths specified as settings.
+        /// Theme paths specified as settings.
         /// </summary>
         public const string ThemePaths = nameof(ThemePaths);
+
+        /// <summary>
+        /// Input paths specified as settings.
+        /// </summary>
+        public const string InputPaths = nameof(InputPaths);
+
+        /// <summary>
+        /// Output path specific as a setting.
+        /// </summary>
+        public const string OutputPath = nameof(OutputPath);
+
+        /// <summary>
+        /// Excluded paths specified as a setting.
+        /// </summary>
+        public const string ExcludedPaths = nameof(ExcludedPaths);
 
         /// <summary>
         /// The level at which to gather headings for a document (this can be set globally or per-document).

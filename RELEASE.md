@@ -1,5 +1,10 @@
 # 1.0.0-alpha.20
 
+- Added `OutputPath` setting so the output path can be set from the command-line or configuration file.
+- Added `ExcludedPaths` setting so excluded paths can be set from the command-line or configuration file.
+- Added `InputPaths` setting so input paths can be set from the command-line or configuration file.
+- Updated Statiq Framework to version [1.0.0-beta.16](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.16).
+
 # 1.0.0-alpha.19
 
 - Added the new `Statiq.Web.props` file to a `buildTransitive` folder in the package so it flows transitively to consumers.

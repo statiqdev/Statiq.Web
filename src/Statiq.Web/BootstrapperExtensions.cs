@@ -28,9 +28,62 @@ namespace Statiq.Web
             boostrapper
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
+                .AddWebServices()
+                .AddInputPaths()
+                .AddExcludedPaths()
+                .SetOutputPath()
+                .AddThemePaths()
+                .AddDefaultWebSettings();
+
+        private static Bootstrapper AddWebServices(this Bootstrapper bootstrapper) =>
+            bootstrapper
                 .ConfigureServices(services => services
                     .AddSingleton(new Templates())
-                    .AddSingleton(new ThemeManager()))
+                    .AddSingleton(new ThemeManager()));
+
+        private static Bootstrapper AddInputPaths(this Bootstrapper bootstrapper) =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    IReadOnlyList<NormalizedPath> paths = engine.Settings.GetList<NormalizedPath>(WebKeys.InputPaths);
+                    if (paths?.Count > 0)
+                    {
+                        engine.FileSystem.InputPaths.Clear();
+                        foreach (NormalizedPath path in paths)
+                        {
+                            engine.FileSystem.InputPaths.Add(path);
+                        }
+                    }
+                });
+
+        private static Bootstrapper AddExcludedPaths(this Bootstrapper bootstrapper) =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    IReadOnlyList<NormalizedPath> paths = engine.Settings.GetList<NormalizedPath>(WebKeys.ExcludedPaths);
+                    if (paths?.Count > 0)
+                    {
+                        engine.FileSystem.ExcludedPaths.Clear();
+                        foreach (NormalizedPath path in paths)
+                        {
+                            engine.FileSystem.ExcludedPaths.Add(path);
+                        }
+                    }
+                });
+
+        private static Bootstrapper SetOutputPath(this Bootstrapper bootstrapper) =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    NormalizedPath path = engine.Settings.GetPath(WebKeys.OutputPath);
+                    if (!path.IsNullOrEmpty)
+                    {
+                        engine.FileSystem.OutputPath = path;
+                    }
+                });
+
+        private static Bootstrapper AddThemePaths(this Bootstrapper bootstrapper) =>
+            bootstrapper
                 .ConfigureEngine(engine =>
                 {
                     ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
@@ -71,7 +124,10 @@ namespace Statiq.Web
                             }
                         }
                     }
-                })
+                });
+
+        private static Bootstrapper AddDefaultWebSettings(this Bootstrapper bootstrapper) =>
+            bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
@@ -82,7 +138,7 @@ namespace Statiq.Web
                 });
 
         /// <summary>
-        /// Adds the "preview" and "serve" commands (these are added by default when you
+        /// Adds the "preview" and "serve" commands (this is called by default when you
         /// call <see cref="BootstrapperFactoryExtensions.CreateWeb(BootstrapperFactory, string[])"/>.
         /// </summary>
         /// <param name="bootstrapper">The current bootstrapper.</param>

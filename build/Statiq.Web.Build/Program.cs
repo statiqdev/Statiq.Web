@@ -146,7 +146,7 @@ namespace Statiq.Web.Build
                         {
                             Name = version,
                             Body = string.Join(Environment.NewLine, notes),
-                            TargetCommitish = "master",
+                            TargetCommitish = "main",
                             Prerelease = version.Contains('-')
                         });
                         ctx.LogInformation($"Added release {release.Name} to GitHub");
