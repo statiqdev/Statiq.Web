@@ -18,23 +18,17 @@ namespace Statiq.Web.Pipelines
                 {
                     new ConcatDocuments(nameof(Content))
                     {
-                        new FilterDocuments(
-                            Config.FromDocument(WebKeys.ShouldOutput, true).CombineWith(
-                            Config.FromDocument(WebKeys.IncludeInSitemap, true)))
+                        new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true))
                     },
                     new ConcatDocuments(nameof(Data))
                     {
-                        new FilterDocuments(
-                            Config.FromDocument(WebKeys.ShouldOutput, true).CombineWith(
-                            Config.FromDocument(WebKeys.IncludeInSitemap, true)))
+                        new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true))
                     },
-                    new ConcatDocuments(nameof(Archives))
-                    {
-                        new FilterDocuments(
-                            Config.FromDocument(WebKeys.IncludeInSitemap, true))
-                    },
+                    new ConcatDocuments(nameof(Archives)),
                     new FlattenTree(),
-                    new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))),
+                    new FilterDocuments(
+                        Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder)).CombineWith(
+                        Config.FromDocument(WebKeys.IncludeInSitemap, true))),
                     new GenerateSitemap()
                 }
             };

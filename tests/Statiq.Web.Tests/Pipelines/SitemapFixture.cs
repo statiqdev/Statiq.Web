@@ -56,6 +56,11 @@ namespace Statiq.Web.Tests.Pipelines
                         "/input/foo.html",
                         @"IncludeInSitemap: true
 ---" + ContentFile
+                    },
+                    {
+                        "/input/foo/bar.html",
+                        @"IncludeInSitemap: true
+---" + ContentFile
                     }
                 };
 
@@ -67,6 +72,7 @@ namespace Statiq.Web.Tests.Pipelines
                 IDocument document = result.Outputs[nameof(Sitemap)][Phase.Output].ShouldHaveSingleItem();
                 string sitemapContent = await document.GetContentStringAsync();
                 sitemapContent.ShouldContain("<loc>/foo</loc>");
+                sitemapContent.ShouldContain("<loc>/foo/bar</loc>");
             }
 
             [Test]
@@ -84,6 +90,11 @@ namespace Statiq.Web.Tests.Pipelines
                         "/input/foo.html",
                         @"IncludeInSitemap: false
 ---" + ContentFile
+                    },
+                    {
+                        "/input/foo/bar.html",
+                        @"IncludeInSitemap: false
+---" + ContentFile
                     }
                 };
 
@@ -95,6 +106,7 @@ namespace Statiq.Web.Tests.Pipelines
                 IDocument document = result.Outputs[nameof(Sitemap)][Phase.Output].ShouldHaveSingleItem();
                 string sitemapContent = await document.GetContentStringAsync();
                 sitemapContent.ShouldNotContain("<loc>/foo</loc>");
+                sitemapContent.ShouldNotContain("<loc>/foo/bar</loc>");
             }
         }
 
