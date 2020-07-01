@@ -149,6 +149,7 @@ namespace Statiq.Web.Commands
                         {
                             ConfigurationSettings[Keys.ResetCache] = false;
                         }
+                        else
                         {
                             ConfigurationSettings[Keys.ResetCache] = existingResetCacheSetting;
                         }
