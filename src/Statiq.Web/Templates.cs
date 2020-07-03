@@ -34,7 +34,6 @@ namespace Statiq.Web
                         .WithLayout(Config.FromDocument((doc, ctx) =>
                         {
                             // Crawl up the tree looking for a layout
-                            // TODO: Layout doesn't appear to be working, need to run that down
                             IDocument parent = doc;
                             while (parent != null)
                             {

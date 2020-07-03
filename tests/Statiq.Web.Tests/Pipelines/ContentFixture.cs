@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -101,6 +102,44 @@ namespace Statiq.Web.Tests.Pipelines
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
                     .ShouldBe(new[] { "1.1", "1.2", "2.1", "2.2", "2.3" }, true);
+            }
+
+            [Test]
+            public async Task LayoutMetadata()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Layout/Test.md",
+                        @"Layout: _Layout.cshtml
+---
+# Heading
+
+This is a test"
+                    },
+                    {
+                        "/input/Layout/_Layout.cshtml",
+                        @"<div>LAYOUT</div>
+    @RenderBody()"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<div>LAYOUT</div>
+    <h1 id=""heading"">Heading</h1>
+<p>This is a test</p>
+",
+                    StringCompareShould.IgnoreLineEndings);
             }
         }
 
