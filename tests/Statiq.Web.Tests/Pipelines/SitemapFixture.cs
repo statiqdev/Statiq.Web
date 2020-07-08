@@ -10,7 +10,6 @@ using Statiq.Web.Pipelines;
 namespace Statiq.Web.Tests.Pipelines
 {
     [TestFixture]
-    [NonParallelizable]
     public class SitemapFixture
     {
         public class ExecuteTests : DataFixture

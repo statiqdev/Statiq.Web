@@ -12,7 +12,6 @@ using Statiq.Web.Pipelines;
 namespace Statiq.Web.Tests.Pipelines
 {
     [TestFixture]
-    [NonParallelizable]
     public class RedirectsFixture : BaseFixture
     {
         public class ExecuteTests : RedirectsFixture

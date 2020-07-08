@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -14,7 +12,6 @@ using Statiq.Web.Pipelines;
 namespace Statiq.Web.Tests.Pipelines
 {
     [TestFixture]
-    [NonParallelizable]
     public class ContentFixture : BaseFixture
     {
         public class ExecuteTests : DataFixture

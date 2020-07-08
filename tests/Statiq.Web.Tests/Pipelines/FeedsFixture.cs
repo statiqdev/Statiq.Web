@@ -12,7 +12,6 @@ using Statiq.Web.Pipelines;
 namespace Statiq.Web.Tests.Pipelines
 {
     [TestFixture]
-    [NonParallelizable]
     public class FeedsFixture : BaseFixture
     {
         public class ExecuteTests : DataFixture
