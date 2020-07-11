@@ -23,6 +23,8 @@ namespace Statiq.Web.Commands
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
         private readonly InterlockedBool _exit = new InterlockedBool(false);
 
+        private readonly ResetCacheMetadataValue _resetCache = new ResetCacheMetadataValue();
+
         public PreviewCommand(
             IConfiguratorCollection configurators,
             IConfigurationSettings configurationSettings,
@@ -36,6 +38,9 @@ namespace Statiq.Web.Commands
                   configurationRoot,
                   bootstrapper)
         {
+            // Add a lazy ResetCache value - we need to add it here and make it lazy since
+            // the configuration settings are disposed once the engine is created
+            configurationSettings[Keys.ResetCache] = _resetCache;
         }
 
         protected override async Task<int> ExecuteEngineAsync(
@@ -125,13 +130,15 @@ namespace Statiq.Web.Commands
                     logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
 
                     // Reset caches when an error occurs during the previous preview
-                    string existingResetCacheSetting = null;
+                    bool? existingResetCacheSetting = null;
                     bool setResetCacheSetting = false;
                     if (exitCode == ExitCode.ExecutionError)
                     {
-                        existingResetCacheSetting = engineManager.Engine.Settings.GetString(Keys.ResetCache);
+                        existingResetCacheSetting = engineManager.Engine.Settings.ContainsKey(Keys.ResetCache)
+                            ? engineManager.Engine.Settings.GetBool(Keys.ResetCache)
+                            : (bool?)null;
                         setResetCacheSetting = true;
-                        ConfigurationSettings[Keys.ResetCache] = "true";
+                        _resetCache.Value = true;
                     }
 
                     // If there was an execution error due to reload, keep previewing but clear the cache
@@ -145,13 +152,7 @@ namespace Statiq.Web.Commands
                     // Reset the reset cache setting after removing it
                     if (setResetCacheSetting)
                     {
-                        if (existingResetCacheSetting == null)
-                        {
-                            ConfigurationSettings[Keys.ResetCache] = false;
-                        }
-                        {
-                            ConfigurationSettings[Keys.ResetCache] = existingResetCacheSetting;
-                        }
+                        _resetCache.Value = existingResetCacheSetting ?? false;
                     }
 
                     if (previewServer == null)
@@ -233,6 +234,14 @@ namespace Statiq.Web.Commands
             logger.LogInformation($"Preview server listening at http://localhost:{port}{urlPath} (on any hostname/IP) and serving from path {path}"
                 + (liveReload ? " with LiveReload support" : string.Empty));
             return server;
+        }
+
+        // This needs to be lazily evaluated so that we can change it after the configuration settings are copied to the engine
+        private class ResetCacheMetadataValue : IMetadataValue
+        {
+            public bool Value { get; set; }
+
+            public object Get(IMetadata metadata) => Value;
         }
     }
 }
