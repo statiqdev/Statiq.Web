@@ -1,5 +1,6 @@
 # 1.0.0-alpha.22
 
+- Added support for `themesettings` and `statiq` YAML (`.yml` and `.yaml`) and XML (`.xml`) configuration files in themes.
 - Fixed a bug on engine reruns (I.e. the preview command).
 
 # 1.0.0-alpha.21
