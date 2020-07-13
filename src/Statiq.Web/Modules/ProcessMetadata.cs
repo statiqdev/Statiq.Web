@@ -19,11 +19,14 @@ namespace Statiq.Web.Modules
                 new ExecuteIf(Config.FromSetting(WebKeys.ProcessSidecarFiles, true))
                 {
                     new ProcessSidecarFile(Config.FromDocument((doc, ctx) =>
-                        doc.Source.IsNull
+                    {
+                        NormalizedPath relativePath = doc.Source.IsNull ? NormalizedPath.Null : doc.Source.GetRelativeInputPath();
+                        return relativePath.IsNull
                             ? NormalizedPath.Null
                             : ParseDataContent.SupportedExtensions
-                                .Select(x => doc.Source.InsertPrefix("_").ChangeExtension(x))
-                                .FirstOrDefault(x => ctx.FileSystem.GetInputFile(x).Exists)))
+                                .Select(x => relativePath.InsertPrefix("_").ChangeExtension(x))
+                                .FirstOrDefault(x => ctx.FileSystem.GetInputFile(x).Exists);
+                    }))
                     {
                         new ParseDataContent()
                     }
