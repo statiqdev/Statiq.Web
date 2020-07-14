@@ -111,14 +111,9 @@ namespace Statiq.Web
                         {
                             IConfigurationRoot configuration = new ConfigurationBuilder()
                                 .SetBasePath(themeDirectory.Path.FullPath)
-                                .AddJsonFile("themesettings.json", true)
-                                .AddYamlFile("themesettings.yml", true)
-                                .AddYamlFile("themesettings.yaml", true)
-                                .AddXmlFile("themesettings.xml", true)
-                                .AddJsonFile("statiq.json", true)
-                                .AddYamlFile("statiq.yml", true)
-                                .AddYamlFile("statiq.yaml", true)
-                                .AddXmlFile("statiq.xml", true)
+                                .AddSettingsFile("themesettings")
+                                .AddSettingsFile("settings")
+                                .AddSettingsFile("statiq")
                                 .Build();
                             foreach (KeyValuePair<string, string> config in configuration.AsEnumerable())
                             {
