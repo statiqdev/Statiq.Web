@@ -111,8 +111,13 @@ namespace Statiq.Web
         /// If you want to use a different metadata key to represent published dates you can
         /// globally fetch a value from a different key by setting <see cref="Published"/>
         /// in settings to an evaluated metadata script like <c>=> SomeOtherKey</c>.
+        /// The pipelines will ensure that the <see cref="Published"/> value is always set by
+        /// either reading from an existing value or by attempting to determine a published
+        /// date using the file name or (optionally) the file last modified time.
         /// </remarks>
         public const string Published = nameof(Published);
+
+        public const string PublishedUsesLastModifiedDate = nameof(PublishedUsesLastModifiedDate);
 
         public const string Updated = nameof(Updated);
 

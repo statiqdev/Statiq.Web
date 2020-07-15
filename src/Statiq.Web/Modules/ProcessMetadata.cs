@@ -32,7 +32,8 @@ namespace Statiq.Web.Modules
                     }
                 },
                 new ExtractFrontMatter(new ParseYaml()),
-                new ParseDataContent())
+                new ParseDataContent(),
+                new SetMetadata(WebKeys.Published, Config.FromDocument((doc, ctx) => doc.GetPublishedDate(ctx, ctx.GetBool(WebKeys.PublishedUsesLastModifiedDate)))))
         {
         }
     }

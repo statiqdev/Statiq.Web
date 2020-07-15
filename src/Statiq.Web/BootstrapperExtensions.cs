@@ -135,7 +135,8 @@ namespace Statiq.Web
                     { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
-                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetPublishedDate(false) > DateTime.Today.AddDays(1)) } // Add +1 days so the threshold is midnight on the current day
+                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
+                    { WebKeys.PublishedUsesLastModifiedDate, true }
                 });
 
         /// <summary>

@@ -1,5 +1,7 @@
 # 1.0.0-alpha.22
 
+- Added ability for all pipelines to ensure every document gets a `Published` value, either from an existing value or from the file name or modified date.
+- Added a `PublishedUsesLastModifiedDate` setting to control whether a file modified date should be used for getting published dates.
 - Added `settings` as a default settings file name in themes (with support for JSON, YAML, or XML formats).
 - Added support for sidecar files in other input directories at the same relative path (I.e. themes).
 - Added support for `themesettings` and `statiq` YAML (`.yml` and `.yaml`) and XML (`.xml`) configuration files in themes.
