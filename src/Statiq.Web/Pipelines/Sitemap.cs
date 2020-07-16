@@ -33,8 +33,7 @@ namespace Statiq.Web.Pipelines
                         new FilterDocuments(
                             Config.FromDocument(WebKeys.IncludeInSitemap, true))
                     },
-                    new FlattenTree(),
-                    new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))),
+                    new FlattenTree(true),
                     new GenerateSitemap()
                 }
             };

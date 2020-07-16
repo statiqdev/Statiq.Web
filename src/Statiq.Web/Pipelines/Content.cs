@@ -50,8 +50,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new FlattenTree(),
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(Keys.TreePlaceholder))), // Don't render placeholder pages
+                new FlattenTree(true), // Don't render placeholder pages
                 new RenderPostProcessTemplates(templates)
             };
 

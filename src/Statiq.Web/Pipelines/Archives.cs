@@ -41,7 +41,7 @@ namespace Statiq.Web.Pipelines
                         // Get outputs from the pipeline(s)
                         modules.Add(
                             new ReplaceDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()),
-                            new FlattenTree(),
+                            new FlattenTree(true),
                             new MergeMetadata(Config.FromValue(archiveDoc.Yield())).KeepExisting());
 
                         // Filter by document source
