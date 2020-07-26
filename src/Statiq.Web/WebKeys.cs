@@ -1,3 +1,8 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Statiq.Common;
+
 namespace Statiq.Web
 {
     public static class WebKeys
@@ -98,6 +103,9 @@ namespace Statiq.Web
 
         public const string Description = nameof(Description);
 
+        /// <summary>
+        /// The author of the site, post, or page (can be set at any level).
+        /// </summary>
         public const string Author = nameof(Author);
 
         public const string Image = nameof(Image);
@@ -192,6 +200,18 @@ namespace Statiq.Web
         public const string ArchiveKey = nameof(ArchiveKey);
 
         /// <summary>
+        /// An <c>IEqualityComparer&lt;object&gt;</c> to use for comparing archive groups.
+        /// </summary>
+        /// <remarks>
+        /// A scripted metadata value can be used to return the appropriate comparer and
+        /// the <see cref="IEqualityComparerExtensions.ToConvertingEqualityComparer{T}(IEqualityComparer{T})"/> extension method
+        /// can be used to convert a typed comparer into a <c>IEqualityComparer&lt;object&gt;</c>.
+        /// For example, to ignore case when generating an archive for tags, you can use
+        /// <c>ArchiveKeyComparer: => StringComparer.OrdinalIgnoreCase.ToConvertingEqualityComparer()</c>.
+        /// </remarks>
+        public const string ArchiveKeyComparer = nameof(ArchiveKeyComparer);
+
+        /// <summary>
         /// The number of items on each group page (or all group items if not defined).
         /// </summary>
         /// <remarks>
@@ -262,7 +282,7 @@ namespace Statiq.Web
 
         public const string FeedDescription = nameof(FeedDescription);  // Defaults to WebKeys.Description
 
-        public const string FeedAuthor = nameof(FeedAuthor);
+        public const string FeedAuthor = nameof(FeedAuthor);  // Defaults to WebKeys.Author
 
         public const string FeedPublished = nameof(FeedPublished);
 

@@ -45,12 +45,12 @@ namespace Statiq.Web.Pipelines
                 new GenerateExcerpt(), // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
                 new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1)),
                 new OrderDocuments(),
-                new CreateTree().WithNesting(true, true)
+                new CreateTree(),
+                new RemoveTreePlaceholders(), // Filter out the placeholder documents right away
             };
 
             PostProcessModules = new ModuleList
             {
-                new FlattenTree(true), // Don't render placeholder pages
                 new RenderPostProcessTemplates(templates)
             };
 

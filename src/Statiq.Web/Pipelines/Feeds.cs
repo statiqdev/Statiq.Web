@@ -40,7 +40,6 @@ namespace Statiq.Web.Pipelines
                         // Get outputs from the pipeline(s)
                         modules.Add(
                             new ReplaceDocuments(feedDoc.GetList(WebKeys.FeedPipelines, new[] { nameof(Content) }).ToArray()),
-                            new FlattenTree(true),
                             new MergeMetadata(Config.FromValue(feedDoc.Yield())).KeepExisting());
 
                         // Filter by document source

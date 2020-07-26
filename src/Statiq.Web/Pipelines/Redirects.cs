@@ -15,7 +15,6 @@ namespace Statiq.Web.Pipelines
             ProcessModules = new ModuleList
             {
                 new ReplaceDocuments(nameof(Content)),
-                new FlattenTree(true),
                 new ExecuteConfig(Config.FromSettings(settings =>
                 {
                     GenerateRedirects generateRedirects = new GenerateRedirects()

@@ -241,7 +241,7 @@ namespace Statiq.Web.Commands
         {
             public bool Value { get; set; }
 
-            public object Get(IMetadata metadata) => Value;
+            public object Get(string key, IMetadata metadata) => Value;
         }
     }
 }

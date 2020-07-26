@@ -1,5 +1,7 @@
 # 1.0.0-alpha.22
 
+- The `Content` pipeline no longer nests output documents and all documents are now output. `IEnumerable<IDocument>.FilterDestinations("*")` can
+  now be used to get "root" documents. **This change in behavior may break existing sites**.
 - Added ability for all pipelines to ensure every document gets a `Published` value, either from an existing value or from the file name or modified date.
 - Added a `PublishedUsesLastModifiedDate` setting to control whether a file modified date should be used for getting published dates.
 - Added `settings` as a default settings file name in themes (with support for JSON, YAML, or XML formats).
