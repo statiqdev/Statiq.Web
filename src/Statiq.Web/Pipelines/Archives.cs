@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
@@ -34,14 +36,13 @@ namespace Statiq.Web.Pipelines
 
                 new ForEachDocument
                 {
-                    new ExecuteConfig(Config.FromDocument(archiveDoc =>
+                    new ExecuteConfig(Config.FromDocument((archiveDoc, ctx) =>
                     {
                         ModuleList modules = new ModuleList();
 
                         // Get outputs from the pipeline(s)
                         modules.Add(
                             new ReplaceDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()),
-                            new FlattenTree(true),
                             new MergeMetadata(Config.FromValue(archiveDoc.Yield())).KeepExisting());
 
                         // Filter by document source
@@ -69,8 +70,18 @@ namespace Statiq.Web.Pipelines
                         {
                             // Group by the archive key
                             string archiveKey = archiveDoc.GetRaw(WebKeys.ArchiveKey) as string;
+                            IEqualityComparer<object> keyComparer = null;
+                            if (archiveDoc.ContainsKey(WebKeys.ArchiveKeyComparer))
+                            {
+                                keyComparer = archiveDoc.Get<IEqualityComparer<object>>(WebKeys.ArchiveKeyComparer);
+                                if (keyComparer == null)
+                                {
+                                    ctx.LogWarning($"Could not convert value of {WebKeys.ArchiveKeyComparer} to an IEqualityComparer<object>, try using the {nameof(IEqualityComparerExtensions.ToConvertingEqualityComparer)} extension method");
+                                }
+                            }
                             modules.Add(
                                 new GroupDocuments(Config.FromDocument(doc => doc.GetList(archiveKey ?? WebKeys.ArchiveKey, new object[] { })))
+                                        .WithComparer(keyComparer)
                                         .WithSource(archiveDoc.Source),
                                 new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
 

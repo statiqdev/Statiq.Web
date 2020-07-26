@@ -1,5 +1,6 @@
 # 1.0.0-alpha.22
 
+- Added an `ArchiveKeyComparer` metadata that allows specifying a specific comparer for use with archive groups (usually with script metadata).
 - The `Content` pipeline no longer nests output documents and all documents are now output. `IEnumerable<IDocument>.FilterDestinations("*")` can
   now be used to get "root" documents. **This change in behavior may break existing sites**.
 - Added ability for all pipelines to ensure every document gets a `Published` value, either from an existing value or from the file name or modified date.
