@@ -13,7 +13,7 @@ namespace Statiq.Web
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            DocumentList<IDocument> documents = context.Outputs[nameof(Pipelines.Content)].Flatten();
+            DocumentList<IDocument> documents = context.Outputs.FromPipeline(nameof(Pipelines.Content)).Flatten();
             List<(NormalizedPath, string, IDocument)> xrefs = documents.Select(x => (x.Source, x.GetString(WebKeys.Xref), x)).ToList();
             ImmutableArray<IDocument> matches = documents
                 .Where(x => x.GetString(WebKeys.Xref)?.Equals(xref, StringComparison.OrdinalIgnoreCase) == true)

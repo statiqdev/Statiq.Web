@@ -18,7 +18,8 @@ namespace Statiq.Web.Modules
         {
             // Figure out relative input paths for all metadata documents
             ImmutableDictionary<string, ImmutableArray<DirectoryMetadataData>> directoryMetadata = context
-                .Outputs[nameof(DirectoryMetadata)]
+                .Outputs
+                .FromPipeline(nameof(DirectoryMetadata))
                 .GroupBy(x => x.Source.Parent.GetRelativeInputPath().FullPath)
                 .ToImmutableDictionary(
                     x => x.Key,

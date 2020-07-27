@@ -35,15 +35,19 @@ namespace Statiq.Web.Pipelines
                 // Enumerate metadata values
                 new EnumerateValues(),
 
-                new AddTitle(),
-                new SetDestination(".html"),
-                new ExecuteIf(Config.FromSetting(WebKeys.OptimizeContentFileNames, true))
+                new CacheDocuments
                 {
-                    new OptimizeFileName()
+                    new AddTitle(),
+                    new SetDestination(".html"),
+                    new ExecuteIf(Config.FromSetting(WebKeys.OptimizeContentFileNames, true))
+                    {
+                        new OptimizeFileName()
+                    },
+                    new RenderProcessTemplates(templates),
+                    new GenerateExcerpt(), // Note that if the document was .cshtml the excerpt might contain Razor instructions or might not work at all
+                    new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
                 },
-                new RenderProcessTemplates(templates),
-                new GenerateExcerpt(), // Note that if the document was .cshtml the except might contain Razor instructions or might not work at all
-                new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1)),
+
                 new OrderDocuments(),
                 new CreateTree(),
                 new RemoveTreePlaceholders(), // Filter out the placeholder documents right away
@@ -51,7 +55,10 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new RenderPostProcessTemplates(templates)
+                new CacheDocuments
+                {
+                    new RenderPostProcessTemplates(templates)
+                }
             };
 
             OutputModules = new ModuleList
