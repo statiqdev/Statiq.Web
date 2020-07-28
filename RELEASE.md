@@ -1,9 +1,10 @@
-# 1.0.0-alpha.22
+# 1.0.0-beta.1
 
 - **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.18](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.18).
   This version of Statiq Framework contains breaking changes which Statiq Web will inherit.
 - **Breaking change:** The `Content` pipeline no longer nests output documents and instead all documents are now output.
   `IEnumerable<IDocument>.FilterDestinations("*.html")` or `Outputs["*.html"]` can be used to get "root" documents.
+- Suppressed archive output when there's no documents to archive.
 - Added the `CacheDocuments` module to additional pipelines for faster rebuild times.
 - Added an `ArchiveKeyComparer` metadata that allows specifying a specific comparer for use with archive groups (usually with script metadata).
 - Added ability for all pipelines to ensure every document gets a `Published` value, either from an existing value or from the file name or modified date.

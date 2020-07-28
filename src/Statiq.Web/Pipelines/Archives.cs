@@ -31,6 +31,9 @@ namespace Statiq.Web.Pipelines
                 // Process front matter and sidecar files
                 new ProcessMetadata(),
 
+                // Filter out excluded documents
+                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
+
                 // Filter just to archive documents
                 new FilterDocuments(Config.FromDocument(IsArchive)),
 
@@ -111,31 +114,40 @@ namespace Statiq.Web.Pipelines
                                 GetTitleAndDestinationModules(archiveDoc));
                             topLevel.Add(GetTopLevelIndexModules(archiveDoc));
 
-                            // Add the group modules and create a top-level index document in a branch
-                            modules.Add(new ExecuteBranch(paginateGroups).Branch(topLevel));
+                            // Add the group modules and create a top-level index document in a branch, but only if we've actually created groups
+                            modules.Add(new ExecuteIf(
+                                Config.FromContext(ctx => ctx.Inputs.Length > 0),
+                                new ExecuteBranch(paginateGroups).Branch(topLevel)));
                         }
                         else
                         {
                             // We weren't grouping so now we've got a sequence of documents
+                            // Only produce them if we have input documents
+                            ModuleList archiveModules = new ModuleList();
 
                             // Paginate the documents
                             if (archiveDoc.ContainsKey(WebKeys.ArchivePageSize))
                             {
-                                modules.Add(
+                                archiveModules.Add(
                                     new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize))
                                         .WithSource(archiveDoc.Source),
                                     new MergeDocuments(Config.FromValue(archiveDoc.Yield())).KeepExistingMetadata());
-                                modules.Add(GetTitleAndDestinationModules(archiveDoc));
+                                archiveModules.Add(GetTitleAndDestinationModules(archiveDoc));
                             }
                             else
                             {
                                 // We didn't make pages so create a top-level document
-                                modules.Add(GetTopLevelIndexModules(archiveDoc));
+                                archiveModules.Add(GetTopLevelIndexModules(archiveDoc));
                             }
+
+                            modules.Add(new ExecuteIf(Config.FromContext(ctx => ctx.Inputs.Length > 0), archiveModules));
                         }
 
                         // Render any markdown content
-                        modules.Add(new RenderProcessTemplates(templates));
+                        modules.Add(new CacheDocuments
+                        {
+                            new RenderProcessTemplates(templates)
+                        });
 
                         return modules;
                     }))
