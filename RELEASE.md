@@ -4,6 +4,8 @@
   This version of Statiq Framework contains breaking changes which Statiq Web will inherit.
 - **Breaking change:** The `Content` pipeline no longer nests output documents and instead all documents are now output.
   `IEnumerable<IDocument>.FilterDestinations("*.html")` or `Outputs["*.html"]` can be used to get "root" documents.
+- Added a `MakeLinksAbsolute` setting to rewrite relative links to be absolute.
+- Added a `MakeLinksRootRelative` setting to rewrite relative links to be root-relative.
 - Suppressed archive output when there's no documents to archive.
 - Added the `CacheDocuments` module to additional pipelines for faster rebuild times.
 - Added an `ArchiveKeyComparer` metadata that allows specifying a specific comparer for use with archive groups (usually with script metadata).

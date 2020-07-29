@@ -25,7 +25,15 @@ namespace Statiq.Web.Modules
                     {
                         new MirrorResources()
                     },
-                    new ResolveXrefs()
+                    new ResolveXrefs(),
+                    new ExecuteIf(Config.FromSetting<bool>(WebKeys.MakeLinksAbsolute))
+                    {
+                        new MakeLinksAbsolute()
+                    },
+                    new ExecuteIf(Config.FromSetting<bool>(WebKeys.MakeLinksRootRelative))
+                    {
+                        new MakeLinksRootRelative()
+                    }
                 })
                 .ToArray())
         {

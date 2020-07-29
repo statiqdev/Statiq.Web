@@ -97,6 +97,16 @@ namespace Statiq.Web
         /// </summary>
         public const string GatherHeadingsLevel = nameof(GatherHeadingsLevel);
 
+        /// <summary>
+        /// Converts relative links to absolute links.
+        /// </summary>
+        public const string MakeLinksAbsolute = nameof(MakeLinksAbsolute);
+
+        /// <summary>
+        /// Converts relative links to root-relative links.
+        /// </summary>
+        public const string MakeLinksRootRelative = nameof(MakeLinksRootRelative);
+
         ////////// Document
 
         public const string Title = nameof(Title);
