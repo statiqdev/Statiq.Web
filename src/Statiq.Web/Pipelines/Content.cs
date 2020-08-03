@@ -55,10 +55,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new CacheDocuments
-                {
-                    new RenderPostProcessTemplates(templates)
-                }
+                new RenderPostProcessTemplates(templates)
             };
 
             OutputModules = new ModuleList
