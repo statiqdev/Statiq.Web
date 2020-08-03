@@ -81,12 +81,12 @@ namespace Statiq.Web.Aws
                         writer.WriteValue("add");
 
                         writer.WritePropertyName("id");
-                        writer.WriteValue(_idMetaKey != null ? input.GetString(_idMetaKey) : input.Id.ToString());
+                        writer.WriteValue(_idMetaKey is object ? input.GetString(_idMetaKey) : input.Id.ToString());
 
                         writer.WritePropertyName("fields");
                         writer.WriteStartObject();
 
-                        if (_bodyField != null)
+                        if (_bodyField is object)
                         {
                             writer.WritePropertyName(_bodyField);
                             writer.WriteValue(await input.GetContentStringAsync());
@@ -96,7 +96,7 @@ namespace Statiq.Web.Aws
                         {
                             string name = await field.FieldName.GetValueAsync(input, context);
                             object value = await field.FieldValue.GetValueAsync(input, context);
-                            if (name == null || value == null)
+                            if (name is null || value is null)
                             {
                                 // Null fields are not written
                                 continue;
@@ -117,17 +117,17 @@ namespace Statiq.Web.Aws
                             }
 
                             object value = input.Get(metaKey);
-                            if (value == null || fieldName == null)
+                            if (value is null || fieldName is null)
                             {
                                 // Null fields are not written
                                 continue;
                             }
 
-                            if (field.Transformer != null)
+                            if (field.Transformer is object)
                             {
                                 value = field.Transformer.Invoke(value);
                             }
-                            if (value == null)
+                            if (value is null)
                             {
                                 // If the transformer function returns null, we'll not writing this either
                                 continue;

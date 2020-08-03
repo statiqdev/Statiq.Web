@@ -44,7 +44,7 @@ namespace Statiq.Web
             if (context.TryGetXrefDocument(xref, out IDocument document, out error))
             {
                 link = document.GetLink(includeHost);
-                return link != null;
+                return link is object;
             }
             link = default;
             return false;

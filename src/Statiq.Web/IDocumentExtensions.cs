@@ -37,7 +37,7 @@ namespace Statiq.Web
                 return metadataDate;
             }
 
-            if (document.Source != null)
+            if (!document.Source.IsNull)
             {
                 // Check filename
                 if (((document.Source.FileName.FullPath.Length >= 11 && document.Source.FileName.FullPath.EndsWith('-')) || document.Source.FileName.FullPath.Length == 10)
@@ -50,7 +50,7 @@ namespace Statiq.Web
                 if (useLastModifiedDate)
                 {
                     IFile file = context.FileSystem.GetFile(document.Source);
-                    if (file != null)
+                    if (file is object)
                     {
                         return file.LastWriteTime;
                     }

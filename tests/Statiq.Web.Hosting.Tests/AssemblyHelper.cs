@@ -12,7 +12,7 @@ namespace Statiq.Web.Hosting.Tests
             string resourceName = $"Statiq.Web.Hosting.Tests.wwwroot.{filename}";
             using (Stream stream = TestAssembly.GetManifestResourceStream(resourceName))
             {
-                if (stream == null)
+                if (stream is null)
                 {
                     return null;
                 }

@@ -47,7 +47,7 @@ namespace Statiq.Web.Modules
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
             IHtmlDocument htmlDocument = await input.ParseHtmlAsync(context, HtmlParser);
-            if (htmlDocument != null)
+            if (htmlDocument is object)
             {
                 // Find and replace "xref:" in links
                 bool modifiedDocument = false;

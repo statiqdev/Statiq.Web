@@ -63,7 +63,7 @@ namespace Statiq.Web.Shortcodes
             using (HttpClient httpClient = context.CreateHttpClient())
             {
                 string request = $"{endpoint}?url={WebUtility.UrlEncode(url)}";
-                if (query != null)
+                if (query is object)
                 {
                     request += "&" + string.Join("&", query);
                 }

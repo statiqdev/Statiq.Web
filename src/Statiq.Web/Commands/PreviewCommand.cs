@@ -155,7 +155,7 @@ namespace Statiq.Web.Commands
                         _resetCache.Value = existingResetCacheSetting ?? false;
                     }
 
-                    if (previewServer == null)
+                    if (previewServer is null)
                     {
                         if (outputDirectory.Exists)
                         {

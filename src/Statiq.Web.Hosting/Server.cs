@@ -100,7 +100,7 @@ namespace Statiq.Web.Hosting
                 .UseWebRoot(Path.Combine(currentDirectory, "wwwroot"))
                 .ConfigureLogging(log =>
                 {
-                    if (loggerProvider != null)
+                    if (loggerProvider is object)
                     {
                         log.AddProvider(loggerProvider);
                     }
@@ -132,7 +132,7 @@ namespace Statiq.Web.Hosting
             IWebHostEnvironment host = app.ApplicationServices.GetService<IWebHostEnvironment>();
             host.WebRootFileProvider = compositeFileProvider;
 
-            if (_liveReloadServer != null)
+            if (_liveReloadServer is object)
             {
                 // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
                 app.UseScriptInjection($"{VirtualDirectory ?? string.Empty}/livereload.js?host=localhost&port={Port}");
@@ -160,7 +160,7 @@ namespace Statiq.Web.Hosting
 
             // Use our large set of mappings and add any additional ones
             FileExtensionContentTypeProvider contentTypeProvider = new FileExtensionContentTypeProvider(MediaTypes.ExtensionMappings);
-            if (_contentTypes != null)
+            if (_contentTypes is object)
             {
                 foreach (KeyValuePair<string, string> contentType in _contentTypes)
                 {
@@ -187,7 +187,7 @@ namespace Statiq.Web.Hosting
 
         public async Task TriggerReloadAsync()
         {
-            if (_liveReloadServer != null)
+            if (_liveReloadServer is object)
             {
                 await _liveReloadServer.SendReloadMessageAsync();
             }

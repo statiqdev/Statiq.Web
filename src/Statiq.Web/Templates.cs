@@ -35,7 +35,7 @@ namespace Statiq.Web
                         {
                             // Crawl up the tree looking for a layout
                             IDocument parent = doc;
-                            while (parent != null)
+                            while (parent is object)
                             {
                                 if (parent.ContainsKey(WebKeys.Layout))
                                 {
@@ -61,7 +61,7 @@ namespace Statiq.Web
             get => _defaultTemplate;
             set
             {
-                if (value != null)
+                if (value is object)
                 {
                     // If not null, do some sanity checks
                     if (!TryGetValue(value, out Template template))
@@ -82,7 +82,7 @@ namespace Statiq.Web
             IEnumerable<IModule> modules = _templates
                 .Where(x => x.Phase == phase && (phase != Phase.PostProcess || !x.Name.Equals(DefaultTemplate, StringComparison.OrdinalIgnoreCase)))
                 .Select(x => new ExecuteIf(x.Condition, x.Module));
-            if (phase == Phase.PostProcess && DefaultTemplate != null)
+            if (phase == Phase.PostProcess && DefaultTemplate is object)
             {
                 if (!TryGetValue(DefaultTemplate, out Template defaultTemplate))
                 {

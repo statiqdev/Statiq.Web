@@ -148,7 +148,7 @@ namespace Statiq.Web.Commands
             // Shutdown
             logger.LogInformation("Shutting down");
 
-            if (serveFolderWatcher != null)
+            if (serveFolderWatcher is object)
             {
                 serveFolderWatcher.EnableRaisingEvents = false;
                 serveFolderWatcher.Changed -= OnFileChanged;

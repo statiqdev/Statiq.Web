@@ -81,18 +81,18 @@ namespace Statiq.Web.Shortcodes
                 arguments.XAttribute(Height),
                 arguments.XAttribute(Width)
             });
-            if (imageLink != null && image != null)
+            if (imageLink is object && image is object)
             {
                 imageLink.Add(image);
                 figure.Add(imageLink);
             }
-            else if (image != null)
+            else if (image is object)
             {
                 figure.Add(image);
             }
 
             // Caption
-            if (content != null)
+            if (content is object)
             {
                 figure.Add(new XElement("figcaption", content));
             }

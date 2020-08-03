@@ -107,7 +107,7 @@ namespace Statiq.Web.Hosting.LiveReload
                 .OrderByDescending(x => x)
                 .FirstOrDefault();
 
-            if (negotiatedProtocol == null)
+            if (negotiatedProtocol is null)
             {
                 string incompatibleMessage =
                     "No compatible LiveReload protocols found, aborting connection " +

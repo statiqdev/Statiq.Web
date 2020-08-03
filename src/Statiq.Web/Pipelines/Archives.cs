@@ -77,7 +77,7 @@ namespace Statiq.Web.Pipelines
                             if (archiveDoc.ContainsKey(WebKeys.ArchiveKeyComparer))
                             {
                                 keyComparer = archiveDoc.Get<IEqualityComparer<object>>(WebKeys.ArchiveKeyComparer);
-                                if (keyComparer == null)
+                                if (keyComparer is null)
                                 {
                                     ctx.LogWarning($"Could not convert value of {WebKeys.ArchiveKeyComparer} to an IEqualityComparer<object>, try using the {nameof(IEqualityComparerExtensions.ToConvertingEqualityComparer)} extension method");
                                 }
