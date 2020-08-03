@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Statiq.Common;
 
@@ -10,12 +8,17 @@ namespace Statiq.Web
         ////////// Global
 
         /// <summary>
-        /// The globbing pattern(s) that will be used to read content files.
+        /// The globbing pattern(s) used to copy asset files.
+        /// </summary>
+        public const string AssetFiles = nameof(AssetFiles);
+
+        /// <summary>
+        /// The globbing pattern(s) used to read content files.
         /// </summary>
         public const string ContentFiles = nameof(ContentFiles);
 
         /// <summary>
-        /// The globbing pattern(s) that will be used to read data files.
+        /// The globbing pattern(s) used to read data files.
         /// </summary>
         public const string DataFiles = nameof(DataFiles);
 

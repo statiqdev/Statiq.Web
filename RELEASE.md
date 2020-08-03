@@ -1,3 +1,9 @@
+# 1.0.0-beta.2
+
+- Updated Statiq Framework to version [1.0.0-beta.19](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.19).
+  This version of Statiq Framework includes internal refactoring that provides a big performance boost.
+- Added a `AssetFiles` settings to configure the globbing patterns used for copying assets.
+
 # 1.0.0-beta.1
 
 - **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.18](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.18).

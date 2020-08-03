@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Statiq.App;
+﻿using System.Collections.Generic;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
-using Statiq.Less;
-using Statiq.Markdown;
-using Statiq.Razor;
-using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
@@ -20,7 +12,7 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                new CopyFiles("**/*{!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}")
+                new CopyFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.AssetFiles))
             };
         }
     }

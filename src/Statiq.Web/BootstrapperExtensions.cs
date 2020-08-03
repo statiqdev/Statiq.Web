@@ -131,6 +131,7 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
+                    { WebKeys.AssetFiles, "**/*{!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}" },
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
                     { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
