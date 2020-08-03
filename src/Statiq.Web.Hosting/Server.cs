@@ -79,7 +79,7 @@ namespace Statiq.Web.Hosting
         public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, ILoggerProvider loggerProvider)
         {
             _contentTypes = contentTypes;
-            LocalPath = localPath ?? throw new ArgumentNullException(nameof(localPath));
+            LocalPath = localPath.ThrowIfNull(nameof(localPath));
             Port = port <= 0 ? throw new ArgumentException("The port must be greater than 0") : port;
             Extensionless = extensionless;
 

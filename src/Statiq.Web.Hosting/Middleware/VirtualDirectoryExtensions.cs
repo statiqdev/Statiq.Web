@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.Middleware
 {
@@ -7,11 +8,7 @@ namespace Statiq.Web.Hosting.Middleware
     {
         public static IApplicationBuilder UseVirtualDirectory(this IApplicationBuilder builder, string virtualDirectory)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
+            builder.ThrowIfNull(nameof(builder));
             return builder.UseMiddleware<VirtualDirectoryMiddleware>(virtualDirectory);
         }
     }

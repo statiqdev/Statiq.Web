@@ -54,7 +54,7 @@ namespace Statiq.Web
         public Template(string name, Phase phase, string mediaType, IModule module)
             : this(name, phase, Config.FromDocument(doc => doc.MediaTypeEquals(mediaType)), module)
         {
-            _ = mediaType ?? throw new ArgumentNullException(nameof(mediaType));
+            mediaType.ThrowIfNull(nameof(mediaType));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Statiq.Web
         /// <param name="module">The template module to execute.</param>
         public Template(string name, Phase phase, Config<bool> condition, IModule module)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = name.ThrowIfNull(nameof(name));
             if (phase != Phase.Process && phase != Phase.PostProcess)
             {
                 throw new ArgumentException("Templates can only be executed in the process or post-process phase");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.Middleware
 {
@@ -14,12 +15,8 @@ namespace Statiq.Web.Hosting.Middleware
 
         public VirtualDirectoryMiddleware(RequestDelegate next, string virtualDirectory)
         {
-            if (virtualDirectory == null)
-            {
-                throw new ArgumentNullException(nameof(virtualDirectory));
-            }
-
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            virtualDirectory.ThrowIfNull(nameof(virtualDirectory));
+            _next = next.ThrowIfNull(nameof(next));
             _virtualDirectory = NormalizeVirtualDirectory(virtualDirectory);
         }
 

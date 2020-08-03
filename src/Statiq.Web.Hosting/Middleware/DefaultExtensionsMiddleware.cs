@@ -6,34 +6,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.Middleware
 {
     internal class DefaultExtensionsMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IFileProvider _fileProvider;
+        private readonly Microsoft.Extensions.FileProviders.IFileProvider _fileProvider;
         private readonly string[] _extensions;
         private readonly ILogger _logger;
 
         public DefaultExtensionsMiddleware(RequestDelegate next, IWebHostEnvironment hostingEnv, IOptions<DefaultExtensionsOptions> options, ILoggerFactory loggerFactory)
         {
-            if (hostingEnv == null)
-            {
-                throw new ArgumentNullException(nameof(hostingEnv));
-            }
+            hostingEnv.ThrowIfNull(nameof(hostingEnv));
+            options.ThrowIfNull(nameof(options));
+            loggerFactory.ThrowIfNull(nameof(loggerFactory));
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
-
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _next = next.ThrowIfNull(nameof(next));
             _fileProvider = hostingEnv.WebRootFileProvider;
             _extensions = (options?.Value ?? new DefaultExtensionsOptions()).Extensions.Select(x => x.StartsWith(".") ? x : ("." + x)).ToArray();
             _logger = loggerFactory.CreateLogger<DefaultExtensionsMiddleware>();

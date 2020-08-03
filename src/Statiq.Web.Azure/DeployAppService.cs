@@ -49,7 +49,7 @@ namespace Statiq.Web.Azure
 
         private static Config<IContentProvider> GetContentProviderFromDirectory(Config<NormalizedPath> directory)
         {
-            _ = directory ?? throw new ArgumentNullException(nameof(directory));
+            directory.ThrowIfNull(nameof(directory));
             return directory.Transform(GetContentProvider);
 
             static IContentProvider GetContentProvider(NormalizedPath path, IExecutionContext context)
@@ -77,7 +77,7 @@ namespace Statiq.Web.Azure
 
         private static Config<IContentProvider> GetContentProviderFromZipFile(Config<NormalizedPath> zipPath)
         {
-            _ = zipPath ?? throw new ArgumentNullException(nameof(zipPath));
+            zipPath.ThrowIfNull(nameof(zipPath));
             return zipPath.Transform(GetContentProvider);
 
             static IContentProvider GetContentProvider(NormalizedPath filePath, IExecutionContext context)
@@ -109,7 +109,7 @@ namespace Statiq.Web.Azure
 
         private static Config<IContentProvider> GetContentProviderFromContentProviderFactory(Config<IContentProviderFactory> contentProviderFactory)
         {
-            _ = contentProviderFactory ?? throw new ArgumentNullException(nameof(contentProviderFactory));
+            contentProviderFactory.ThrowIfNull(nameof(contentProviderFactory));
             return contentProviderFactory.Transform(factory => factory?.GetContentProvider());
         }
 
@@ -124,10 +124,10 @@ namespace Statiq.Web.Azure
             : base(
                 new Dictionary<string, IConfig>
                 {
-                    { SiteName, siteName ?? throw new ArgumentNullException(nameof(siteName)) },
-                    { Username, username ?? throw new ArgumentNullException(nameof(username)) },
-                    { Password, password ?? throw new ArgumentNullException(nameof(password)) },
-                    { ContentProvider, contentProvider ?? throw new ArgumentNullException(nameof(contentProvider)) }
+                    { SiteName, siteName.ThrowIfNull(nameof(siteName)) },
+                    { Username, username.ThrowIfNull(nameof(username)) },
+                    { Password, password.ThrowIfNull(nameof(password)) },
+                    { ContentProvider, contentProvider.ThrowIfNull(nameof(contentProvider)) }
                 },
                 false)
         {

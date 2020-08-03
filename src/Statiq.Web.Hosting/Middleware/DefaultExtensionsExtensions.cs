@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.Middleware
 {
@@ -8,11 +9,7 @@ namespace Statiq.Web.Hosting.Middleware
     {
         public static IApplicationBuilder UseDefaultExtensions(this IApplicationBuilder app, DefaultExtensionsOptions options)
         {
-            if (app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
+            app.ThrowIfNull(nameof(app));
             return app.UseMiddleware<DefaultExtensionsMiddleware>(Options.Create(options));
         }
     }

@@ -147,7 +147,7 @@ namespace Statiq.Web
         /// <returns>The bootstrapper.</returns>
         public static Bootstrapper AddHostingCommands(this Bootstrapper bootstrapper)
         {
-            _ = bootstrapper ?? throw new ArgumentNullException(nameof(bootstrapper));
+            bootstrapper.ThrowIfNull(nameof(bootstrapper));
             bootstrapper.AddCommand<PreviewCommand>();
             bootstrapper.AddCommand<ServeCommand>();
             return bootstrapper;

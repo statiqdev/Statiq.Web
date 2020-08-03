@@ -28,8 +28,8 @@ namespace Statiq.Web
         /// <returns>The published date of the document or <see cref="DateTime.Today"/> if a published date can't be determined.</returns>
         public static DateTime GetPublishedDate(this IDocument document, IExecutionContext context, bool useLastModifiedDate = true)
         {
-            _ = document ?? throw new ArgumentNullException(nameof(document));
-            _ = context ?? throw new ArgumentNullException(nameof(context));
+            document.ThrowIfNull(nameof(document));
+            context.ThrowIfNull(nameof(context));
 
             // Check metadata
             if (document.ContainsKey(WebKeys.Published) && context.TryParseInputDateTime(document.GetString(WebKeys.Published), out DateTime metadataDate))

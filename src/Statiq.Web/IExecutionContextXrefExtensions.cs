@@ -11,7 +11,7 @@ namespace Statiq.Web
     {
         public static bool TryGetXrefDocument(this IExecutionContext context, string xref, out IDocument document, out string error)
         {
-            _ = context ?? throw new ArgumentNullException(nameof(context));
+            context.ThrowIfNull(nameof(context));
 
             DocumentList<IDocument> documents = context.Outputs.FromPipeline(nameof(Pipelines.Content)).Flatten();
             List<(NormalizedPath, string, IDocument)> xrefs = documents.Select(x => (x.Source, x.GetString(WebKeys.Xref), x)).ToList();

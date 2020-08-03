@@ -47,7 +47,7 @@ namespace Statiq.Web.GitHub
                 },
                 false)
         {
-            _ = request ?? throw new ArgumentNullException(nameof(request));
+            request.ThrowIfNull(nameof(request));
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Statiq.Web.GitHub
                   },
                   false)
         {
-            _ = request ?? throw new ArgumentNullException(nameof(request));
+            request.ThrowIfNull(nameof(request));
         }
 
         public ReadGitHub(Func<IDocument, IExecutionContext, GitHubClient, Task<object>> request)
@@ -73,7 +73,7 @@ namespace Statiq.Web.GitHub
                   },
                   false)
         {
-            _ = request ?? throw new ArgumentNullException(nameof(request));
+            request.ThrowIfNull(nameof(request));
         }
 
         /// <summary>

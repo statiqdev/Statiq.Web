@@ -100,7 +100,7 @@ namespace Statiq.Web
 
         public void Add(Template template)
         {
-            _ = template ?? throw new ArgumentNullException(nameof(template));
+            template.ThrowIfNull(nameof(template));
 
             if (Contains(template.Name))
             {
@@ -112,14 +112,14 @@ namespace Statiq.Web
 
         public int IndexOf(string name)
         {
-            _ = name ?? throw new ArgumentNullException(nameof(name));
+            name.ThrowIfNull(nameof(name));
 
             return _templates.FindIndex(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
         public void Insert(int index, Template template)
         {
-            _ = template ?? throw new ArgumentNullException(nameof(template));
+            template.ThrowIfNull(nameof(template));
 
             if (Contains(template.Name))
             {
@@ -131,7 +131,7 @@ namespace Statiq.Web
 
         public bool Remove(string name)
         {
-            _ = name ?? throw new ArgumentNullException(nameof(name));
+            name.ThrowIfNull(nameof(name));
 
             int index = IndexOf(name);
             if (index < 0)
@@ -157,7 +157,7 @@ namespace Statiq.Web
 
         public bool Contains(string name)
         {
-            _ = name ?? throw new ArgumentNullException(nameof(name));
+            name.ThrowIfNull(nameof(name));
 
             return _templates.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
@@ -172,7 +172,7 @@ namespace Statiq.Web
         {
             get
             {
-                _ = name ?? throw new ArgumentNullException(nameof(name));
+                name.ThrowIfNull(nameof(name));
 
                 Template template = _templates.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (template == default)
@@ -185,7 +185,7 @@ namespace Statiq.Web
 
         public bool TryGetValue(string name, out Template template)
         {
-            _ = name ?? throw new ArgumentNullException(nameof(name));
+            name.ThrowIfNull(nameof(name));
 
             template = _templates.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             return template != default;

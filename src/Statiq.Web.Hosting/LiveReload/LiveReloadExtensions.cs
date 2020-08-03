@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.LiveReload
 {
@@ -7,11 +8,7 @@ namespace Statiq.Web.Hosting.LiveReload
     {
         public static IApplicationBuilder UseLiveReload(this IApplicationBuilder builder, LiveReloadServer liveReloadServer)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
+            builder.ThrowIfNull(nameof(builder));
             return builder.UseMiddleware<LiveReloadMiddleware>(liveReloadServer);
         }
     }

@@ -45,14 +45,8 @@ namespace Statiq.Web.Aws
         /// <returns>The current module.</returns>
         public GenerateCloudSearchData MapMetaField(Config<string> fieldName, Config<string> metaKey, Func<object, object> transformer = null)
         {
-            if (fieldName == null)
-            {
-                throw new ArgumentNullException(nameof(fieldName));
-            }
-            if (metaKey == null)
-            {
-                throw new ArgumentNullException(nameof(metaKey));
-            }
+            fieldName.ThrowIfNull(nameof(fieldName));
+            metaKey.ThrowIfNull(nameof(metaKey));
             _metaFields.Add(new MetaFieldMapping(fieldName, metaKey, transformer));
             return this;
         }

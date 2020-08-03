@@ -43,7 +43,7 @@ namespace Statiq.Web.Netlify
 
         private static Config<IContentProvider> GetContentProviderFromDirectory(Config<NormalizedPath> directory)
         {
-            _ = directory ?? throw new ArgumentNullException(nameof(directory));
+            directory.ThrowIfNull(nameof(directory));
             return directory.Transform(GetContentProvider);
 
             static IContentProvider GetContentProvider(NormalizedPath path, IExecutionContext context)
@@ -70,7 +70,7 @@ namespace Statiq.Web.Netlify
 
         private static Config<IContentProvider> GetContentProviderFromZipFile(Config<NormalizedPath> zipPath)
         {
-            _ = zipPath ?? throw new ArgumentNullException(nameof(zipPath));
+            zipPath.ThrowIfNull(nameof(zipPath));
             return zipPath.Transform(GetContentProvider);
 
             static IContentProvider GetContentProvider(NormalizedPath filePath, IExecutionContext context)
@@ -101,7 +101,7 @@ namespace Statiq.Web.Netlify
 
         private static Config<IContentProvider> GetContentProviderFromContentProviderFactory(Config<IContentProviderFactory> contentProviderFactory)
         {
-            _ = contentProviderFactory ?? throw new ArgumentNullException(nameof(contentProviderFactory));
+            contentProviderFactory.ThrowIfNull(nameof(contentProviderFactory));
             return contentProviderFactory.Transform(factory => factory?.GetContentProvider());
         }
 
@@ -115,9 +115,9 @@ namespace Statiq.Web.Netlify
             : base(
                 new Dictionary<string, IConfig>
                 {
-                    { SiteId, siteId ?? throw new ArgumentNullException(nameof(siteId)) },
-                    { AccessToken, accessToken ?? throw new ArgumentNullException(nameof(accessToken)) },
-                    { ContentProvider, contentProvider ?? throw new ArgumentNullException(nameof(contentProvider)) }
+                    { SiteId, siteId.ThrowIfNull(nameof(siteId)) },
+                    { AccessToken, accessToken.ThrowIfNull(nameof(accessToken)) },
+                    { ContentProvider, contentProvider.ThrowIfNull(nameof(contentProvider)) }
                 },
                 false)
         {

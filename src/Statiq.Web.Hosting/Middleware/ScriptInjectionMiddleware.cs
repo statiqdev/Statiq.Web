@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Statiq.Common;
 
 namespace Statiq.Web.Hosting.Middleware
 {
@@ -16,12 +17,8 @@ namespace Statiq.Web.Hosting.Middleware
 
         public ScriptInjectionMiddleware(RequestDelegate next, params string[] scriptUrls)
         {
-            if (scriptUrls == null)
-            {
-                throw new ArgumentNullException(nameof(scriptUrls));
-            }
-
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            scriptUrls.ThrowIfNull(nameof(scriptUrls));
+            _next = next.ThrowIfNull(nameof(next));
             _injectionCode = string.Join(
                 Environment.NewLine,
                 scriptUrls.Select(x => $@"<script type=""text/javascript"" src=""{x}""></script>"));
