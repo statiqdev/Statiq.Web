@@ -110,6 +110,12 @@ namespace Statiq.Web
         /// </summary>
         public const string MakeLinksRootRelative = nameof(MakeLinksRootRelative);
 
+        /// <summary>
+        /// Sets a semantic version range of Statiq Web that must be used.
+        /// Particularly useful for themes to set a supported version range.
+        /// </summary>
+        public const string SupportedStatiqWebVersion = nameof(SupportedStatiqWebVersion);
+
         ////////// Document
 
         public const string Title = nameof(Title);

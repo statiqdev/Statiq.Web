@@ -34,6 +34,7 @@ namespace Statiq.Web
                         .WithLayout(Config.FromDocument((doc, ctx) =>
                         {
                             // Crawl up the tree looking for a layout
+                            DocumentPathTree<IDocument> tree = ctx.Outputs.AsSourceTree();
                             IDocument parent = doc;
                             while (parent is object)
                             {
@@ -41,7 +42,7 @@ namespace Statiq.Web
                                 {
                                     return parent.GetPath(WebKeys.Layout);
                                 }
-                                parent = parent.GetParent();
+                                parent = tree.GetParentOf(parent);
                             }
                             return null;  // If no layout metadata, revert to default behavior
                         }))),

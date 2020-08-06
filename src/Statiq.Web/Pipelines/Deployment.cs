@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using Statiq.App;
+﻿using Microsoft.Extensions.Logging;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 using Statiq.Web.Azure;
 using Statiq.Web.GitHub;
-using Statiq.Web.Modules;
 using Statiq.Web.Netlify;
-using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
@@ -26,11 +16,11 @@ namespace Statiq.Web.Pipelines
             OutputModules = new ModuleList
             {
                 // GitHub
-                new ExecuteIf(Config.FromSettings(x => x.ContainsKeys(WebKeys.GitHubOwner, WebKeys.GitHubName)))
+                new ExecuteIf(Config.ContainsSettings(WebKeys.GitHubOwner, WebKeys.GitHubName))
                 {
                     new LogMessage(Config.FromSettings(x => $"Deploying to GitHub repository {x.GetString(WebKeys.GitHubOwner)}/{x.GetString(WebKeys.GitHubName)}")),
                     new ExecuteIf(
-                        Config.FromSettings(x => x.ContainsKeys(WebKeys.GitHubUsername, WebKeys.GitHubPassword)),
+                        Config.ContainsSettings(WebKeys.GitHubUsername, WebKeys.GitHubPassword),
                         new DeployGitHubPages(
                             Config.FromSetting<string>(WebKeys.GitHubOwner),
                             Config.FromSetting<string>(WebKeys.GitHubName),
@@ -38,7 +28,7 @@ namespace Statiq.Web.Pipelines
                             Config.FromSetting<string>(WebKeys.GitHubPassword))
                             .ToBranch(Config.FromSetting(WebKeys.GitHubBranch, DeployGitHubPages.DefaultBranch)))
                         .ElseIf(
-                            Config.FromSettings(x => x.ContainsKey(WebKeys.GitHubToken)),
+                            Config.ContainsSettings(WebKeys.GitHubToken),
                             new DeployGitHubPages(
                                 Config.FromSetting<string>(WebKeys.GitHubOwner),
                                 Config.FromSetting<string>(WebKeys.GitHubName),
@@ -48,7 +38,7 @@ namespace Statiq.Web.Pipelines
                 },
 
                 // Netlify
-                new ExecuteIf(Config.FromSettings(x => x.ContainsKeys(WebKeys.NetlifySiteId, WebKeys.NetlifyAccessToken)))
+                new ExecuteIf(Config.ContainsSettings(WebKeys.NetlifySiteId, WebKeys.NetlifyAccessToken))
                 {
                     new LogMessage(Config.FromSettings(x => $"Deploying to Netlify site {x.GetString(WebKeys.NetlifySiteId)}")),
                     new DeployNetlifySite(
@@ -57,7 +47,7 @@ namespace Statiq.Web.Pipelines
                 },
 
                 // Azure App Service
-                new ExecuteIf(Config.FromSettings(x => x.ContainsKeys(WebKeys.AzureAppServiceSiteName, WebKeys.AzureAppServiceUsername, WebKeys.AzureAppServicePassword)))
+                new ExecuteIf(Config.ContainsSettings(WebKeys.AzureAppServiceSiteName, WebKeys.AzureAppServiceUsername, WebKeys.AzureAppServicePassword))
                 {
                     new LogMessage(Config.FromSettings(x => $"Deploying to Azure App Service site {x.GetString(WebKeys.AzureAppServiceSiteName)}")),
                     new DeployAppService(

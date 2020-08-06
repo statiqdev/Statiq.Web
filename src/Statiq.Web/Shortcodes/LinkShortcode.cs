@@ -21,7 +21,7 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="Root">The root of the link. The value of this parameter is prepended to the path.</parameter>
     /// <parameter name="Scheme">The scheme to use for the link (will override the <c>UseHttps</c> parameter).</parameter>
     /// <parameter name="UseHttps">If set to <c>true</c>, HTTPS will be used as the scheme for the link.</parameter>
-    /// <parameter name="HideIndexPages">If set to <c>true</c>, "index.htm" and "index.html" file names will be hidden.</parameter>
+    /// <parameter name="HideIndexPages">If set to <c>true</c>, index files will be hidden.</parameter>
     /// <parameter name="HideExtensions">If set to <c>true</c>, extensions will be hidden.</parameter>
     /// <parameter name="Lowercase">If set to <c>true</c>, links will be rendered in all lowercase.</parameter>
     public class LinkShortcode : SyncShortcode
@@ -70,14 +70,16 @@ namespace Statiq.Web.Shortcodes
                 : (context.Settings.GetBool(Keys.LinksUseHttps) ? "https" : null));
 
             // If "HideIndexPages" is provided and true use default hide pages, otherwise use default hide pages if LinkHideIndexPages is true
+            string indexFileName = context.Settings.GetIndexFileName();
             string[] hidePages = arguments.ContainsKey(HideIndexPages)
-                ? (arguments.GetBool(HideIndexPages) ? LinkGenerator.DefaultHidePages : null)
-                : (context.Settings.GetBool(Keys.LinkHideIndexPages) ? LinkGenerator.DefaultHidePages : null);
+                ? (arguments.GetBool(HideIndexPages) ? new[] { indexFileName } : null)
+                : (context.Settings.GetBool(Keys.LinkHideIndexPages) ? new[] { indexFileName } : null);
 
             // If "HideExtensions" is provided and true use default hide extensions, otherwise use default hide extensions if LinkHideExtensions is true
-            string[] hideExtensions = arguments.ContainsKey(HideExtensions)
-                ? (arguments.GetBool(HideExtensions) ? LinkGenerator.DefaultHideExtensions : null)
-                : (context.Settings.GetBool(Keys.LinkHideExtensions) ? LinkGenerator.DefaultHideExtensions : null);
+            IReadOnlyList<string> pageFileExtensions = context.Settings.GetPageFileExtensions();
+            IReadOnlyList<string> hideExtensions = arguments.ContainsKey(HideExtensions)
+                ? (arguments.GetBool(HideExtensions) ? pageFileExtensions : null)
+                : (context.Settings.GetBool(Keys.LinkHideExtensions) ? pageFileExtensions : null);
 
             // If "Lowercase" is provided use that, otherwise use LinkLowercase setting
             bool lowercase = arguments.ContainsKey(Lowercase)

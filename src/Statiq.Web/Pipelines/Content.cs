@@ -38,7 +38,7 @@ namespace Statiq.Web.Pipelines
                 new CacheDocuments
                 {
                     new AddTitle(),
-                    new SetDestination(".html"),
+                    new SetDestination(true),
                     new ExecuteIf(Config.FromSetting(WebKeys.OptimizeContentFileNames, true))
                     {
                         new OptimizeFileName()
@@ -48,9 +48,7 @@ namespace Statiq.Web.Pipelines
                     new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
                 },
 
-                new OrderDocuments(),
-                new CreateTree(),
-                new RemoveTreePlaceholders(), // Filter out the placeholder documents right away
+                new OrderDocuments()
             };
 
             PostProcessModules = new ModuleList

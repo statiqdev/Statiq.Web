@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
+using Statiq.Core;
 using Statiq.Web.Commands;
 using Statiq.Web.Modules;
 
@@ -26,6 +27,7 @@ namespace Statiq.Web
         /// <returns>The bootstrapper.</returns>
         public static Bootstrapper AddWeb(this Bootstrapper boostrapper) =>
             boostrapper
+                .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.SupportedStatiqWebVersion))
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
                 .AddWebServices()
@@ -131,7 +133,7 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.AssetFiles, "**/*{!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}" },
+                    { WebKeys.AssetFiles, "**/*{!.htm,!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}" },
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" },
                     { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },

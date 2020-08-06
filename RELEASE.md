@@ -1,5 +1,10 @@
 # 1.0.0-beta.3
 
+- **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.20](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.20).
+  This version of Statiq Framework contains breaking changes which Statiq Web will inherit.
+- The `Content` pipeline no longer creates any metadata-based tree structure (I.e. the metadata key `Children` is no longer set). Instead, consider
+  using methods from `Outputs` such as `Outputs.GetChildren(doc)` (see the Statiq Framework 1.0.0-beta.20 release notes for more details).
+
 # 1.0.0-beta.2
 
 - Updated Statiq Framework to version [1.0.0-beta.19](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.19).

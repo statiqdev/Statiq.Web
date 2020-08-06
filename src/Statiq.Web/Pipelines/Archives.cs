@@ -97,7 +97,7 @@ namespace Statiq.Web.Pipelines
                                     // Paginate the group
                                     new ExecuteConfig(Config.FromDocument(groupDoc => new ModuleList
                                     {
-                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.GetChildren())),
+                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.AsMetadataTree().GetChildren())),
                                         new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize))
                                             .WithSource(archiveDoc.Source),
                                         new MergeMetadata(Config.FromValue(groupDoc.Yield())).KeepExisting(),
@@ -169,7 +169,7 @@ namespace Statiq.Web.Pipelines
         {
             new ReplaceDocuments(Config.FromContext(ctx => archiveDoc.Clone(new MetadataItems { { Keys.Children, ctx.Inputs } }).Yield())),
             new AddTitle(),
-            new SetDestination(Config.FromValue(archiveDoc.Destination.ChangeExtension(".html")), true)
+            new SetDestination(Config.FromSettings(s => archiveDoc.Destination.ChangeExtension(s.GetPageFileExtensions()[0])), true)
         };
 
         private static IModule[] GetTitleAndDestinationModules(IDocument archiveDoc) => new IModule[]
@@ -192,7 +192,7 @@ namespace Statiq.Web.Pipelines
                     return index <= 1 ? title : (title + $" (Page {index})");
                 })).KeepExisting(false),
             new SetDestination(
-                Config.FromDocument(doc =>
+                Config.FromDocument((doc, ctx) =>
                 {
                     if (doc.ContainsKey(WebKeys.ArchiveDestination))
                     {
@@ -210,7 +210,7 @@ namespace Statiq.Web.Pipelines
                     {
                         destination = destination.Combine(index.ToString());
                     }
-                    return destination.AppendExtension(".html");
+                    return destination.AppendExtension(ctx.Settings.GetPageFileExtensions()[0]);
                 }),
                 true)
         };
