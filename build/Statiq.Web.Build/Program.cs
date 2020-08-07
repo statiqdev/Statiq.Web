@@ -14,8 +14,8 @@ namespace Statiq.Web.Build
         private static readonly NormalizedPath ArtifactsFolder = "artifacts";
         private static readonly string GitHubOwner = "statiqdev";
         private static readonly string GitHubName = "Statiq.Web";
-
         private static readonly string BuildServer = nameof(BuildServer);
+        private static readonly string ProjectPattern = "src/**/{!templates,}/**/*.csproj";
 
         public static async Task<int> Main(string[] args) => await Bootstrapper
             .Factory
@@ -39,7 +39,7 @@ namespace Statiq.Web.Build
 
                 ProcessModules = new ModuleList
                 {
-                    new ReadFiles("src/**/*.csproj"),
+                    new ReadFiles(ProjectPattern),
                     new StartProcess("dotnet")
                         .WithArgument("build")
                         .WithArgument(Config.FromContext(context =>
@@ -82,7 +82,7 @@ namespace Statiq.Web.Build
                 ProcessModules = new ModuleList
                 {
                     new ThrowExceptionIf(Config.ContainsSettings("DAVIDGLICK_CERTPASS").IsFalse(), "DAVIDGLICK_CERTPASS setting missing"),
-                    new ReadFiles("src/**/*.csproj"),
+                    new ReadFiles(ProjectPattern),
                     new StartProcess("dotnet")
                         .WithArgument("pack")
                         .WithArgument("--no-build")
