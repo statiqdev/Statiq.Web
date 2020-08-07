@@ -27,7 +27,6 @@ namespace Statiq.Web
         /// <returns>The bootstrapper.</returns>
         public static Bootstrapper AddWeb(this Bootstrapper boostrapper) =>
             boostrapper
-                .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.SupportedStatiqWebVersion))
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
                 .AddWebServices()
@@ -35,7 +34,8 @@ namespace Statiq.Web
                 .AddExcludedPaths()
                 .SetOutputPath()
                 .AddThemePaths()
-                .AddDefaultWebSettings();
+                .AddDefaultWebSettings()
+                .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.MinimumStatiqWebVersion));
 
         private static Bootstrapper AddWebServices(this Bootstrapper bootstrapper) =>
             bootstrapper

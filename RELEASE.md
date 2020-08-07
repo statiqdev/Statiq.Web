@@ -3,7 +3,11 @@
 - **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.20](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.20).
   This version of Statiq Framework contains breaking changes which Statiq Web will inherit.
 - The `Content` pipeline no longer creates any metadata-based tree structure (I.e. the metadata key `Children` is no longer set). Instead, consider
-  using methods from `Outputs` such as `Outputs.GetChildren(doc)` (see the Statiq Framework 1.0.0-beta.20 release notes for more details).
+  using methods from `Outputs` such as `Outputs.GetChildren(doc)` or the new `OutputPages` property (see the Statiq Framework 1.0.0-beta.20 release notes for more details).
+- Added a new `MinimumStatiqWebVersion` key to perform a check for the minimum allowed version of Statiq Web. If this is set to something higher than the current version
+  of Statiq Web, an error will be logged and execution will stop. Any setting that starts will this key will be considered, so it's recommended the use of this key be
+  suffixed with a unique identifier to avoid conflicts between components (for example `MinimumStatiqWebVersion-MySite`). While not required or typically necessary for sites,
+  it's recommended that themes set this in their theme settings file (for example `MinimumStatiqWebVersion-CleanBlog`).
 
 # 1.0.0-beta.2
 

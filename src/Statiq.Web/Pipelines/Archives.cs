@@ -97,7 +97,7 @@ namespace Statiq.Web.Pipelines
                                     // Paginate the group
                                     new ExecuteConfig(Config.FromDocument(groupDoc => new ModuleList
                                     {
-                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.AsMetadataTree().GetChildren())),
+                                        new ReplaceDocuments(Config.FromDocument<IEnumerable<IDocument>>(doc => doc.GetChildren())),
                                         new PaginateDocuments(archiveDoc.GetInt(WebKeys.ArchivePageSize))
                                             .WithSource(archiveDoc.Source),
                                         new MergeMetadata(Config.FromValue(groupDoc.Yield())).KeepExisting(),
