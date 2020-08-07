@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="input\" />
+    <Folder Include="output\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Statiq.Web" Version="1.0.0-beta.3" />
+  </ItemGroup>
+</Project>
