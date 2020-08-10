@@ -9,12 +9,23 @@ jobs:
   build:
     name: Build
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: Statiq.Web
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - name: Get Source
         uses: actions/checkout@v2
+        with:
+          path: Statiq.Web
+
+      - name: Checkout Statiq.Framework
+        uses: actions/checkout@v2
+        with:
+          repository: statiqdev/Statiq.Framework
+          path: Statiq.Framework
 
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v1
