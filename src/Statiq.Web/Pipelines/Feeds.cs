@@ -21,8 +21,14 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                // Process directory metadata, sidecar files, and front matter, and data content
+                // Process directory metadata, sidecar files, and front matter
                 new ProcessMetadata(),
+
+                // Exclude scripts
+                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Script))),
+
+                // Parse the actual document content
+                new ParseDataContent(),
 
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),

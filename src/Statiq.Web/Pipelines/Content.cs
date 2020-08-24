@@ -11,7 +11,7 @@ namespace Statiq.Web.Pipelines
     {
         public Content(Templates templates)
         {
-            Dependencies.AddRange(nameof(Data), nameof(DirectoryMetadata));
+            Dependencies.AddRange(nameof(Data), nameof(Scripts), nameof(DirectoryMetadata));
 
             InputModules = new ModuleList
             {
@@ -34,6 +34,12 @@ namespace Statiq.Web.Pipelines
 
                 // Enumerate metadata values
                 new EnumerateValues(),
+
+                // Evaluate scripts
+                new ExecuteIf(Config.FromDocument<bool>(WebKeys.Script))
+                {
+                    new EvaluateScript()
+                },
 
                 new CacheDocuments
                 {

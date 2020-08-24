@@ -7,15 +7,15 @@ using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
-    public class Data : Pipeline
+    public class Scripts : Pipeline
     {
-        public Data()
+        public Scripts()
         {
-            Dependencies.Add(nameof(DirectoryMetadata));
+            Dependencies.AddRange(nameof(Data), nameof(DirectoryMetadata));
 
             InputModules = new ModuleList
             {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.DataFiles))
+                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ScriptFiles))
             };
 
             ProcessModules = new ModuleList
@@ -23,34 +23,24 @@ namespace Statiq.Web.Pipelines
                 // Concat all documents from externally declared dependencies (exclude explicit dependencies above)
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Process directory metadata, sidecar files, and front matter
+                // Process directory metadata, sidecar files, front matter, and data content
                 new ProcessMetadata(),
-
-                // Evaluate scripts
-                new ExecuteIf(Config.FromDocument<bool>(WebKeys.Script))
-                {
-                    new EvaluateScript()
-                },
-
-                // Parse the actual document content
-                new ParseDataContent(),
 
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
-
-                // Filter out feed documents (they'll get processed by the Feed pipeline)
-                // This has to come after the data content is parsed since that contains the feed metadata
-                new FilterDocuments(Config.FromDocument(doc => !Feeds.IsFeed(doc))),
 
                 // Enumerate metadata values
                 new EnumerateValues(),
 
                 // Set the destination and optimize filenames
                 new SetDestination(),
-                new ExecuteIf(Config.FromSetting(WebKeys.OptimizeDataFileNames, true))
+                new ExecuteIf(Config.FromSetting(WebKeys.OptimizeScriptFileNames, true))
                 {
                     new OptimizeFileName()
-                }
+                },
+
+                // Execute the script
+                new EvaluateScript()
             };
 
             OutputModules = new ModuleList

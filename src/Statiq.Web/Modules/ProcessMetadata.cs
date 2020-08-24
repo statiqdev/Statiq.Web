@@ -31,8 +31,7 @@ namespace Statiq.Web.Modules
                         new ParseDataContent()
                     }
                 },
-                new ExtractFrontMatter(new ParseYaml()),
-                new ParseDataContent(),
+                new ExtractFrontMatter(new ParseYaml()), // TODO: accept other types of front matter based on first char
                 new SetMetadata(WebKeys.Published, Config.FromDocument((doc, ctx) => doc.GetPublishedDate(ctx, ctx.GetBool(WebKeys.PublishedUsesLastModifiedDate)))))
         {
         }

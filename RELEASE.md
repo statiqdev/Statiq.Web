@@ -1,5 +1,11 @@
 # 1.0.0-beta.4
 
+- Added a new `Script` metadata value for the `Data` and `Content` pipelines that will evaluate a script and continue processing it's result within the pipeline.
+- Added a new `Script` pipeline that evaluates scripts with a `.csx` extension. Detailed usage will be documented on the site,
+  but generally if the script returns null the original input document is returned, if the script returns a string the content
+  of the document will be changed to the return value, or if the script returns a document(s) those will be added to the pipeline.
+- New `Statiq.Web.Templates` project with a Statiq Web templates for the `dotnet new` CLI command (#915, thanks @devlead).
+
 # 1.0.0-beta.3
 
 - **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.20](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.20).

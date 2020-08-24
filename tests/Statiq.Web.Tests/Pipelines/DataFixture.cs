@@ -454,6 +454,33 @@ Foo: Bar"
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 result.Outputs[nameof(Data)][Phase.Process].Select(x => x["Current"]).ShouldBe(new[] { "Apple", "Orange" }, true);
             }
+
+            [Test]
+            public async Task JsonScriptReturn()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/a/b/c.json",
+                        @"
+Script: true
+---
+int a = 1;
+int b = 2;
+return $""{{ \""Foo\"": \""{ a + b }\"" }}"";"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
+                document["Foo"].ShouldBe("3");
+            }
         }
     }
 }

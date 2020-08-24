@@ -138,6 +138,36 @@ This is a test"
 ",
                     StringCompareShould.IgnoreLineEndings);
             }
+
+            [Test]
+            public async Task ScriptContent()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.md",
+                        @"
+Script: true
+---
+string foo = ""Bar"";
+return $""# {foo}\nContent"";"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
+                document.GetContentStringAsync().Result.ShouldBe(
+                    @"<h1 id=""bar"">Bar</h1>
+<p>Content</p>
+",
+                    StringCompareShould.IgnoreLineEndings);
+            }
         }
 
         public const string GatherHeadingsFile = @"
