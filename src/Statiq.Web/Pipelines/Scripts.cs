@@ -29,6 +29,9 @@ namespace Statiq.Web.Pipelines
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
 
+                // Filter out archive documents (they'll get processed by the Archives pipeline)
+                new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
+
                 // Enumerate metadata values
                 new EnumerateValues(),
 
@@ -45,7 +48,7 @@ namespace Statiq.Web.Pipelines
 
             OutputModules = new ModuleList
             {
-                new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput)),
+                new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput, true)),
                 new WriteFiles()
             };
         }

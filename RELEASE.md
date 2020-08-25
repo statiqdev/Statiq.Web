@@ -1,7 +1,10 @@
 # 1.0.0-beta.4
 
-- Added a new `Script` metadata value for the `Data` and `Content` pipelines that will evaluate a script and continue processing it's result within the pipeline.
-- Added a new `Script` pipeline that evaluates scripts with a `.csx` extension. Detailed usage will be documented on the site,
+- Removed the `Isolated` flag from the `Assets` pipeline so the set of copied assets can be retrieved from other pipelines (I.e. to generate a list of images in a directory).
+- Added a `ClearContent` document setting that clears content from data documents (true by default).
+- Added support for script files (`.csx`) to the `Archive` pipeline (I.e. to generate JSON APIs from a collection of documents or data).
+- Added a `Script` document setting for the `Data` and `Content` pipelines that will evaluate a script and continue processing it's result within the pipeline.
+- Added a `Script` pipeline that evaluates scripts with a `.csx` extension. Detailed usage will be documented on the site,
   but generally if the script returns null the original input document is returned, if the script returns a string the content
   of the document will be changed to the return value, or if the script returns a document(s) those will be added to the pipeline.
 - New `Statiq.Web.Templates` project with a Statiq Web templates for the `dotnet new` CLI command (#915, thanks @devlead).

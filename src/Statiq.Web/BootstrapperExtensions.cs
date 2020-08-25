@@ -133,7 +133,7 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.AssetFiles, "**/*{!.htm,!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,}" }, // TODO: Exclude via the templates and ParseDataContent.SupportedExtensions
+                    { WebKeys.AssetFiles, "**/*{!.htm,!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,!.csx,}" }, // TODO: Exclude via the templates and ParseDataContent.SupportedExtensions
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" }, // TODO: Get these from the templates collection
                     { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
                     { WebKeys.ScriptFiles, "**/{!_,}*.csx" },

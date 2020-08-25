@@ -8,8 +8,6 @@ namespace Statiq.Web.Pipelines
     {
         public Assets()
         {
-            Isolated = true;
-
             ProcessModules = new ModuleList
             {
                 new CopyFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.AssetFiles))

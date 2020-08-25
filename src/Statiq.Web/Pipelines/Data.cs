@@ -35,6 +35,12 @@ namespace Statiq.Web.Pipelines
                 // Parse the actual document content
                 new ParseDataContent(),
 
+                // Clear the content so data documents can be safely sent to the content pipeline or rendered with a layout
+                new ExecuteIf(Config.FromDocument(WebKeys.ClearContent, true))
+                {
+                    new SetContent(string.Empty)
+                },
+
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
 

@@ -17,13 +17,21 @@ namespace Statiq.Web.Pipelines
 {
     public class Archives : Pipeline
     {
+        private const string SourcePattern = "_SourcePattern";
+
         public Archives(Templates templates)
         {
             Dependencies.AddRange(nameof(Content), nameof(Data));
 
             InputModules = new ModuleList
             {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles))
+                // Archives can be either content or script, keep track of which
+                new ExecuteBranch(
+                    new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles)),
+                    new SetMetadata(SourcePattern, nameof(WebKeys.ContentFiles)))
+                    .Branch(
+                        new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ScriptFiles)),
+                        new SetMetadata(SourcePattern, nameof(WebKeys.ScriptFiles)))
             };
 
             ProcessModules = new ModuleList
@@ -143,11 +151,19 @@ namespace Statiq.Web.Pipelines
                             modules.Add(new ExecuteIf(Config.FromContext(ctx => ctx.Inputs.Length > 0), archiveModules));
                         }
 
-                        // Render any markdown content
-                        modules.Add(new CacheDocuments
-                        {
-                            new RenderProcessTemplates(templates)
-                        });
+                        // Render any markdown content or scripts
+                        modules.Add(
+                            new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ContentFiles)))
+                            {
+                                new CacheDocuments
+                                {
+                                    new RenderProcessTemplates(templates)
+                                }
+                            },
+                            new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ScriptFiles)))
+                            {
+                                new EvaluateScript()
+                            });
 
                         return modules;
                     }))
@@ -156,11 +172,15 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new RenderPostProcessTemplates(templates)
+                new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ContentFiles)))
+                {
+                    new RenderPostProcessTemplates(templates)
+                }
             };
 
             OutputModules = new ModuleList
             {
+                new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true)),
                 new WriteFiles()
             };
         }
@@ -216,6 +236,9 @@ namespace Statiq.Web.Pipelines
         };
 
         public static bool IsArchive(IDocument document) =>
-            document.ContainsKey(WebKeys.ArchiveSources) || document.ContainsKey(WebKeys.ArchiveFilter) || document.ContainsKey(WebKeys.ArchiveKey);
+            document.ContainsKey(WebKeys.ArchivePipelines)
+                || document.ContainsKey(WebKeys.ArchiveSources)
+                || document.ContainsKey(WebKeys.ArchiveFilter)
+                || document.ContainsKey(WebKeys.ArchiveKey);
     }
 }
