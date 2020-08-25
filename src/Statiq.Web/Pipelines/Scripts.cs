@@ -11,7 +11,7 @@ namespace Statiq.Web.Pipelines
     {
         public Scripts()
         {
-            Dependencies.AddRange(nameof(Data), nameof(DirectoryMetadata));
+            Dependencies.AddRange(nameof(Data), nameof(Content), nameof(Archives), nameof(DirectoryMetadata));
 
             InputModules = new ModuleList
             {
