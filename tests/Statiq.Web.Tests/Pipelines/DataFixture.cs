@@ -33,6 +33,29 @@ namespace Statiq.Web.Tests.Pipelines
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
+            }
+
+            [Test]
+            public async Task DoesNotClearContent()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.ClearContent, false);
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
+                document["Foo"].ShouldBe("Bar");
+                (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
             }
 
             [Test]
@@ -308,7 +331,7 @@ namespace Statiq.Web.Tests.Pipelines
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Fizz"].ShouldBe("Buzz");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -334,7 +357,7 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Fizz"].ShouldBe("Buzz");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBe("Foo: Bar");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -362,7 +385,7 @@ Foo: Bar"
                 document["Fizz"].ShouldBe("Buzz");
                 document["Blue"].ShouldBe("Green");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -384,7 +407,7 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
                 document["Fizz"].ShouldBe("Buzz");
-                (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -406,7 +429,7 @@ Foo: Bar"
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Fizz"].ShouldBe("Buzz");
-                (await document.GetContentStringAsync()).ShouldBe("Foobar");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -427,7 +450,7 @@ Foo: Bar"
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]

@@ -1,7 +1,10 @@
 # 1.0.0-beta.4
 
+- Updated Statiq Framework to version [1.0.0-beta.21](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.21).
+- **Breaking change:** Added a `ClearContent` document setting that clears content from data documents. This is now `true` by default, which is different than the
+  previous behavior of keeping document content for data files (to allow for passing the data file to layouts). To get the old behavior back, add
+  `.AddSetting(WebKeys.ClearContent, false)` to your bootstrapper.
 - Removed the `Isolated` flag from the `Assets` pipeline so the set of copied assets can be retrieved from other pipelines (I.e. to generate a list of images in a directory).
-- Added a `ClearContent` document setting that clears content from data documents (true by default).
 - Added support for script files (`.csx`) to the `Archive` pipeline (I.e. to generate JSON APIs from a collection of documents or data).
 - Added a `Script` document setting for the `Data` and `Content` pipelines that will evaluate a script and continue processing it's result within the pipeline.
 - Added a `Script` pipeline that evaluates scripts with a `.csx` extension. Detailed usage will be documented on the site,
