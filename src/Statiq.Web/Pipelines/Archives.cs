@@ -189,7 +189,7 @@ namespace Statiq.Web.Pipelines
         {
             new ReplaceDocuments(Config.FromContext(ctx => archiveDoc.Clone(new MetadataItems { { Keys.Children, ctx.Inputs } }).Yield())),
             new AddTitle(),
-            new SetDestination(Config.FromSettings(s => archiveDoc.Destination.ChangeExtension(s.GetPageFileExtensions()[0])), true)
+            new SetDestination(Config.FromSettings(s => archiveDoc.Destination.ChangeExtension(s.GetPageFileExtensions()[0])))
         };
 
         private static IModule[] GetTitleAndDestinationModules(IDocument archiveDoc) => new IModule[]

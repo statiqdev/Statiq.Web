@@ -133,10 +133,10 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.AssetFiles, "**/*{!.htm,!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,!.csx,}" }, // TODO: Exclude via the templates and ParseDataContent.SupportedExtensions
+                    { WebKeys.AssetFiles, "**/*{!.htm,!.html,!.cshtml,!.md,!.less,!.yml,!.yaml,!.json,!.scss,!.config,!.csx,!.cs,}" }, // TODO: Exclude via the templates and ParseDataContent.SupportedExtensions
                     { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" }, // TODO: Get these from the templates collection
                     { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
-                    { WebKeys.ScriptFiles, "**/{!_,}*.csx" },
+                    { WebKeys.ScriptFiles, "**/{!_,}*.{csx,cs}" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day

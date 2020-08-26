@@ -10,7 +10,7 @@ namespace Statiq.Web.Modules
     /// </summary>
     public class ProcessMetadata : ForAllDocuments
     {
-        public ProcessMetadata()
+        public ProcessMetadata(string frontMatterStartDelimiter = null, string frontMatterEndDelimiter = null)
             : base(
                 new ExecuteIf(Config.FromSetting(WebKeys.ApplyDirectoryMetadata, true))
                 {
@@ -31,9 +31,24 @@ namespace Statiq.Web.Modules
                         new ParseDataContent()
                     }
                 },
-                new ExtractFrontMatter(new ParseYaml()), // TODO: accept other types of front matter based on first char
+                new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.CSharp)))
+                {
+                    // Special case to pre-process C# files with comment-style front matter delimiters first
+                    new ExtractFrontMatter("*/", GetFrontMatterModules()).RequireStartDelimiter("/*")
+                },
+                new ExtractFrontMatter(GetFrontMatterModules()),
                 new SetMetadata(WebKeys.Published, Config.FromDocument((doc, ctx) => doc.GetPublishedDate(ctx, ctx.GetBool(WebKeys.PublishedUsesLastModifiedDate)))))
         {
+        }
+
+        private static IModule[] GetFrontMatterModules()
+        {
+            ModuleList modules = new ModuleList();
+
+            // TODO: accept other types of front matter based on first char
+            modules.Add(new ParseYaml());
+
+            return modules.ToArray();
         }
     }
 }
