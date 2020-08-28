@@ -9,32 +9,33 @@ using Statiq.Common;
 using Statiq.Core;
 using Statiq.Handlebars;
 using Statiq.Html;
+using Statiq.Less;
 using Statiq.Markdown;
 using Statiq.Razor;
+using Statiq.Sass;
 
 namespace Statiq.Web
 {
-    public class Templates : IEnumerable<Template>, IReadOnlyDictionary<string, Template>
+    public class Templates : IReadOnlyList<Template>, IReadOnlyDictionary<string, Template>
     {
-        private readonly List<Template> _templates;
+        private readonly List<KeyValuePair<string, Template>> _templates = new List<KeyValuePair<string, Template>>();
 
         internal Templates()
         {
-            // Create the default set of templates
-            _templates = new List<Template>
-            {
-                // ContentProcess
-                new Template(nameof(MediaTypes.Markdown), TemplateType.ContentProcess, MediaTypes.Markdown, new RenderMarkdown().UseExtensions()),
+            // Assets
+            Add(MediaTypes.Less, new Template(TemplateType.Asset, new CacheDocuments { new CompileLess() }));
+            Add(MediaTypes.Sass, new Template(TemplateType.Asset, new CacheDocuments { new CompileSass().WithCompactOutputStyle() }));
+            Add(MediaTypes.Scss, this[MediaTypes.Sass]);
 
-                // ContentPostProcess
-                new Template(nameof(MediaTypes.Handlebars), TemplateType.ContentPostProcess, MediaTypes.Handlebars, new RenderHandlebars()),
+            // ContentProcess
+            Add(MediaTypes.Markdown, new Template(TemplateType.ContentProcess, new RenderMarkdown().UseExtensions()));
 
-                // Razor is last and processes both Razor and HTML media types so it runs for other templates and HTML files
-                // Change the condition for Razor to just the Razor media type to prevent it from always running
+            // ContentPostProcess
+            Add(MediaTypes.Handlebars, new Template(TemplateType.ContentPostProcess, new RenderHandlebars()));
+            Add(
+                MediaTypes.Razor,
                 new Template(
-                    nameof(MediaTypes.Razor),
                     TemplateType.ContentPostProcess,
-                    new[] { MediaTypes.Razor, MediaTypes.Html },
                     new RenderRazor()
                         .WithLayout(Config.FromDocument((doc, ctx) =>
                         {
@@ -50,55 +51,50 @@ namespace Statiq.Web
                                 parent = tree.GetParentOf(parent);
                             }
                             return null;  // If no layout metadata, revert to default behavior
-                        }))),
-            };
+                        }))));
+            Add(MediaTypes.Html, this[MediaTypes.Razor]); // Set Razor as the default for HTML files
         }
 
-        internal IEnumerable<IModule> GetModules(TemplateType templateType) =>
-            _templates
-                .Where(x => x.TemplateType == templateType)
-                .Select(x => new ExecuteIf(x.Condition, x.Module));
+        // This returns a single module with branches for each supported media type
+        internal IModule GetModule(TemplateType templateType)
+        {
+            ExecuteIf module = null;
+            foreach (KeyValuePair<string, Template> item in _templates.Where(x => x.Value.TemplateType == templateType))
+            {
+                module = module is null
+                    ? new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module)
+                    : module.ElseIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module);
+            }
+            return module;
+        }
 
-        public Template this[int index] => _templates[index];
-
-        public int Count => _templates.Count;
-
-        public void Add(Template template)
+        public void Add(string mediaType, Template template)
         {
             template.ThrowIfNull(nameof(template));
 
-            if (Contains(template.Name))
+            if (ContainsKey(mediaType))
             {
-                throw new ArgumentException($"A template with the name {template.Name} has already been added");
+                throw new ArgumentException($"A template for media type {mediaType} has already been added");
             }
 
-            _templates.Add(template);
+            _templates.Add(new KeyValuePair<string, Template>(mediaType, template));
         }
 
-        public int IndexOf(string name)
-        {
-            name.ThrowIfNull(nameof(name));
-
-            return _templates.FindIndex(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public void Insert(int index, Template template)
+        public void Insert(int index, string mediaType, Template template)
         {
             template.ThrowIfNull(nameof(template));
 
-            if (Contains(template.Name))
+            if (ContainsKey(mediaType))
             {
-                throw new ArgumentException($"A template with the name {template.Name} has already been added");
+                throw new ArgumentException($"A template for media type {mediaType} has already been added");
             }
 
-            _templates.Insert(index, template);
+            _templates.Insert(index, new KeyValuePair<string, Template>(mediaType, template));
         }
 
-        public bool Remove(string name)
+        public bool Remove(string key)
         {
-            name.ThrowIfNull(nameof(name));
-
-            int index = IndexOf(name);
+            int index = IndexOf(key);
             if (index < 0)
             {
                 return false;
@@ -107,58 +103,41 @@ namespace Statiq.Web
             return true;
         }
 
-        /// <summary>
-        /// Removes all templates.
-        /// </summary>
+        public int IndexOf(string key) =>
+            _templates.FindIndex(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
         public void Clear() => _templates.Clear();
 
-        public bool Contains(string name)
+        // Interfaces
+
+        public Template this[int index] => _templates[index].Value;
+
+        public Template this[string key] => _templates.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase)).Value;
+
+        public int Count => _templates.Count;
+
+        public IEnumerable<string> Keys => _templates.Select(x => x.Key);
+
+        public IEnumerable<Template> Values => _templates.Select(x => x.Value);
+
+        public bool ContainsKey(string key) => _templates.Any(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out Template value)
         {
-            name.ThrowIfNull(nameof(name));
-
-            return _templates.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public IEnumerator<Template> GetEnumerator() => ((IList<Template>)_templates).GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => ((IList<Template>)_templates).GetEnumerator();
-
-        // IReadOnlyDictionary<Template>
-
-        public Template this[string name]
-        {
-            get
+            int index = IndexOf(key);
+            if (index < 0)
             {
-                name.ThrowIfNull(nameof(name));
-
-                Template template = _templates.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                if (template == default)
-                {
-                    throw new KeyNotFoundException();
-                }
-                return template;
+                value = default;
+                return false;
             }
+            value = _templates[index].Value;
+            return true;
         }
 
-        public bool TryGetValue(string name, out Template template)
-        {
-            name.ThrowIfNull(nameof(name));
+        public IEnumerator<Template> GetEnumerator() => _templates.Select(x => x.Value).GetEnumerator();
 
-            template = _templates.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            return template != default;
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        IEnumerable<string> IReadOnlyDictionary<string, Template>.Keys => _templates.Select(x => x.Name);
-
-        IEnumerable<Template> IReadOnlyDictionary<string, Template>.Values => _templates;
-
-        int IReadOnlyCollection<KeyValuePair<string, Template>>.Count => throw new NotImplementedException();
-
-        Template IReadOnlyDictionary<string, Template>.this[string key] => throw new NotImplementedException();
-
-        bool IReadOnlyDictionary<string, Template>.ContainsKey(string name) => Contains(name);
-
-        IEnumerator<KeyValuePair<string, Template>> IEnumerable<KeyValuePair<string, Template>>.GetEnumerator() =>
-            _templates.Select(x => new KeyValuePair<string, Template>(x.Name, x)).GetEnumerator();
+        IEnumerator<KeyValuePair<string, Template>> IEnumerable<KeyValuePair<string, Template>>.GetEnumerator() => _templates.GetEnumerator();
     }
 }

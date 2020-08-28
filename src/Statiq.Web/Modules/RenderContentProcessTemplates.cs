@@ -20,7 +20,7 @@ namespace Statiq.Web.Modules
                 {
                     new ProcessShortcodes("!")
                 }
-                .Concat(templates.GetModules(TemplateType.ContentProcess))
+                .Concat(templates.GetModule(TemplateType.ContentProcess))
                 .ToArray())
         {
         }

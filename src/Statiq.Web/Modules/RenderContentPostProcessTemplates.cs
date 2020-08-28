@@ -21,7 +21,7 @@ namespace Statiq.Web.Modules
                 {
                     new ExecuteIf(
                         Config.FromDocument(WebKeys.RenderPostProcessTemplates, true),
-                        templates.GetModules(TemplateType.ContentPostProcess))
+                        templates.GetModule(TemplateType.ContentPostProcess))
                 }
                 .Concat(new IModule[]
                 {

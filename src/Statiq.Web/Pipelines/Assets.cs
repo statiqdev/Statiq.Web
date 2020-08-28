@@ -6,11 +6,18 @@ namespace Statiq.Web.Pipelines
 {
     public class Assets : Pipeline
     {
-        public Assets()
+        public Assets(Templates templates)
         {
-            ProcessModules = new ModuleList
+            InputModules = new ModuleList
             {
-                new CopyFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.AssetFiles))
+                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.AssetFiles))
+            };
+
+            ProcessModules = new ModuleList(templates.GetModule(TemplateType.Asset));
+
+            OutputModules = new ModuleList
+            {
+                new WriteFiles()
             };
         }
     }
