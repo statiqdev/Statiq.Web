@@ -157,7 +157,7 @@ namespace Statiq.Web.Pipelines
                             {
                                 new CacheDocuments
                                 {
-                                    new RenderProcessTemplates(templates)
+                                    new RenderContentProcessTemplates(templates)
                                 }
                             },
                             new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ScriptFiles)))
@@ -174,7 +174,7 @@ namespace Statiq.Web.Pipelines
             {
                 new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ContentFiles)))
                 {
-                    new RenderPostProcessTemplates(templates)
+                    new RenderContentPostProcessTemplates(templates)
                 }
             };
 

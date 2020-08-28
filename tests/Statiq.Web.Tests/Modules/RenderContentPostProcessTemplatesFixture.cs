@@ -9,9 +9,9 @@ using Statiq.Web.Modules;
 namespace Statiq.Web.Tests.Modules
 {
     [TestFixture]
-    public class RenderPostProcessTemplatesFixture : BaseFixture
+    public class RenderContentPostProcessTemplatesFixture : BaseFixture
     {
-        public class ExecuteTests : RenderPostProcessTemplatesFixture
+        public class ExecuteTests : RenderContentPostProcessTemplatesFixture
         {
             [Test]
             public async Task MakesRelativeLinksAbsolute()
@@ -31,7 +31,7 @@ namespace Statiq.Web.Tests.Modules
                         </body>
                     </html>");
                 Templates templates = new Templates();
-                RenderPostProcessTemplates module = new RenderPostProcessTemplates(templates);
+                RenderContentPostProcessTemplates module = new RenderContentPostProcessTemplates(templates);
 
                 // When
                 TestDocument result = await ExecuteAsync(document, context, module).SingleAsync();
@@ -63,7 +63,7 @@ namespace Statiq.Web.Tests.Modules
                         </body>
                     </html>");
                 Templates templates = new Templates();
-                RenderPostProcessTemplates module = new RenderPostProcessTemplates(templates);
+                RenderContentPostProcessTemplates module = new RenderContentPostProcessTemplates(templates);
 
                 // When
                 TestDocument result = await ExecuteAsync(document, context, module).SingleAsync();

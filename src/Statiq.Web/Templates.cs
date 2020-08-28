@@ -18,18 +18,23 @@ namespace Statiq.Web
     {
         private readonly List<Template> _templates;
 
-        private string _defaultTemplate;
-
         internal Templates()
         {
             // Create the default set of templates
             _templates = new List<Template>
             {
-                new Template(Template.Markdown, Phase.Process, MediaTypes.Markdown, new RenderMarkdown().UseExtensions()),
-                new Template(Template.Handlebars, MediaTypes.Handlebars, new RenderHandlebars()),
+                // ContentProcess
+                new Template(nameof(MediaTypes.Markdown), TemplateType.ContentProcess, MediaTypes.Markdown, new RenderMarkdown().UseExtensions()),
+
+                // ContentPostProcess
+                new Template(nameof(MediaTypes.Handlebars), TemplateType.ContentPostProcess, MediaTypes.Handlebars, new RenderHandlebars()),
+
+                // Razor is last and processes both Razor and HTML media types so it runs for other templates and HTML files
+                // Change the condition for Razor to just the Razor media type to prevent it from always running
                 new Template(
-                    Template.Razor,
-                    MediaTypes.Razor,
+                    nameof(MediaTypes.Razor),
+                    TemplateType.ContentPostProcess,
+                    new[] { MediaTypes.Razor, MediaTypes.Html },
                     new RenderRazor()
                         .WithLayout(Config.FromDocument((doc, ctx) =>
                         {
@@ -47,53 +52,12 @@ namespace Statiq.Web
                             return null;  // If no layout metadata, revert to default behavior
                         }))),
             };
-
-            _defaultTemplate = Template.Razor;
         }
 
-        /// <summary>
-        /// The default template to render. It should already be added to the
-        /// collection and be set to execute during the <see cref="Phase.PostProcess"/>
-        /// phase. The default template will always be executed last for all documents,
-        /// regardless of the specified condition. Use <c>null</c> to indicate no default template.
-        /// </summary>
-        public string DefaultTemplate
-        {
-            get => _defaultTemplate;
-            set
-            {
-                if (value is object)
-                {
-                    // If not null, do some sanity checks
-                    if (!TryGetValue(value, out Template template))
-                    {
-                        throw new ArgumentException($"The template {value} does not exist");
-                    }
-                    if (template.Phase != Phase.PostProcess)
-                    {
-                        throw new ArgumentException("The default template must execute during the post-process phase");
-                    }
-                }
-                _defaultTemplate = value;
-            }
-        }
-
-        internal IEnumerable<IModule> GetModules(Phase phase)
-        {
-            IEnumerable<IModule> modules = _templates
-                .Where(x => x.Phase == phase && (phase != Phase.PostProcess || !x.Name.Equals(DefaultTemplate, StringComparison.OrdinalIgnoreCase)))
+        internal IEnumerable<IModule> GetModules(TemplateType templateType) =>
+            _templates
+                .Where(x => x.TemplateType == templateType)
                 .Select(x => new ExecuteIf(x.Condition, x.Module));
-            if (phase == Phase.PostProcess && DefaultTemplate is object)
-            {
-                if (!TryGetValue(DefaultTemplate, out Template defaultTemplate))
-                {
-                    // Sanity check, should never get here
-                    throw new ExecutionException("Could not find the default template");
-                }
-                modules = modules.Concat(defaultTemplate.Module);
-            }
-            return modules;
-        }
 
         public Template this[int index] => _templates[index];
 
@@ -139,22 +103,14 @@ namespace Statiq.Web
             {
                 return false;
             }
-            if (_templates[index].Name.Equals(_defaultTemplate, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ArgumentException("Cannot remove the default template (set the default template to something else first)");
-            }
             _templates.RemoveAt(index);
             return true;
         }
 
         /// <summary>
-        /// Removes all templates. This will also set the <see cref="DefaultTemplate"/> to <c>null</c>.
+        /// Removes all templates.
         /// </summary>
-        public void Clear()
-        {
-            _defaultTemplate = null;
-            _templates.Clear();
-        }
+        public void Clear() => _templates.Clear();
 
         public bool Contains(string name)
         {

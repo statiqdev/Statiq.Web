@@ -1,6 +1,8 @@
 # 1.0.0-beta.4
 
 - Updated Statiq Framework to version [1.0.0-beta.21](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.21).
+- **Breaking change:** Removed the `IBootstrapper.SetDefaultTemplate()` extension given more general use of templates. The "default" template should now be specified
+  via the template condition (for example, to make the Razor template not default, change the condition to only apply to the Razor media type instead of also HTML).
 - **Breaking change:** Added a `ClearContent` document setting that clears content from data documents. This is now `true` by default, which is different than the
   previous behavior of keeping document content for data files (to allow for passing the data file to layouts). To get the old behavior back, add
   `.AddSetting(WebKeys.ClearContent, false)` to your bootstrapper.

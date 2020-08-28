@@ -157,9 +157,6 @@ namespace Statiq.Web
             return bootstrapper;
         }
 
-        public static Bootstrapper SetDefaultTemplate(this Bootstrapper bootstrapper, string defaultTemplate) =>
-            bootstrapper.ConfigureTemplates(templates => templates.DefaultTemplate = defaultTemplate);
-
         /// <summary>
         /// Configures the set of template modules.
         /// </summary>

@@ -49,7 +49,7 @@ namespace Statiq.Web.Pipelines
                     {
                         new OptimizeFileName()
                     },
-                    new RenderProcessTemplates(templates),
+                    new RenderContentProcessTemplates(templates),
                     new GenerateExcerpt(), // Note that if the document was .cshtml the excerpt might contain Razor instructions or might not work at all
                     new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
                 },
@@ -59,7 +59,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new RenderPostProcessTemplates(templates)
+                new RenderContentPostProcessTemplates(templates)
             };
 
             OutputModules = new ModuleList

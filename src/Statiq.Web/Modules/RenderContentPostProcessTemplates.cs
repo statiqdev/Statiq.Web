@@ -6,17 +6,22 @@ using Statiq.Html;
 namespace Statiq.Web.Modules
 {
     /// <summary>
-    /// Parent module that contains the modules used for processing full template languages like Razor.
+    /// Renders the <see cref="TemplateType.ContentPostProcess"/> templates as well
+    /// as related modules like shortcodes.
     /// </summary>
-    public class RenderPostProcessTemplates : ForAllDocuments
+    /// <remarks>
+    /// The content templates are wrapped by a parent module since they're applied from
+    /// multiple places so that the related modules are also executed when needed.
+    /// </remarks>
+    public class RenderContentPostProcessTemplates : ForAllDocuments
     {
-        public RenderPostProcessTemplates(Templates templates)
+        public RenderContentPostProcessTemplates(Templates templates)
             : base(
                 new IModule[]
                 {
                     new ExecuteIf(
                         Config.FromDocument(WebKeys.RenderPostProcessTemplates, true),
-                        templates.GetModules(Phase.PostProcess))
+                        templates.GetModules(TemplateType.ContentPostProcess))
                 }
                 .Concat(new IModule[]
                 {

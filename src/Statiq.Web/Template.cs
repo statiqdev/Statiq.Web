@@ -18,29 +18,15 @@ namespace Statiq.Web
     /// </summary>
     public class Template
     {
-        public const string Markdown = nameof(Markdown);
-        public const string Razor = nameof(Razor);
-        public const string Handlebars = nameof(Handlebars);
-
         /// <summary>
-        /// Creates a template definition that executes during the <see cref="Phase.PostProcess"/> phase.
+        /// Creates a template definition.
         /// </summary>
         /// <param name="name">The name of the template.</param>
+        /// <param name="templateType">The type of the template (when it will be applied).</param>
         /// <param name="mediaType">The media type the template applies to.</param>
         /// <param name="module">The template module to execute.</param>
-        public Template(string name, string mediaType, IModule module)
-            : this(name, Phase.PostProcess, mediaType, module)
-        {
-        }
-
-        /// <summary>
-        /// Creates a template definition that executes during the <see cref="Phase.PostProcess"/> phase.
-        /// </summary>
-        /// <param name="name">The name of the template.</param>
-        /// <param name="condition">The document condition the template applies to.</param>
-        /// <param name="module">The template module to execute.</param>
-        public Template(string name, Config<bool> condition, IModule module)
-            : this(name, Phase.PostProcess, condition, module)
+        public Template(string name, TemplateType templateType, string mediaType, IModule module)
+            : this(name, templateType, new string[] { mediaType.ThrowIfNull(nameof(mediaType)) }, module)
         {
         }
 
@@ -48,31 +34,26 @@ namespace Statiq.Web
         /// Creates a template definition.
         /// </summary>
         /// <param name="name">The name of the template.</param>
-        /// <param name="phase">The phase this template is executed (<see cref="Phase.Process"/> or <see cref="Phase.PostProcess"/>).</param>
-        /// <param name="mediaType">The media type the template applies to.</param>
+        /// <param name="templateType">The type of the template (when it will be applied).</param>
+        /// <param name="mediaTypes">The media types the template applies to.</param>
         /// <param name="module">The template module to execute.</param>
-        public Template(string name, Phase phase, string mediaType, IModule module)
-            : this(name, phase, Config.FromDocument(doc => doc.MediaTypeEquals(mediaType)), module)
+        public Template(string name, TemplateType templateType, IEnumerable<string> mediaTypes, IModule module)
+            : this(name, templateType, Config.FromDocument(doc => mediaTypes?.Any(m => doc.MediaTypeEquals(m)) == true), module)
         {
-            mediaType.ThrowIfNull(nameof(mediaType));
         }
 
         /// <summary>
         /// Creates a template definition.
         /// </summary>
         /// <param name="name">The name of the template.</param>
-        /// <param name="phase">The phase this template is executed (<see cref="Phase.Process"/> or <see cref="Phase.PostProcess"/>).</param>
+        /// <param name="templateType">The type of the template (when it will be applied).</param>
         /// <param name="condition">The document condition the template applies to.</param>
         /// <param name="module">The template module to execute.</param>
-        public Template(string name, Phase phase, Config<bool> condition, IModule module)
+        public Template(string name, TemplateType templateType, Config<bool> condition, IModule module)
         {
             Name = name.ThrowIfNull(nameof(name));
-            if (phase != Phase.Process && phase != Phase.PostProcess)
-            {
-                throw new ArgumentException("Templates can only be executed in the process or post-process phase");
-            }
-            Phase = phase;
-            Condition = condition;
+            TemplateType = templateType;
+            Condition = condition.ThrowIfNull(nameof(condition));
             Module = module;
         }
 
@@ -82,12 +63,12 @@ namespace Statiq.Web
         public string Name { get; }
 
         /// <summary>
-        /// The phase this template is executed (<see cref="Phase.Process"/> or <see cref="Phase.PostProcess"/>).
+        /// The type of this template (when it will be applied).
         /// </summary>
-        public Phase Phase { get; }
+        public TemplateType TemplateType { get; }
 
         /// <summary>
-        /// A condition that determines whether this template should be applied to a given document.
+        /// A condition that determines whether this template should be applied to a given document (usually based on media type).
         /// </summary>
         public Config<bool> Condition { get; set; }
 
