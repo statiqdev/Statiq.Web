@@ -6,8 +6,7 @@ using Statiq.Html;
 namespace Statiq.Web.Modules
 {
     /// <summary>
-    /// Renders the <see cref="TemplateType.ContentPostProcess"/> templates as well
-    /// as related modules like shortcodes.
+    /// Renders the content templates as well as related modules like shortcodes.
     /// </summary>
     /// <remarks>
     /// The content templates are wrapped by a parent module since they're applied from
@@ -21,7 +20,7 @@ namespace Statiq.Web.Modules
                 {
                     new ExecuteIf(
                         Config.FromDocument(WebKeys.RenderPostProcessTemplates, true),
-                        templates.GetModule(TemplateType.ContentPostProcess))
+                        templates.GetModule(ContentType.Content, Phase.PostProcess))
                 }
                 .Concat(new IModule[]
                 {

@@ -13,10 +13,9 @@ namespace Statiq.Web.Modules
 
         public SetContentType(Templates templates)
         {
-            _dataMediaTypes = templates.GetMediaTypes(TemplateType.Data)
+            _dataMediaTypes = templates.GetMediaTypes(ContentType.Data)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            _contentMediaTypes = templates.GetMediaTypes(TemplateType.ContentProcess)
-                .Concat(templates.GetMediaTypes(TemplateType.ContentPostProcess))
+            _contentMediaTypes = templates.GetMediaTypes(ContentType.Content)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 

@@ -5,8 +5,7 @@ using Statiq.Core;
 namespace Statiq.Web.Modules
 {
     /// <summary>
-    /// Renders the <see cref="TemplateType.ContentProcess"/> templates as well
-    /// as related modules like shortcodes.
+    /// Renders the content templates as well as related modules like shortcodes.
     /// </summary>
     /// <remarks>
     /// The content templates are wrapped by a parent module since they're applied from
@@ -20,7 +19,7 @@ namespace Statiq.Web.Modules
                 {
                     new ProcessShortcodes("!")
                 }
-                .Concat(templates.GetModule(TemplateType.ContentProcess))
+                .Concat(templates.GetModule(ContentType.Content, Phase.Process))
                 .ToArray())
         {
         }

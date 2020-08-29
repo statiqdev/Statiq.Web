@@ -7,17 +7,14 @@ namespace Statiq.Web.Pipelines
 {
     public class DirectoryMetadata : Pipeline
     {
-        public DirectoryMetadata()
+        public DirectoryMetadata(Templates templates)
         {
             InputModules = new ModuleList
             {
                 new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.DirectoryMetadataFiles))
             };
 
-            ProcessModules = new ModuleList
-            {
-                new ParseDataContent()
-            };
+            ProcessModules = new ModuleList(templates.GetModule(ContentType.Data, Phase.Process));
         }
     }
 }

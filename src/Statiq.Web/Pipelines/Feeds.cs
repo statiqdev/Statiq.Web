@@ -12,28 +12,17 @@ namespace Statiq.Web.Pipelines
     {
         public Feeds()
         {
-            Dependencies.AddRange(nameof(Content), nameof(Archives), nameof(Data));
-
-            InputModules = new ModuleList
-            {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.DataFiles))
-            };
+            Dependencies.AddRange(nameof(Inputs), nameof(Content), nameof(Archives), nameof(Data));
 
             ProcessModules = new ModuleList
             {
-                // Process directory metadata, sidecar files, and front matter
-                new ProcessMetadata(),
+                // Get inputs
+                new ReplaceDocuments(nameof(Inputs)),
 
-                // Exclude scripts
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Script))),
+                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
+                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Parse the actual document content
-                new ParseDataContent(),
-
-                // Filter out excluded documents
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
-
-                // Limit to feed documents
+                // Filter to feeds
                 new FilterDocuments(Config.FromDocument(IsFeed)),
 
                 // Generate the feeds

@@ -8,16 +8,15 @@ namespace Statiq.Web.Pipelines
     {
         public Assets(Templates templates)
         {
-            InputModules = new ModuleList
-            {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.AssetFiles))
-            };
+            Dependencies.Add(nameof(Inputs));
 
-            ProcessModules = new ModuleList(templates.GetModule(TemplateType.Asset));
+            ProcessModules = new ModuleList(templates.GetModule(ContentType.Asset, Phase.Process));
+
+            PostProcessModules = new ModuleList(templates.GetModule(ContentType.Asset, Phase.PostProcess));
 
             OutputModules = new ModuleList
             {
-                new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput, true)),
+                new FilterDocuments(Config.FromDocument(WebKeys.ShouldOutput, true)),
                 new WriteFiles()
             };
         }

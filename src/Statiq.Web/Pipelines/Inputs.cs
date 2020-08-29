@@ -40,12 +40,13 @@ namespace Statiq.Web.Pipelines
                         NormalizedPath relativePath = doc.Source.IsNull ? NormalizedPath.Null : doc.Source.GetRelativeInputPath();
                         return relativePath.IsNull
                             ? NormalizedPath.Null
-                            : ParseDataContent.SupportedExtensions
+                            : templates.GetMediaTypes(ContentType.Data, Phase.Process)
+                                .SelectMany(MediaTypes.GetExtensions)
                                 .Select(x => relativePath.InsertPrefix("_").ChangeExtension(x))
                                 .FirstOrDefault(x => ctx.FileSystem.GetInputFile(x).Exists);
                     }))
                     {
-                        new ParseDataContent()
+                        templates.GetModule(ContentType.Data, Phase.Process)
                     }
                 },
 
@@ -81,8 +82,9 @@ namespace Statiq.Web.Pipelines
                     // One more excluded filter in case the data content or front matter excluded the document (needs to be last in case other metadata or media types are used in value)
                     new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
 
-                    // Enumerate metadata values
+                    // Enumerate metadata values (remove the enumerate key so following modules won't enumerate again)
                     new EnumerateValues(),
+                    new SetMetadata(Keys.Enumerate, Config.FromValue<object>(null)),
 
                     // Evaluate scripts (but defer if the script is for an archive)
                     // Script return document should either have media type or content type set, or script metadata should have content type, otherwise script output will be treated as an asset
@@ -93,7 +95,21 @@ namespace Statiq.Web.Pipelines
                 },
 
                 // Set content type based on media type if not already explicitly set as metadata
-                new SetContentType(templates)
+                new SetContentType(templates),
+
+                // If it's data, go ahead and process the data content (which might actually change the content type to something else
+                // This also lets us filter out feeds in the data pipeline without evaluating the data twice
+                new ExecuteIf(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType) == ContentType.Data))
+                {
+                    templates.GetModule(ContentType.Data, Phase.Process),
+
+                    // Filter out excluded documents (do this again in case the content of the document excluded the file)
+                    new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
+                },
+
+                // Enumerate values one more time in case data content or the script output some (remove the enumerate key so following modules won't enumerate again)
+                new EnumerateValues(),
+                new SetMetadata(Keys.Enumerate, Config.FromValue<object>(null)),
             };
         }
 

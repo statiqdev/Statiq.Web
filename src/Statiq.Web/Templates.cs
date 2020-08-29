@@ -24,23 +24,24 @@ namespace Statiq.Web
         internal Templates()
         {
             // Assets
-            Add(MediaTypes.Less, new Template(TemplateType.Asset, new CacheDocuments { new CompileLess() }));
-            Add(MediaTypes.Sass, new Template(TemplateType.Asset, new CacheDocuments { new CompileSass().WithCompactOutputStyle() }));
+            Add(MediaTypes.Less, new Template(ContentType.Asset, Phase.Process, new CacheDocuments { new CompileLess() }));
+            Add(MediaTypes.Sass, new Template(ContentType.Asset, Phase.Process, new CacheDocuments { new CompileSass().WithCompactOutputStyle() }));
             Add(MediaTypes.Scss, this[MediaTypes.Sass]);
 
             // Data
-            Add(MediaTypes.Json, new Template(TemplateType.Data, new ParseJson()));
-            Add(MediaTypes.Yaml, new Template(TemplateType.Data, new ParseYaml()));
+            Add(MediaTypes.Json, new Template(ContentType.Data, Phase.Process, new ParseJson()));
+            Add(MediaTypes.Yaml, new Template(ContentType.Data, Phase.Process, new ParseYaml()));
 
-            // ContentProcess
-            Add(MediaTypes.Markdown, new Template(TemplateType.ContentProcess, new RenderMarkdown().UseExtensions()));
+            // Content (Process)
+            Add(MediaTypes.Markdown, new Template(ContentType.Content, Phase.Process, new RenderMarkdown().UseExtensions()));
 
-            // ContentPostProcess
-            Add(MediaTypes.Handlebars, new Template(TemplateType.ContentPostProcess, new RenderHandlebars()));
+            // Content (PostProcess)
+            Add(MediaTypes.Handlebars, new Template(ContentType.Content, Phase.PostProcess, new RenderHandlebars()));
             Add(
                 MediaTypes.Razor,
                 new Template(
-                    TemplateType.ContentPostProcess,
+                    ContentType.Content,
+                    Phase.PostProcess,
                     new RenderRazor()
                         .WithLayout(Config.FromDocument((doc, ctx) =>
                         {
@@ -63,30 +64,29 @@ namespace Statiq.Web
         /// <summary>
         /// Gets a single module that runs all the matching templates for a given set of input documents.
         /// </summary>
-        /// <param name="templateType">The template types to execute.</param>
+        /// <param name="contentType">The content type being processed.</param>
+        /// <param name="phase">The phase being executed.</param>
         /// <returns>A module.</returns>
-        public IModule GetModule(TemplateType templateType)
+        public IModule GetModule(ContentType contentType, Phase phase)
         {
             ExecuteIf module = null;
-            foreach (KeyValuePair<string, Template> item in _templates.Where(x => x.Value.TemplateType == templateType))
+            foreach (KeyValuePair<string, Template> item in _templates.Where(x => x.Value.ContentType == contentType && x.Value.Phase == phase))
             {
-                module = module is null
-                    ? new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module)
-                    : module.ElseIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module);
+                if (item.Value.Module is object)
+                {
+                    module = module is null
+                        ? new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module)
+                        : module.ElseIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module);
+                }
             }
             return module;
         }
 
-        /// <summary>
-        /// Gets all the supported file extensions for a given template type based on their declared media types.
-        /// </summary>
-        /// <param name="templateType">The template types to get file extensions for.</param>
-        /// <returns>The file extensions.</returns>
-        public IEnumerable<string> GetFileExtensions(TemplateType templateType) =>
-            _templates.Where(x => x.Value.TemplateType == templateType).SelectMany(x => MediaTypes.GetExtensions(x.Key));
+        public IEnumerable<string> GetMediaTypes(ContentType contentType) =>
+            _templates.Where(x => x.Value.ContentType == contentType).Select(x => x.Key);
 
-        public IEnumerable<string> GetMediaTypes(TemplateType templateType) =>
-            _templates.Where(x => x.Value.TemplateType == templateType).Select(x => x.Key);
+        public IEnumerable<string> GetMediaTypes(ContentType contentType, Phase phase) =>
+            _templates.Where(x => x.Value.ContentType == contentType && x.Value.Phase == phase).Select(x => x.Key);
 
         public void Add(string mediaType, Template template)
         {

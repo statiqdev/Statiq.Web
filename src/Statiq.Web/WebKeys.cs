@@ -23,7 +23,7 @@ namespace Statiq.Web
         /// </summary>
         /// <remarks>
         /// Any files that match the pattern will be further filtered by media types
-        /// supported by <see cref="Templates"/> that match <see cref="TemplateType.Data"/>.
+        /// supported by <see cref="Templates"/> that match <see cref="ContentType.Data"/>.
         /// </remarks>
         public const string DirectoryMetadataFiles = nameof(DirectoryMetadataFiles);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using dotless.Core.Parser.Infrastructure;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Html;
@@ -11,36 +12,20 @@ namespace Statiq.Web.Pipelines
     {
         public Content(Templates templates)
         {
-            Dependencies.AddRange(nameof(Data), nameof(DirectoryMetadata));
-
-            InputModules = new ModuleList
-            {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles))
-            };
+            Dependencies.AddRange(nameof(Inputs), nameof(Data));
 
             ProcessModules = new ModuleList
             {
-                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Data")
+                // Get inputs
+                new ReplaceDocuments(nameof(Inputs)),
+
+                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
                 new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Process directory metadata, sidecar files, and front matter
-                new ProcessMetadata(),
+                // Filter to non-archive content
+                new FilterDocuments(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType) == ContentType.Content && !Archives.IsArchive(doc))),
 
-                // Filter out excluded documents
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
-
-                // Filter out archive documents (they'll get processed by the Archives pipeline)
-                new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
-
-                // Enumerate metadata values
-                new EnumerateValues(),
-
-                // Evaluate scripts
-                new ExecuteIf(Config.FromDocument<bool>(WebKeys.Script))
-                {
-                    new EvaluateScript()
-                },
-
+                // Process the content
                 new CacheDocuments
                 {
                     new AddTitle(),
@@ -50,8 +35,12 @@ namespace Statiq.Web.Pipelines
                         new OptimizeFileName()
                     },
                     new RenderContentProcessTemplates(templates),
-                    new GenerateExcerpt(), // Note that if the document was .cshtml the excerpt might contain Razor instructions or might not work at all
-                    new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
+                    new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.Html)))
+                    {
+                        // Excerpts and headings only work for HTML content
+                        new GenerateExcerpt(),
+                        new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
+                    }
                 },
 
                 new OrderDocuments()

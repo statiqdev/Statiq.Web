@@ -19,22 +19,17 @@ namespace Statiq.Web.Pipelines
     {
         public Archives(Templates templates)
         {
-            Dependencies.AddRange(nameof(Content), nameof(Data));
-
-            InputModules = new ModuleList
-            {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles))
-            };
+            Dependencies.AddRange(nameof(Inputs), nameof(Content), nameof(Data));
 
             ProcessModules = new ModuleList
             {
-                // Process front matter and sidecar files
-                new ProcessMetadata(),
+                // Get inputs
+                new ReplaceDocuments(nameof(Inputs)),
 
-                // Filter out excluded documents
-                new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
+                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
+                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
 
-                // Filter just to archive documents
+                // Filter to archives
                 new FilterDocuments(Config.FromDocument(IsArchive)),
 
                 new ForEachDocument
@@ -143,12 +138,23 @@ namespace Statiq.Web.Pipelines
                             modules.Add(new ExecuteIf(Config.FromContext(ctx => ctx.Inputs.Length > 0), archiveModules));
                         }
 
-                        // Render any markdown content or scripts
+                        // If it's a script, evaluate it now (deferred from inputs pipeline)
                         modules.Add(
-                            new CacheDocuments
+                            new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.CSharp)))
                             {
-                                new RenderContentProcessTemplates(templates)
+                                new EvaluateScript()
                             });
+
+                        // Now execute templates
+                        modules.Add(
+                            new ExecuteSwitch(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType)))
+                                .Case(ContentType.Data, templates.GetModule(ContentType.Data, Phase.Process))
+                                .Case(
+                                    ContentType.Content,
+                                    (IModule)new CacheDocuments
+                                    {
+                                        new RenderContentProcessTemplates(templates)
+                                    }));
 
                         return modules;
                     }))
@@ -157,7 +163,9 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new RenderContentPostProcessTemplates(templates)
+                new ExecuteSwitch(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType)))
+                    .Case(ContentType.Data, templates.GetModule(ContentType.Data, Phase.PostProcess))
+                    .Case(ContentType.Content, (IModule)new RenderContentPostProcessTemplates(templates))
             };
 
             OutputModules = new ModuleList
