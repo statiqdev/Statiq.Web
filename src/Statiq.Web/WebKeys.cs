@@ -8,24 +8,19 @@ namespace Statiq.Web
         ////////// Global
 
         /// <summary>
-        /// The globbing pattern(s) used to copy asset files.
+        /// The globbing pattern(s) used to filter asset files.
         /// </summary>
         public const string AssetFiles = nameof(AssetFiles);
 
         /// <summary>
-        /// The globbing pattern(s) used to read content files.
+        /// The globbing pattern(s) used to filter content files.
         /// </summary>
         public const string ContentFiles = nameof(ContentFiles);
 
         /// <summary>
-        /// The globbing pattern(s) used to read data files.
+        /// The globbing pattern(s) used to filter data files.
         /// </summary>
         public const string DataFiles = nameof(DataFiles);
-
-        /// <summary>
-        /// The globbing pattern(s) used to read script files.
-        /// </summary>
-        public const string ScriptFiles = nameof(ScriptFiles);
 
         /// <summary>
         /// The globbing pattern(s) that will be used to read directory metadata.
@@ -205,7 +200,8 @@ namespace Statiq.Web
 
         /// <summary>
         /// Set this to <c>true</c> to indicate the file contains a script which should be evaluated
-        /// before processing the document normally (the return from the script will be the new document content).
+        /// before processing the document normally.
+        /// The return from the script should be the new document content or new document(s).
         /// </summary>
         public const string Script = nameof(Script);
 

@@ -17,21 +17,13 @@ namespace Statiq.Web.Pipelines
 {
     public class Archives : Pipeline
     {
-        private const string SourcePattern = "_SourcePattern";
-
         public Archives(Templates templates)
         {
             Dependencies.AddRange(nameof(Content), nameof(Data));
 
             InputModules = new ModuleList
             {
-                // Archives can be either content or script, keep track of which
-                new ExecuteBranch(
-                    new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles)),
-                    new SetMetadata(SourcePattern, nameof(WebKeys.ContentFiles)))
-                    .Branch(
-                        new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ScriptFiles)),
-                        new SetMetadata(SourcePattern, nameof(WebKeys.ScriptFiles)))
+                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ContentFiles))
             };
 
             ProcessModules = new ModuleList
@@ -153,16 +145,9 @@ namespace Statiq.Web.Pipelines
 
                         // Render any markdown content or scripts
                         modules.Add(
-                            new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ContentFiles)))
+                            new CacheDocuments
                             {
-                                new CacheDocuments
-                                {
-                                    new RenderContentProcessTemplates(templates)
-                                }
-                            },
-                            new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ScriptFiles)))
-                            {
-                                new EvaluateScript()
+                                new RenderContentProcessTemplates(templates)
                             });
 
                         return modules;
@@ -172,10 +157,7 @@ namespace Statiq.Web.Pipelines
 
             PostProcessModules = new ModuleList
             {
-                new ExecuteIf(Config.FromDocument(doc => doc.GetString(SourcePattern) == nameof(WebKeys.ContentFiles)))
-                {
-                    new RenderContentPostProcessTemplates(templates)
-                }
+                new RenderContentPostProcessTemplates(templates)
             };
 
             OutputModules = new ModuleList

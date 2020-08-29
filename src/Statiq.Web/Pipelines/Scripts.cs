@@ -15,7 +15,7 @@ namespace Statiq.Web.Pipelines
 
             InputModules = new ModuleList
             {
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ScriptFiles))
+                // new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.ScriptFiles))
             };
 
             ProcessModules = new ModuleList

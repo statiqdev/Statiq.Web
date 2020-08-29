@@ -13,6 +13,7 @@ using Statiq.Less;
 using Statiq.Markdown;
 using Statiq.Razor;
 using Statiq.Sass;
+using Statiq.Yaml;
 
 namespace Statiq.Web
 {
@@ -26,6 +27,10 @@ namespace Statiq.Web
             Add(MediaTypes.Less, new Template(TemplateType.Asset, new CacheDocuments { new CompileLess() }));
             Add(MediaTypes.Sass, new Template(TemplateType.Asset, new CacheDocuments { new CompileSass().WithCompactOutputStyle() }));
             Add(MediaTypes.Scss, this[MediaTypes.Sass]);
+
+            // Data
+            Add(MediaTypes.Json, new Template(TemplateType.Data, new ParseJson()));
+            Add(MediaTypes.Yaml, new Template(TemplateType.Data, new ParseYaml()));
 
             // ContentProcess
             Add(MediaTypes.Markdown, new Template(TemplateType.ContentProcess, new RenderMarkdown().UseExtensions()));
@@ -55,8 +60,12 @@ namespace Statiq.Web
             Add(MediaTypes.Html, this[MediaTypes.Razor]); // Set Razor as the default for HTML files
         }
 
-        // This returns a single module with branches for each supported media type
-        internal IModule GetModule(TemplateType templateType)
+        /// <summary>
+        /// Gets a single module that runs all the matching templates for a given set of input documents.
+        /// </summary>
+        /// <param name="templateType">The template types to execute.</param>
+        /// <returns>A module.</returns>
+        public IModule GetModule(TemplateType templateType)
         {
             ExecuteIf module = null;
             foreach (KeyValuePair<string, Template> item in _templates.Where(x => x.Value.TemplateType == templateType))
@@ -67,6 +76,14 @@ namespace Statiq.Web
             }
             return module;
         }
+
+        /// <summary>
+        /// Gets all the supported file extensions for a given template type based on their declared media types.
+        /// </summary>
+        /// <param name="templateType">The template types to get file extensions for.</param>
+        /// <returns>The file extensions.</returns>
+        public IEnumerable<string> GetFileExtensions(TemplateType templateType) =>
+            _templates.Where(x => x.Value.TemplateType == templateType).SelectMany(x => MediaTypes.GetExtensions(x.Key));
 
         public void Add(string mediaType, Template template)
         {

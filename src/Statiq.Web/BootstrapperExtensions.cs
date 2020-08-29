@@ -133,15 +133,52 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.AssetFiles, "**/{!_,}*{!.htm,!.html,!.cshtml,!.md,!.yml,!.yaml,!.json,!.config,!.csx,!.cs,}" }, // TODO: Exclude via the templates and ParseDataContent.SupportedExtensions
-                    { WebKeys.ContentFiles, "**/{!_,}*.{html,cshtml,md}" }, // TODO: Get these from the templates collection
-                    { WebKeys.DataFiles, $"**/{{!_,}}*.{{{string.Join(",", ParseDataContent.SupportedExtensions)}}}" },
-                    { WebKeys.ScriptFiles, "**/{!_,}*.{csx,cs}" },
-                    { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.{json,yaml,yml}" },
+                    {
+                        WebKeys.AssetFiles,
+                        Config.FromContext(ctx =>
+                        {
+                            Templates templates = ctx.GetRequiredService<Templates>();
+                            return GetFilesPattern(
+                                templates.GetFileExtensions(TemplateType.Data)
+                                    .Concat(templates.GetFileExtensions(TemplateType.ContentProcess))
+                                    .Concat(templates.GetFileExtensions(TemplateType.ContentPostProcess)),
+                                true);
+                        })
+                    },
+                    {
+                        WebKeys.DataFiles,
+                        Config.FromContext(ctx =>
+                        {
+                            Templates templates = ctx.GetRequiredService<Templates>();
+                            return GetFilesPattern(templates.GetFileExtensions(TemplateType.Data), false);
+                        })
+                    },
+                    {
+                        WebKeys.ContentFiles,
+                        Config.FromContext(ctx =>
+                        {
+                            Templates templates = ctx.GetRequiredService<Templates>();
+                            return GetFilesPattern(
+                                templates.GetFileExtensions(TemplateType.ContentProcess)
+                                    .Concat(templates.GetFileExtensions(TemplateType.ContentPostProcess)),
+                                false);
+                        })
+                    },
+                    {
+                        WebKeys.DirectoryMetadataFiles,
+                        Config.FromContext(ctx =>
+                        {
+                            Templates templates = ctx.GetRequiredService<Templates>();
+                            return GetFilesPattern(templates.GetFileExtensions(TemplateType.Data), false, "_{d,D}irectory");
+                        })
+                    },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
                     { WebKeys.PublishedUsesLastModifiedDate, true }
                 });
+
+        private static string GetFilesPattern(IEnumerable<string> extensions, bool excluded, string prefix = "{!_,}*") =>
+            $"**/{prefix}{{{string.Join(",", extensions.Select(x => excluded ? ("!" + x) : x))}{(excluded ? "," : string.Empty)}}}";
 
         /// <summary>
         /// Adds the "preview" and "serve" commands (this is called by default when you

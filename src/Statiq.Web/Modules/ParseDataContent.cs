@@ -4,9 +4,7 @@ using Statiq.Yaml;
 
 namespace Statiq.Web.Modules
 {
-    /// <summary>
-    /// Common parsing of data content based on media type.
-    /// </summary>
+    // TODO: Remove in favor of data templates where used
     public class ParseDataContent : ForAllDocuments
     {
         public static string[] SupportedExtensions { get; } = new[] { "json", "yaml", "yml" };
