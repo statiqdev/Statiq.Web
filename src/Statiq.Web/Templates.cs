@@ -85,6 +85,9 @@ namespace Statiq.Web
         public IEnumerable<string> GetFileExtensions(TemplateType templateType) =>
             _templates.Where(x => x.Value.TemplateType == templateType).SelectMany(x => MediaTypes.GetExtensions(x.Key));
 
+        public IEnumerable<string> GetMediaTypes(TemplateType templateType) =>
+            _templates.Where(x => x.Value.TemplateType == templateType).Select(x => x.Key);
+
         public void Add(string mediaType, Template template)
         {
             template.ThrowIfNull(nameof(template));

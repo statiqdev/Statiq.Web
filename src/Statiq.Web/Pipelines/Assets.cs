@@ -17,6 +17,7 @@ namespace Statiq.Web.Pipelines
 
             OutputModules = new ModuleList
             {
+                new FilterDocuments(Config.FromDocument<bool>(WebKeys.ShouldOutput, true)),
                 new WriteFiles()
             };
         }

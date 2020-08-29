@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using Statiq.Common;
 
 namespace Statiq.Web
@@ -8,30 +9,27 @@ namespace Statiq.Web
         ////////// Global
 
         /// <summary>
-        /// The globbing pattern(s) used to filter asset files.
+        /// The globbing pattern(s) used to read input files.
         /// </summary>
-        public const string AssetFiles = nameof(AssetFiles);
+        /// <remarks>
+        /// The files will be processed by the appropriate pipeline based on their
+        /// media type and registered <see cref="Templates"/>. Files that don't match
+        /// templates for data or content are treated as assets.
+        /// </remarks>
+        public const string InputFiles = nameof(InputFiles);
 
         /// <summary>
-        /// The globbing pattern(s) used to filter content files.
+        /// The globbing pattern(s) that will be used to filter directory metadata files.
         /// </summary>
-        public const string ContentFiles = nameof(ContentFiles);
-
-        /// <summary>
-        /// The globbing pattern(s) used to filter data files.
-        /// </summary>
-        public const string DataFiles = nameof(DataFiles);
-
-        /// <summary>
-        /// The globbing pattern(s) that will be used to read directory metadata.
-        /// </summary>
+        /// <remarks>
+        /// Any files that match the pattern will be further filtered by media types
+        /// supported by <see cref="Templates"/> that match <see cref="TemplateType.Data"/>.
+        /// </remarks>
         public const string DirectoryMetadataFiles = nameof(DirectoryMetadataFiles);
 
         public const string OptimizeContentFileNames = nameof(OptimizeContentFileNames);
 
         public const string OptimizeDataFileNames = nameof(OptimizeDataFileNames);
-
-        public const string OptimizeScriptFileNames = nameof(OptimizeScriptFileNames);
 
         /// <summary>
         /// Set to <c>false</c> to prevent processing directory metadata.
@@ -120,6 +118,26 @@ namespace Statiq.Web
 
         ////////// Document
 
+        /// <summary>
+        /// Indicates the type of content (and thus which pipeline will process the file).
+        /// </summary>
+        /// <remarks>
+        /// This will be automatically set based on the media type of the file and other metadata,
+        /// but it can be further adjusted by setting manually. For example, if you have a ".cshtml"
+        /// file but you want to copy it to the output folder instead of processing as a Razor file,
+        /// set the <see cref="ContentType"/> to <see cref="ContentType.Asset"/>.
+        /// </remarks>
+        public const string ContentType = nameof(ContentType);
+
+        /// <summary>
+        /// Changes the media type of the document (normally this is interpreted from the file extension).
+        /// </summary>
+        /// <remarks>
+        /// For example, to force script evaluation for a file that isn't ".cs" or ".csx", set the
+        /// <see cref="MediaType"/> front matter to <see cref="MediaTypes.CSharp"/>.
+        /// </remarks>
+        public const string MediaType = nameof(MediaType);
+
         public const string Title = nameof(Title);
 
         public const string Description = nameof(Description);
@@ -197,13 +215,6 @@ namespace Statiq.Web
         /// as HTML but not as an entire page so that it can be included in other pages.
         /// </remarks>
         public const string RenderPostProcessTemplates = nameof(RenderPostProcessTemplates);
-
-        /// <summary>
-        /// Set this to <c>true</c> to indicate the file contains a script which should be evaluated
-        /// before processing the document normally.
-        /// The return from the script should be the new document content or new document(s).
-        /// </summary>
-        public const string Script = nameof(Script);
 
         ////////// Archive
 
