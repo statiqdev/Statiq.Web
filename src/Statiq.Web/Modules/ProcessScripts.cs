@@ -7,9 +7,9 @@ using Statiq.Web.Pipelines;
 
 namespace Statiq.Web.Modules
 {
-    public class ExecuteEvaluateScript : ForAllDocuments
+    public class ProcessScripts : ForAllDocuments
     {
-        public ExecuteEvaluateScript(bool exceptArchives)
+        public ProcessScripts(bool exceptArchives)
             : base(new ExecuteIf(Config.FromDocument(doc => (doc.MediaTypeEquals(MediaTypes.CSharp) || doc.GetBool(WebKeys.Script)) && (!exceptArchives || !Archives.IsArchive(doc))))
             {
                 new EvaluateScript(),
@@ -17,10 +17,12 @@ namespace Statiq.Web.Modules
                 // Remove the script extension and reset the media type and destination path
                 new ExecuteIf(Config.FromDocument(doc =>
                     doc.MediaTypeEquals(MediaTypes.CSharp)
-                    && doc.Destination.HasExtension
-                    && MediaTypes.GetExtensions(MediaTypes.CSharp).Any(x => x.Equals(doc.Destination.Extension, StringComparison.OrdinalIgnoreCase))))
+                    && doc.GetBool(WebKeys.RemoveScriptExtension, true)
+                    && !doc.Source.IsNullOrEmpty
+                    && doc.Source.ChangeExtension(null).HasExtension // Check if it's got multiple extensions
+                    && MediaTypes.GetExtensions(MediaTypes.CSharp).Any(x => x.Equals(doc.Source.Extension, StringComparison.OrdinalIgnoreCase))))
                 {
-                    new SetDestination(Config.FromDocument(doc => doc.Destination.ChangeExtension(null))),
+                    new SetDestination(Config.FromDocument(doc => doc.Source.GetRelativeInputPath().ChangeExtension(null))),
                     new SetMediaType(Config.FromDocument(doc => MediaTypes.Get(doc.Destination.FullPath)))
                 }
             })

@@ -9,14 +9,35 @@ using Statiq.Common;
 using Statiq.Testing;
 using Statiq.Web.Pipelines;
 
-namespace Statiq.Web.Tests
+namespace Statiq.Web.Tests.Pipelines
 {
-    // Scripts are processed by the Inputs pipeline, so these tests are more about how they flow through all the pipelines
     [TestFixture]
-    public class ScriptFixture : BaseFixture
+    public class AssetsFixture : BaseFixture
     {
-        public class ExecuteTests : ScriptFixture
+        public class ExecuteTests : AssetsFixture
         {
+            [Test]
+            public async Task ProcessesJsonSidecarFileWithDifferentExtension()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/a/b/c.foo", "Foobar" },
+                    { "/input/a/b/_c.json", "{ \"Fizz\": \"Buzz\" }" }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Assets)][Phase.Process].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("a/b/c.foo");
+                document["Fizz"].ShouldBe("Buzz");
+                (await document.GetContentStringAsync()).ShouldBe("Foobar");
+            }
+
             [Test]
             public async Task ReturnsStringContent()
             {
@@ -48,7 +69,7 @@ namespace Statiq.Web.Tests
                         "/input/a/b/c.csx",
                         @"DestinationExtension: .txt
 ---
-int a = 1; int b = 2; return $\""The number is {a + b}.\"";"
+int a = 1; int b = 2; return $""The number is {a + b}."";"
                     }
                 };
 
@@ -136,16 +157,15 @@ return new IDocument[]
             }
 
             [Test]
-            public async Task ScriptWithMarkdownExtensionReturnsMarkdownContent()
+            public async Task RemoveScriptExtensionIsFalse()
             {
                 // Given
                 Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
-                        "/input/foo.md",
-                        @"
-Script: true
+                        "/input/foo.md.csx",
+                        @"RemoveScriptExtension: false
 ---
 string foo = ""Bar"";
 return $""# {foo}\nContent"";"
@@ -157,74 +177,11 @@ return $""# {foo}\nContent"";"
 
                 // Then
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
-                document.Destination.ShouldBe("foo.html");
+                IDocument document = result.Outputs[nameof(Assets)][Phase.Process].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.md.csx");
                 document.GetContentStringAsync().Result.ShouldBe(
-                    @"<h1 id=""bar"">Bar</h1>
-<p>Content</p>
-",
-                    StringCompareShould.IgnoreLineEndings);
-            }
-
-            [Test]
-            public async Task ScriptWithCsxExtensionAndMediaTypeReturnsMarkdownContent()
-            {
-                // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    {
-                        "/input/foo.csx",
-                        @"
-/*
-MediaType: text/markdown
-Script: true
-*/
-string foo = ""Bar"";
-return $""# {foo}\nContent"";"
-                    }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
-                document.Destination.ShouldBe("foo.html");
-                document.GetContentStringAsync().Result.ShouldBe(
-                    @"<h1 id=""bar"">Bar</h1>
-<p>Content</p>
-",
-                    StringCompareShould.IgnoreLineEndings);
-            }
-
-            [Test]
-            public async Task ScriptWithMdAndCsxExtensionReturnsMarkdownContent()
-            {
-                // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    {
-                        "/input/foo.md.csx",
-                        @"
-string foo = ""Bar"";
-return $""# {foo}\nContent"";"
-                    }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
-                document.Destination.ShouldBe("foo.html");
-                document.GetContentStringAsync().Result.ShouldBe(
-                    @"<h1 id=""bar"">Bar</h1>
-<p>Content</p>
-",
+                    @"# Bar
+Content",
                     StringCompareShould.IgnoreLineEndings);
             }
         }

@@ -143,6 +143,13 @@ namespace Statiq.Web
         /// </summary>
         public const string Script = nameof(Script);
 
+        /// <summary>
+        /// Indicates that if a script file has a second extension such as "foo.md.csx" that the script extension should be removed
+        /// and the preceding extension should be used to reset the media type, and thus the templates that will be executed
+        /// (the default is <c>true</c>).
+        /// </summary>
+        public const string RemoveScriptExtension = nameof(RemoveScriptExtension);
+
         public const string Title = nameof(Title);
 
         public const string Description = nameof(Description);

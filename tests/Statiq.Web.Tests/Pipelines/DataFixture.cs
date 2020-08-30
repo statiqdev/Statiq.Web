@@ -369,27 +369,6 @@ Foo: Bar"
             }
 
             [Test]
-            public async Task ProcessesJsonSidecarFileWithDifferentExtension()
-            {
-                // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    { "/input/a/b/c.foo", "Foobar" },
-                    { "/input/a/b/_c.json", "{ \"Fizz\": \"Buzz\" }" }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
-                document["Fizz"].ShouldBe("Buzz");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
-            }
-
-            [Test]
             public async Task ContentOverridesSidecarFile()
             {
                 // Given
@@ -406,6 +385,7 @@ Foo: Bar"
                 // Then
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("a/b/c.json");
                 document["Foo"].ShouldBe("Bar");
                 (await document.GetContentStringAsync()).ShouldBeEmpty();
             }

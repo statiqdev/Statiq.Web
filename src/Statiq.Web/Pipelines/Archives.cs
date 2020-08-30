@@ -139,7 +139,7 @@ namespace Statiq.Web.Pipelines
                         }
 
                         // If it's a script, evaluate it now (deferred from inputs pipeline)
-                        modules.Add(new ExecuteEvaluateScript(false));
+                        modules.Add(new ProcessScripts(false));
 
                         // Now execute templates
                         modules.Add(
