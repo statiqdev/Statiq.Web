@@ -81,17 +81,17 @@ namespace Statiq.Web
         public const string ThemePaths = nameof(ThemePaths);
 
         /// <summary>
-        /// Input paths specified as settings.
+        /// Input directory paths specified as settings.
         /// </summary>
         public const string InputPaths = nameof(InputPaths);
 
         /// <summary>
-        /// Output path specific as a setting.
+        /// Output directory path specific as a setting.
         /// </summary>
         public const string OutputPath = nameof(OutputPath);
 
         /// <summary>
-        /// Excluded paths specified as a setting.
+        /// Excluded directory paths specified as a setting.
         /// </summary>
         public const string ExcludedPaths = nameof(ExcludedPaths);
 

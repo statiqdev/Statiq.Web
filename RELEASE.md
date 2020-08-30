@@ -7,7 +7,9 @@
   previous behavior of keeping document content for data files (to allow for passing the data file to layouts). To get the old behavior back, add
   `.AddSetting(WebKeys.ClearContent, false)` to your bootstrapper.
 - **Breaking Change:** Removed the `AssetFiles`, `DataFiles`, and `ContentFiles` settings and replaced with a single `InputFiles` setting for finding all input files.
-  The target pipeline and content type are now determined from the media type and metadata of the document instead of via globbing patterns for each pipeline. 
+  The target pipeline and content type are now determined from the media type and metadata of the document instead of via globbing patterns for each pipeline.
+  If you previously had asset files that started with an underscore (such as a `_redirects` file), you will need to explicitly add those to the `InputFiles` patterns
+  along with the default pattern: `.AddSetting(WebKeys.InputFiles, new [] { "**/{!_,}*", "_redirects" })`.
 - Made the concept of "templates" more general. They now essentially use the media type of a document (typically inferred from file extension) to determine which pipeline to
   process the document in and what module to use for processing. Templates can now be defined for assets, data, and content and for the `Process` and `PostProcess` phases for each.
 - Added a `ContentType` document setting to override the calculated pipeline and processing for a document (values are `Asset`, `Data`, and `Content`).
