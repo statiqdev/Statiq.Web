@@ -138,6 +138,11 @@ namespace Statiq.Web
         /// </remarks>
         public const string MediaType = nameof(MediaType);
 
+        /// <summary>
+        /// Set to <c>true</c> to indicate that the content contains a script that should be evaluated before processing normally.
+        /// </summary>
+        public const string Script = nameof(Script);
+
         public const string Title = nameof(Title);
 
         public const string Description = nameof(Description);

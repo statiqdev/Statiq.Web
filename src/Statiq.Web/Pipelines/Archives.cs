@@ -139,11 +139,7 @@ namespace Statiq.Web.Pipelines
                         }
 
                         // If it's a script, evaluate it now (deferred from inputs pipeline)
-                        modules.Add(
-                            new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.CSharp)))
-                            {
-                                new EvaluateScript()
-                            });
+                        modules.Add(new ExecuteEvaluateScript(false));
 
                         // Now execute templates
                         modules.Add(

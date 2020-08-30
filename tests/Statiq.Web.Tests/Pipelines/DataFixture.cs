@@ -78,52 +78,10 @@ namespace Statiq.Web.Tests.Pipelines
             }
 
             [Test]
-            public async Task HonorsDataFilesSetting()
-            {
-                // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                bootstrapper.AddSetting(WebKeys.DataFiles, "x/**/*.json");
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
-                    { "/input/x/y/z.json", "{ \"Foo\": \"Buz\" }" }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
-                document["Foo"].ShouldBe("Buz");
-            }
-
-            [Test]
-            public async Task SupportsMultipleDataFilesPatterns()
-            {
-                // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                bootstrapper.AddSetting(WebKeys.DataFiles, new[] { "a/**/*.json", "x/**/*.json" });
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
-                    { "/input/x/y/z.json", "{ \"Foo\": \"Buz\" }" }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                result.Outputs[nameof(Data)][Phase.Process].Select(x => x["Foo"]).ShouldBe(new[] { "Bar", "Buz" }, true);
-            }
-
-            [Test]
             public async Task IncludesDocumentsFromDependencies()
             {
                 // Given
                 Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                bootstrapper.AddSetting(WebKeys.DataFiles, "x/**/*.json");
                 bootstrapper.BuildPipeline("Test", builder => builder
                     .WithInputReadFiles("a/**/*.json")
                     .AsDependencyOf(nameof(Data)));
@@ -415,7 +373,6 @@ Foo: Bar"
             {
                 // Given
                 Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
-                bootstrapper.AddSetting(WebKeys.DataFiles, "**/*.foo");
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.foo", "Foobar" },
