@@ -16,14 +16,10 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                // Get inputs
-                new ReplaceDocuments(nameof(Inputs)),
-
-                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
-                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
+                new GetPipelineDocuments(ContentType.Content),
 
                 // Filter to non-archive content
-                new FilterDocuments(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType) == ContentType.Content && !Archives.IsArchive(doc))),
+                new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc))),
 
                 // Process the content
                 new CacheDocuments

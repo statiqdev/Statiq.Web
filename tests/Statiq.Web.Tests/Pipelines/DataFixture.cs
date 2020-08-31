@@ -33,16 +33,14 @@ namespace Statiq.Web.Tests.Pipelines
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
-            public async Task DoesNotClearContent()
+            public async Task DoesNotClearDataContentIfNotSet()
             {
                 // Given
                 Bootstrapper bootstrapper = Bootstrapper.Factory
-                    .CreateWeb(Array.Empty<string>())
-                    .AddSetting(WebKeys.ClearContent, false);
+                    .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" }
@@ -56,6 +54,28 @@ namespace Statiq.Web.Tests.Pipelines
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
                 (await document.GetContentStringAsync()).ShouldBe("{ \"Foo\": \"Bar\" }");
+            }
+
+            [Test]
+            public async Task ClearsDataContentIfSet()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.ClearDataContent, true);
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
+                document["Foo"].ShouldBe("Bar");
+                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -81,7 +101,9 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task IncludesDocumentsFromDependencies()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.InputFiles, "x/**/*");
                 bootstrapper.BuildPipeline("Test", builder => builder
                     .WithInputReadFiles("a/**/*.json")
                     .AsDependencyOf(nameof(Data)));
@@ -289,7 +311,6 @@ namespace Statiq.Web.Tests.Pipelines
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Fizz"].ShouldBe("Buzz");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -315,7 +336,6 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Fizz"].ShouldBe("Buzz");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -343,7 +363,6 @@ Foo: Bar"
                 document["Fizz"].ShouldBe("Buzz");
                 document["Blue"].ShouldBe("Green");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -365,7 +384,6 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document["Foo"].ShouldBe("Bar");
                 document["Fizz"].ShouldBe("Buzz");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]
@@ -387,7 +405,6 @@ Foo: Bar"
                 IDocument document = result.Outputs[nameof(Data)][Phase.Process].ShouldHaveSingleItem();
                 document.Destination.ShouldBe("a/b/c.json");
                 document["Foo"].ShouldBe("Bar");
-                (await document.GetContentStringAsync()).ShouldBeEmpty();
             }
 
             [Test]

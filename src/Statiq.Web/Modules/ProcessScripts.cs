@@ -23,7 +23,7 @@ namespace Statiq.Web.Modules
                     && MediaTypes.GetExtensions(MediaTypes.CSharp).Any(x => x.Equals(doc.Source.Extension, StringComparison.OrdinalIgnoreCase))))
                 {
                     new SetDestination(Config.FromDocument(doc => doc.Source.GetRelativeInputPath().ChangeExtension(null))),
-                    new SetMediaType(Config.FromDocument(doc => MediaTypes.Get(doc.Destination.FullPath)))
+                    new SetMediaType(Config.FromDocument(doc => doc.Destination.MediaType))
                 }
             })
         {

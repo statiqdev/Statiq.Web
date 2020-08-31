@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 using Statiq.Web.Modules;
-using Statiq.Yaml;
 
 namespace Statiq.Web.Pipelines
 {
@@ -23,11 +15,8 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                // Get inputs
-                new ReplaceDocuments(nameof(Inputs)),
-
-                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
-                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
+                // Include all non-asset documents (filtered to archives next)
+                new GetPipelineDocuments(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType) != ContentType.Asset || doc.MediaTypeEquals(MediaTypes.CSharp))),
 
                 // Filter to archives
                 new FilterDocuments(Config.FromDocument(IsArchive)),

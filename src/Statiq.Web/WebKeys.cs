@@ -195,10 +195,9 @@ namespace Statiq.Web
         public const string ShouldOutput = nameof(ShouldOutput);
 
         /// <summary>
-        /// By default, the content of data files is cleared. Set this to
-        /// <c>false</c> to keep the original content of the file prior to data processing.
+        /// Set this to <c>true</c> to clear the content of data files after processing.
         /// </summary>
-        public const string ClearContent = nameof(ClearContent);
+        public const string ClearDataContent = nameof(ClearDataContent);
 
         /// <summary>
         /// Indicates the layout file that should be used for this document.

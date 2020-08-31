@@ -3,13 +3,12 @@
 - Updated Statiq Framework to version [1.0.0-beta.21](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.21).
 - **Breaking change:** Removed the `IBootstrapper.SetDefaultTemplate()` extension given more general use of templates. The "default" template should now be specified
   by setting a templates for the HTML media type (by default it's still Razor, so this breaking change won't really affect anyone right now).
-- **Breaking change:** Added a `ClearContent` document setting that clears content from data documents. This is now `true` by default, which is different than the
-  previous behavior of keeping document content for data files (to allow for passing the data file to layouts). To get the old behavior back, add
-  `.AddSetting(WebKeys.ClearContent, false)` to your bootstrapper.
 - **Breaking Change:** Removed the `AssetFiles`, `DataFiles`, and `ContentFiles` settings and replaced with a single `InputFiles` setting for finding all input files.
   The target pipeline and content type are now determined from the media type and metadata of the document instead of via globbing patterns for each pipeline.
   If you previously had asset files that started with an underscore (such as a `_redirects` file), you will need to explicitly add those to the `InputFiles` patterns
   along with the default pattern: `.AddSetting(WebKeys.InputFiles, new [] { "**/{!_,}*", "_redirects" })`.
+- Added a `ClearDataContent` document setting that clears content from data documents (for example, to support passing the data file to layouts).
+  Set this for a single data document to clear it's content or globally with `.AddSetting(WebKeys.ClearDataContent, true)` to clear the content of all data files.
 - Made the concept of "templates" more general. They now essentially use the media type of a document (typically inferred from file extension) to determine which pipeline to
   process the document in and what module to use for processing. Templates can now be defined for assets, data, and content and for the `Process` and `PostProcess` phases for each.
 - Added a `ContentType` document setting to override the calculated pipeline and processing for a document (values are `Asset`, `Data`, and `Content`).

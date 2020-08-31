@@ -15,17 +15,14 @@ namespace Statiq.Web.Pipelines
 
             ProcessModules = new ModuleList
             {
-                // Get inputs
-                new ReplaceDocuments(nameof(Inputs)),
-
-                // Concat all documents from externally declared dependencies (exclude explicit dependencies above like "Inputs")
-                new ConcatDocuments(Config.FromContext<IEnumerable<IDocument>>(ctx => ctx.Outputs.FromPipelines(ctx.Pipeline.GetAllDependencies(ctx).Except(Dependencies).ToArray()))),
+                // We ran the data templates against documents in Inputs, but haven't run it against documents from dependencies
+                new GetPipelineDocuments(ContentType.Data, templates.GetModule(ContentType.Data, Phase.Process)),
 
                 // Filter to non-archive, non-feed data
-                new FilterDocuments(Config.FromDocument(doc => doc.Get<ContentType>(WebKeys.ContentType) == ContentType.Data && !Archives.IsArchive(doc) && !Feeds.IsFeed(doc))),
+                new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc) && !Feeds.IsFeed(doc))),
 
                 // Clear the content so data documents can be safely sent to the content pipeline or rendered with a layout
-                new ExecuteIf(Config.FromDocument(WebKeys.ClearContent, true))
+                new ExecuteIf(Config.FromDocument<bool>(WebKeys.ClearDataContent))
                 {
                     new SetContent(string.Empty)
                 },
