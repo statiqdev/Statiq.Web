@@ -5,7 +5,8 @@
   "identity": "Statiq.Web.Templates.ConsoleTemplate.CSharp",
   "name": "Statiq Web Console Application",
   "shortName": "statiq-web",
-  "sourceName": "StatiqWeb",
+  "sourceName": "Statiq.Web.Template",
+  "preferNameDirectory": true,
   "tags": {
     "language": "C#",
     "type": "project"

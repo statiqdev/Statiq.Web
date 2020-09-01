@@ -1,5 +1,7 @@
 # 1.0.0-beta.5
 
+- Some tweaks to the new .NET template to prefer the directory name.
+
 # 1.0.0-beta.4
 
 - Updated Statiq Framework to version [1.0.0-beta.21](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.21).

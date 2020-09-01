@@ -22,6 +22,6 @@
   </ItemGroup>
 
   <Target Name="VersionBuild" BeforeTargets="PrepareForBuild">
-   <XmlPoke XmlInputPath="templates\statiq-web\StatiqWeb\StatiqWeb.csproj" Query="Project/ItemGroup/PackageReference/@Version" Value="$(Version)" />
+   <XmlPoke XmlInputPath="templates\statiq-web\Statiq.Web.Template.csproj" Query="Project/ItemGroup/PackageReference/@Version" Value="$(Version)" />
   </Target>
 </Project>
