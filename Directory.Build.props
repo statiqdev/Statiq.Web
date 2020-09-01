@@ -2,13 +2,13 @@
   
   <PropertyGroup>
     <!-- Controls whether references are local projects or NuGet packages -->
-    <LocalReferences>true</LocalReferences>    
+    <LocalReferences>false</LocalReferences>    
     <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
-    <StatiqFrameworkVersion>1.0.0-beta.20</StatiqFrameworkVersion>
+    <StatiqFrameworkVersion>1.0.0-beta.21</StatiqFrameworkVersion>
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>1.0.0-beta.4</Version>
+    <Version>1.0.0-beta.5</Version>
     <InformationalVersion>$(Version)</InformationalVersion>
     <AssemblyVersion>$(Version.Split('-')[0])</AssemblyVersion>
     <FileVersion>$(Version.Split('-')[0])</FileVersion>
