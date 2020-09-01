@@ -1,3 +1,5 @@
+# 1.0.0-beta.6
+
 # 1.0.0-beta.5
 
 - Some tweaks to the new .NET template to prefer the directory name.
