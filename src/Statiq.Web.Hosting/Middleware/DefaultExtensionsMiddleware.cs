@@ -37,7 +37,7 @@ namespace Statiq.Web.Hosting.Middleware
                 // Check if there's a file with a matched extension, and rewrite the request if found
                 foreach (string extension in _extensions)
                 {
-                    string filePath = context.Request.Path.ToString() + extension;
+                    string filePath = context.Request.Path.Value + extension;
                     IFileInfo fileInfo = _fileProvider.GetFileInfo(filePath);
                     if (fileInfo?.Exists == true)
                     {
