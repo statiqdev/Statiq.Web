@@ -46,149 +46,148 @@ namespace Statiq.Web.Commands
             PreviewCommandSettings commandSettings,
             IEngineManager engineManager)
         {
-            SetPipelines(commandContext, commandSettings, engineManager);
-
-            ExitCode exitCode = ExitCode.Normal;
-            ILogger logger = engineManager.Engine.Services.GetRequiredService<ILogger<Bootstrapper>>();
-
-            // Execute the engine for the first time
             using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
             {
-                exitCode = await engineManager.ExecuteAsync(cancellationTokenSource)
-                    ? ExitCode.Normal
-                    : ExitCode.ExecutionError;
-            }
+                SetPipelines(commandContext, commandSettings, engineManager);
 
-            // Start the preview server
-            Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
-                ? GetContentTypes(commandSettings.ContentTypes)
-                : new Dictionary<string, string>();
-            ILoggerProvider loggerProvider = engineManager.Engine.Services.GetRequiredService<ILoggerProvider>();
-            IDirectory outputDirectory = engineManager.Engine.FileSystem.GetOutputDirectory();
-            Server previewServer = null;
-            if (outputDirectory.Exists)
-            {
-                previewServer = await StartPreviewServerAsync(
-                    outputDirectory.Path,
-                    commandSettings.Port,
-                    commandSettings.ForceExt,
-                    commandSettings.VirtualDirectory,
-                    !commandSettings.NoReload,
-                    contentTypes,
-                    loggerProvider,
-                    logger);
-            }
+                ExitCode exitCode = ExitCode.Normal;
+                ILogger logger = engineManager.Engine.Services.GetRequiredService<ILogger<Bootstrapper>>();
 
-            // Start the watchers
-            ActionFileSystemWatcher inputFolderWatcher = null;
-            if (!commandSettings.NoWatch)
-            {
-                logger.LogInformation("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
-                inputFolderWatcher = new ActionFileSystemWatcher(
-                    outputDirectory.Path,
-                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path),
-                    true,
-                    "*.*",
-                    path =>
+                // Start the message pump
+                CommandUtilities.WaitForControlC(
+                    () =>
                     {
-                        _changedFiles.Enqueue(path);
+                        _exit.Set();
                         _messageEvent.Set();
+                        cancellationTokenSource.Cancel();
                     });
-            }
 
-            // Start the message pump
-            CommandUtilities.WaitForControlC(
-                () =>
-                {
-                    _exit.Set();
-                    _messageEvent.Set();
-                },
-                logger);
+                // Execute the engine for the first time
+                exitCode = await engineManager.ExecuteAsync(cancellationTokenSource);
 
-            // Wait for activity
-            while (true)
-            {
-                _messageEvent.WaitOne(); // Blocks the current thread until a signal
-                if (_exit)
+                // Start previewing if we didn't cancel
+                ActionFileSystemWatcher inputFolderWatcher = null;
+                Server previewServer = null;
+                if (exitCode != ExitCode.OperationCanceled)
                 {
-                    break;
-                }
-
-                // Execute if files have changed
-                HashSet<string> changedFiles = new HashSet<string>();
-                while (_changedFiles.TryDequeue(out string changedFile))
-                {
-                    if (changedFiles.Add(changedFile))
+                    // Start the preview server
+                    Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
+                        ? GetContentTypes(commandSettings.ContentTypes)
+                        : new Dictionary<string, string>();
+                    ILoggerProvider loggerProvider = engineManager.Engine.Services.GetRequiredService<ILoggerProvider>();
+                    IDirectory outputDirectory = engineManager.Engine.FileSystem.GetOutputDirectory();
+                    if (outputDirectory.Exists)
                     {
-                        logger.LogDebug($"{changedFile} has changed");
-                    }
-                }
-                if (changedFiles.Count > 0)
-                {
-                    logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
-
-                    // Reset caches when an error occurs during the previous preview
-                    bool? existingResetCacheSetting = null;
-                    bool setResetCacheSetting = false;
-                    if (exitCode == ExitCode.ExecutionError)
-                    {
-                        existingResetCacheSetting = engineManager.Engine.Settings.ContainsKey(Keys.ResetCache)
-                            ? engineManager.Engine.Settings.GetBool(Keys.ResetCache)
-                            : (bool?)null;
-                        setResetCacheSetting = true;
-                        _resetCache.Value = true;
+                        previewServer = await StartPreviewServerAsync(
+                            outputDirectory.Path,
+                            commandSettings.Port,
+                            commandSettings.ForceExt,
+                            commandSettings.VirtualDirectory,
+                            !commandSettings.NoReload,
+                            contentTypes,
+                            loggerProvider,
+                            logger);
                     }
 
-                    // If there was an execution error due to reload, keep previewing but clear the cache
-                    using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
+                    // Start the watchers
+                    if (!commandSettings.NoWatch)
                     {
-                        exitCode = await engineManager.ExecuteAsync(cancellationTokenSource)
-                            ? ExitCode.Normal
-                            : ExitCode.ExecutionError;
+                        logger.LogInformation("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
+                        inputFolderWatcher = new ActionFileSystemWatcher(
+                            outputDirectory.Path,
+                            engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path),
+                            true,
+                            "*.*",
+                            path =>
+                            {
+                                _changedFiles.Enqueue(path);
+                                _messageEvent.Set();
+                            });
                     }
 
-                    // Reset the reset cache setting after removing it
-                    if (setResetCacheSetting)
-                    {
-                        _resetCache.Value = existingResetCacheSetting ?? false;
-                    }
+                    logger.LogInformation("Hit Ctrl-C to exit");
 
-                    if (previewServer is null)
+                    // Wait for activity
+                    while (true)
                     {
-                        if (outputDirectory.Exists)
+                        _messageEvent.WaitOne(); // Blocks the current thread until a signal
+                        if (_exit)
                         {
-                            previewServer = await StartPreviewServerAsync(
-                                outputDirectory.Path,
-                                commandSettings.Port,
-                                commandSettings.ForceExt,
-                                commandSettings.VirtualDirectory,
-                                !commandSettings.NoReload,
-                                contentTypes,
-                                loggerProvider,
-                                logger);
+                            break;
                         }
-                    }
-                    else
-                    {
-                        await previewServer.TriggerReloadAsync();
+
+                        // Execute if files have changed
+                        HashSet<string> changedFiles = new HashSet<string>();
+                        while (_changedFiles.TryDequeue(out string changedFile))
+                        {
+                            if (changedFiles.Add(changedFile))
+                            {
+                                logger.LogDebug($"{changedFile} has changed");
+                            }
+                        }
+                        if (changedFiles.Count > 0)
+                        {
+                            logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
+
+                            // Reset caches when an error occurs during the previous preview
+                            bool? existingResetCacheSetting = null;
+                            bool setResetCacheSetting = false;
+                            if (exitCode != ExitCode.Normal)
+                            {
+                                existingResetCacheSetting = engineManager.Engine.Settings.ContainsKey(Keys.ResetCache)
+                                    ? engineManager.Engine.Settings.GetBool(Keys.ResetCache)
+                                    : (bool?)null;
+                                setResetCacheSetting = true;
+                                _resetCache.Value = true;
+                            }
+
+                            // If there was an execution error due to reload, keep previewing but clear the cache
+                            exitCode = await engineManager.ExecuteAsync(cancellationTokenSource);
+
+                            // Reset the reset cache setting after removing it
+                            if (setResetCacheSetting)
+                            {
+                                _resetCache.Value = existingResetCacheSetting ?? false;
+                            }
+
+                            if (previewServer is null)
+                            {
+                                if (outputDirectory.Exists)
+                                {
+                                    previewServer = await StartPreviewServerAsync(
+                                        outputDirectory.Path,
+                                        commandSettings.Port,
+                                        commandSettings.ForceExt,
+                                        commandSettings.VirtualDirectory,
+                                        !commandSettings.NoReload,
+                                        contentTypes,
+                                        loggerProvider,
+                                        logger);
+                                }
+                            }
+                            else
+                            {
+                                await previewServer.TriggerReloadAsync();
+                            }
+                        }
+
+                        // Check one more time for exit
+                        if (_exit)
+                        {
+                            break;
+                        }
+                        logger.LogInformation("Hit Ctrl-C to exit");
+                        _messageEvent.Reset();
                     }
                 }
 
-                // Check one more time for exit
-                if (_exit)
-                {
-                    break;
-                }
-                logger.LogInformation("Hit Ctrl-C to exit");
-                _messageEvent.Reset();
+                // Shutdown
+                logger.LogInformation("Shutting down");
+                inputFolderWatcher?.Dispose();
+                previewServer?.Dispose();
+
+                return (int)exitCode;
             }
-
-            // Shutdown
-            logger.LogInformation("Shutting down");
-            inputFolderWatcher?.Dispose();
-            previewServer?.Dispose();
-
-            return (int)exitCode;
         }
 
         internal static Dictionary<string, string> GetContentTypes(string[] contentTypes)

@@ -101,8 +101,7 @@ namespace Statiq.Web.Commands
                     {
                         _exit.Set();
                         _messageEvent.Set();
-                    },
-                    logger);
+                    });
 
                 // Wait for activity
                 while (true)

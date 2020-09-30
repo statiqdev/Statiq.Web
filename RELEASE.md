@@ -1,5 +1,9 @@
 # 1.0.0-beta.6
 
+- Updated Statiq Framework to version [1.0.0-beta.22](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.22).
+- Added base Markdown analyzers `MarkdownAnalyzer` and `SyncMarkdownAnalyzer`.
+- Added `Bootstrapper.AnalyzeMarkdown()` extensions for defining delegate-based Markdown analyzers.
+
 # 1.0.0-beta.5
 
 - Some tweaks to the new .NET template to prefer the directory name.

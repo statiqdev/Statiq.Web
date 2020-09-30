@@ -46,6 +46,9 @@ namespace Statiq.Web
         /// </summary>
         public const string GenerateSitemap = nameof(GenerateSitemap);
 
+        /// <summary>
+        /// Set to <c>false</c> to exclude a document from the sitemap file.
+        /// </summary>
         public const string IncludeInSitemap = nameof(IncludeInSitemap);
 
         public const string MirrorResources = nameof(MirrorResources);
@@ -119,7 +122,7 @@ namespace Statiq.Web
         ////////// Document
 
         /// <summary>
-        /// Indicates the type of content (and thus which pipeline will process the file).
+        /// Indicates the type of content and thus which pipeline will process the file.
         /// </summary>
         /// <remarks>
         /// This will be automatically set based on the media type of the file and other metadata,
@@ -145,13 +148,19 @@ namespace Statiq.Web
 
         /// <summary>
         /// Indicates that if a script file has a second extension such as "foo.md.csx" that the script extension should be removed
-        /// and the preceding extension should be used to reset the media type, and thus the templates that will be executed
-        /// (the default is <c>true</c>).
+        /// and the preceding extension should be used to reset the media type after script evaluation, and thus the templates that
+        /// will be executed (the default is <c>true</c>).
         /// </summary>
         public const string RemoveScriptExtension = nameof(RemoveScriptExtension);
 
+        /// <summary>
+        /// The title of the document, often used by themes.
+        /// </summary>
         public const string Title = nameof(Title);
 
+        /// <summary>
+        /// The description of the document, often used by themes.
+        /// </summary>
         public const string Description = nameof(Description);
 
         /// <summary>
@@ -181,21 +190,21 @@ namespace Statiq.Web
         public const string Updated = nameof(Updated);
 
         /// <summary>
-        /// A <c>bool</c> that indicates the document should be excluded from the content or data
-        /// pipeline if <c>true</c>. The default value looks at <see cref="Published"/>
+        /// Indicates the document should be excluded from pipeline processing if <c>true</c>.
+        /// The default value looks at <see cref="Published"/>
         /// and filters out any future-dated content or data, though you can also define a value
         /// for this setting directly for each document.
         /// </summary>
         public const string Excluded = nameof(Excluded);
 
         /// <summary>
-        /// Indicates that the content or data file should be output.
-        /// By default content files are output and data files are not.
+        /// Indicates that the file should be output.
+        /// By default content and asset files are output and data files are not.
         /// </summary>
         public const string ShouldOutput = nameof(ShouldOutput);
 
         /// <summary>
-        /// Set this to <c>true</c> to clear the content of data files after processing.
+        /// Set this to <c>true</c> to clear the content of data files after processing (the default is <c>false</c>).
         /// </summary>
         public const string ClearDataContent = nameof(ClearDataContent);
 
