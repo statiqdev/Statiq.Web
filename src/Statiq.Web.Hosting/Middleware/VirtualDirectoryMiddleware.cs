@@ -25,7 +25,7 @@ namespace Statiq.Web.Hosting.Middleware
             if (context.Request.Path.ToString().StartsWith(_virtualDirectory))
             {
                 string realPath = context.Request.Path.ToString().Substring(_virtualDirectory.Length);
-                if (realPath?.Length == 0)
+                if (realPath.Length == 0)
                 {
                     realPath = "/";
                 }

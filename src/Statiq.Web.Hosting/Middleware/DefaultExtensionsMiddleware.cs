@@ -25,7 +25,7 @@ namespace Statiq.Web.Hosting.Middleware
 
             _next = next.ThrowIfNull(nameof(next));
             _fileProvider = hostingEnv.WebRootFileProvider;
-            _extensions = (options?.Value ?? new DefaultExtensionsOptions()).Extensions.Select(x => x.StartsWith(".") ? x : ("." + x)).ToArray();
+            _extensions = (options.Value ?? new DefaultExtensionsOptions()).Extensions.Select(x => x.StartsWith(".") ? x : ("." + x)).ToArray();
             _logger = loggerFactory.CreateLogger<DefaultExtensionsMiddleware>();
         }
 
