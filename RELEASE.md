@@ -3,6 +3,8 @@
 - Updated Statiq Framework to version [1.0.0-beta.22](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.22).
 - Added base Markdown analyzers `MarkdownAnalyzer` and `SyncMarkdownAnalyzer`.
 - Added `Bootstrapper.AnalyzeMarkdown()` extensions for defining delegate-based Markdown analyzers.
+- Fixed a bug in the preview server related to non-ASCII paths (#918, thanks @Vladekk).
+- Fixed some bugs in the preview server related to cache reset (#914, thanks @Backs).
 
 # 1.0.0-beta.5
 
