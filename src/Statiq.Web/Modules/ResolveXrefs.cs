@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
-using AngleSharp.Dom.Html;
-using AngleSharp.Parser.Html;
+using AngleSharp.Html;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;
 using Statiq.Html;
@@ -15,8 +16,6 @@ namespace Statiq.Web.Modules
 {
     public class ResolveXrefs : Module
     {
-        private static readonly HtmlParser HtmlParser = new HtmlParser();
-
         protected override async Task<IEnumerable<Common.IDocument>> ExecuteContextAsync(IExecutionContext context)
         {
             // Key = source, Value = tag HTML
@@ -46,7 +45,7 @@ namespace Statiq.Web.Modules
             IExecutionContext context,
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
-            IHtmlDocument htmlDocument = await input.ParseHtmlAsync(context, HtmlParser);
+            IHtmlDocument htmlDocument = await HtmlHelper.ParseHtmlAsync(input);
             if (htmlDocument is object)
             {
                 // Find and replace "xref:" in links

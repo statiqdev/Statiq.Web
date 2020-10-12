@@ -17,7 +17,7 @@ namespace Statiq.Web
         {
             foreach (FencedCodeBlock block in markdown.Descendants<FencedCodeBlock>().Where(b => b.Info.IsNullOrEmpty()))
             {
-                context.Add($"Line {block.Line}: Fenced code blocks should specify a language");
+                context.AddAnalyzerResult(document, $"Line {block.Line}: Fenced code blocks should specify a language");
             }
         }
     }

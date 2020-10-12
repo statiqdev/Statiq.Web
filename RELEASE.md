@@ -1,5 +1,11 @@
 # 1.0.0-beta.8
 
+- Removed the `ValidateLinks` pipeline.
+- Added a new `AnalyzeContent` pipeline.
+- Added base `HtmlAnalyzer` and `SyncHtmlAnalyzer` classes for analyzing HTML content.
+- Added `Bootstrapper.AnalyzeHtml()` extensions for defining delegate-based HTML analyzers.
+- Added new `ValidateAbsoluteLinks` and `ValidateRelativeLinks` analyzers (replaces the `ValidateLinks` pipeline).
+
 # 1.0.0-beta.7
 
 - Updated Statiq Framework to version [1.0.0-beta.23](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.23).

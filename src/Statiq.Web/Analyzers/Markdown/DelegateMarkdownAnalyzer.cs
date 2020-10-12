@@ -19,6 +19,6 @@ namespace Statiq.Web
             _analyzeFunc = analyzeFunc.ThrowIfNull(nameof(analyzeFunc));
         }
 
-        protected override async Task AnalyzeAsync(MarkdownDocument markdown, IDocument document, IAnalyzerContext context) => await _analyzeFunc(markdown, document, context);
+        protected sealed override async Task AnalyzeAsync(MarkdownDocument markdown, IDocument document, IAnalyzerContext context) => await _analyzeFunc(markdown, document, context);
     }
 }
