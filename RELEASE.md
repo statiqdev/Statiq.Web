@@ -1,5 +1,6 @@
 # 1.0.0-beta.8
 
+- Updated Statiq Framework to version [1.0.0-beta.24](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.24).
 - **Breaking change:** Removed the `ValidateAbsoluteLinks`, `ValidateRelativeLinks`, and `ValidateLinksAsError` settings in favor of the new analyzers.
   For example, to turn on absolute link validation with an error log level, set `Analyzers: ValidateAbsoluteLinks=Error` in your configuration file (or bootstrapper, etc.)
 - Added new `ValidateAbsoluteLinks` and `ValidateRelativeLinks` analyzers (replaces the `ValidateLinks` pipeline).
