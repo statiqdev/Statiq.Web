@@ -11,7 +11,7 @@ namespace Statiq.Web
 {
     public class FencedCodeBlocksShouldHaveLanguage : SyncMarkdownAnalyzer
     {
-        public override LogLevel LogLevel { get; set; } = LogLevel.Warning;
+        public override LogLevel LogLevel { get; set; } = LogLevel.None;
 
         protected override void Analyze(MarkdownDocument markdown, IDocument document, IAnalyzerContext context)
         {

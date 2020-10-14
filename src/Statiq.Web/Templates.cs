@@ -74,6 +74,7 @@ namespace Statiq.Web
             {
                 if (item.Value.Module is object)
                 {
+                    // Add else conditions instead of lots of individual ExecuteIf modules so that we only run a single template
                     module = module is null
                         ? new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module)
                         : module.ElseIf(Config.FromDocument(doc => doc.MediaTypeEquals(item.Key)), item.Value.Module);

@@ -54,21 +54,6 @@ namespace Statiq.Web
         public const string MirrorResources = nameof(MirrorResources);
 
         /// <summary>
-        /// Set to <c>true</c> (the default value is <c>false</c>) to validate all absolute links. Note that this may add considerable time to your generation process.
-        /// </summary>
-        public const string ValidateAbsoluteLinks = nameof(ValidateAbsoluteLinks);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value is <c>false</c>) to report errors on link validation failures.
-        /// </summary>
-        public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value) to validate all relative links.
-        /// </summary>
-        public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
-
-        /// <summary>
         /// Generates META-REFRESH redirect pages (the default value is <c>true</c>).
         /// </summary>
         public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);

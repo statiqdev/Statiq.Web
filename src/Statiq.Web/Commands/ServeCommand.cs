@@ -18,7 +18,7 @@ using Statiq.Web.Hosting;
 namespace Statiq.Web.Commands
 {
     [Description("Serves a folder, optionally watching for changes and triggering client reload by default.")]
-    internal class ServeCommand : EngineCommand<ServeCommandSettings>
+    public class ServeCommand : EngineCommand<ServeCommandSettings>
     {
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);

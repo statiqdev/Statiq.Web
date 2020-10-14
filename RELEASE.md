@@ -1,10 +1,13 @@
 # 1.0.0-beta.8
 
+- **Breaking change:** Removed the `ValidateAbsoluteLinks`, `ValidateRelativeLinks`, and `ValidateLinksAsError` settings in favor of the new analyzers.
+  For example, to turn on absolute link validation with an error log level, set `Analyzers: ValidateAbsoluteLinks=Error` in your configuration file (or bootstrapper, etc.)
+- Added new `ValidateAbsoluteLinks` and `ValidateRelativeLinks` analyzers (replaces the `ValidateLinks` pipeline).
 - Removed the `ValidateLinks` pipeline.
 - Added a new `AnalyzeContent` pipeline.
 - Added base `HtmlAnalyzer` and `SyncHtmlAnalyzer` classes for analyzing HTML content.
 - Added `Bootstrapper.AnalyzeHtml()` extensions for defining delegate-based HTML analyzers.
-- Added new `ValidateAbsoluteLinks` and `ValidateRelativeLinks` analyzers (replaces the `ValidateLinks` pipeline).
+- Made the `PreviewCommand` and `ServeCommand` in Statiq.Web.Hosting public so you can call `IBootstrapper.AddCommand<PreviewCommand>()` directly without Statiq.Web.
 
 # 1.0.0-beta.7
 

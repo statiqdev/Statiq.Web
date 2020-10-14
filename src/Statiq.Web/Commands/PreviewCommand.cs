@@ -17,7 +17,7 @@ using Statiq.Web.Hosting;
 namespace Statiq.Web.Commands
 {
     [Description("Builds the site and serves it, optionally watching for changes, rebuilding, and triggering client reload by default.")]
-    internal class PreviewCommand : PipelinesCommand<PreviewCommandSettings>
+    public class PreviewCommand : PipelinesCommand<PreviewCommandSettings>
     {
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);

@@ -16,7 +16,7 @@ using Statiq.Web.Hosting;
 
 namespace Statiq.Web.Commands
 {
-    internal class ServeCommandSettings : BaseCommandSettings
+    public class ServeCommandSettings : BaseCommandSettings
     {
         [CommandArgument(0, "[root]")]
         [Description("The root folder to serve (the output directory by default).")]

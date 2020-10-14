@@ -13,7 +13,7 @@ using Statiq.Web.Hosting;
 
 namespace Statiq.Web.Commands
 {
-    internal class PreviewCommandSettings : PipelinesCommandSettings
+    public class PreviewCommandSettings : PipelinesCommandSettings
     {
         [CommandOption("--port <PORT>")]
         [Description("Start the preview web server on the specified port (default is 5080).")]

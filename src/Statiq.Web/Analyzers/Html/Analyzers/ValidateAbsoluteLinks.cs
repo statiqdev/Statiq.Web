@@ -26,7 +26,7 @@ namespace Statiq.Web
         /// <summary>
         /// Validating absolute links is expensive, so this should be disabled by default.
         /// </summary>
-        public override LogLevel LogLevel => LogLevel.None;
+        public override LogLevel LogLevel { get; set; } = LogLevel.None;
 
         public override Task BeforeEngineExecutionAsync(IEngine engine, Guid executionId)
         {

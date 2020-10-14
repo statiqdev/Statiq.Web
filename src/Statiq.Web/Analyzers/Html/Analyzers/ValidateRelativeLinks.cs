@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
@@ -16,7 +17,7 @@ namespace Statiq.Web
     {
         private readonly HashSet<string> _relativeOutputPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public override LogLevel LogLevel => LogLevel.Warning;
+        public override LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
         public override async Task AnalyzeAsync(IAnalyzerContext context)
         {
@@ -58,11 +59,6 @@ namespace Statiq.Web
                 normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("?", StringComparison.Ordinal));
             }
             normalizedPath = Uri.UnescapeDataString(normalizedPath);
-            if (normalizedPath?.Length == 0)
-            {
-                // Intra-page link, nothing more to validate
-                return;
-            }
 
             // Remove the link root if there is one and remove the preceding slash
             if (!context.Settings.GetPath(Keys.LinkRoot).IsNull
@@ -71,6 +67,12 @@ namespace Statiq.Web
                 normalizedPath = normalizedPath.Substring(context.Settings.GetPath(Keys.LinkRoot).FullPath.Length);
             }
             normalizedPath = normalizedPath.TrimStart('/');
+
+            // If an intra-page link or link to root, nothing more to validate
+            if (normalizedPath?.Length == 0)
+            {
+                return;
+            }
 
             // See if it's in the output paths
             if (!_relativeOutputPaths.Contains(normalizedPath))

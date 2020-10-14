@@ -33,6 +33,7 @@ namespace Statiq.Web
                 .SetOutputPath()
                 .AddThemePaths()
                 .AddDefaultWebSettings()
+                .AddWebAnalyzers()
                 .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.MinimumStatiqWebVersion));
 
         private static Bootstrapper AddWebServices(this Bootstrapper bootstrapper) =>
@@ -137,6 +138,8 @@ namespace Statiq.Web
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
                     { WebKeys.PublishedUsesLastModifiedDate, true }
                 });
+
+        private static Bootstrapper AddWebAnalyzers(this Bootstrapper bootstrapper) => bootstrapper.AddAnalyzers(typeof(BootstrapperExtensions).Assembly);
 
         /// <summary>
         /// Adds the "preview" and "serve" commands (this is called by default when you
