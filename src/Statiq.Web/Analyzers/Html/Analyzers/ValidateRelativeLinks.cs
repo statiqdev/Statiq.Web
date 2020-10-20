@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;
-using Statiq.Html;
 
 namespace Statiq.Web
 {
@@ -22,16 +18,17 @@ namespace Statiq.Web
         public override async Task AnalyzeAsync(IAnalyzerContext context)
         {
             // Get existing relative output paths
+            // Unescape here since we also unescape during the test below to the escapeness matches
             _relativeOutputPaths.Clear();
             foreach (NormalizedPath relativeOutputPath in context.FileSystem
                 .GetOutputDirectory()
                 .GetFiles(System.IO.SearchOption.AllDirectories)
                 .Select(x => context.FileSystem.GetRelativeOutputPath(x.Path)))
             {
-                _relativeOutputPaths.Add(relativeOutputPath.FullPath.TrimStart('/'));
-                _relativeOutputPaths.Add(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, false)).TrimStart('/'));
-                _relativeOutputPaths.Add(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, false, true)).TrimStart('/'));
-                _relativeOutputPaths.Add(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, true)).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(relativeOutputPath.FullPath).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, false))).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, false, true))).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, true))).TrimStart('/'));
             }
 
             await base.AnalyzeAsync(context);

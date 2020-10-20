@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Data;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using NUnit.Framework.Constraints;
 using Statiq.Common;
-using Statiq.Html;
 
 namespace Statiq.Web
 {
@@ -70,7 +63,7 @@ namespace Statiq.Web
                 }
 
                 // Only validate http and https schemes
-                if (uri.Scheme == Uri.UriSchemeHttp || link.Item1.Scheme == Uri.UriSchemeHttps)
+                if (uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     HttpStatusCode statusCode = await ValidateLinkAsync(uri, context);
                     if (statusCode != HttpStatusCode.OK)
@@ -80,7 +73,7 @@ namespace Statiq.Web
                 }
                 else
                 {
-                    context.Logger.LogDebug($"Skipping validation for absolute link {link.Item1}: unsupported scheme {link.Item1.Scheme}.");
+                    context.Logger.LogDebug($"Skipping validation for absolute link {uri}: unsupported scheme {uri.Scheme}.");
                 }
                 return null;
             });

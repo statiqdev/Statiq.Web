@@ -13,22 +13,27 @@ namespace Statiq.Web
 {
     public abstract class ValidateLinks : HtmlAnalyzer
     {
-        protected static IEnumerable<(Uri, IEnumerable<IElement>)> GetLinks(IHtmlDocument htmlDocument, Common.IDocument document, IAnalyzerContext context, bool absolute)
-        {
-            // Get the base path for links
-            NormalizedPath basePath = string.IsNullOrEmpty(htmlDocument.BaseUri) ? NormalizedPath.Null : new NormalizedPath(htmlDocument.BaseUri);
-
-            // Get <a>, <link>, <image>, and <script> links
-            return htmlDocument.Links.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e))
+        // Get <a>, <link>, <image>, and <script> links
+        protected static IEnumerable<(Uri, IEnumerable<IElement>)> GetLinks(
+            IHtmlDocument htmlDocument,
+            Common.IDocument document,
+            IAnalyzerContext context,
+            bool absolute) =>
+            htmlDocument.Links.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e))
                 .Concat(htmlDocument.GetElementsByTagName("link").Where(e => e.HasAttribute("href") && !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e)))
                 .Concat(htmlDocument.Images.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("src"), (IElement)e)))
                 .Concat(htmlDocument.Scripts.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.Source, (IElement)e)))
                 .GroupBy(x => x.Item1, x => x.Item2)
-                .Select(g => (GetLink(g.Key, g, basePath, document, context, absolute), (IEnumerable<IElement>)g))
+                .Select(g => (GetLink(g.Key, g, htmlDocument.BaseUrl, document, context, absolute), (IEnumerable<IElement>)g))
                 .Where(x => x.Item1 is object);
-        }
 
-        private static Uri GetLink(string link, IEnumerable<IElement> elements, NormalizedPath basePath, Common.IDocument document, IAnalyzerContext context, bool absolute)
+        private static Uri GetLink(
+            string link,
+            IEnumerable<IElement> elements,
+            AngleSharp.Url baseUrl,
+            Common.IDocument document,
+            IAnalyzerContext context,
+            bool absolute)
         {
             if (link.IsNullOrEmpty())
             {
@@ -52,10 +57,22 @@ namespace Statiq.Web
             // If this is a relative Uri, add the base path or adjust it relative to the document destination
             if (!uri.IsAbsoluteUri)
             {
-                // If we have a base path, add it and try again (which might make the link absolute if the base is absolute)
-                if (!basePath.IsNull)
+                // If we have a base Url, add it and try again (which might make the link absolute if the base is absolute)
+                if (baseUrl is object)
                 {
-                    return GetLink(basePath.Combine(link).FullPath, elements, NormalizedPath.Null, document, context, absolute);
+                    if (baseUrl.Scheme.Equals("about", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!baseUrl.Path.IsNullOrEmpty())
+                        {
+                            // The base URL is relative, so prepend it to this path
+                            return GetLink(baseUrl.Path.TrimEnd('/') + "/" + uri.ToString().TrimStart('/'), elements, null, document, context, absolute);
+                        }
+                    }
+                    else
+                    {
+                        // The base URL is absolute, so append the path to it
+                        return GetLink(baseUrl.ToString().TrimEnd('/') + "/" + uri.ToString().TrimStart('/'), elements, null, document, context, absolute);
+                    }
                 }
 
                 // If we've got a document destination, adjust the path relative to that
