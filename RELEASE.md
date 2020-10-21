@@ -1,5 +1,8 @@
 # 1.0.0-beta.9
 
+- Updated Statiq Framework to version [1.0.0-beta.25](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.25).
+- Lots of bug fixes for the `ValidateAbsoluteLinks` and `ValidateRelativeLinks` analyzers.
+
 # 1.0.0-beta.8
 
 - Updated Statiq Framework to version [1.0.0-beta.24](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.24).
