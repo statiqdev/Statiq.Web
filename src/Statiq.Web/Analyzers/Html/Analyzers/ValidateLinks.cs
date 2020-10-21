@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Statiq.Common;
-using Statiq.Html;
 
 namespace Statiq.Web
 {
     public abstract class ValidateLinks : HtmlAnalyzer
     {
         // Get <a>, <link>, <image>, and <script> links
-        protected static IEnumerable<(Uri, IEnumerable<IElement>)> GetLinks(
+        protected static IEnumerable<(string, IEnumerable<IElement>)> GetLinks(
             IHtmlDocument htmlDocument,
             Common.IDocument document,
             IAnalyzerContext context,
@@ -24,13 +20,13 @@ namespace Statiq.Web
                 .Concat(htmlDocument.Images.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("src"), (IElement)e)))
                 .Concat(htmlDocument.Scripts.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.Source, (IElement)e)))
                 .GroupBy(x => x.Item1, x => x.Item2)
-                .Select(g => (GetLink(g.Key, g, htmlDocument.BaseUrl, document, context, absolute), (IEnumerable<IElement>)g))
+                .Select(g => (GetLink(g.Key, g, htmlDocument.GetElementsByTagName("base").FirstOrDefault()?.GetAttribute("href"), document, context, absolute), (IEnumerable<IElement>)g))
                 .Where(x => x.Item1 is object);
 
-        private static Uri GetLink(
+        private static string GetLink(
             string link,
             IEnumerable<IElement> elements,
-            AngleSharp.Url baseUrl,
+            string baseUri,
             Common.IDocument document,
             IAnalyzerContext context,
             bool absolute)
@@ -46,32 +42,32 @@ namespace Statiq.Web
                 AddAnalyzerResult("Invalid URI", elements, document, context);
                 return null;
             }
+            link = uri.ToString();
 
             // Double-slash link means use http:// or https:// depending on current protocol
             // The Uri class treats these as relative, but they're really absolute
-            if (uri.ToString().StartsWith("//"))
+            if (link.StartsWith("//"))
             {
-                return absolute ? uri : null;
+                return absolute ? link : null;
             }
 
             // If this is a relative Uri, add the base path or adjust it relative to the document destination
             if (!uri.IsAbsoluteUri)
             {
                 // If we have a base Url, add it and try again (which might make the link absolute if the base is absolute)
-                if (baseUrl is object)
+                if (!baseUri.IsNullOrEmpty())
                 {
-                    if (baseUrl.Scheme.Equals("about", StringComparison.OrdinalIgnoreCase))
+                    return GetLink(baseUri.TrimEnd('/') + "/" + link.TrimStart('/'), elements, null, document, context, absolute);
+                }
+
+                // If it's a relative URI, remove the query and/or fragment
+                int removeIndex = link.IndexOfAny(new char[] { '?', '#' });
+                if (removeIndex > -1)
+                {
+                    link = link.Remove(removeIndex);
+                    if (link.IsNullOrEmpty())
                     {
-                        if (!baseUrl.Path.IsNullOrEmpty())
-                        {
-                            // The base URL is relative, so prepend it to this path
-                            return GetLink(baseUrl.Path.TrimEnd('/') + "/" + uri.ToString().TrimStart('/'), elements, null, document, context, absolute);
-                        }
-                    }
-                    else
-                    {
-                        // The base URL is absolute, so append the path to it
-                        return GetLink(baseUrl.ToString().TrimEnd('/') + "/" + uri.ToString().TrimStart('/'), elements, null, document, context, absolute);
+                        return null;
                     }
                 }
 
@@ -81,10 +77,11 @@ namespace Statiq.Web
                     AddAnalyzerResult("Invalid relative URI", elements, document, context);
                     return null;
                 }
+                link = uri.ToString();
             }
 
             // Return the URI if it's the right type
-            return uri.IsAbsoluteUri == absolute ? uri : null;
+            return uri.IsAbsoluteUri == absolute ? link : null;
         }
 
         protected static void AddAnalyzerResult(string message, IEnumerable<IElement> elements, Common.IDocument document, IAnalyzerContext context)

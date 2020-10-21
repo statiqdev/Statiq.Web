@@ -14,7 +14,7 @@ namespace Statiq.Web
     {
         private const HttpStatusCode TooManyRequests = (HttpStatusCode)429;
 
-        private readonly ConcurrentCache<Uri, Task<string>> _resultCache = new ConcurrentCache<Uri, Task<string>>();
+        private readonly ConcurrentCache<string, Task<string>> _resultCache = new ConcurrentCache<string, Task<string>>();
 
         /// <summary>
         /// Validating absolute links is expensive, so this should be disabled by default.
@@ -35,15 +35,15 @@ namespace Statiq.Web
         }
 
         // Internal for testing
-        private async Task ValidateLinkAsync((Uri, IEnumerable<IElement>) link, Common.IDocument document, IAnalyzerContext context)
+        private async Task ValidateLinkAsync((string, IEnumerable<IElement>) linkAndElements, Common.IDocument document, IAnalyzerContext context)
         {
-            string result = await _resultCache.GetOrAdd(link.Item1, async uri =>
+            string result = await _resultCache.GetOrAdd(linkAndElements.Item1, async link =>
             {
-                if (uri.ToString().StartsWith("//"))
+                if (link.StartsWith("//"))
                 {
                     // Double-slash link means use http:// or https:// depending on current protocol
                     // Try as http first, then https
-                    if (!Uri.TryCreate($"http:{uri.OriginalString}", UriKind.Absolute, out Uri absoluteUri))
+                    if (!Uri.TryCreate($"http:{link}", UriKind.Absolute, out Uri absoluteUri))
                     {
                         return "Invalid protocol-relative URI";
                     }
@@ -63,6 +63,7 @@ namespace Statiq.Web
                 }
 
                 // Only validate http and https schemes
+                Uri uri = new Uri(link, UriKind.Absolute);
                 if (uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     HttpStatusCode statusCode = await ValidateLinkAsync(uri, context);
@@ -73,13 +74,13 @@ namespace Statiq.Web
                 }
                 else
                 {
-                    context.Logger.LogDebug($"Skipping validation for absolute link {uri}: unsupported scheme {uri.Scheme}.");
+                    context.Logger.LogDebug($"Skipping validation for absolute link {link}: unsupported scheme {uri.Scheme}.");
                 }
                 return null;
             });
             if (result is object)
             {
-                AddAnalyzerResult(result, link.Item2, document, context);
+                AddAnalyzerResult(result, linkAndElements.Item2, document, context);
             }
         }
 

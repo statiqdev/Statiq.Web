@@ -37,44 +37,41 @@ namespace Statiq.Web
         protected override Task AnalyzeAsync(IHtmlDocument htmlDocument, Common.IDocument document, IAnalyzerContext context)
         {
             // Validate links in parallel
+            foreach ((string, IEnumerable<IElement>) link in GetLinks(htmlDocument, document, context, false))
+            {
+                ValidateLink(link, document, context);
+            }
+            /*
             GetLinks(htmlDocument, document, context, false)
                 .AsParallel()
                 .ForAll(x => ValidateLink(x, document, context));
+            */
             return Task.CompletedTask;
         }
 
-        private void ValidateLink((Uri, IEnumerable<IElement>) link, Common.IDocument document, IAnalyzerContext context)
+        private void ValidateLink((string, IEnumerable<IElement>) linkAndElements, Common.IDocument document, IAnalyzerContext context)
         {
-            // Remove the query string and fragment, if any
-            string normalizedPath = link.Item1.ToString();
-            if (normalizedPath.Contains("#"))
-            {
-                normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("#", StringComparison.Ordinal));
-            }
-            if (normalizedPath.Contains("?"))
-            {
-                normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("?", StringComparison.Ordinal));
-            }
-            normalizedPath = Uri.UnescapeDataString(normalizedPath);
+            // Unescape the path since we're comparing against unescaped links
+            string link = Uri.UnescapeDataString(linkAndElements.Item1);
 
             // Remove the link root if there is one and remove the preceding slash
             if (!context.Settings.GetPath(Keys.LinkRoot).IsNull
-                && normalizedPath.StartsWith(context.Settings.GetPath(Keys.LinkRoot).FullPath))
+                && link.StartsWith(context.Settings.GetPath(Keys.LinkRoot).FullPath))
             {
-                normalizedPath = normalizedPath.Substring(context.Settings.GetPath(Keys.LinkRoot).FullPath.Length);
+                link = link.Substring(context.Settings.GetPath(Keys.LinkRoot).FullPath.Length);
             }
-            normalizedPath = normalizedPath.TrimStart('/');
+            link = link.TrimStart('/');
 
             // If an intra-page link or link to root, nothing more to validate
-            if (normalizedPath?.Length == 0)
+            if (link.IsNullOrEmpty())
             {
                 return;
             }
 
             // See if it's in the output paths
-            if (!_relativeOutputPaths.Contains(normalizedPath))
+            if (!_relativeOutputPaths.Contains(link))
             {
-                AddAnalyzerResult("Could not validate relative link", link.Item2, document, context);
+                AddAnalyzerResult("Could not validate relative link", linkAndElements.Item2, document, context);
             }
         }
     }
