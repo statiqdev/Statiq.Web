@@ -1,5 +1,7 @@
 # 1.0.0-beta.10
 
+- Updated Statiq Framework to version [1.0.0-beta.25](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.27).
+
 # 1.0.0-beta.9
 
 - Updated Statiq Framework to version [1.0.0-beta.25](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.25).
