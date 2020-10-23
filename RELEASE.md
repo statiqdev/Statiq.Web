@@ -1,3 +1,5 @@
+# 1.0.0-beta.12
+
 # 1.0.0-beta.11
 
 - Fixed several bugs with relative link validation, including when using a `LinkRoot` setting.
