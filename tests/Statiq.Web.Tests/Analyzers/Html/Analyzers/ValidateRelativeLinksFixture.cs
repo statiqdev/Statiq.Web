@@ -55,6 +55,145 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
             }
 
+            [TestCase("/link-root/foo/target.html", true)]
+            [TestCase("link-root/foo/target.html", false)]
+            [TestCase("/link-root/target.html", false)]
+            [TestCase("link-root/target.html", false)]
+            [TestCase("../link-root/foo/target.html", true)]
+            [TestCase("../foo/target.html", false)]
+            [TestCase("../target.html", false)]
+            public async Task CanValidateRelativeLinkWithLinkRoot(string link, bool success)
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/output");
+                fileProvider.AddFile("/output/foo/target.html", "<html><head></head><body><h1>Hello World!</h1></body></html>");
+                TestFileSystem fileSystem = new TestFileSystem
+                {
+                    FileProvider = fileProvider
+                };
+                TestDocument document = new TestDocument(
+                    new NormalizedPath("/test/document.html"),
+                    new NormalizedPath("test/document.html"),
+                    $"<html><head></head><body><a href=\"{link}\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document)
+                {
+                    FileSystem = fileSystem
+                };
+                context.Settings.Add(Keys.LinkRoot, "link-root");
+                ValidateRelativeLinks validateRelativeLinks = new ValidateRelativeLinks();
+
+                // When
+                await validateRelativeLinks.AnalyzeAsync(context);
+
+                // Then
+                if (success)
+                {
+                    context.AnalyzerResults.ShouldBeEmpty();
+                }
+                else
+                {
+                    context.AnalyzerResults.ShouldHaveSingleItem();
+                }
+            }
+
+            [TestCase("/foo/target", true)]
+            [TestCase("foo/target", false)]
+            [TestCase("../foo/target", true)]
+            [TestCase("/target", false)]
+            [TestCase("target", false)]
+            [TestCase("../target", false)]
+            public async Task CanValidateExtensionlessLinks(string link, bool success)
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/output");
+                fileProvider.AddFile("/output/foo/target.html", "<html><head></head><body><h1>Hello World!</h1></body></html>");
+                TestFileSystem fileSystem = new TestFileSystem
+                {
+                    FileProvider = fileProvider
+                };
+                TestDocument document = new TestDocument(
+                    new NormalizedPath("/test/document.html"),
+                    new NormalizedPath("test/document.html"),
+                    $"<html><head></head><body><a href=\"{link}\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document)
+                {
+                    FileSystem = fileSystem
+                };
+                ValidateRelativeLinks validateRelativeLinks = new ValidateRelativeLinks();
+
+                // When
+                await validateRelativeLinks.AnalyzeAsync(context);
+
+                // Then
+                if (success)
+                {
+                    context.AnalyzerResults.ShouldBeEmpty();
+                }
+                else
+                {
+                    context.AnalyzerResults.ShouldHaveSingleItem();
+                }
+            }
+
+            [TestCase("/foo", true)]
+            [TestCase("foo", false)]
+            [TestCase("../foo", true)]
+            [TestCase("/", true)]
+            [TestCase("/foo.html", false)]
+            [TestCase("/foo/index", true)]
+            [TestCase("foo/index", false)]
+            [TestCase("../foo/index", true)]
+            [TestCase("/index", false)]
+            [TestCase("index", false)]
+            [TestCase("../index", false)]
+            [TestCase("/foo/index.html", true)]
+            [TestCase("foo/index.html", false)]
+            [TestCase("../foo/index.html", true)]
+            [TestCase("/index.html", false)]
+            [TestCase("index.html", false)]
+            [TestCase("../index.html", false)]
+            public async Task CanValidateIndexLinks(string link, bool success)
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/output");
+                fileProvider.AddFile("/output/foo/index.html", "<html><head></head><body><h1>Hello World!</h1></body></html>");
+                TestFileSystem fileSystem = new TestFileSystem
+                {
+                    FileProvider = fileProvider
+                };
+                TestDocument document = new TestDocument(
+                    new NormalizedPath("/test/document.html"),
+                    new NormalizedPath("test/document.html"),
+                    $"<html><head></head><body><a href=\"{link}\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document)
+                {
+                    FileSystem = fileSystem
+                };
+                ValidateRelativeLinks validateRelativeLinks = new ValidateRelativeLinks();
+
+                // When
+                await validateRelativeLinks.AnalyzeAsync(context);
+
+                // Then
+                if (success)
+                {
+                    context.AnalyzerResults.ShouldBeEmpty();
+                }
+                else
+                {
+                    context.AnalyzerResults.ShouldHaveSingleItem();
+                }
+            }
+
             [TestCase("nested", "/document.html", "target.html", true)]
             [TestCase("foobar", "/document.html", "target.html", false)]
             [TestCase("/nested", "/document.html", "target.html", true)]

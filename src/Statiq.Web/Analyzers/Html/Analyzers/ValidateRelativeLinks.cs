@@ -25,10 +25,10 @@ namespace Statiq.Web
                 .GetFiles(System.IO.SearchOption.AllDirectories)
                 .Select(x => context.FileSystem.GetRelativeOutputPath(x.Path)))
             {
-                _relativeOutputPaths.Add(Uri.UnescapeDataString(relativeOutputPath.FullPath).TrimStart('/'));
-                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, false))).TrimStart('/'));
-                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, false, true))).TrimStart('/'));
-                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(context.GetLink(relativeOutputPath, null, NormalizedPath.Null, false, true, true))).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(relativeOutputPath, null, context.Settings.GetPath(Keys.LinkRoot), false, false, false)).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(relativeOutputPath, null, context.Settings.GetPath(Keys.LinkRoot), false, true, false)).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(relativeOutputPath, null, context.Settings.GetPath(Keys.LinkRoot), false, false, true)).TrimStart('/'));
+                _relativeOutputPaths.Add(Uri.UnescapeDataString(context.GetLink(relativeOutputPath, null, context.Settings.GetPath(Keys.LinkRoot), false, true, true)).TrimStart('/'));
             }
 
             await base.AnalyzeAsync(context);
@@ -36,16 +36,10 @@ namespace Statiq.Web
 
         protected override Task AnalyzeAsync(IHtmlDocument htmlDocument, Common.IDocument document, IAnalyzerContext context)
         {
-            // Validate links in parallel
             foreach ((string, IEnumerable<IElement>) link in GetLinks(htmlDocument, document, context, false))
             {
                 ValidateLink(link, document, context);
             }
-            /*
-            GetLinks(htmlDocument, document, context, false)
-                .AsParallel()
-                .ForAll(x => ValidateLink(x, document, context));
-            */
             return Task.CompletedTask;
         }
 
@@ -54,12 +48,7 @@ namespace Statiq.Web
             // Unescape the path since we're comparing against unescaped links
             string link = Uri.UnescapeDataString(linkAndElements.Item1);
 
-            // Remove the link root if there is one and remove the preceding slash
-            if (!context.Settings.GetPath(Keys.LinkRoot).IsNull
-                && link.StartsWith(context.Settings.GetPath(Keys.LinkRoot).FullPath))
-            {
-                link = link.Substring(context.Settings.GetPath(Keys.LinkRoot).FullPath.Length);
-            }
+            // Remove a preceding slash
             link = link.TrimStart('/');
 
             // If an intra-page link or link to root, nothing more to validate
