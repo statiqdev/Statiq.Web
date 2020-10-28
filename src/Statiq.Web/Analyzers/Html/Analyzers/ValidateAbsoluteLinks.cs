@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -21,21 +23,35 @@ namespace Statiq.Web
         /// </summary>
         public override LogLevel LogLevel { get; set; } = LogLevel.None;
 
+        private int _count;
+
         public override Task BeforeEngineExecutionAsync(IEngine engine, Guid executionId)
         {
             _resultCache.Clear();
             return Task.CompletedTask;
         }
 
+        public override async Task AnalyzeAsync(IAnalyzerContext context)
+        {
+            _count = 0;
+            await base.AnalyzeAsync(context);
+            if (_count > 0)
+            {
+                context.AddAnalyzerResult(null, $"{_count} total absolute links could not be validated");
+            }
+        }
+
         protected override async Task AnalyzeAsync(IHtmlDocument htmlDocument, Common.IDocument document, IAnalyzerContext context)
         {
             // Validate links in parallel
-            await GetLinks(htmlDocument, document, context, true)
-                .ParallelForEachAsync(async x => await ValidateLinkAsync(x, document, context));
+            IEnumerable<bool> results = await GetLinks(htmlDocument, document, context, true)
+                .ParallelSelectAsync(async x => await ValidateLinkAsync(x, document, context));
+            int count = results.Count(x => x);
+            Interlocked.Add(ref _count, count);
         }
 
         // Internal for testing
-        private async Task ValidateLinkAsync((string, IEnumerable<IElement>) linkAndElements, Common.IDocument document, IAnalyzerContext context)
+        private async Task<bool> ValidateLinkAsync((string, IEnumerable<IElement>) linkAndElements, Common.IDocument document, IAnalyzerContext context)
         {
             string result = await _resultCache.GetOrAdd(linkAndElements.Item1, async link =>
             {
@@ -81,7 +97,9 @@ namespace Statiq.Web
             if (result is object)
             {
                 AddAnalyzerResult(result, linkAndElements.Item2, document, context);
+                return true;
             }
+            return false;
         }
 
         // Perform request as HEAD then try one more time as GET

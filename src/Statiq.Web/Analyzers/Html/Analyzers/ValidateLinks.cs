@@ -14,20 +14,36 @@ namespace Statiq.Web
             IHtmlDocument htmlDocument,
             Common.IDocument document,
             IAnalyzerContext context,
-            bool absolute) =>
-            htmlDocument.Links.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e))
+            bool absolute)
+        {
+            // Get the correct destination path for the document, taking into account a link root and dropping the file
+            // This will be combined with the link to determine the actual output path
+            NormalizedPath documentDestinationDirectory = document.Destination;
+            if (!documentDestinationDirectory.IsNull)
+            {
+                NormalizedPath linkRoot = context.Settings.GetPath(Keys.LinkRoot);
+                if (!linkRoot.IsNullOrEmpty)
+                {
+                    documentDestinationDirectory = linkRoot.Combine(documentDestinationDirectory);
+                }
+                documentDestinationDirectory = documentDestinationDirectory.Parent;
+            }
+
+            return htmlDocument.Links.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e))
                 .Concat(htmlDocument.GetElementsByTagName("link").Where(e => e.HasAttribute("href") && !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e)))
                 .Concat(htmlDocument.Images.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("src"), (IElement)e)))
                 .Concat(htmlDocument.Scripts.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.Source, (IElement)e)))
                 .GroupBy(x => x.Item1, x => x.Item2)
-                .Select(g => (GetLink(g.Key, g, htmlDocument.GetElementsByTagName("base").FirstOrDefault()?.GetAttribute("href"), document, context, absolute), (IEnumerable<IElement>)g))
+                .Select(g => (GetLink(g.Key, g, htmlDocument.GetElementsByTagName("base").FirstOrDefault()?.GetAttribute("href"), document, documentDestinationDirectory, context, absolute), (IEnumerable<IElement>)g))
                 .Where(x => x.Item1 is object);
+        }
 
         private static string GetLink(
             string link,
             IEnumerable<IElement> elements,
             string baseUri,
             Common.IDocument document,
+            NormalizedPath documentDestinationDirectory,
             IAnalyzerContext context,
             bool absolute)
         {
@@ -57,7 +73,7 @@ namespace Statiq.Web
                 // If we have a base Url, add it and try again (which might make the link absolute if the base is absolute)
                 if (!baseUri.IsNullOrEmpty())
                 {
-                    return GetLink(baseUri.TrimEnd('/') + "/" + link.TrimStart('/'), elements, null, document, context, absolute);
+                    return GetLink(baseUri.TrimEnd('/') + "/" + link.TrimStart('/'), elements, null, document, documentDestinationDirectory, context, absolute);
                 }
 
                 // If it's a relative URI, remove the query and/or fragment
@@ -72,7 +88,7 @@ namespace Statiq.Web
                 }
 
                 // If we've got a document destination, adjust the path relative to that
-                if (!document.Destination.IsNull && !Uri.TryCreate(document.Destination.Parent.Combine(link).FullPath, UriKind.Relative, out uri))
+                if (!documentDestinationDirectory.IsNull && !Uri.TryCreate(documentDestinationDirectory.Combine(link).FullPath, UriKind.Relative, out uri))
                 {
                     AddAnalyzerResult("Invalid relative URI", elements, document, context);
                     return null;

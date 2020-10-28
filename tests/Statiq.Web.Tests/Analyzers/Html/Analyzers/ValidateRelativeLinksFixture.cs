@@ -51,7 +51,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -59,8 +59,9 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
             [TestCase("link-root/foo/target.html", false)]
             [TestCase("/link-root/target.html", false)]
             [TestCase("link-root/target.html", false)]
-            [TestCase("../link-root/foo/target.html", true)]
-            [TestCase("../foo/target.html", false)]
+            [TestCase("../link-root/foo/target.html", false)]
+            [TestCase("../../link-root/foo/target.html", true)]
+            [TestCase("../foo/target.html", true)]
             [TestCase("../target.html", false)]
             public async Task CanValidateRelativeLinkWithLinkRoot(string link, bool success)
             {
@@ -95,7 +96,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -137,7 +138,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -190,7 +191,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -245,7 +246,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -320,7 +321,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
@@ -372,7 +373,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
         }

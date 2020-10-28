@@ -1,12 +1,15 @@
 # 1.0.0-beta.12
 
+- Link validator analyzers now report total number of failures at the end of validation.
+- Fixed additional bugs related to relative link validation and `LinkRoot` settings.
+
 # 1.0.0-beta.11
 
 - Fixed several bugs with relative link validation, including when using a `LinkRoot` setting.
 
 # 1.0.0-beta.10
 
-- Updated Statiq Framework to version [1.0.0-beta.25](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.27).
+- Updated Statiq Framework to version [1.0.0-beta.27](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.27).
 
 # 1.0.0-beta.9
 

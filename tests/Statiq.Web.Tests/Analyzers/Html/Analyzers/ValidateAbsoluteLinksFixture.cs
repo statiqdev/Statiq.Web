@@ -60,7 +60,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 }
                 else
                 {
-                    context.AnalyzerResults.ShouldHaveSingleItem();
+                    context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
 
