@@ -1,3 +1,5 @@
+# 1.0.0-beta.13
+
 # 1.0.0-beta.12
 
 - Link validator analyzers now report total number of failures at the end of validation.
