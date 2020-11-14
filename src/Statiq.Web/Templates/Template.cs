@@ -1,15 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Statiq.Common;
-using Statiq.Core;
-using Statiq.Html;
-using Statiq.Markdown;
-using Statiq.Razor;
 
 namespace Statiq.Web
 {
@@ -46,6 +36,9 @@ namespace Statiq.Web
         /// <summary>
         /// The template module to apply if the media types match.
         /// </summary>
+        /// <remarks>
+        /// This can be set to null in the event a template has already been added but you don't want it to do anything.
+        /// </remarks>
         public IModule Module { get; set; }
     }
 }

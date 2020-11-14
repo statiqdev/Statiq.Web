@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Statiq.App;
+﻿using System.Collections.Generic;
 using Statiq.Common;
-using Statiq.Core;
-using Statiq.Web.Commands;
-using Statiq.Web.Modules;
 
 namespace Statiq.Web
 {
     public static class BootstrapperDeployExtensions
     {
-        public static Bootstrapper DeployToGitHubPages(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToGitHubPages<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> owner,
             Config<string> name,
             Config<string> username,
-            Config<string> password) =>
+            Config<string> password)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -29,13 +21,14 @@ namespace Statiq.Web
                     { WebKeys.GitHubPassword, password }
                 });
 
-        public static Bootstrapper DeployToGitHubPagesBranch(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToGitHubPagesBranch<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> owner,
             Config<string> name,
             Config<string> username,
             Config<string> password,
-            Config<string> branch) =>
+            Config<string> branch)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -46,11 +39,12 @@ namespace Statiq.Web
                     { WebKeys.GitHubBranch, branch }
                 });
 
-        public static Bootstrapper DeployToGitHubPages(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToGitHubPages<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> owner,
             Config<string> name,
-            Config<string> token) =>
+            Config<string> token)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -59,12 +53,13 @@ namespace Statiq.Web
                     { WebKeys.GitHubToken, token }
                 });
 
-        public static Bootstrapper DeployToGitHubPagesBranch(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToGitHubPagesBranch<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> owner,
             Config<string> name,
             Config<string> token,
-            Config<string> branch) =>
+            Config<string> branch)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -74,10 +69,11 @@ namespace Statiq.Web
                     { WebKeys.GitHubBranch, branch }
                 });
 
-        public static Bootstrapper DeployToNetlify(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToNetlify<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> siteId,
-            Config<string> accessToken) =>
+            Config<string> accessToken)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -85,11 +81,12 @@ namespace Statiq.Web
                     { WebKeys.NetlifyAccessToken, accessToken }
                 });
 
-        public static Bootstrapper DeployToAzureAppService(
-            this Bootstrapper bootstrapper,
+        public static TBootstrapper DeployToAzureAppService<TBootstrapper>(
+            this TBootstrapper bootstrapper,
             Config<string> siteName,
             Config<string> username,
-            Config<string> password) =>
+            Config<string> password)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {

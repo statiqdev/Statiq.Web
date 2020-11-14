@@ -1,5 +1,8 @@
 # 1.0.0-beta.13
 
+- Added "processes" which are CLI commands you can run as part of your generation process at various points.
+- Added additional bootstrapper extensions to make working with templates easier.
+
 # 1.0.0-beta.12
 
 - Link validator analyzers now report total number of failures at the end of validation.

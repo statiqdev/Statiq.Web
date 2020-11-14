@@ -23,7 +23,8 @@ namespace Statiq.Web
         /// </remarks>
         /// <param name="boostrapper">The bootstrapper to add Statiq Web functionality to.</param>
         /// <returns>The bootstrapper.</returns>
-        public static Bootstrapper AddWeb(this Bootstrapper boostrapper) =>
+        public static TBootstrapper AddWeb<TBootstrapper>(this TBootstrapper boostrapper)
+            where TBootstrapper : IBootstrapper =>
             boostrapper
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
@@ -34,15 +35,19 @@ namespace Statiq.Web
                 .AddThemePaths()
                 .AddDefaultWebSettings()
                 .AddWebAnalyzers()
+                .AddProcessEventHandlers()
                 .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.MinimumStatiqWebVersion));
 
-        private static Bootstrapper AddWebServices(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper AddWebServices<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureServices(services => services
                     .AddSingleton(new Templates())
+                    .AddSingleton(new Processes())
                     .AddSingleton(new ThemeManager()));
 
-        private static Bootstrapper AddInputPaths(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper AddInputPaths<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureEngine(engine =>
                 {
@@ -57,7 +62,8 @@ namespace Statiq.Web
                     }
                 });
 
-        private static Bootstrapper AddExcludedPaths(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper AddExcludedPaths<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureEngine(engine =>
                 {
@@ -72,7 +78,8 @@ namespace Statiq.Web
                     }
                 });
 
-        private static Bootstrapper SetOutputPath(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper SetOutputPath<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureEngine(engine =>
                 {
@@ -83,7 +90,8 @@ namespace Statiq.Web
                     }
                 });
 
-        private static Bootstrapper AddThemePaths(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper AddThemePaths<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureEngine(engine =>
                 {
@@ -128,7 +136,8 @@ namespace Statiq.Web
                     }
                 });
 
-        private static Bootstrapper AddDefaultWebSettings(this Bootstrapper bootstrapper) =>
+        private static TBootstrapper AddDefaultWebSettings<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
@@ -139,7 +148,21 @@ namespace Statiq.Web
                     { WebKeys.PublishedUsesLastModifiedDate, true }
                 });
 
-        private static Bootstrapper AddWebAnalyzers(this Bootstrapper bootstrapper) => bootstrapper.AddAnalyzers(typeof(BootstrapperExtensions).Assembly);
+        private static TBootstrapper AddWebAnalyzers<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddAnalyzers(typeof(BootstrapperExtensions).Assembly);
+
+        private static TBootstrapper AddProcessEventHandlers<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    Processes processes = engine.Services.GetRequiredService<Processes>();
+                    processes.CreateProcessLaunchers(engine);
+                    engine.Events.Subscribe<BeforeEngineExecution>(evt => processes.StartProcesses(ProcessTiming.BeforeExecution, evt.Engine));
+                    engine.Events.Subscribe<AfterEngineExecution>(evt => processes.StartProcesses(ProcessTiming.AfterExecution, evt.Engine));
+                    engine.Events.Subscribe<BeforeDeployment>(evt => processes.StartProcesses(ProcessTiming.BeforeDeployment, evt.Engine));
+                });
 
         /// <summary>
         /// Adds the "preview" and "serve" commands (this is called by default when you
@@ -147,24 +170,13 @@ namespace Statiq.Web
         /// </summary>
         /// <param name="bootstrapper">The current bootstrapper.</param>
         /// <returns>The bootstrapper.</returns>
-        public static Bootstrapper AddHostingCommands(this Bootstrapper bootstrapper)
+        public static TBootstrapper AddHostingCommands<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper
         {
             bootstrapper.ThrowIfNull(nameof(bootstrapper));
-            bootstrapper.AddCommand<PreviewCommand>();
-            bootstrapper.AddCommand<ServeCommand>();
+            bootstrapper.AddCommand(typeof(PreviewCommand));
+            bootstrapper.AddCommand(typeof(ServeCommand));
             return bootstrapper;
         }
-
-        /// <summary>
-        /// Configures the set of template modules.
-        /// </summary>
-        /// <param name="bootstrapper">The current bootstrapper.</param>
-        /// <param name="action">The configuration action.</param>
-        /// <returns>The bootstrapper.</returns>
-        public static Bootstrapper ConfigureTemplates(this Bootstrapper bootstrapper, Action<Templates> action) =>
-            bootstrapper.ConfigureServices(services =>
-                action(services
-                    .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
-                    .GetRequiredService<Templates>()));
     }
 }
