@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Statiq.Common;
 using Statiq.Web.Hosting.LiveReload.Messages;
 
 namespace Statiq.Web.Hosting.LiveReload
@@ -73,20 +74,23 @@ namespace Statiq.Web.Hosting.LiveReload
         private async Task HandleMessageAsync(byte[] message)
         {
             string json = Encoding.UTF8.GetString(message);
-            BasicMessage parsedMessage = JsonSerializer.Deserialize<BasicMessage>(json, DefaultJsonSerializerOptions);
-            switch (parsedMessage.Command)
+            if (!json.IsNullOrWhiteSpace())
             {
-                case "info":
-                    HandleInfo(json);
-                    break;
+                BasicMessage parsedMessage = JsonSerializer.Deserialize<BasicMessage>(json, DefaultJsonSerializerOptions);
+                switch (parsedMessage.Command)
+                {
+                    case "info":
+                        HandleInfo(json);
+                        break;
 
-                case "hello":
-                    await HandleHelloAsync(json);
-                    break;
+                    case "hello":
+                        await HandleHelloAsync(json);
+                        break;
 
-                default:
-                    // Unknown message, just ignore it
-                    break;
+                    default:
+                        // Unknown message, just ignore it
+                        break;
+                }
             }
         }
 

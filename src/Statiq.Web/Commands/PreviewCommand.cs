@@ -74,7 +74,7 @@ namespace Statiq.Web.Commands
                     Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
                         ? GetContentTypes(commandSettings.ContentTypes)
                         : new Dictionary<string, string>();
-                    ILoggerProvider loggerProvider = engineManager.Engine.Services.GetRequiredService<ILoggerProvider>();
+                    IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
                     IDirectory outputDirectory = engineManager.Engine.FileSystem.GetOutputDirectory();
                     if (outputDirectory.Exists)
                     {
@@ -85,7 +85,7 @@ namespace Statiq.Web.Commands
                             commandSettings.VirtualDirectory,
                             !commandSettings.NoReload,
                             contentTypes,
-                            loggerProvider,
+                            loggerProviders,
                             logger);
                     }
 
@@ -161,7 +161,7 @@ namespace Statiq.Web.Commands
                                         commandSettings.VirtualDirectory,
                                         !commandSettings.NoReload,
                                         contentTypes,
-                                        loggerProvider,
+                                        loggerProviders,
                                         logger);
                                 }
                             }
@@ -212,13 +212,13 @@ namespace Statiq.Web.Commands
             NormalizedPath virtualDirectory,
             bool liveReload,
             IDictionary<string, string> contentTypes,
-            ILoggerProvider loggerProvider,
+            IEnumerable<ILoggerProvider> loggerProviders,
             ILogger logger)
         {
             Server server;
             try
             {
-                server = new Server(path.FullPath, port, !forceExtension, virtualDirectory.IsNull ? null : virtualDirectory.FullPath, liveReload, contentTypes, loggerProvider);
+                server = new Server(path.FullPath, port, !forceExtension, virtualDirectory.IsNull ? null : virtualDirectory.FullPath, liveReload, contentTypes, loggerProviders);
                 await server.StartAsync();
             }
             catch (Exception ex)

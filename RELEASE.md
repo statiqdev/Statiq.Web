@@ -1,5 +1,7 @@
 # 1.0.0-beta.13
 
+- Fixed a bug with LiveReload functionality related to trying to serialize empty JSON payloads.
+- Fixed preview server logging (it had stopped working), now Kestrel log messages will begin appearing again.
 - Added "processes" which are CLI commands you can run as part of your generation process at various points.
 - Added additional bootstrapper extensions to make working with templates easier.
 

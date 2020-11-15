@@ -60,9 +60,9 @@ namespace Statiq.Web.Hosting
         /// <param name="extensionless"><c>true</c> if the server should support extensionless URLs, <c>false</c> otherwise.</param>
         /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
         /// <param name="liveReload">Enables support for LiveReload.</param>
-        /// <param name="loggerProvider">The logger provider to use.</param>
-        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, ILoggerProvider loggerProvider)
-            : this(localPath, port, extensionless, virtualDirectory, liveReload, null, loggerProvider)
+        /// <param name="loggerProviders">The logger providers to use.</param>
+        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IEnumerable<ILoggerProvider> loggerProviders)
+            : this(localPath, port, extensionless, virtualDirectory, liveReload, null, loggerProviders)
         {
         }
 
@@ -74,9 +74,9 @@ namespace Statiq.Web.Hosting
         /// <param name="extensionless"><c>true</c> if the server should support extensionless URLs, <c>false</c> otherwise.</param>
         /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
         /// <param name="liveReload">Enables support for LiveReload.</param>
-        /// <param name="loggerProvider">The logger provider to use.</param>
+        /// <param name="loggerProviders">The logger providers to use.</param>
         /// <param name="contentTypes">Additional content types the server should support.</param>
-        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, ILoggerProvider loggerProvider)
+        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, IEnumerable<ILoggerProvider> loggerProviders)
         {
             _contentTypes = contentTypes;
             LocalPath = localPath.ThrowIfNull(nameof(localPath));
@@ -100,9 +100,15 @@ namespace Statiq.Web.Hosting
                 .UseWebRoot(Path.Combine(currentDirectory, "wwwroot"))
                 .ConfigureLogging(log =>
                 {
-                    if (loggerProvider is object)
+                    if (loggerProviders is object)
                     {
-                        log.AddProvider(loggerProvider);
+                        foreach (ILoggerProvider loggerProvider in loggerProviders)
+                        {
+                            if (loggerProvider is object)
+                            {
+                                log.AddProvider(loggerProvider);
+                            }
+                        }
                     }
                 })
                 .UseKestrel()

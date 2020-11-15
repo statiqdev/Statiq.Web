@@ -63,7 +63,7 @@ namespace Statiq.Web.Commands
             Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
                 ? PreviewCommand.GetContentTypes(commandSettings.ContentTypes)
                 : new Dictionary<string, string>();
-            ILoggerProvider loggerProvider = engineManager.Engine.Services.GetRequiredService<ILoggerProvider>();
+            IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
 
             Server previewServer = null;
             FileSystemWatcher serveFolderWatcher = null;
@@ -78,7 +78,7 @@ namespace Statiq.Web.Commands
                     commandSettings.VirtualDirectory,
                     !commandSettings.NoReload,
                     contentTypes,
-                    loggerProvider,
+                    loggerProviders,
                     logger);
 
                 // Start the watchers

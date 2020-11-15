@@ -28,6 +28,7 @@ namespace Statiq.Web.Hosting.LiveReload
                 {
                     context.Response.StatusCode = 400;
                 }
+                return;
             }
 
             await _next(context);
