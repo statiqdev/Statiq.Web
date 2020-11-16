@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -113,6 +114,7 @@ namespace Statiq.Web.Hosting
                 })
                 .UseKestrel()
                 .ConfigureKestrel(x => x.ListenAnyIP(port))
+                .ConfigureServices(ConfigureServices)
                 .Configure(ConfigureApp)
                 .Build();
         }
@@ -128,6 +130,18 @@ namespace Statiq.Web.Hosting
 
         /// <inheritdoc />
         public Task StopAsync(CancellationToken cancellationToken = default) => _host.StopAsync(cancellationToken);
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+
+                // Only loopback proxies are allowed by default, clear that restriction
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+        }
 
         private void ConfigureApp(IApplicationBuilder app)
         {
@@ -156,6 +170,10 @@ namespace Statiq.Web.Hosting
 
             // Disable caching
             app.UseDisableCache();
+
+            // Process forwarded headers from proxies, etc. (I.e. GitHub Codespaces port forwarding)
+            // See https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
+            app.UseForwardedHeaders();
 
             // Support for extensionless URLs
             if (Extensionless)
