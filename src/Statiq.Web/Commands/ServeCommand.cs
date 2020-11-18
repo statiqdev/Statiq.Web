@@ -96,12 +96,12 @@ namespace Statiq.Web.Commands
                 }
 
                 // Start the message pump
-                CommandUtilities.WaitForControlC(
-                    () =>
-                    {
-                        _exit.Set();
-                        _messageEvent.Set();
-                    });
+                new ConsoleListener(() =>
+                {
+                    _exit.Set();
+                    _messageEvent.Set();
+                    return Task.CompletedTask;
+                });
 
                 // Wait for activity
                 while (true)

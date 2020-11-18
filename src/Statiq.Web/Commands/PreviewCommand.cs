@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,6 +27,9 @@ namespace Statiq.Web.Commands
         private readonly InterlockedBool _exit = new InterlockedBool(false);
 
         private readonly ResetCacheMetadataValue _resetCache = new ResetCacheMetadataValue();
+
+        private ScriptOptions _scriptOptions;
+        private ScriptState<object> _scriptState;
 
         public PreviewCommand(
             IConfiguratorCollection configurators,
@@ -53,14 +59,10 @@ namespace Statiq.Web.Commands
                 ExitCode exitCode = ExitCode.Normal;
                 ILogger logger = engineManager.Engine.Services.GetRequiredService<ILogger<Bootstrapper>>();
 
-                // Start the message pump
-                CommandUtilities.WaitForControlC(
-                    () =>
-                    {
-                        _exit.Set();
-                        _messageEvent.Set();
-                        cancellationTokenSource.Cancel();
-                    });
+                // Start the console listener
+                ConsoleListener consoleListener = new ConsoleListener(
+                    () => OnExitAsync(cancellationTokenSource),
+                    input => EvaluateScriptAsync(input, engineManager, cancellationTokenSource));
 
                 // Execute the engine for the first time
                 exitCode = await engineManager.ExecuteAsync(cancellationTokenSource);
@@ -105,7 +107,10 @@ namespace Statiq.Web.Commands
                             });
                     }
 
+                    // Log that we're ready and start waiting on input
                     logger.LogInformation("Hit Ctrl-C to exit");
+                    ConsoleLoggerProvider.FlushAndWait();
+                    consoleListener.StartReadingLines();
 
                     // Wait for activity
                     while (true)
@@ -115,6 +120,9 @@ namespace Statiq.Web.Commands
                         {
                             break;
                         }
+
+                        // Stop listening while we run again
+                        consoleListener.StopReadingLines();
 
                         // Execute if files have changed
                         HashSet<string> changedFiles = new HashSet<string>();
@@ -176,8 +184,12 @@ namespace Statiq.Web.Commands
                         {
                             break;
                         }
-                        logger.LogInformation("Hit Ctrl-C to exit");
                         _messageEvent.Reset();
+
+                        // Log that we're ready and start waiting on input (again)
+                        logger.LogInformation("Hit Ctrl-C to exit");
+                        ConsoleLoggerProvider.FlushAndWait();
+                        consoleListener.StartReadingLines();
                     }
                 }
 
@@ -187,6 +199,58 @@ namespace Statiq.Web.Commands
                 previewServer?.Dispose();
 
                 return (int)exitCode;
+            }
+        }
+
+        private Task OnExitAsync(CancellationTokenSource cancellationTokenSource)
+        {
+            _exit.Set();
+            _messageEvent.Set();
+            cancellationTokenSource.Cancel();
+            return Task.CompletedTask;
+        }
+
+        private async Task EvaluateScriptAsync(string code, IEngineManager engineManager, CancellationTokenSource cancellationTokenSource)
+        {
+            if (!code.IsNullOrWhiteSpace())
+            {
+                // Create the script options
+                if (_scriptOptions is null)
+                {
+                    IEnumerable<MetadataReference> references = engineManager.Engine.ScriptHelper
+                        .GetScriptReferences().Select(x => MetadataReference.CreateFromFile(x.Location));
+                    _scriptOptions = ScriptOptions.Default
+                        .WithReferences(references)
+                        .WithImports(engineManager.Engine.ScriptHelper.GetScriptNamespaces());
+                }
+
+                // Run the script
+                try
+                {
+                    if (_scriptState is null)
+                    {
+                        ScriptGlobals scriptGlobals = new ScriptGlobals(engineManager.Engine, () => OnExitAsync(cancellationTokenSource).GetAwaiter().GetResult());
+                        _scriptState = await CSharpScript.RunAsync(code, _scriptOptions, globals: scriptGlobals, cancellationToken: cancellationTokenSource.Token);
+                    }
+                    else
+                    {
+                        _scriptState = await _scriptState.ContinueWithAsync(code, _scriptOptions, cancellationToken: cancellationTokenSource.Token);
+                    }
+                }
+                catch (CompilationErrorException e)
+                {
+                    Console.WriteLine(string.Join(Environment.NewLine, e.Diagnostics));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+
+                // Output the result (if any)
+                if (_scriptState?.ReturnValue is object && TypeHelper.TryConvert(_scriptState.ReturnValue, out string result))
+                {
+                    Console.WriteLine(result);
+                }
             }
         }
 
