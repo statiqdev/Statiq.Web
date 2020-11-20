@@ -10,10 +10,6 @@
     <None Include="Statiq.Web.props" Pack="true" PackagePath="build\$(TargetFramework)\" />
     <None Include="Statiq.Web.props" Pack="true" PackagePath="buildTransitive\$(TargetFramework)\" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.4.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Statiq.Web.Aws\Statiq.Web.Aws.csproj" />

@@ -133,7 +133,7 @@ namespace Statiq.Web.Commands
                     {
                         break;
                     }
-                    logger.LogInformation("Hit Ctrl-C to exit");
+                    logger.LogInformation("Type Ctrl-C to exit");
                     _messageEvent.Reset();
                 }
             }
