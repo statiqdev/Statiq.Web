@@ -99,7 +99,7 @@ namespace Statiq.Web.Hosting
             _host = new WebHostBuilder()
                 .UseContentRoot(currentDirectory)
                 .UseWebRoot(Path.Combine(currentDirectory, "wwwroot"))
-                .ConfigureLogging(log =>
+                .ConfigureLogging(loggingBuilder =>
                 {
                     if (loggerProviders is object)
                     {
@@ -107,7 +107,10 @@ namespace Statiq.Web.Hosting
                         {
                             if (loggerProvider is object)
                             {
-                                log.AddProvider(loggerProvider);
+                                loggingBuilder.AddProvider(
+                                    new ChangeLevelLoggerProvider(
+                                        loggerProvider,
+                                        level => level == LogLevel.Information ? LogLevel.Debug : level));
                             }
                         }
                     }

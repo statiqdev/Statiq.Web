@@ -95,16 +95,25 @@ namespace Statiq.Web.Commands
 
             // Execute if files have changed
             HashSet<string> changedFiles = new HashSet<string>();
+            bool forceExecution = commandSettings.NoWatch;
             while (_changedFiles.TryDequeue(out string changedFile))
             {
-                if (changedFiles.Add(changedFile))
+                if (changedFile is null)
+                {
+                    // Special case to force execution when no files have changed (I.e. via interactive)
+                    forceExecution = true;
+                }
+                else if (changedFiles.Add(changedFile))
                 {
                     logger.LogDebug($"{changedFile} has changed");
                 }
             }
-            if (changedFiles.Count > 0)
+            if (forceExecution || changedFiles.Count > 0)
             {
-                logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
+                if (changedFiles.Count > 0)
+                {
+                    logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
+                }
 
                 // Reset caches when an error occurs during the previous preview
                 bool? existingResetCacheSetting = null;
@@ -211,5 +220,18 @@ namespace Statiq.Web.Commands
 
             public object Get(string key, IMetadata metadata) => Value;
         }
+
+        protected override InteractiveGlobals GetInteractiveGlobals(
+            CommandContext commandContext,
+            PreviewCommandSettings commandSettings,
+            IEngineManager engineManager) =>
+            new InteractiveGlobals(
+                engineManager.Engine,
+                () =>
+                {
+                    _changedFiles.Enqueue(null);
+                    TriggerExecution();
+                },
+                TriggerExit);
     }
 }
