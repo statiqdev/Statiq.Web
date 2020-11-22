@@ -1,5 +1,8 @@
 # 1.0.0-beta.14
 
+- Updated Statiq Framework to version [1.0.0-beta.29](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.29).
+- Added a new `interactive` command that provides a REPL (read-eval-print prompt) after execution, useful for inspecting the state of the engine and debugging the generation.
+- Added the REPL to the `preview` command.
 
 # 1.0.0-beta.13
 
