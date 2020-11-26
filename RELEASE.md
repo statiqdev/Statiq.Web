@@ -2,6 +2,7 @@
 
 - Updated Statiq Framework to version [1.0.0-beta.30](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.30).
 - Fixed a regression with the preview command and file watching that was execution more than once on file changes.
+- Added a `WatchPaths` setting that adds additional folders to watch in preview mode (#930).
 
 # 1.0.0-beta.14
 

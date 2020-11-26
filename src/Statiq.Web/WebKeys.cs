@@ -84,6 +84,11 @@ namespace Statiq.Web
         public const string ExcludedPaths = nameof(ExcludedPaths);
 
         /// <summary>
+        /// Additional paths to watch in preview mode (input paths are always watched).
+        /// </summary>
+        public const string WatchPaths = nameof(WatchPaths);
+
+        /// <summary>
         /// The level at which to gather headings for a document (this can be set globally or per-document).
         /// </summary>
         public const string GatherHeadingsLevel = nameof(GatherHeadingsLevel);

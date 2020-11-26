@@ -73,7 +73,9 @@ namespace Statiq.Web.Commands
                 logger.LogInformation("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
                 _inputFolderWatcher = new InputFileWatcher(
                     outputDirectory.Path,
-                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path),
+                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path)
+                        .Concat(engineManager.Engine.Settings.GetList(WebKeys.WatchPaths, Array.Empty<NormalizedPath>())
+                            .Select(x => engineManager.Engine.FileSystem.GetRootPath(x))),
                     true,
                     "*.*",
                     path =>
