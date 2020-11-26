@@ -1,5 +1,8 @@
 # 1.0.0-beta.15
 
+- Updated Statiq Framework to version [1.0.0-beta.30](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.30).
+- Fixed a regression with the preview command and file watching that was execution more than once on file changes.
+
 # 1.0.0-beta.14
 
 - Updated Statiq Framework to version [1.0.0-beta.29](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.29).

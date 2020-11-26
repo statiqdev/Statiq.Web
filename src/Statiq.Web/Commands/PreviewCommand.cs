@@ -20,7 +20,7 @@ namespace Statiq.Web.Commands
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly ResetCacheMetadataValue _resetCache = new ResetCacheMetadataValue();
 
-        private ActionFileSystemWatcher _inputFolderWatcher;
+        private InputFileWatcher _inputFolderWatcher;
         private Server _previewServer;
         private Dictionary<string, string> _contentTypes;
 
@@ -71,7 +71,7 @@ namespace Statiq.Web.Commands
             if (!commandSettings.NoWatch)
             {
                 logger.LogInformation("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
-                _inputFolderWatcher = new ActionFileSystemWatcher(
+                _inputFolderWatcher = new InputFileWatcher(
                     outputDirectory.Path,
                     engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path),
                     true,
