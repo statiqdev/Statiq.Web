@@ -7,10 +7,9 @@ namespace Statiq.Web
 {
     public class Processes : IDisposable
     {
-        private readonly List<KeyValuePair<ProcessTiming, Func<IExecutionState, ProcessLauncher>>> _launcherFactories =
-            new List<KeyValuePair<ProcessTiming, Func<IExecutionState, ProcessLauncher>>>();
+        private readonly List<ProcessLauncherFactory> _processLauncherFactories = new List<ProcessLauncherFactory>();
 
-        private KeyValuePair<ProcessTiming, ProcessLauncher>[] _launchers;
+        private KeyValuePair<ProcessTiming, ProcessLauncher>[] _processLaunchers;
 
         internal Processes()
         {
@@ -18,54 +17,80 @@ namespace Statiq.Web
 
         public void Dispose()
         {
-            if (_launchers is object)
+            if (_processLaunchers is object)
             {
-                foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _launchers)
+                foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers)
                 {
                     launcher.Value.Dispose();
                 }
             }
         }
 
-        public void Add(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getLauncher)
+        public void Add(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            Add(null, processTiming, getProcessLauncher);
+
+        public void AddNonPreview(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            Add(false, processTiming, getProcessLauncher);
+
+        public void AddPreview(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            Add(true, processTiming, getProcessLauncher);
+
+        public void Add(bool? whenPreviewCommand, ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher)
         {
-            if (_launchers is object)
+            if (_processLaunchers is object)
             {
                 throw new InvalidOperationException("Cannot add processes once execution has started");
             }
-            _launcherFactories.Add(KeyValuePair.Create(processTiming, getLauncher));
+            _processLauncherFactories.Add(new ProcessLauncherFactory
+            {
+                WhenPreviewCommand = whenPreviewCommand,
+                ProcessTiming = processTiming,
+                GetProcessLauncher = getProcessLauncher
+            });
         }
 
         public void Clear()
         {
-            if (_launchers is object)
+            if (_processLaunchers is object)
             {
                 throw new InvalidOperationException("Cannot clear processes once execution has started");
             }
-            _launcherFactories.Clear();
+            _processLauncherFactories.Clear();
         }
 
-        internal void CreateProcessLaunchers(IExecutionState executionState)
+        internal void CreateProcessLaunchers(bool isPreviewCommand, IExecutionState executionState)
         {
-            if (_launchers is null)
+            if (_processLaunchers is null)
             {
-                _launchers = _launcherFactories
-                    .Select(launcherFactory => KeyValuePair.Create(launcherFactory.Key, launcherFactory.Value?.Invoke(executionState)))
+                _processLaunchers = _processLauncherFactories
+                    .Where(x => !x.WhenPreviewCommand.HasValue || x.WhenPreviewCommand.Value == isPreviewCommand)
+                    .Select(launcherFactory => KeyValuePair.Create(launcherFactory.ProcessTiming, launcherFactory.GetProcessLauncher?.Invoke(executionState)))
                     .Where(launcher => launcher.Value is object)
-                    .Select(launcher =>
-                    {
-                        return launcher;
-                    })
                     .ToArray();
             }
         }
 
         internal void StartProcesses(ProcessTiming processTiming, IExecutionState executionState)
         {
-            foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _launchers.Where(x => x.Key == processTiming && !x.Value.AreAnyRunning))
+            foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers.Where(x => x.Key == processTiming && !x.Value.AreAnyRunning))
             {
                 launcher.Value.StartNew(null, null, executionState.Logger, executionState.Services, executionState.CancellationToken);
             }
+        }
+
+        internal void WaitForRunningProcesses(ProcessTiming processTiming)
+        {
+            foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers.Where(x => x.Key == processTiming))
+            {
+                launcher.Value.WaitForRunningProcesses();
+            }
+        }
+
+        private class ProcessLauncherFactory
+        {
+            public bool? WhenPreviewCommand { get; set; } // null means both preview and non-preview
+            public ProcessTiming ProcessTiming { get; set; }
+            public Func<IExecutionState, ProcessLauncher> GetProcessLauncher { get; set; }
         }
     }
 }

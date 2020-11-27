@@ -63,5 +63,85 @@ namespace Statiq.Web
             params string[] arguments)
             where TBootstrapper : IBootstrapper =>
             bootstrapper.AddProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddNonPreviewProcess<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            ProcessTiming processTiming,
+            ProcessLauncher processLauncher)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.ConfigureProcesses(processes => processes.Add(false, processTiming, _ => processLauncher));
+
+        public static TBootstrapper AddNonPreviewBackgroundProcess<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddNonPreviewProcess(
+                ProcessTiming.BeforeExecution,
+                new ProcessLauncher(fileName, arguments)
+                {
+                    IsBackground = true
+                });
+
+        public static TBootstrapper AddNonPreviewProcessBeforeExecution<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddNonPreviewProcess(ProcessTiming.BeforeExecution, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddNonPreviewProcessAfterExecution<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddNonPreviewProcess(ProcessTiming.AfterExecution, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddNonPreviewProcessBeforeDeployment<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddNonPreviewProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddPreviewProcess<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            ProcessTiming processTiming,
+            ProcessLauncher processLauncher)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.ConfigureProcesses(processes => processes.Add(true, processTiming, _ => processLauncher));
+
+        public static TBootstrapper AddPreviewBackgroundProcess<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddPreviewProcess(
+                ProcessTiming.BeforeExecution,
+                new ProcessLauncher(fileName, arguments)
+                {
+                    IsBackground = true
+                });
+
+        public static TBootstrapper AddPreviewProcessBeforeExecution<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddPreviewProcess(ProcessTiming.BeforeExecution, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddPreviewProcessAfterExecution<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddPreviewProcess(ProcessTiming.AfterExecution, new ProcessLauncher(fileName, arguments));
+
+        public static TBootstrapper AddPreviewProcessBeforeDeployment<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string fileName,
+            params string[] arguments)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.AddPreviewProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
     }
 }
