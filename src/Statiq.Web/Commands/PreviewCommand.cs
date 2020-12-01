@@ -82,6 +82,7 @@ namespace Statiq.Web.Commands
                     {
                         _changedFiles.Enqueue(path);
                         TriggerExecution();
+                        return Task.CompletedTask;
                     });
             }
         }

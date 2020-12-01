@@ -1,5 +1,8 @@
 # 1.0.0-beta.16
 
+- Updated Statiq Framework to version [1.0.0-beta.31](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.31).
+- Added a short wait to the file watcher to avoid file lock exceptions under certain conditions.
+
 # 1.0.0-beta.15
 
 - Updated Statiq Framework to version [1.0.0-beta.30](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.30).
