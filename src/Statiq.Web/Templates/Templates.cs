@@ -58,7 +58,7 @@ namespace Statiq.Web
                             }
                             return null;  // If no layout metadata, revert to default behavior
                         }))));
-            Add(MediaTypes.Html, this[MediaTypes.Razor]); // Set Razor as the default for HTML files
+            Add(MediaTypes.HtmlFragment, this[MediaTypes.Razor]); // Set Razor as the default for HTML fragment files, don't process full HTML files as part of a template, they're assumed to be complete
         }
 
         /// <summary>

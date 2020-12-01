@@ -1,6 +1,7 @@
 # 1.0.0-beta.16
 
 - Updated Statiq Framework to version [1.0.0-beta.31](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.31).
+- **Breaking change:** By default `.html` files are no longer processed by a layout engine like Razor, instead use `.fhtml` (HTML fragment) to indicate the file should be processed (#933).
 - Added a short wait to the file watcher to avoid file lock exceptions under certain conditions.
 
 # 1.0.0-beta.15
