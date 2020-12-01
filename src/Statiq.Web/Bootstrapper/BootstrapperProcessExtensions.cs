@@ -24,124 +24,118 @@ namespace Statiq.Web
                     .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
                     .GetRequiredService<Processes>()));
 
-        public static TBootstrapper AddProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            ProcessTiming processTiming,
-            ProcessLauncher processLauncher)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.ConfigureProcesses(processes => processes.Add(processTiming, _ => processLauncher));
+        // Normal
 
-        public static TBootstrapper AddBackgroundProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddProcess(
-                ProcessTiming.BeforeExecution,
-                new ProcessLauncher(fileName, arguments)
-                {
-                    IsBackground = true
-                });
+            bootstrapper.ConfigureProcesses(processes => processes.AddProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddProcessBeforeExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background and will be started when not in the preview command.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddNonPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddProcess(ProcessTiming.BeforeExecution, new ProcessLauncher(fileName, arguments));
+            bootstrapper.ConfigureProcesses(processes => processes.AddNonPreviewProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddProcessAfterExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background and will be started when in the preview command.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddProcess(ProcessTiming.AfterExecution, new ProcessLauncher(fileName, arguments));
+            bootstrapper.ConfigureProcesses(processes => processes.AddPreviewProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddProcessBeforeDeployment<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
+        // Background
 
-        public static TBootstrapper AddNonPreviewProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            ProcessTiming processTiming,
-            ProcessLauncher processLauncher)
+        /// <summary>
+        /// Adds a new process that runs in the background.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddBackgroundProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.ConfigureProcesses(processes => processes.Add(false, processTiming, _ => processLauncher));
+            bootstrapper.ConfigureProcesses(processes => processes.AddBackgroundProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddNonPreviewBackgroundProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background and will be started when not in the preview command.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddBackgroundNonPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddNonPreviewProcess(
-                ProcessTiming.BeforeExecution,
-                new ProcessLauncher(fileName, arguments)
-                {
-                    IsBackground = true
-                });
+            bootstrapper.ConfigureProcesses(processes => processes.AddBackgroundNonPreviewProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddNonPreviewProcessBeforeExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background and will be started when in the preview command.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddBackgroundPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddNonPreviewProcess(ProcessTiming.BeforeExecution, new ProcessLauncher(fileName, arguments));
+            bootstrapper.ConfigureProcesses(processes => processes.AddBackgroundPreviewProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddNonPreviewProcessAfterExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddNonPreviewProcess(ProcessTiming.AfterExecution, new ProcessLauncher(fileName, arguments));
+        // Concurrent
 
-        public static TBootstrapper AddNonPreviewProcessBeforeDeployment<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background and will wait for process exit before starting the next process timing phase.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddConcurrentProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddNonPreviewProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
+            bootstrapper.ConfigureProcesses(processes => processes.AddConcurrentProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddPreviewProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            ProcessTiming processTiming,
-            ProcessLauncher processLauncher)
+        /// <summary>
+        /// Adds a new process that runs in the background, will be started when not in the preview command, and will wait for process exit before starting the next process timing phase.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddConcurrentNonPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.ConfigureProcesses(processes => processes.Add(true, processTiming, _ => processLauncher));
+            bootstrapper.ConfigureProcesses(processes => processes.AddConcurrentNonPreviewProcess(processTiming, fileName, arguments));
 
-        public static TBootstrapper AddPreviewBackgroundProcess<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
+        /// <summary>
+        /// Adds a new process that runs in the background, will be started when in the preview command, and will wait for process exit before starting the next process timing phase.
+        /// </summary>
+        /// <param name="bootstrapper">The current bootstrapper.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="fileName">The file name of the process to start.</param>
+        /// <param name="arguments">The arguments to pass to the process.</param>
+        /// <returns>The process collection.</returns>
+        public static TBootstrapper AddConcurrentPreviewProcess<TBootstrapper>(this TBootstrapper bootstrapper, ProcessTiming processTiming, string fileName, params string[] arguments)
             where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddPreviewProcess(
-                ProcessTiming.BeforeExecution,
-                new ProcessLauncher(fileName, arguments)
-                {
-                    IsBackground = true
-                });
-
-        public static TBootstrapper AddPreviewProcessBeforeExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddPreviewProcess(ProcessTiming.BeforeExecution, new ProcessLauncher(fileName, arguments));
-
-        public static TBootstrapper AddPreviewProcessAfterExecution<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddPreviewProcess(ProcessTiming.AfterExecution, new ProcessLauncher(fileName, arguments));
-
-        public static TBootstrapper AddPreviewProcessBeforeDeployment<TBootstrapper>(
-            this TBootstrapper bootstrapper,
-            string fileName,
-            params string[] arguments)
-            where TBootstrapper : IBootstrapper =>
-            bootstrapper.AddPreviewProcess(ProcessTiming.BeforeDeployment, new ProcessLauncher(fileName, arguments));
+            bootstrapper.ConfigureProcesses(processes => processes.AddConcurrentPreviewProcess(processTiming, fileName, arguments));
     }
 }

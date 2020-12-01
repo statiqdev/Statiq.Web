@@ -157,35 +157,31 @@ namespace Statiq.Web
             bootstrapper
                 .ConfigureEngine(engine =>
                 {
-                    bool isPreviewCommand = typeof(PreviewCommand).IsAssignableFrom(bootstrapper.Command.GetType());
+                    bool previewCommand = typeof(PreviewCommand).IsAssignableFrom(bootstrapper.Command.GetType());
                     Processes processes = engine.Services.GetRequiredService<Processes>();
-                    processes.CreateProcessLaunchers(isPreviewCommand, engine);
-                    engine.Events.Subscribe<BeforeEngineExecution>(evt => processes.StartProcesses(ProcessTiming.BeforeExecution, evt.Engine));
+                    processes.CreateProcessLaunchers(previewCommand, engine);
+                    bool firstExecution = true;
+                    engine.Events.Subscribe<BeforeEngineExecution>(evt =>
+                    {
+                        if (firstExecution)
+                        {
+                            processes.StartProcesses(ProcessTiming.Initialization, evt.Engine);
+                            processes.WaitForRunningProcesses(ProcessTiming.Initialization);
+                        }
+                        firstExecution = false;
+
+                        processes.StartProcesses(ProcessTiming.BeforeExecution, evt.Engine);
+                    });
                     engine.Events.Subscribe<BeforeDeployment>(evt =>
                     {
-                        // Wait for before engine processes if not previewing
-                        if (!isPreviewCommand)
-                        {
-                            processes.WaitForRunningProcesses(ProcessTiming.BeforeExecution);
-                        }
-
+                        processes.WaitForRunningProcesses(ProcessTiming.BeforeExecution);
                         processes.StartProcesses(ProcessTiming.BeforeDeployment, evt.Engine);
                     });
                     engine.Events.Subscribe<AfterEngineExecution>(evt =>
                     {
-                        // Wait for before deployment processes if not previewing
-                        if (!isPreviewCommand)
-                        {
-                            processes.WaitForRunningProcesses(ProcessTiming.BeforeDeployment);
-                        }
-
+                        processes.WaitForRunningProcesses(ProcessTiming.BeforeDeployment);
                         processes.StartProcesses(ProcessTiming.AfterExecution, evt.Engine);
-
-                        // Wait for after engine processes if not previewing
-                        if (!isPreviewCommand)
-                        {
-                            processes.WaitForRunningProcesses(ProcessTiming.AfterExecution);
-                        }
+                        processes.WaitForRunningProcesses(ProcessTiming.AfterExecution);
                     });
                 });
 

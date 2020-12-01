@@ -1,10 +1,12 @@
 # 1.0.0-beta.15
 
 - Updated Statiq Framework to version [1.0.0-beta.30](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.30).
+- **Breaking change:** Refactored the exiting bootstrapper process extensions to use the `ProcessTiming` enum.
 - Fixed a regression with the preview command and file watching that was execution more than once on file changes.
 - Added a `WatchPaths` setting that adds additional folders to watch in preview mode (#930).
 - Added additional bootstrapper extensions to specify whether a process should launch when previewing, when not previewing, or always (#931).
-- Modified the behavior of background processes to block when not in a preview command (#931).
+- Added a flag for "concurrent" processes that run in the background but wait for exit before the next process timing phase (#931).
+- Added a `ProcessTiming.Initialization` setting to start a process before all others (#932).
 
 # 1.0.0-beta.14
 

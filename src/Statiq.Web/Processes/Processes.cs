@@ -5,11 +5,14 @@ using Statiq.Common;
 
 namespace Statiq.Web
 {
+    /// <summary>
+    /// Keeps track of process and when they should be started.
+    /// </summary>
     public class Processes : IDisposable
     {
         private readonly List<ProcessLauncherFactory> _processLauncherFactories = new List<ProcessLauncherFactory>();
 
-        private KeyValuePair<ProcessTiming, ProcessLauncher>[] _processLaunchers;
+        private KeyValuePair<ProcessLauncherFactory, ProcessLauncher>[] _processLaunchers;
 
         internal Processes()
         {
@@ -19,23 +22,29 @@ namespace Statiq.Web
         {
             if (_processLaunchers is object)
             {
-                foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers)
+                foreach (KeyValuePair<ProcessLauncherFactory, ProcessLauncher> launcher in _processLaunchers)
                 {
                     launcher.Value.Dispose();
                 }
             }
         }
 
-        public void Add(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            Add(null, processTiming, getProcessLauncher);
-
-        public void AddNonPreview(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            Add(false, processTiming, getProcessLauncher);
-
-        public void AddPreview(ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            Add(true, processTiming, getProcessLauncher);
-
-        public void Add(bool? whenPreviewCommand, ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher)
+        /// <summary>
+        /// Adds a new process.
+        /// </summary>
+        /// <param name="previewCommand">
+        /// <c>true</c> to start the process for the preview command,
+        /// <c>false</c> to start the process for non-preview commands,
+        /// <c>null</c> to always start the process.
+        /// </param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="waitForExit">
+        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
+        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
+        /// </param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public Processes AddProcess(bool? previewCommand, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher)
         {
             if (_processLaunchers is object)
             {
@@ -43,10 +52,12 @@ namespace Statiq.Web
             }
             _processLauncherFactories.Add(new ProcessLauncherFactory
             {
-                WhenPreviewCommand = whenPreviewCommand,
+                PreviewCommand = previewCommand,
                 ProcessTiming = processTiming,
+                WaitForExit = waitForExit,
                 GetProcessLauncher = getProcessLauncher
             });
+            return this;
         }
 
         public void Clear()
@@ -58,13 +69,13 @@ namespace Statiq.Web
             _processLauncherFactories.Clear();
         }
 
-        internal void CreateProcessLaunchers(bool isPreviewCommand, IExecutionState executionState)
+        internal void CreateProcessLaunchers(bool previewCommand, IExecutionState executionState)
         {
             if (_processLaunchers is null)
             {
                 _processLaunchers = _processLauncherFactories
-                    .Where(x => !x.WhenPreviewCommand.HasValue || x.WhenPreviewCommand.Value == isPreviewCommand)
-                    .Select(launcherFactory => KeyValuePair.Create(launcherFactory.ProcessTiming, launcherFactory.GetProcessLauncher?.Invoke(executionState)))
+                    .Where(x => !x.PreviewCommand.HasValue || x.PreviewCommand.Value == previewCommand)
+                    .Select(launcherFactory => KeyValuePair.Create(launcherFactory, launcherFactory.GetProcessLauncher?.Invoke(executionState)))
                     .Where(launcher => launcher.Value is object)
                     .ToArray();
             }
@@ -72,15 +83,20 @@ namespace Statiq.Web
 
         internal void StartProcesses(ProcessTiming processTiming, IExecutionState executionState)
         {
-            foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers.Where(x => x.Key == processTiming && !x.Value.AreAnyRunning))
+            foreach (KeyValuePair<ProcessLauncherFactory, ProcessLauncher> launcher in _processLaunchers
+                .Where(x => x.Key.ProcessTiming == processTiming && !x.Value.AreAnyRunning))
             {
                 launcher.Value.StartNew(null, null, executionState.Logger, executionState.Services, executionState.CancellationToken);
             }
         }
 
+        /// <summary>
+        /// Waits on all processes with the <see cref="ProcessLauncherFactory.WaitForExit"/> flag started during the specified timing.
+        /// </summary>
         internal void WaitForRunningProcesses(ProcessTiming processTiming)
         {
-            foreach (KeyValuePair<ProcessTiming, ProcessLauncher> launcher in _processLaunchers.Where(x => x.Key == processTiming))
+            foreach (KeyValuePair<ProcessLauncherFactory, ProcessLauncher> launcher in _processLaunchers
+                .Where(x => x.Key.ProcessTiming == processTiming && x.Key.WaitForExit))
             {
                 launcher.Value.WaitForRunningProcesses();
             }
@@ -88,8 +104,9 @@ namespace Statiq.Web
 
         private class ProcessLauncherFactory
         {
-            public bool? WhenPreviewCommand { get; set; } // null means both preview and non-preview
+            public bool? PreviewCommand { get; set; } // null means both preview and non-preview
             public ProcessTiming ProcessTiming { get; set; }
+            public bool WaitForExit { get; set; }
             public Func<IExecutionState, ProcessLauncher> GetProcessLauncher { get; set; }
         }
     }
