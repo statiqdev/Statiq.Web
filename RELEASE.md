@@ -1,3 +1,5 @@
+# 1.0.0-beta.18
+
 # 1.0.0-beta.17
 
 - Fixed a regression in how layouts are applied to Markdown files (#934).
