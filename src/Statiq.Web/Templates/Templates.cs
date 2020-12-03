@@ -58,7 +58,19 @@ namespace Statiq.Web
                             }
                             return null;  // If no layout metadata, revert to default behavior
                         }))));
-            Add(MediaTypes.HtmlFragment, this[MediaTypes.Razor]); // Set Razor as the default for HTML fragment files, don't process full HTML files as part of a template, they're assumed to be complete
+
+            // Set Razor as the default for HTML and HTML fragment files, but if HTML make sure we don't already have a full <html> before applying layouts
+            // By changing the module of MediaTypes.HtmlFragment we can change the default layout template
+            Add(MediaTypes.HtmlFragment, this[MediaTypes.Razor]);
+            Add(
+                MediaTypes.Html,
+                new Template(
+                    ContentType.Content,
+                    Phase.PostProcess,
+                    new ExecuteIf(Config.FromDocument(async doc => !(await doc.GetContentStringAsync()).Replace(" ", string.Empty).Contains("<html")))
+                    {
+                        new ExecuteConfig(Config.FromContext(_ => this[MediaTypes.HtmlFragment].Module))
+                    }));
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Shouldly;
 using Statiq.App;
 using Statiq.Common;
+using Statiq.Core;
 using Statiq.Html;
 using Statiq.Testing;
 using Statiq.Web.Pipelines;
@@ -99,6 +100,345 @@ namespace Statiq.Web.Tests.Pipelines
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
                     .ShouldBe(new[] { "1.1", "1.2", "2.1", "2.2", "2.3" }, true);
+            }
+
+            [Test]
+            public async Task LayoutViewStart()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.md",
+                        @"# Heading
+
+This is a test"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<html><head></head><body>
+    <div>LAYOUT</div>
+    <h1 id=""heading"">Heading</h1>
+<p>This is a test</p>
+
+</body></html>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentFileAppliesLayout()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.fhtml",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<html><head></head><body>
+    <div>LAYOUT</div>
+    <p>This is a test</p>
+</body></html>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentAppliesLayout()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.html",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<html><head></head><body>
+    <div>LAYOUT</div>
+    <p>This is a test</p>
+</body></html>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlDoesNotApplyLayout()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.html",
+                        @"<html><head></head><body><p>This is a test</p></body></html>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<html><head></head><body><p>This is a test</p></body></html>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentFileAppliesAlternateLayout()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddTemplate(
+                        "foobar",
+                        ContentType.Content,
+                        Phase.PostProcess,
+                        new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")))
+                    .SetDefaultLayoutTemplate("foobar");
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.fhtml",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"start<p>This is a test</p>end",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentAppliesAlternateLayout()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .SetDefaultLayoutModule(new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")));
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.html",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"start<p>This is a test</p>end",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentFileAppliesAlternateLayoutModule()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .SetDefaultLayoutModule(new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")));
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.fhtml",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"start<p>This is a test</p>end",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlFragmentAppliesAlternateLayoutModule()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddTemplate(
+                        "foobar",
+                        ContentType.Content,
+                        Phase.PostProcess,
+                        new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")))
+                    .SetDefaultLayoutTemplate("foobar");
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Test.html",
+                        @"<p>This is a test</p>"
+                    },
+                    {
+                        "/input/_Layout.cshtml",
+                        @"<html><head></head><body>
+    <div>LAYOUT</div>
+    @RenderBody()
+</body></html>"
+                    },
+                    {
+                        "/input/_ViewStart.cshtml",
+                        @"@{
+    Layout = ""_Layout"";
+}"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"start<p>This is a test</p>end",
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]

@@ -1,5 +1,10 @@
 # 1.0.0-beta.17
 
+- Fixed a regression in how layouts are applied to Markdown files (#934).
+- Changed behavior introduced in 1.0.0-beta.16 regarding HTML files and layouts, now layouts are applied if the HTML file does not contain a `<html>` tag, and are not applied if it does (#934).
+- Added a `SetDefaultLayoutTemplate()` bootstrapper extension to change the layout engine applied to HTML fragments to an existing one (if the default of Razor is not wanted).
+- Added a `SetDefaultLayoutModule()` bootstrapper extension to change the layout engine applied to HTML fragments to a new module (if the default of Razor is not wanted).
+
 # 1.0.0-beta.16
 
 - Updated Statiq Framework to version [1.0.0-beta.31](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.31).

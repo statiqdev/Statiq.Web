@@ -72,5 +72,35 @@ namespace Statiq.Web
                     throw new Exception($"Template for media type {mediaType} not found");
                 }
             });
+
+        public static TBootstrapper SetDefaultLayoutTemplate<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            string mediaType)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.ConfigureTemplates(templates =>
+            {
+                if (!templates.TryGetValue(mediaType, out Template template))
+                {
+                    throw new Exception($"Template for media type {mediaType} not found");
+                }
+                if (template.ContentType != ContentType.Content)
+                {
+                    throw new Exception($"Template for media type {mediaType} is not a {ContentType.Content} template");
+                }
+                if (template.Phase != Phase.PostProcess)
+                {
+                    throw new Exception($"Template for media type {mediaType} is not a {Phase.PostProcess} template");
+                }
+                templates[MediaTypes.HtmlFragment].Module = template.Module;
+            });
+
+        public static TBootstrapper SetDefaultLayoutModule<TBootstrapper>(
+            this TBootstrapper bootstrapper,
+            IModule module)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper.ConfigureTemplates(templates =>
+            {
+                templates[MediaTypes.HtmlFragment].Module = module;
+            });
     }
 }
