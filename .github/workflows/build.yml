@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: statiqdev/Statiq.Framework
-          path: Statiq.Framework
+          path: ../Statiq.Framework
 
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v1
