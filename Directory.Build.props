@@ -1,12 +1,23 @@
 <Project>
   
   <PropertyGroup>
-    <!-- Controls whether references are local projects or NuGet packages -->
-    <LocalReferences>true</LocalReferences>    
-    <!-- The NuGet version of Statiq that should be referenced if LocalReferences is false -->
-    <StatiqFrameworkVersion>1.0.0-beta.31</StatiqFrameworkVersion>
+    <!-- The NuGet version of Statiq that should be referenced, or empty to use local references -->
+    <StatiqFrameworkVersion></StatiqFrameworkVersion>
   </PropertyGroup>
-  
+
+  <Choose>
+    <When Condition=" '$(CI)' == 'true'">
+      <PropertyGroup>
+        <StatiqFrameworkRoot>..\..\Statiq.Framework</StatiqFrameworkRoot>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <PropertyGroup>
     <Version>1.0.0-beta.18</Version>
     <InformationalVersion>$(Version)</InformationalVersion>

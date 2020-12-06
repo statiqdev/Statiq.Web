@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" '$(LocalReferences)' == 'true'">
+    <When Condition=" '$(StatiqFrameworkVersion)' == ''">
       <ItemGroup>
-        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
-        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Testing\Statiq.Testing.csproj" />
+        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Testing\Statiq.Testing.csproj" />
       </ItemGroup>
     </When>
     <Otherwise>
