@@ -1,5 +1,7 @@
 # 1.0.0-beta.18
 
+- Added a `ResetCache()` method to the REPL to force a cache reset on the next execution (#936).
+
 # 1.0.0-beta.17
 
 - Fixed a regression in how layouts are applied to Markdown files (#934).

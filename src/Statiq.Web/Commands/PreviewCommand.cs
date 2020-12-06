@@ -18,11 +18,12 @@ namespace Statiq.Web.Commands
     public class PreviewCommand : InteractiveCommand<PreviewCommandSettings>
     {
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
-        private readonly ResetCacheMetadataValue _resetCache = new ResetCacheMetadataValue();
+        private readonly ResetCacheMetadataValue _resetCacheMetadata = new ResetCacheMetadataValue();
 
         private InputFileWatcher _inputFolderWatcher;
         private Server _previewServer;
         private Dictionary<string, string> _contentTypes;
+        private bool _resetCache = false;
 
         public PreviewCommand(
             IConfiguratorCollection configurators,
@@ -37,7 +38,7 @@ namespace Statiq.Web.Commands
         {
             // Add a lazy ResetCache value - we need to add it here and make it lazy since
             // the configuration settings are disposed once the engine is created
-            settings[Keys.ResetCache] = _resetCache;
+            settings[Keys.ResetCache] = _resetCacheMetadata;
         }
 
         protected override async Task AfterInitialExecutionAsync(
@@ -118,26 +119,26 @@ namespace Statiq.Web.Commands
                     logger.LogInformation($"{changedFiles.Count} files have changed, re-executing");
                 }
 
-                // Reset caches when an error occurs during the previous preview
+                // Reset caches when an error occurs during the previous preview or if requested
                 bool? existingResetCacheSetting = null;
-                bool setResetCacheSetting = false;
-                if (previousExitCode != ExitCode.Normal)
+                if (previousExitCode != ExitCode.Normal || _resetCache)
                 {
                     existingResetCacheSetting = engineManager.Engine.Settings.ContainsKey(Keys.ResetCache)
                         ? engineManager.Engine.Settings.GetBool(Keys.ResetCache)
                         : (bool?)null;
-                    setResetCacheSetting = true;
-                    _resetCache.Value = true;
+                    _resetCache = true;
+                    _resetCacheMetadata.Value = true;
                 }
 
                 // If there was an execution error due to reload, keep previewing but clear the cache
                 previousExitCode = await base.ExecutionTriggeredAsync(commandContext, commandSettings, engineManager, previousExitCode, cancellationTokenSource);
 
                 // Reset the reset cache setting after removing it
-                if (setResetCacheSetting)
+                if (_resetCache)
                 {
-                    _resetCache.Value = existingResetCacheSetting ?? false;
+                    _resetCacheMetadata.Value = existingResetCacheSetting ?? false;
                 }
+                _resetCache = false;
 
                 if (_previewServer is null)
                 {
@@ -228,7 +229,8 @@ namespace Statiq.Web.Commands
             CommandContext commandContext,
             PreviewCommandSettings commandSettings,
             IEngineManager engineManager) =>
-            new InteractiveGlobals(
+            new PreviewGlobals(
+                this,
                 engineManager.Engine,
                 () =>
                 {
@@ -236,5 +238,23 @@ namespace Statiq.Web.Commands
                     TriggerExecution();
                 },
                 TriggerExit);
+
+        public class PreviewGlobals : InteractiveGlobals
+        {
+            private readonly PreviewCommand _previewCommand;
+
+            public PreviewGlobals(PreviewCommand previewCommand, IEngine engine, Action triggerExecution, Action triggerExit)
+                : base(engine, triggerExecution, triggerExit)
+            {
+                _previewCommand = previewCommand;
+            }
+
+            [Description("Resets the cache on the next execution.")]
+            public void ResetCache()
+            {
+                _previewCommand._resetCache = true;
+                Engine.Logger.LogInformation("The cache will be reset on the next execution");
+            }
+        }
     }
 }

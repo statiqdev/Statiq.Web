@@ -3,20 +3,8 @@
   <PropertyGroup>
     <!-- The NuGet version of Statiq that should be referenced, or empty to use local references -->
     <StatiqFrameworkVersion></StatiqFrameworkVersion>
+    <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
   </PropertyGroup>
-
-  <Choose>
-    <When Condition=" '$(CI)' == 'true'">
-      <PropertyGroup>
-        <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
 
   <PropertyGroup>
     <Version>1.0.0-beta.18</Version>
