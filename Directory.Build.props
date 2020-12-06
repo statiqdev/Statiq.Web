@@ -8,7 +8,7 @@
   <Choose>
     <When Condition=" '$(CI)' == 'true'">
       <PropertyGroup>
-        <StatiqFrameworkRoot>..\..\Statiq.Framework</StatiqFrameworkRoot>
+        <StatiqFrameworkRoot>..\Statiq.Framework</StatiqFrameworkRoot>
       </PropertyGroup>
     </When>
     <Otherwise>
