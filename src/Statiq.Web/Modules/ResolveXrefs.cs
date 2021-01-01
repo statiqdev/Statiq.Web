@@ -45,7 +45,7 @@ namespace Statiq.Web.Modules
             IExecutionContext context,
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
-            IHtmlDocument htmlDocument = await HtmlHelper.ParseHtmlAsync(input);
+            IHtmlDocument htmlDocument = await HtmlHelper.ParseHtmlAsync(input, false);
             if (htmlDocument is object)
             {
                 // Find and replace "xref:" in links

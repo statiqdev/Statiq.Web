@@ -23,7 +23,7 @@ namespace Statiq.Web
             IHtmlDocument htmlDocument = null;
             if (document.MediaTypeEquals(MediaTypes.Html))
             {
-                htmlDocument = await HtmlHelper.ParseHtmlAsync(document);
+                htmlDocument = await HtmlHelper.ParseHtmlAsync(document, false);
             }
 
             if (htmlDocument is object)

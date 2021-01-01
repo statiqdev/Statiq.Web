@@ -1,5 +1,6 @@
 # 1.0.0-beta.18
 
+- Updated Statiq Framework to version [1.0.0-beta.32](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.32).
 - Added a `ResetCache()` method to the REPL to force a cache reset on the next execution (#936).
 
 # 1.0.0-beta.17
