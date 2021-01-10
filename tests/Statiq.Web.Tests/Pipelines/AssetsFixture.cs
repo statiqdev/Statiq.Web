@@ -96,7 +96,7 @@ int a = 1; int b = 2; return $""The number is {a + b}."";"
                         @"
 int a = 1;
 int b = 2;
-return await Context.CreateDocumentAsync(
+return Context.CreateDocument(
     new MetadataItems
     {
         { ""Foo"", ""Bar"" }
@@ -129,13 +129,13 @@ int a = 1;
 int b = 2;
 return new IDocument[]
 {
-    await Context.CreateDocumentAsync(
+    Context.CreateDocument(
         new MetadataItems
         {
             { ""Foo"", ""Bar"" }
         },
         $""The number is {a}.""),
-    await Context.CreateDocumentAsync(
+    Context.CreateDocument(
         new MetadataItems
         {
             { ""Foo"", ""Baz"" }

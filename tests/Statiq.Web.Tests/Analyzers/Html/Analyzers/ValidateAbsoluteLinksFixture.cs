@@ -46,7 +46,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 context.HttpResponseFunc = (_, __) => new HttpResponseMessage
                     {
                         StatusCode = success ? HttpStatusCode.OK : HttpStatusCode.NotFound,
-                        Content = new StringContent(string.Empty)
+                        Content = new System.Net.Http.StringContent(string.Empty)
                     };
                 ValidateAbsoluteLinks validateAbsoluteLinks = new ValidateAbsoluteLinks();
 
@@ -93,7 +93,7 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(string.Empty)
+                        Content = new System.Net.Http.StringContent(string.Empty)
                     };
                 };
                 ValidateAbsoluteLinks validateAbsoluteLinks = new ValidateAbsoluteLinks();

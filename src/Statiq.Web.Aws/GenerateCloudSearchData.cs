@@ -66,7 +66,7 @@ namespace Statiq.Web.Aws
         /// <inheritdoc />
         protected override async Task<IEnumerable<IDocument>> ExecuteContextAsync(IExecutionContext context)
         {
-            Stream contentStream = await context.GetContentStreamAsync();
+            Stream contentStream = context.GetContentStream();
             using (TextWriter textWriter = new StreamWriter(contentStream))
             {
                 using (JsonWriter writer = new JsonTextWriter(textWriter))
