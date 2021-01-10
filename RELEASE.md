@@ -1,3 +1,5 @@
+# 1.0.0-beta.19
+
 # 1.0.0-beta.18
 
 - **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.32](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.32),
