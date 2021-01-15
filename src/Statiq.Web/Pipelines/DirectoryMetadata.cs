@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Web.Modules;
 
 namespace Statiq.Web.Pipelines
 {

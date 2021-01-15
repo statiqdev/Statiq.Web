@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Spectre.Cli;
+﻿using System.ComponentModel;
+using Spectre.Console.Cli;
 using Statiq.App;
-using Statiq.Common;
-using Statiq.Web.Hosting;
 
 namespace Statiq.Web.Commands
 {

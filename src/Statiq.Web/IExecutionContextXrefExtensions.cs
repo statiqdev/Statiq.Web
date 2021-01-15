@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using Statiq.Common;
 
 namespace Statiq.Web

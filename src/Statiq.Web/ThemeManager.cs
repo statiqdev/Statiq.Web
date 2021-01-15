@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-using Statiq.App;
-using Statiq.Common;
-using Statiq.Web.Modules;
+﻿using Statiq.Common;
 
 namespace Statiq.Web
 {

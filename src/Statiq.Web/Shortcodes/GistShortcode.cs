@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Statiq.Common;
 
 namespace Statiq.Web.Shortcodes

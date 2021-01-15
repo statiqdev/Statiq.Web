@@ -2,7 +2,6 @@
 using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
 using Statiq.Web.Pipelines;
 
 namespace Statiq.Web.Modules

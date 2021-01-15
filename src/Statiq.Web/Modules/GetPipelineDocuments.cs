@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Web.Pipelines;

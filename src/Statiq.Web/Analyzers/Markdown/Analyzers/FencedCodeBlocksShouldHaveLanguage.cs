@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Markdig.Syntax;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;

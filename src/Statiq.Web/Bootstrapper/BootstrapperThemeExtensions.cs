@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Statiq.App;
 using Statiq.Common;
 
 namespace Statiq.Web
