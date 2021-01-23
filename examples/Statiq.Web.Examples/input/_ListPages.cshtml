@@ -2,6 +2,6 @@
 
 @foreach (IDocument document in Model)
 {
-    <h3>@Html.DocumentLink(document)</h3>
+    <h5>@Html.DocumentLink(document)</h5>
     @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
 }

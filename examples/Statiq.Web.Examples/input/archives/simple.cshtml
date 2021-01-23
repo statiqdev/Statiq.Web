@@ -1,0 +1,9 @@
+ArchiveSources: posts/*
+---
+<p>This is a simple archive that lists all the documents from the <code>posts</code> folder on a single page without any sorting.</p>
+
+@foreach (IDocument document in Model.GetChildren())
+{
+    <h5>@Html.DocumentLink(document)</h5>
+    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+}

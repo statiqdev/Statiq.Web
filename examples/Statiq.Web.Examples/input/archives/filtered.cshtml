@@ -1,0 +1,13 @@
+﻿ArchiveSources: posts/*
+ArchiveFilter: => GetList<string>("Colors").Contains("Red")
+---
+<p>
+    This is a filtered archive that uses <a href="https://statiq.dev/framework/documents/metadata-values#computed-values">computed metadata</a> for the <code>ArchiveFilter</code> setting to
+    list all the documents from the <code>posts</code> folder that have <code>Colors</code> metadata of "Red" on a single page without any sorting.
+</p>
+
+@foreach (IDocument document in Model.GetChildren())
+{
+    <h5>@Html.DocumentLink(document)</h5>
+    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+}

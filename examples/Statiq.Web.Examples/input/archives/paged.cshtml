@@ -1,0 +1,29 @@
+ArchiveSources: posts/*
+ArchivePageSize: 4
+Title: Paged
+---
+<p>
+    This is a paged archive that lists all the documents from the <code>posts</code> folder in pages of 4 items without any sorting.
+    Note that the <code>Title</code> setting is needed to populate the titles for each page. Alternativly, you can set <code>ArchiveTitle</code> to have full control over the page title.
+<p>
+    
+<p class="fw-bold">Page @Model.GetString(Keys.Index)</p>
+
+@foreach (IDocument document in Model.GetChildren())
+{
+    <h5>@Html.DocumentLink(document)</h5>
+    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+}
+
+@{
+    IDocument previous = Model.GetDocument(Keys.Previous);
+    IDocument next = Model.GetDocument(Keys.Next);
+}
+@if (previous != null)
+{
+    <div class="mb-2"><a class="btn btn-primary" href="@previous.GetLink()" role="button"><i class="fas fa-angle-double-left"></i> Previous Page</a></div>
+}
+@if (next != null)
+{
+    <div><a class="btn btn-primary" href="@next.GetLink()" role="button">Next Page <i class="fas fa-angle-double-right"></i></a></div>
+}
