@@ -79,9 +79,12 @@ namespace Statiq.Web.Commands
                             .Select(x => engineManager.Engine.FileSystem.GetRootPath(x))),
                     true,
                     "*.*",
-                    path =>
+                    paths =>
                     {
-                        _changedFiles.Enqueue(path);
+                        foreach (string path in paths)
+                        {
+                            _changedFiles.Enqueue(path);
+                        }
                         TriggerExecution();
                         return Task.CompletedTask;
                     });
@@ -109,7 +112,7 @@ namespace Statiq.Web.Commands
                 }
                 else if (changedFiles.Add(changedFile))
                 {
-                    logger.LogDebug($"{changedFile} has changed");
+                    logger.LogInformation($"{changedFile} has changed");
                 }
             }
             if (forceExecution || changedFiles.Count > 0)

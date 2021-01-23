@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using Statiq.Common;
 
 namespace Statiq.Web
@@ -13,20 +14,22 @@ namespace Statiq.Web
     /// </summary>
     public class InputFileWatcher : IDisposable
     {
-        private static readonly TimeSpan _eventThreshold = TimeSpan.FromMilliseconds(800);
+        public static readonly TimeSpan EventThreshold = TimeSpan.FromMilliseconds(800);
+
+        private static readonly DateTime _zeroFileTime = DateTime.FromFileTime(0);
 
         private readonly BlockingCollection<string> _changedFiles = new BlockingCollection<string>(new ConcurrentQueue<string>());
         private readonly ConcurrentCache<string, DateTime> _fileLastWriteTimes = new ConcurrentCache<string, DateTime>();
         private readonly List<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
         private readonly string _outputPath;
-        private readonly Func<string, Task> _callback;
+        private readonly Func<IEnumerable<string>, Task> _callback;
 
         public InputFileWatcher(
             in NormalizedPath outputDirectory,
             IEnumerable<NormalizedPath> inputDirectories,
             bool includeSubdirectories,
             string filter,
-            Func<string, Task> callback)
+            Func<IEnumerable<string>, Task> callback)
         {
             foreach (string inputDirectory in inputDirectories.Select(x => x.FullPath).Where(Directory.Exists))
             {
@@ -40,7 +43,7 @@ namespace Statiq.Web
                 watcher.Changed += OnChanged;
                 watcher.Created += OnChanged;
                 watcher.Deleted += OnChanged;
-                watcher.Renamed += OnChanged;
+                watcher.Renamed += OnRenamed;
                 _watchers.Add(watcher);
             }
             _outputPath = outputDirectory.FullPath;
@@ -68,6 +71,8 @@ namespace Statiq.Web
                     watcher.EnableRaisingEvents = false;
                     watcher.Changed -= OnChanged;
                     watcher.Created -= OnChanged;
+                    watcher.Deleted -= OnChanged;
+                    watcher.Renamed -= OnRenamed;
                 }
             }
         }
@@ -78,8 +83,15 @@ namespace Statiq.Web
             while ((changedFile = TakeChangedFile()) is object)
             {
                 // Wait a little bit of time to let sequences of events fire
-                await Task.Delay(_eventThreshold / 2);
-                await _callback(changedFile);
+                await Task.Delay(EventThreshold / 2);
+
+                // Go ahead and clear out the queue
+                List<string> changedFiles = new List<string> { changedFile };
+                while (TryTakeChangedFile(out changedFile))
+                {
+                    changedFiles.Add(changedFile);
+                }
+                await _callback(changedFiles);
             }
         }
 
@@ -99,20 +111,57 @@ namespace Statiq.Web
             return null;
         }
 
+        private bool TryTakeChangedFile(out string changedFile)
+        {
+            if (!_changedFiles.IsCompleted)
+            {
+                try
+                {
+                    return _changedFiles.TryTake(out changedFile);
+                }
+                catch
+                {
+                    // The collection was completed or disposed while waiting
+                }
+            }
+            changedFile = null;
+            return false;
+        }
+
         private void OnChanged(object sender, FileSystemEventArgs args)
         {
-            if (!args.FullPath.StartsWith(_outputPath, StringComparison.OrdinalIgnoreCase))
+            DateTime lastWriteTime = GetLastWriteTime(args.FullPath);
+            AddAndThrottle(args.FullPath, lastWriteTime);
+        }
+
+        private void OnRenamed(object sender, RenamedEventArgs args)
+        {
+            // Use now as the "write" time for renamed files
+            DateTime now = DateTime.Now;
+            AddAndThrottle(args.OldFullPath, now);
+            AddAndThrottle(args.FullPath, now);
+        }
+
+        private static DateTime GetLastWriteTime(string fullPath)
+        {
+            DateTime lastWriteTime = File.GetLastWriteTime(fullPath);
+            return lastWriteTime.Equals(default) || lastWriteTime.Equals(_zeroFileTime) ? DateTime.Now : lastWriteTime;
+        }
+
+        // Multiple events are often fired for file changes so we need to throttle them somehow
+        // Looking at last write time with a small threshold seems to work well
+        private void AddAndThrottle(string fullPath, DateTime lastWriteTime)
+        {
+            if (!fullPath.StartsWith(_outputPath, StringComparison.OrdinalIgnoreCase))
             {
-                // Multiple events are often fired for file changes so we need to throttle them somehow
-                // Looking at last write time with a small threshold seems to work well
                 _fileLastWriteTimes.AddOrUpdate(
-                    args.FullPath,
-                    fullPath =>
+                    fullPath,
+                    fp =>
                     {
-                        DateTime lastWriteTime = File.GetLastWriteTime(fullPath);
+                        // First time we've seen an event for this file
                         try
                         {
-                            _changedFiles.Add(args.FullPath);
+                            _changedFiles.Add(fp);
                         }
                         catch
                         {
@@ -120,14 +169,14 @@ namespace Statiq.Web
                         }
                         return lastWriteTime;
                     },
-                    (fullPath, previousWriteTime) =>
+                    (fp, previousWriteTime) =>
                     {
-                        DateTime lastWriteTime = File.GetLastWriteTime(fullPath);
-                        if (lastWriteTime - previousWriteTime > _eventThreshold)
+                        // We've seen this file before so only add it if it's been long enough
+                        if (lastWriteTime - previousWriteTime > EventThreshold)
                         {
                             try
                             {
-                                _changedFiles.Add(args.FullPath);
+                                _changedFiles.Add(fp);
                             }
                             catch
                             {
