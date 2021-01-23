@@ -36,12 +36,19 @@ namespace Statiq.Web.Pipelines
                     new ProcessSidecarFile(Config.FromDocument((doc, ctx) =>
                     {
                         NormalizedPath relativePath = doc.Source.IsNull ? NormalizedPath.Null : doc.Source.GetRelativeInputPath();
-                        return relativePath.IsNull
-                            ? NormalizedPath.Null
-                            : templates.GetMediaTypes(ContentType.Data, Phase.Process)
-                                .SelectMany(MediaTypes.GetExtensions)
-                                .Select(x => relativePath.InsertPrefix("_").ChangeExtension(x))
-                                .FirstOrDefault(x => ctx.FileSystem.GetInputFile(x).Exists);
+                        if (relativePath.IsNull)
+                        {
+                            return NormalizedPath.Null;
+                        }
+                        relativePath = relativePath.InsertPrefix("_");
+                        return templates.GetMediaTypes(ContentType.Data, Phase.Process)
+                            .SelectMany(MediaTypes.GetExtensions)
+                            .SelectMany(x => new NormalizedPath[]
+                            {
+                                relativePath.ChangeExtension(x),
+                                relativePath.AppendExtension(x)
+                            })
+                            .FirstOrDefault(x => ctx.FileSystem.GetInputFile(x).Exists);
                     }))
                     {
                         templates.GetModule(ContentType.Data, Phase.Process)

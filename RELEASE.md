@@ -1,5 +1,6 @@
 # 1.0.0-beta.19
 
+- Added ability for sidecar files to append the sidecar file extension in addition to replacing the original file extension.
 - Fixed several bugs in the file watcher for preview mode related to multiple file changes.
 
 # 1.0.0-beta.18
