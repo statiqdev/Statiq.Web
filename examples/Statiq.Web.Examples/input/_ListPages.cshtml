@@ -1,0 +1,7 @@
+﻿@inherits Statiq.Razor.StatiqRazorPage<IEnumerable<IDocument>>
+
+@foreach (IDocument document in Model)
+{
+    <h3>@Html.DocumentLink(document)</h3>
+    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+}
