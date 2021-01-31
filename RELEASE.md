@@ -1,11 +1,12 @@
 # 1.0.0-beta.19
 
+- Updated Statiq Framework to version [1.0.0-beta.33](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.33).
 - Added ability for sidecar files to append the sidecar file extension in addition to replacing the original file extension.
 - Fixed several bugs in the file watcher for preview mode related to multiple file changes.
 
 # 1.0.0-beta.18
 
-- **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.32](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.32),
+- **Breaking change:** Updated Statiq Framework to version [1.0.0-beta.32](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.32).
   see the Statiq Framework release notes for details on breaking changes, mostly applicable to module authors.
 - Added a `ResetCache()` method to the REPL to force a cache reset on the next execution (#936).
 
