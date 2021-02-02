@@ -248,6 +248,8 @@ namespace Statiq.Web
         /// <summary>
         /// The key to use for generating archive groups. The
         /// source documents will be grouped by the key value(s).
+        /// This can either be the name of a metadata key to use
+        /// or a computed value that will get archive key values.
         /// If this is not defined, only a single archive index
         /// with the source documents will be generated.
         /// </summary>
@@ -310,7 +312,7 @@ namespace Statiq.Web
         public const string ArchiveOrderKey = nameof(ArchiveOrderKey);
 
         /// <summary>
-        /// A value that sorting should be based on (I.e. use a computed value).
+        /// A value that sorting should be based on (I.e. using a computed value).
         /// </summary>
         /// <remarks>
         /// If both <see cref="ArchiveOrder"/> and <see cref="ArchiveOrderKey"/> are specified,

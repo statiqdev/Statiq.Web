@@ -1,0 +1,28 @@
+ArchiveSources: posts/*
+ArchiveKey: Colors
+---
+<p>
+    This groups the archive using the "Colors" metadata property. Note how if <code>GroupKey</code> is defined for the document
+    we can assume it's the index for a given color, but if it's not then it's the index for all colors.
+</p>
+
+@if (Model.ContainsKey(Keys.GroupKey))
+{
+    // An individual color
+    <h3>@Model.GetString(Keys.GroupKey)</h3>
+    @foreach (IDocument document in Model.GetChildren())
+    {
+        <h5>@Html.DocumentLink(document)</h5>
+        <p><b>Colors:</b> @string.Join(", ", document.GetList<string>("Colors"))</p>
+        @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+    }
+}
+else
+{
+    // The main color index
+    <h3>All Colors</h3>
+    @foreach (IDocument document in Model.GetChildren())
+    {
+        <h5>@Html.DocumentLink(document)</h5>
+    }
+}

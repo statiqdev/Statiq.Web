@@ -1,7 +1,7 @@
 Fruit: Avocado
 Colors: Green
 Number: 9
-PostDate: 3/7/2018
+PostDate: 1/7/2018
 ---
 The avocado (Persea americana), a tree likely originating from south central Mexico,[2][3][4] is classified as a member of the flowering plant family Lauraceae.[2] The fruit of the plant, also called an avocado (or avocado pear or alligator pear), is botanically a large berry containing a single large seed.[5]
 

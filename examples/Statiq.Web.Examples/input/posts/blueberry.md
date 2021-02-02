@@ -1,7 +1,7 @@
 Fruit: Blueberry
 Colors: Blue
 Number: 6
-PostDate: 7/2/2018
+PostDate: 5/2/2018
 ---
 Blueberries are perennial flowering plants with blue or purple berries. They are classified in the section Cyanococcus within the genus Vaccinium. Vaccinium also includes cranberries, bilberries, huckleberries and Madeira blueberries.[1] Commercial blueberries—both wild (lowbush) and cultivated (highbush)—are all native to North America. The highbush varieties were introduced into Europe during the 1930s.[2]
 

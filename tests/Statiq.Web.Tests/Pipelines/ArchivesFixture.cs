@@ -253,6 +253,169 @@ ArchiveOrder: => int.Parse(GetString(""B"").Substring(1))
                 document.Destination.ShouldBe("archive.html");
                 (await document.GetContentStringAsync()).ShouldBe(@"Foo,Bar");
             }
+
+            [Test]
+            public async Task ArchiveKey()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/1.cshtml",
+                        @"A: a1
+G: a1
+---
+Foo"
+                    },
+                    {
+                        "/input/2.cshtml",
+                        @"A: a2
+G: a2
+---
+Bar"
+                    },
+                    {
+                        "/input/3.cshtml",
+                        @"A: a3
+G: a1
+---
+Bizz"
+                    },
+                    {
+                        "/input/4.cshtml",
+                        @"A: a4
+G: b1
+---
+Buzz"
+                    },
+                    {
+                        "/input/5.cshtml",
+                        @"A: a5
+G: b1
+---
+Bazz"
+                    },
+                    {
+                        "/input/archive.cshtml",
+                        @"ArchiveSources: ""**/*""
+ArchiveKey: G
+---
+@if(!Document.ContainsKey(""GroupKey""))
+{
+    @foreach(IDocument doc in Document.GetChildren().OrderBy(x => x.GetString(""GroupKey"")))
+    {
+      <div>@doc.GetString(""GroupKey"")</div>
+      <div>@string.Join("","", doc.GetChildren().Select(x => x.GetContentStringAsync().Result).OrderBy(x => x))</div>
+    }
+}"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                result.Outputs[nameof(Archives)][Phase.Output].Select(x => x.Destination.FullPath).ShouldBe(
+                    new[]
+                    {
+                        "archive.html",
+                        "archive/a1.html",
+                        "archive/a2.html",
+                        "archive/b1.html"
+                    },
+                    true);
+                IDocument document = result.Outputs[nameof(Archives)][Phase.Output].Single(x => x.Destination.FileNameWithoutExtension.FullPath == "archive");
+                document.Destination.ShouldBe("archive.html");
+                (await document.GetContentStringAsync()).Replace(" ", string.Empty).ShouldBe(@"<div>a1</div>
+<div>Bizz,Foo</div>
+<div>a2</div>
+<div>Bar</div>
+<div>b1</div>
+<div>Bazz,Buzz</div>
+");
+            }
+
+            [Test]
+            public async Task ComputedArchiveKey()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/1.cshtml",
+                        @"A: a1
+G: a1
+---
+Foo"
+                    },
+                    {
+                        "/input/2.cshtml",
+                        @"A: a2
+G: a2
+---
+Bar"
+                    },
+                    {
+                        "/input/3.cshtml",
+                        @"A: a3
+G: a1
+---
+Bizz"
+                    },
+                    {
+                        "/input/4.cshtml",
+                        @"A: a4
+G: b1
+---
+Buzz"
+                    },
+                    {
+                        "/input/5.cshtml",
+                        @"A: a5
+G: b1
+---
+Bazz"
+                    },
+                    {
+                        "/input/archive.cshtml",
+                        @"ArchiveSources: ""**/*""
+ArchiveKey: => GetString(""G"").Substring(1)
+---
+@if(!Document.ContainsKey(""GroupKey""))
+{
+    @foreach(IDocument doc in Document.GetChildren().OrderBy(x => x.GetString(""GroupKey"")))
+    {
+      <div>@doc.GetString(""GroupKey"")</div>
+      <div>@string.Join("","", doc.GetChildren().Select(x => x.GetContentStringAsync().Result).OrderBy(x => x))</div>
+    }
+}"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                result.Outputs[nameof(Archives)][Phase.Output].Select(x => x.Destination.FullPath).ShouldBe(
+                    new[]
+                    {
+                        "archive.html",
+                        "archive/1.html",
+                        "archive/2.html"
+                    },
+                    true);
+                IDocument document = result.Outputs[nameof(Archives)][Phase.Output].Single(x => x.Destination.FileNameWithoutExtension.FullPath == "archive");
+                document.Destination.ShouldBe("archive.html");
+                (await document.GetContentStringAsync()).Replace(" ", string.Empty).ShouldBe(@"<div>1</div>
+<div>Bazz,Bizz,Buzz,Foo</div>
+<div>2</div>
+<div>Bar</div>
+");
+            }
         }
     }
 }

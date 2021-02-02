@@ -184,10 +184,17 @@ namespace Statiq.Web.Pipelines
                     }
 
                     // Default title
-                    string title = doc.GetString(Keys.Title);
+                    string title = doc.GetString(Keys.Title, string.Empty);
                     if (doc.ContainsKey(Keys.GroupKey))
                     {
-                        title += " - " + doc.GetString(Keys.GroupKey);
+                        if (!string.IsNullOrEmpty(title))
+                        {
+                            title += " - " + doc.GetString(Keys.GroupKey);
+                        }
+                        else
+                        {
+                            title = doc.GetString(Keys.GroupKey);
+                        }
                     }
                     int index = doc.GetInt(Keys.Index);
                     return index <= 1 ? title : (title + $" (Page {index})");
@@ -204,7 +211,7 @@ namespace Statiq.Web.Pipelines
                     NormalizedPath destination = archiveDoc.Destination.ChangeExtension(null);
                     if (doc.ContainsKey(Keys.GroupKey))
                     {
-                        destination.Combine(NormalizedPath.ReplaceInvalidFileNameChars(doc.GetString(Keys.GroupKey)));
+                        destination = destination.Combine(NormalizedPath.ReplaceInvalidFileNameChars(doc.GetString(Keys.GroupKey)));
                     }
                     int index = doc.GetInt(Keys.Index);
                     if (index > 1)
