@@ -3,6 +3,7 @@ Colors:
   - Yellow
   - White
 Number: 5
+PostDate: 10/11/2018
 ---
 The onion (Allium cepa L., from Latin cepa "onion"), also known as the bulb onion or common onion, is a vegetable that is the most widely cultivated species of the genus Allium. Its close relatives include the garlic, scallion, shallot, leek, chive,[2] and Chinese onion.[3]
 

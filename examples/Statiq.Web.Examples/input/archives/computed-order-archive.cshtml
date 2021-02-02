@@ -1,0 +1,17 @@
+ArchiveSources: posts/*
+ArchiveOrder: => GetDateTime("PostDate")
+ArchiveOrderDescending: false
+---
+<p>
+    Ordering by something other than a string can be tricky. Since front matter isn't usually typed, sorting by any fields from front matter
+    usually sort on their string representation. To use different sorting logic, we first need to convert the front matter into the appropriate
+    type and then sort on that. <a href="https://statiq.dev/framework/documents/metadata-values#computed-values">Computed metadata</a> can be
+    helpful here because it lets us run code to generate the item being sorted for the archive.
+</p>
+
+@foreach (IDocument document in Model.GetChildren())
+{
+    <h5>@Html.DocumentLink(document)</h5>
+    <p><b>Post Date:</b> @document.GetString("PostDate")</p>
+    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+}

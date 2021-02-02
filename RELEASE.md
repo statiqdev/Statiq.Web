@@ -1,5 +1,7 @@
 # 1.0.0-beta.20
 
+- Added an `ArchiveOrder` to archives which can be used to sort the archive by an arbitrary value using computed metadata (as opposed to `ArchiveOrderKey` which relies on the value in metadata).
+
 # 1.0.0-beta.19
 
 - Updated Statiq Framework to version [1.0.0-beta.33](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.33).

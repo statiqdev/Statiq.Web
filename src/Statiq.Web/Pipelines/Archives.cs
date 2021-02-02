@@ -51,6 +51,12 @@ namespace Statiq.Web.Pipelines
                                 new OrderDocuments(archiveDoc.GetString(WebKeys.ArchiveOrderKey))
                                     .Descending(archiveDoc.GetBool(WebKeys.ArchiveOrderDescending)));
                         }
+                        if (archiveDoc.ContainsKey(WebKeys.ArchiveOrder))
+                        {
+                            modules.Add(
+                                new OrderDocuments(Config.FromDocument(doc => doc.Get(WebKeys.ArchiveOrder)))
+                                    .Descending(archiveDoc.GetBool(WebKeys.ArchiveOrderDescending)));
+                        }
 
                         // Are we making groups?
                         if (archiveDoc.ContainsKey(WebKeys.ArchiveKey))

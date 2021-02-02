@@ -2,4 +2,4 @@
 ---
 Examples of the [archives](https://statiq.dev/web/content-and-data/archives) feature.
 
-<partial name="_ListPages" model='\@OutputPages[Model.Destination.Parent.Combine("archives/*").FullPath]'>
+<div>\@Html.Partial("_ListPages", OutputPages[Model.Destination.Parent.Combine("archives/*").FullPath])</div>

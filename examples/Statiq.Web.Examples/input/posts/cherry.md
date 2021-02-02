@@ -1,6 +1,7 @@
 Fruit: Cherry
 Colors: Red
 Number: 10
+PostDate: 9/2/2018
 ---
 A cherry is the fruit of many plants of the genus Prunus, and is a fleshy drupe (stone fruit).
 

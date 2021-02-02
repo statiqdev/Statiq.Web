@@ -1,6 +1,7 @@
 Fruit: Orange
 Colors: Orange
 Number: 2
+PostDate: 8/24/2018
 ---
 The orange is the fruit of various citrus species in the family Rutaceae (see list of plants known as orange); it primarily refers to Citrus × sinensis,[1] which is also called sweet orange, to distinguish it from the related Citrus × aurantium, referred to as bitter orange. The sweet orange reproduces asexually (apomixis through nucellar embryony); varieties of sweet orange arise through mutations.[2][3][4][5]
 

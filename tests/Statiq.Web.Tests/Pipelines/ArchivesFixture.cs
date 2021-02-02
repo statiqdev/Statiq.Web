@@ -132,6 +132,127 @@ ContentType: Asset
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 result.Outputs[nameof(Archives)][Phase.Output].ShouldBeEmpty();
             }
+
+            [Test]
+            public async Task KeyedOrder()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/1.cshtml",
+                        @"A: a2
+B: b1
+---
+Foo"
+                    },
+                    {
+                        "/input/2.cshtml",
+                        @"A: a1
+B: b2
+---
+Bar"
+                    },
+                    {
+                        "/input/archive.cshtml",
+                        @"ArchiveSources: ""**/*""
+ArchiveOrderKey: A
+---
+@string.Join("","", Document.GetChildren().Select(x => x.GetContentStringAsync().Result))"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Archives)][Phase.Output].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("archive.html");
+                (await document.GetContentStringAsync()).ShouldBe(@"Bar,Foo");
+            }
+
+            [Test]
+            public async Task ComputedOrder()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/1.cshtml",
+                        @"A: a2
+B: b1
+---
+Foo"
+                    },
+                    {
+                        "/input/2.cshtml",
+                        @"A: a1
+B: b2
+---
+Bar"
+                    },
+                    {
+                        "/input/archive.cshtml",
+                        @"ArchiveSources: ""**/*""
+ArchiveOrder: => int.Parse(GetString(""A"").Substring(1))
+---
+@string.Join("","", Document.GetChildren().Select(x => x.GetContentStringAsync().Result))"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Archives)][Phase.Output].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("archive.html");
+                (await document.GetContentStringAsync()).ShouldBe(@"Bar,Foo");
+            }
+
+            [Test]
+            public async Task ComputedOrderAfterKeyedOrder()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/1.cshtml",
+                        @"A: a2
+B: b1
+---
+Foo"
+                    },
+                    {
+                        "/input/2.cshtml",
+                        @"A: a1
+B: b2
+---
+Bar"
+                    },
+                    {
+                        "/input/archive.cshtml",
+                        @"ArchiveSources: ""**/*""
+ArchiveOrderKey: A
+ArchiveOrder: => int.Parse(GetString(""B"").Substring(1))
+---
+@string.Join("","", Document.GetChildren().Select(x => x.GetContentStringAsync().Result))"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Archives)][Phase.Output].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("archive.html");
+                (await document.GetContentStringAsync()).ShouldBe(@"Foo,Bar");
+            }
         }
     }
 }

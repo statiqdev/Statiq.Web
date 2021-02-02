@@ -301,9 +301,22 @@ namespace Statiq.Web
         public const string ArchiveDestination = nameof(ArchiveDestination);
 
         /// <summary>
-        /// The metadata key that sorting should be based on.
+        /// A metadata key that contains the value that sorting should be based on.
         /// </summary>
+        /// <remarks>
+        /// If both <see cref="ArchiveOrder"/> and <see cref="ArchiveOrderKey"/> are specified,
+        /// <see cref="ArchiveOrderKey"/> will be applied first followed by <see cref="ArchiveOrder"/>.
+        /// </remarks>
         public const string ArchiveOrderKey = nameof(ArchiveOrderKey);
+
+        /// <summary>
+        /// A value that sorting should be based on (I.e. use a computed value).
+        /// </summary>
+        /// <remarks>
+        /// If both <see cref="ArchiveOrder"/> and <see cref="ArchiveOrderKey"/> are specified,
+        /// <see cref="ArchiveOrderKey"/> will be applied first followed by <see cref="ArchiveOrder"/>.
+        /// </remarks>
+        public const string ArchiveOrder = nameof(ArchiveOrder);
 
         /// <summary>
         /// Indicates the archive should be sorted in descending order.
