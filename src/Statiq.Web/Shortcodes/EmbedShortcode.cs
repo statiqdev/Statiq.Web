@@ -22,13 +22,17 @@ namespace Statiq.Web.Shortcodes
     /// </code>
     /// </example>
     /// <parameter name="Endpoint">The oEmbed endpoint.</parameter>
-    /// <parameter name="Url">The embeded URL to fetch an embed for.</parameter>
+    /// <parameter name="Url">The embedded URL to fetch an embed for.</parameter>
     /// <parameter name="Format">An optional format to use ("xml" or "json").</parameter>
+    /// <parameter name="MaxWidth">An optional maximum width of the embed.</parameter>
+    /// <parameter name="MaxHeight">An optional maximum height of the embed.</parameter>
     public class EmbedShortcode : Shortcode
     {
-        private const string Endpoint = nameof(Endpoint);
-        private const string Url = nameof(Url);
-        private const string Format = nameof(Format);
+        protected const string Endpoint = nameof(Endpoint);
+        protected const string Url = nameof(Url);
+        protected const string Format = nameof(Format);
+        protected const string MaxWidth = nameof(MaxWidth);
+        protected const string MaxHeight = nameof(MaxHeight);
 
         public sealed override async Task<ShortcodeResult> ExecuteAsync(
             KeyValuePair<string, string>[] args,
@@ -42,27 +46,37 @@ namespace Statiq.Web.Shortcodes
         /// </summary>
         public virtual async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
         {
-            IMetadataDictionary arguments = args.ToDictionary(Endpoint, Url, Format);
+            IMetadataDictionary arguments = args.ToDictionary(Endpoint, Url, Format, MaxWidth, MaxHeight);
             arguments.RequireKeys(Endpoint, Url);
             return await GetEmbedResultAsync(
+                arguments,
                 arguments.GetString(Endpoint),
                 arguments.GetString(Url),
-                arguments.ContainsKey(Format)
-                    ? new string[] { $"format={arguments.GetString(Format)}" }
-                    : null,
                 context);
         }
 
-        protected async Task<ShortcodeResult> GetEmbedResultAsync(string endpoint, string url, IExecutionContext context) =>
-            await GetEmbedResultAsync(endpoint, url, null, context);
+        protected async Task<ShortcodeResult> GetEmbedResultAsync(IMetadataDictionary arguments, string endpoint, string url, IExecutionContext context) =>
+            await GetEmbedResultAsync(arguments, endpoint, url, null, context);
 
-        protected async Task<ShortcodeResult> GetEmbedResultAsync(string endpoint, string url, IEnumerable<string> query, IExecutionContext context)
+        protected async Task<ShortcodeResult> GetEmbedResultAsync(IMetadataDictionary arguments, string endpoint, string url, IEnumerable<string> query, IExecutionContext context)
         {
             // Get the oEmbed response
             EmbedResponse embedResponse;
             using (HttpClient httpClient = context.CreateHttpClient())
             {
                 string request = $"{endpoint}?url={WebUtility.UrlEncode(url)}";
+                if (arguments.ContainsKey(Format))
+                {
+                    request += $"&format={arguments.GetString(Format)}";
+                }
+                if (arguments.ContainsKey(MaxWidth))
+                {
+                    request += $"&maxwidth={arguments.GetString(MaxWidth)}";
+                }
+                if (arguments.ContainsKey(MaxHeight))
+                {
+                    request += $"&maxheight={arguments.GetString(MaxHeight)}";
+                }
                 if (query is object)
                 {
                     request += "&" + string.Join("&", query);

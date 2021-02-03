@@ -18,10 +18,16 @@ namespace Statiq.Web.Shortcodes
     /// &lt;?# Giphy excited-birthday-yeah-yoJC2GnSClbPOkV0eA /?&gt;
     /// </code>
     /// </example>
-    /// <parameter>The ID of the gif.</parameter>
+    /// <parameter name="Id">The ID of the gif.</parameter>
     public class GiphyShortcode : EmbedShortcode
     {
-        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context) =>
-            await GetEmbedResultAsync("https://giphy.com/services/oembed", $"https://giphy.com/gifs/{args.SingleValue()}", context);
+        private const string Id = nameof(Id);
+
+        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
+        {
+            IMetadataDictionary arguments = args.ToDictionary(Id);
+            arguments.RequireKeys(Id);
+            return await GetEmbedResultAsync(arguments, "https://giphy.com/services/oembed", $"https://giphy.com/gifs/{arguments.GetString(Id)}", context);
+        }
     }
 }

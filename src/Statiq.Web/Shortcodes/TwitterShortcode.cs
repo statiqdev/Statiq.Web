@@ -60,7 +60,7 @@ namespace Statiq.Web.Shortcodes
             // Omit the script on the next Twitter embed
             _omitScript = true;
 
-            return await GetEmbedResultAsync("https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString(Id)}", query, context);
+            return await GetEmbedResultAsync(arguments, "https://publish.twitter.com/oembed", $"https://twitter.com/username/status/{arguments.GetString(Id)}", query, context);
         }
     }
 }

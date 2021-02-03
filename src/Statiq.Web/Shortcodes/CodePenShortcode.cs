@@ -18,10 +18,16 @@ namespace Statiq.Web.Shortcodes
     /// &lt;?# CodePen edanny/pen/JXwgdK /?&gt;
     /// </code>
     /// </example>
-    /// <parameter>The path of the pen.</parameter>
+    /// <parameter name="Pen">The path of the pen.</parameter>
     public class CodePenShortcode : EmbedShortcode
     {
-        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context) =>
-            await GetEmbedResultAsync("https://codepen.io/api/oembed", $"https://codepen.io/{args.SingleValue()}", new[] { "format=json" }, context);
+        private const string Pen = nameof(Pen);
+
+        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
+        {
+            IMetadataDictionary arguments = args.ToDictionary(Pen);
+            arguments.RequireKeys(Pen);
+            return await GetEmbedResultAsync(arguments, "https://codepen.io/api/oembed", $"https://codepen.io/{arguments.GetString(Pen)}", context);
+        }
     }
 }

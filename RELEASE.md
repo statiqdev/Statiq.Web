@@ -1,6 +1,7 @@
 # 1.0.0-beta.20
 
 - Added an `ArchiveOrder` to archives which can be used to sort the archive by an arbitrary value using computed metadata (as opposed to `ArchiveOrderKey` which relies on the value in metadata).
+- Added support for maxwidth and maxheight to the embed (and derived) shortcode (#943).
 
 # 1.0.0-beta.19
 

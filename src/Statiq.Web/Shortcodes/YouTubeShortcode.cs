@@ -18,10 +18,16 @@ namespace Statiq.Web.Shortcodes
     /// &lt;?# YouTube u5ayTqlLWQQ /?&gt;
     /// </code>
     /// </example>
-    /// <parameter>The ID of the video.</parameter>
+    /// <parameter name="Id">The ID of the video.</parameter>
     public class YouTubeShortcode : EmbedShortcode
     {
-        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context) =>
-            await GetEmbedResultAsync("https://www.youtube.com/oembed", $"https://www.youtube.com/watch?v={args.SingleValue()}", context);
+        private const string Id = nameof(Id);
+
+        public override async Task<ShortcodeResult> ExecuteAsync(KeyValuePair<string, string>[] args, IDocument document, IExecutionContext context)
+        {
+            IMetadataDictionary arguments = args.ToDictionary(Id);
+            arguments.RequireKeys(Id);
+            return await GetEmbedResultAsync(arguments, "https://www.youtube.com/oembed", $"https://www.youtube.com/watch?v={arguments.GetString(Id)}", context);
+        }
     }
 }

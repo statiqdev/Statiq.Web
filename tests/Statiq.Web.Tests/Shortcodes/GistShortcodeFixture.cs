@@ -16,6 +16,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [Test]
             public void RendersGist()
             {
+                // Given
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument();
                 KeyValuePair<string, string>[] args = new KeyValuePair<string, string>[]
@@ -36,6 +37,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [Test]
             public void RendersGistWithoutUsername()
             {
+                // Given
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument();
                 KeyValuePair<string, string>[] args = new KeyValuePair<string, string>[]
@@ -55,6 +57,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [Test]
             public void RendersGistWithoutFile()
             {
+                // Given
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument();
                 KeyValuePair<string, string>[] args = new KeyValuePair<string, string>[]
