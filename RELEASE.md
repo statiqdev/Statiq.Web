@@ -1,7 +1,6 @@
 # 1.0.0-beta.21
 
-# 1.0.0-beta.20
-
+- Updated Statiq Framework to version [1.0.0-beta.35](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.35).
 - Added an `ArchiveOrder` to archives which can be used to sort the archive by an arbitrary value using computed metadata (as opposed to `ArchiveOrderKey` which relies on the value in metadata).
 - Added support for maxwidth and maxheight to the embed (and derived) shortcode (#943).
 
