@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <!-- The NuGet version of Statiq that should be referenced, or empty to use local references -->
-    <StatiqFrameworkVersion>1.0.0-beta.37</StatiqFrameworkVersion>
+    <StatiqFrameworkVersion>1.0.0-beta.38</StatiqFrameworkVersion>
     <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
   </PropertyGroup>
 
