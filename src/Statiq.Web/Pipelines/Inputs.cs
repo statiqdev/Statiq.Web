@@ -82,8 +82,11 @@ namespace Statiq.Web.Pipelines
                     new SetMetadata(WebKeys.Published, Config.FromDocument((doc, ctx) => doc.GetPublishedDate(ctx, ctx.GetBool(WebKeys.PublishedUsesLastModifiedDate)))),
 
                     // Enumerate metadata values (remove the enumerate key so following modules won't enumerate again)
-                    new EnumerateValues(),
-                    new SetMetadata(Keys.Enumerate, (string)null),
+                    new ExecuteIf(Config.FromDocument(doc => doc.ContainsKey(Keys.Enumerate)))
+                    {
+                        new EnumerateValues(),
+                        new SetMetadata(Keys.Enumerate, (string)null)
+                    },
 
                     // Evaluate scripts (but defer if the script is for an archive)
                     // Script return document should either have media type or content type set, or script metadata should have content type, otherwise script output will be treated as an asset
@@ -101,8 +104,11 @@ namespace Statiq.Web.Pipelines
                 },
 
                 // Enumerate values one more time in case data content or the script output some (remove the enumerate key so following modules won't enumerate again)
-                new EnumerateValues(),
-                new SetMetadata(Keys.Enumerate, (string)null),
+                new ExecuteIf(Config.FromDocument(doc => doc.ContainsKey(Keys.Enumerate)))
+                {
+                    new EnumerateValues(),
+                    new SetMetadata(Keys.Enumerate, (string)null)
+                },
 
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
