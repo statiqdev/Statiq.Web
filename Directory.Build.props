@@ -1,8 +1,8 @@
 <Project>
   
   <PropertyGroup>
-    <!-- The NuGet version of Statiq that should be referenced, or empty to use local references -->
-    <StatiqFrameworkVersion></StatiqFrameworkVersion>
+    <!-- The NuGet version of Statiq that should be referenced like "1.0.0-beta.38", or empty to use local references -->
+    <StatiqFrameworkVersion>1.0.0-beta.39</StatiqFrameworkVersion>
     <StatiqFrameworkRoot>..\..\..\Statiq.Framework</StatiqFrameworkRoot>
   </PropertyGroup>
 
