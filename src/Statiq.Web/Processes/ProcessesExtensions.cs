@@ -5,52 +5,10 @@ namespace Statiq.Web
 {
     public static class ProcessesExtensions
     {
-        /// <summary>
-        /// Adds a new process.
-        /// </summary>
-        /// <param name="processes">The processes collection.</param>
-        /// <param name="processTiming">When to start the process.</param>
-        /// <param name="waitForExit">
-        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
-        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
-        /// </param>
-        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
-        /// <returns>The process collection.</returns>
-        public static Processes AddProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            processes.AddProcess(null, processTiming, waitForExit, getProcessLauncher);
-
-        /// <summary>
-        /// Adds a new process that will be started when not in the preview command.
-        /// </summary>
-        /// <param name="processes">The processes collection.</param>
-        /// <param name="processTiming">When to start the process.</param>
-        /// <param name="waitForExit">
-        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
-        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
-        /// </param>
-        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
-        /// <returns>The process collection.</returns>
-        public static Processes AddNonPreviewProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            processes.AddProcess(false, processTiming, waitForExit, getProcessLauncher);
-
-        /// <summary>
-        /// Adds a new process that will be started when in the preview command.
-        /// </summary>
-        /// <param name="processes">The processes collection.</param>
-        /// <param name="processTiming">When to start the process.</param>
-        /// <param name="waitForExit">
-        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
-        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
-        /// </param>
-        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
-        /// <returns>The process collection.</returns>
-        public static Processes AddPreviewProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
-            processes.AddProcess(true, processTiming, waitForExit, getProcessLauncher);
-
         // Normal
 
         /// <summary>
-        /// Adds a new process that runs in the background.
+        /// Adds a new process.
         /// </summary>
         /// <param name="processes">The processes collection.</param>
         /// <param name="processTiming">When to start the process.</param>
@@ -61,7 +19,7 @@ namespace Statiq.Web
             processes.AddProcess(null, processTiming, false, _ => new ProcessLauncher(fileName, arguments));
 
         /// <summary>
-        /// Adds a new process that runs in the background and will be started when not in the preview command.
+        /// Adds a new process that will be started when not in the preview command.
         /// </summary>
         /// <param name="processes">The processes collection.</param>
         /// <param name="processTiming">When to start the process.</param>
@@ -72,7 +30,7 @@ namespace Statiq.Web
             processes.AddProcess(false, processTiming, false, _ => new ProcessLauncher(fileName, arguments));
 
         /// <summary>
-        /// Adds a new process that runs in the background and will be started when in the preview command.
+        /// Adds a new process that will be started when in the preview command.
         /// </summary>
         /// <param name="processes">The processes collection.</param>
         /// <param name="processTiming">When to start the process.</param>
@@ -169,5 +127,79 @@ namespace Statiq.Web
             {
                 IsBackground = true
             });
+
+        // Process Launcher
+
+        /// <summary>
+        /// Adds a new process.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddProcess(this Processes processes, ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(null, processTiming, false, getProcessLauncher);
+
+        /// <summary>
+        /// Adds a new process that will be started when not in the preview command.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddNonPreviewProcess(this Processes processes, ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(false, processTiming, false, getProcessLauncher);
+
+        /// <summary>
+        /// Adds a new process that will be started when in the preview command.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddPreviewProcess(this Processes processes, ProcessTiming processTiming, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(true, processTiming, false, getProcessLauncher);
+
+        /// <summary>
+        /// Adds a new process.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="waitForExit">
+        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
+        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
+        /// </param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(null, processTiming, waitForExit, getProcessLauncher);
+
+        /// <summary>
+        /// Adds a new process that will be started when not in the preview command.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="waitForExit">
+        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
+        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
+        /// </param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddNonPreviewProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(false, processTiming, waitForExit, getProcessLauncher);
+
+        /// <summary>
+        /// Adds a new process that will be started when in the preview command.
+        /// </summary>
+        /// <param name="processes">The processes collection.</param>
+        /// <param name="processTiming">When to start the process.</param>
+        /// <param name="waitForExit">
+        /// <c>true</c> to wait for this process to exit before the next process timing phase, <c>false</c> to allow it to continue running in the background.
+        /// This flag is only needed when <see cref="ProcessLauncher.IsBackground"/> is <c>true</c>, otherwise the process will block until it exits.
+        /// </param>
+        /// <param name="getProcessLauncher">A factory that returns a process launcher.</param>
+        /// <returns>The process collection.</returns>
+        public static Processes AddPreviewProcess(this Processes processes, ProcessTiming processTiming, bool waitForExit, Func<IExecutionState, ProcessLauncher> getProcessLauncher) =>
+            processes.AddProcess(true, processTiming, waitForExit, getProcessLauncher);
     }
 }
