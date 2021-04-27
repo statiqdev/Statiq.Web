@@ -1,8 +1,11 @@
 # 1.0.0-beta.27
 
+- Added additional extensions to the bootstrapper for creating processes with a `ProcessLauncher` factory.
+- Updated Statiq Framework to version [1.0.0-beta.41](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.41).
+
 # 1.0.0-beta.26
 
-- Updated Statiq Framework to version [1.0.0-beta.40](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.39).
+- Updated Statiq Framework to version [1.0.0-beta.40](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.40).
 
 # 1.0.0-beta.25
 
