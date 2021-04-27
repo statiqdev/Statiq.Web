@@ -1,3 +1,5 @@
+# 1.0.0-beta.28
+
 # 1.0.0-beta.27
 
 - Added additional extensions to the bootstrapper for creating processes with a `ProcessLauncher` factory.
