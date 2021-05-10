@@ -73,9 +73,19 @@ namespace Statiq.Web
         public const string InputPaths = nameof(InputPaths);
 
         /// <summary>
-        /// Output directory path specific as a setting.
+        /// Output directory path specified as a setting.
         /// </summary>
         public const string OutputPath = nameof(OutputPath);
+
+        /// <summary>
+        /// Temp directory path specified as a setting.
+        /// </summary>
+        public const string TempPath = nameof(TempPath);
+
+        /// <summary>
+        /// Cache directory path specified as a setting.
+        /// </summary>
+        public const string CachePath = nameof(CachePath);
 
         /// <summary>
         /// Excluded directory paths specified as a setting.

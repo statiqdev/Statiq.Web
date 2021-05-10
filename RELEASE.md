@@ -1,5 +1,8 @@
 # 1.0.0-beta.28
 
+- Added ability to set the temp and cache paths via `TempPath` and `CachePath` settings.
+- Updated Statiq Framework to version [1.0.0-beta.42](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.42).
+
 # 1.0.0-beta.27
 
 - Added additional extensions to the bootstrapper for creating processes with a `ProcessLauncher` factory.

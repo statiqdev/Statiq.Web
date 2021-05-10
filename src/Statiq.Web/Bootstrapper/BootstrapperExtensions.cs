@@ -32,6 +32,8 @@ namespace Statiq.Web
                 .AddInputPaths()
                 .AddExcludedPaths()
                 .SetOutputPath()
+                .SetTempPath()
+                .SetCachePath()
                 .AddThemePaths()
                 .AddDefaultWebSettings()
                 .AddWebAnalyzers()
@@ -87,6 +89,30 @@ namespace Statiq.Web
                     if (!path.IsNullOrEmpty)
                     {
                         engine.FileSystem.OutputPath = path;
+                    }
+                });
+
+        private static TBootstrapper SetTempPath<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    NormalizedPath path = engine.Settings.GetPath(WebKeys.TempPath);
+                    if (!path.IsNullOrEmpty)
+                    {
+                        engine.FileSystem.TempPath = path;
+                    }
+                });
+
+        private static TBootstrapper SetCachePath<TBootstrapper>(this TBootstrapper bootstrapper)
+            where TBootstrapper : IBootstrapper =>
+            bootstrapper
+                .ConfigureEngine(engine =>
+                {
+                    NormalizedPath path = engine.Settings.GetPath(WebKeys.CachePath);
+                    if (!path.IsNullOrEmpty)
+                    {
+                        engine.FileSystem.CachePath = path;
                     }
                 });
 
