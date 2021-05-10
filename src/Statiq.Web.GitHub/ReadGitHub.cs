@@ -34,6 +34,7 @@ namespace Statiq.Web.GitHub
         private const string Username = nameof(Username);
         private const string Password = nameof(Password);
         private const string Token = nameof(Token);
+        private const string Throttle = nameof(Throttle);
 
         /// <summary>
         /// Submits a request to the GitHub client.
@@ -56,22 +57,22 @@ namespace Statiq.Web.GitHub
         /// <param name="request">A function with the request to make.</param>
         public ReadGitHub(Func<IExecutionContext, GitHubClient, Task<object>> request)
             : base(
-                  new Dictionary<string, IConfig>
-                  {
-                      { Request, Config.FromContext(ctx => (Func<GitHubClient, Task<object>>)(gh => request(ctx, gh))) }
-                  },
-                  false)
+                new Dictionary<string, IConfig>
+                {
+                    { Request, Config.FromContext(ctx => (Func<GitHubClient, Task<object>>)(gh => request(ctx, gh))) }
+                },
+                false)
         {
             request.ThrowIfNull(nameof(request));
         }
 
         public ReadGitHub(Func<IDocument, IExecutionContext, GitHubClient, Task<object>> request)
             : base(
-                  new Dictionary<string, IConfig>
-                  {
-                      { Request, Config.FromDocument((doc, ctx) => (Func<GitHubClient, Task<object>>)(gh => request(doc, ctx, gh))) }
-                  },
-                  false)
+                new Dictionary<string, IConfig>
+                {
+                    { Request, Config.FromDocument((doc, ctx) => (Func<GitHubClient, Task<object>>)(gh => request(doc, ctx, gh))) }
+                },
+                false)
         {
             request.ThrowIfNull(nameof(request));
         }
@@ -103,6 +104,14 @@ namespace Statiq.Web.GitHub
         /// <returns>The current module instance.</returns>
         public ReadGitHub WithUrl(Config<string> url) => (ReadGitHub)SetConfig(Url, url);
 
+        /// <summary>
+        /// Specifies whether to use throttling with the GitHub client. If <c>true</c> (the default), client
+        /// requests will be retried automatically for abuse or rate limit exceptions.
+        /// </summary>
+        /// <param name="throttle"><c>true</c> to automatically throttle requests, <c>false</c> otherwise.</param>
+        /// <returns>The current module instance.</returns>
+        public ReadGitHub WithThrottling(Config<bool> throttle) => (ReadGitHub)SetConfig(Throttle, throttle);
+
         protected override async Task<IEnumerable<IDocument>> ExecuteConfigAsync(IDocument input, IExecutionContext context, IMetadata values)
         {
             // Create the client
@@ -121,7 +130,10 @@ namespace Statiq.Web.GitHub
 
             // Get the results
             Func<GitHubClient, Task<object>> request = values.Get<Func<GitHubClient, Task<object>>>(Request);
-            object result = await request(github);
+            bool throttle = values.GetBool(Throttle, true);
+            object result = throttle
+                ? await github.ThrottleAsync(async x => await request(x), context.CancellationToken)
+                : await request(github);
             return result is IEnumerable results
                 ? results.Cast<object>().ToDocuments()
                 : result.ToDocument().Yield();

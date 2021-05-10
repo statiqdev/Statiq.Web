@@ -1,5 +1,7 @@
 # 1.0.0-beta.28
 
+- Added `GitHubClientExtensions.ThrottleAsync()` extensions that can automatically deal with GitHub rate limit and abuse detection exceptions (#952).
+- Added automatic throttling to the `ReadGitHub` module and a `WithThrottle()` fluent configuration method to specify whether to use it.
 - Added ability to set the temp and cache paths via `TempPath` and `CachePath` settings.
 - Updated Statiq Framework to version [1.0.0-beta.42](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.42).
 
