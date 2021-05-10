@@ -37,3 +37,4 @@ TestResult.xml
 /_NCrunch_Statiq.Framework
 .vscode
 *.pfx
+cache/

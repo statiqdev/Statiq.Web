@@ -1,3 +1,5 @@
+# 1.0.0-beta.29
+
 # 1.0.0-beta.28
 
 - Added `GitHubClientExtensions.ThrottleAsync()` extensions that can automatically deal with GitHub rate limit and abuse detection exceptions (#952).
