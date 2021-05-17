@@ -1,5 +1,7 @@
 # 1.0.0-beta.29
 
+- Updated Statiq Framework to version [1.0.0-beta.43](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.43).
+
 # 1.0.0-beta.28
 
 - Added `GitHubClientExtensions.ThrottleAsync()` extensions that can automatically deal with GitHub rate limit and abuse detection exceptions (#952).
