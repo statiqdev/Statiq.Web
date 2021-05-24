@@ -20,4 +20,8 @@
     </Otherwise>
   </Choose>
   
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>Is_Windows</DefineConstants>
+  </PropertyGroup>
+  
 </Project>

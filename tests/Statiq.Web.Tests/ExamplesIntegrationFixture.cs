@@ -12,6 +12,7 @@ using Statiq.Testing;
 
 namespace Statiq.Web.Tests
 {
+#if Is_Windows
     [TestFixture]
     public class ExamplesIntegrationFixture
     {
@@ -32,4 +33,5 @@ namespace Statiq.Web.Tests
             processLauncher.StartNew(TestContext.Out, TestContext.Error);
         }
     }
+#endif
 }
