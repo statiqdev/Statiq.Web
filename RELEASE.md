@@ -1,5 +1,9 @@
 # 1.0.0-beta.30
 
+- Updated Statiq Framework to version [1.0.0-beta.44](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.44).
+  This Statiq Framework update includes some important breaking changes to Razor layouts and partials. If you have trouble
+  with layout and partial compilation after this update, please read the Statiq Framework release notes for help.
+
 # 1.0.0-beta.29
 
 - Updated Statiq Framework to version [1.0.0-beta.43](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.43).

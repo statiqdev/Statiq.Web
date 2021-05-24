@@ -27,7 +27,11 @@ namespace Statiq.Web.Build
                 x.FileSystem.InputPaths.Clear();
                 x.FileSystem.InputPaths.Add(x.FileSystem.RootPath);
             })
-            .ConfigureSettings(settings => settings.Add(BuildServer, settings.ContainsAnyKeys("GITHUB_ACTIONS", "TF_BUILD")))
+            .ConfigureSettings(settings =>
+            {
+                settings.Add(BuildServer, settings.ContainsAnyKeys("GITHUB_ACTIONS", "TF_BUILD"));
+                settings[Keys.CleanMode] = CleanMode.Full;
+            })
             .AddPipelines<Program>()
             .RunAsync();
 
