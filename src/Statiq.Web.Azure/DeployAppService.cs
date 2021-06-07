@@ -21,6 +21,8 @@ namespace Statiq.Web.Azure
         private const string Username = nameof(Username);
         private const string Password = nameof(Password);
         private const string ContentProvider = nameof(ContentProvider);
+        private const string AsyncDeployment = nameof(AsyncDeployment);
+        private const string Timeout = nameof(Timeout);
 
         /// <summary>
         /// Deploys the output folder to Azure App Service.
@@ -127,11 +129,36 @@ namespace Statiq.Web.Azure
                     { SiteName, siteName.ThrowIfNull(nameof(siteName)) },
                     { Username, username.ThrowIfNull(nameof(username)) },
                     { Password, password.ThrowIfNull(nameof(password)) },
-                    { ContentProvider, contentProvider.ThrowIfNull(nameof(contentProvider)) }
+                    { ContentProvider, contentProvider.ThrowIfNull(nameof(contentProvider)) },
+                    { AsyncDeployment, Config.FromValue(true) },
+                    { Timeout, Config.FromValue(TimeSpan.FromMinutes(30)) }
                 },
                 false)
         {
         }
+
+        /// <summary>
+        /// Sets the timeout for deployment (the default is 30 minutes).
+        /// </summary>
+        /// <param name="timeout">
+        /// The timeout for deployment. If a successful deployment is not
+        /// indicated after this time, an exception will be thrown.
+        /// </param>
+        /// <returns>The current module instance.</returns>
+        public DeployAppService WithTimeout(Config<TimeSpan> timeout) => (DeployAppService)SetConfig(Timeout, timeout);
+
+        /// <summary>
+        /// Configures Kudu to use asynchronous deployment (the default is <c>true</c>).
+        /// </summary>
+        /// <remarks>
+        /// See https://github.com/projectkudu/kudu/wiki/Deploying-from-a-zip-file-or-url#asynchronous-zip-deployment
+        /// for more information about Kudu and asychronous deployment. When using asynchronous deployment, the module
+        /// will poll for completion every 10 seconds until the <see cref="WithTimeout(Config{TimeSpan})"/>
+        /// is reached.
+        /// </remarks>
+        /// <param name="isAsync"><c>true</c> to use asynchronous deployment, <c>false</c> otherwise.</param>
+        /// <returns>The current module instance.</returns>
+        public DeployAppService WithAsyncDeployment(Config<bool> isAsync) => (DeployAppService)SetConfig(AsyncDeployment, isAsync);
 
         protected override async Task<IEnumerable<IDocument>> ExecuteConfigAsync(IDocument input, IExecutionContext context, IMetadata values)
         {
@@ -145,28 +172,86 @@ namespace Statiq.Web.Azure
             byte[] authParameterBytes = Encoding.ASCII.GetBytes(username + ":" + password);
             string authParameter = Convert.ToBase64String(authParameterBytes);
 
+            // Get other settings
             IContentProvider contentProvider = values.Get<IContentProvider>(ContentProvider) ?? throw new Exception("Invalid content provider");
+            bool asyncDeployment = values.GetBool(AsyncDeployment);
+            TimeSpan timeout = values.Get<TimeSpan>(Timeout);
 
             // Upload it via Kudu REST API
-            context.LogDebug($"Starting App Service deployment to {siteName}...");
+            context.LogDebug($"Starting {(asyncDeployment ? "asynchronous" : "synchronous")} App Service zip deployment to {siteName}...");
             try
             {
                 using (Stream zipStream = contentProvider.GetStream())
                 {
                     using (HttpClient client = context.CreateHttpClient())
                     {
-                        client.Timeout = TimeSpan.FromMinutes(10);  // Set a long timeout for App Service uploads
+                        client.Timeout = timeout;
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authParameter);
                         System.Net.Http.StreamContent zipContent = new System.Net.Http.StreamContent(zipStream);
-                        HttpResponseMessage response = await client.PostAsync($"https://{siteName}.scm.azurewebsites.net/api/zipdeploy", zipContent, context.CancellationToken);
-                        if (!response.IsSuccessStatusCode)
+                        if (asyncDeployment)
                         {
-                            string responseContent = await response.Content.ReadAsStringAsync();
-                            context.LogError($"App Service deployment error: {response.StatusCode} {responseContent}");
-                            response.EnsureSuccessStatusCode();
+                            // Async, see https://github.com/projectkudu/kudu/wiki/Deploying-from-a-zip-file-or-url#asynchronous-zip-deployment
+                            HttpResponseMessage response = await client.PostAsync($"https://{siteName}.scm.azurewebsites.net/api/zipdeploy?isAsync=true", zipContent, context.CancellationToken);
+
+                            // Ensure success
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                string responseContent = await response.Content.ReadAsStringAsync();
+                                context.LogError($"App Service deployment error to {siteName}: {response.StatusCode} {responseContent}");
+                                response.EnsureSuccessStatusCode();
+                            }
+
+                            // Poll for deployment success
+                            Uri pollingLocation = response.Headers.Location;
+                            context.LogDebug($"App Service zip upload success to {siteName}, polling {pollingLocation} for success");
+                            DateTime endTime = DateTime.Now.Add(timeout);
+                            int c = 0;
+                            while (true)
+                            {
+                                c++;
+
+                                // Check timeout
+                                if (DateTime.Now > endTime)
+                                {
+                                    throw new Exception($"Timeout expired waiting for App Service zip deployment success to {siteName} while polling {pollingLocation}");
+                                }
+
+                                // Request the polling response
+                                HttpResponseMessage pollingResponse = await client.GetAsync(pollingLocation);
+                                context.LogDebug($"App Service zip deployment to {siteName}, polling attempt {c}: {pollingResponse.StatusCode}");
+
+                                // Ensure success
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    string responseContent = await response.Content.ReadAsStringAsync();
+                                    context.LogError($"App Service deployment error to {siteName}: {response.StatusCode} {responseContent}");
+                                    response.EnsureSuccessStatusCode();
+                                }
+
+                                // Check for completion
+                                if (pollingResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                                {
+                                    context.LogDebug($"App Service deployment success to {siteName}");
+                                    break;
+                                }
+
+                                // Wait to try again
+                                await Task.Delay(TimeSpan.FromSeconds(10));
+                            }
                         }
                         else
                         {
+                            // Synchronous
+                            HttpResponseMessage response = await client.PostAsync($"https://{siteName}.scm.azurewebsites.net/api/zipdeploy", zipContent, context.CancellationToken);
+
+                            // Ensure success
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                string responseContent = await response.Content.ReadAsStringAsync();
+                                context.LogError($"App Service deployment error to {siteName}: {response.StatusCode} {responseContent}");
+                                response.EnsureSuccessStatusCode();
+                            }
+
                             context.LogDebug($"App Service deployment success to {siteName}");
                         }
                     }
