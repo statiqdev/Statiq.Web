@@ -34,6 +34,7 @@
         <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
         <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
         <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Handlebars\Statiq.Handlebars.csproj" />
+        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Lunr\Statiq.Lunr.csproj" />
       </ItemGroup>      
     </When>
     <Otherwise>
@@ -48,6 +49,7 @@
         <PackageReference Include="Statiq.Minification" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Feeds" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Handlebars" Version="$(StatiqFrameworkVersion)" />
+        <PackageReference Include="Statiq.Lunr" Version="$(StatiqFrameworkVersion)" />
       </ItemGroup>      
     </Otherwise>
   </Choose>

@@ -1,5 +1,7 @@
 # 1.0.0-beta.32
 
+- Added support for generating a client-side Lunr search index by setting `GenerateSearchIndex`.
+
 # 1.0.0-beta.31
 
 - Updated Statiq Framework to version [1.0.0-beta.46](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.46).

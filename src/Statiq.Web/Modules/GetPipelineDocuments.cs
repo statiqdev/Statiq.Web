@@ -6,6 +6,13 @@ using Statiq.Web.Pipelines;
 
 namespace Statiq.Web.Modules
 {
+    /// <summary>
+    /// Gets documents from the <see cref="Pipelines.Inputs"/> pipeline for use in following processing
+    /// pipelines like <see cref="Pipelines.Content"/> and <see cref="Pipelines.Data"/>. Note that the
+    /// documents returned from this module can be filtered by content type or a custom filter, and
+    /// are generally unprocessed beyond common processing like front matter. That includes setting
+    /// <see cref="IDocument.Destination"/> which is still set to the original input path and extension.
+    /// </summary>
     public class GetPipelineDocuments : ForAllDocuments
     {
         public GetPipelineDocuments(ContentType contentTypeFilter, params IModule[] dependencyModules)

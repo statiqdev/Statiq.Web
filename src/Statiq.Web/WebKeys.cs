@@ -50,6 +50,31 @@ namespace Statiq.Web
         /// </summary>
         public const string IncludeInSitemap = nameof(IncludeInSitemap);
 
+        /// <summary>
+        /// Indicates that a client-side Lunr search index file should be generated if <c>true</c> (the default is <c>false</c>).
+        /// </summary>
+        public const string GenerateSearchIndex = nameof(GenerateSearchIndex);
+
+        /// <summary>
+        /// The destination path of the client-side Lunr search index file ("searchindex.js" by default).
+        /// </summary>
+        public const string SearchIndexDestinationPath = nameof(SearchIndexDestinationPath);
+
+        /// <summary>
+        /// If set to <c>true</c>, stemming is enabled for the client-side Lunr search index.
+        /// </summary>
+        public const string SearchIndexEnableStemming = nameof(SearchIndexEnableStemming);
+
+        /// <summary>
+        /// A file to use that contains a set of stopwords for the client-side Lunr search index.
+        /// </summary>
+        public const string SearchIndexStopwordsPath = nameof(SearchIndexStopwordsPath);
+
+        /// <summary>
+        /// If set to <c>true</c>, the <see cref="Keys.Host"/> will be included in the client-side Lunr search index links.
+        /// </summary>
+        public const string SearchIndexIncludeHost = nameof(SearchIndexIncludeHost);
+
         public const string MirrorResources = nameof(MirrorResources);
 
         /// <summary>
