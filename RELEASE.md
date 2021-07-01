@@ -1,6 +1,6 @@
 # 1.0.0-beta.32
 
-- Added support for generating a client-side Lunr search index by setting `GenerateSearchIndex`.
+- Added support for generating a client-side Lunr search index by setting `GenerateSearchIndex` (along with many other controllable settings).
 
 # 1.0.0-beta.31
 

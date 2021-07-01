@@ -56,24 +56,45 @@ namespace Statiq.Web
         public const string GenerateSearchIndex = nameof(GenerateSearchIndex);
 
         /// <summary>
-        /// The destination path of the client-side Lunr search index file ("searchindex.js" by default).
+        /// The destination path of the client-side Lunr search file ("search.js" by default).
         /// </summary>
-        public const string SearchIndexDestinationPath = nameof(SearchIndexDestinationPath);
+        public const string SearchScriptPath = nameof(SearchScriptPath);
 
         /// <summary>
-        /// If set to <c>true</c>, stemming is enabled for the client-side Lunr search index.
+        /// Indicates whether the search index file should be gzipped (the default is <c>true</c>).
+        /// If this is <c>true</c>, the JavaScript library pako must be included on the client to decompress the file.
         /// </summary>
-        public const string SearchIndexEnableStemming = nameof(SearchIndexEnableStemming);
+        public const string ZipSearchIndexFile = nameof(ZipSearchIndexFile);
 
         /// <summary>
-        /// A file to use that contains a set of stopwords for the client-side Lunr search index.
+        /// Indicates whether the search results file should be gzipped (the default is <c>true</c>).
+        /// If this is <c>true</c>, the JavaScript library pako must be included on the client to decompress the file.
         /// </summary>
-        public const string SearchIndexStopwordsPath = nameof(SearchIndexStopwordsPath);
+        public const string ZipSearchResultsFile = nameof(ZipSearchResultsFile);
 
         /// <summary>
         /// If set to <c>true</c>, the <see cref="Keys.Host"/> will be included in the client-side Lunr search index links.
         /// </summary>
-        public const string SearchIndexIncludeHost = nameof(SearchIndexIncludeHost);
+        public const string SearchIncludeHost = nameof(SearchIncludeHost);
+
+        /// <summary>
+        /// The metadata fields that will be searchable in addition to the default fields of "title", "content", and "tags".
+        /// </summary>
+        public const string AdditionalSearchableFields = nameof(AdditionalSearchableFields);
+
+        /// <summary>
+        /// The metadata fields that will be available in search results in addition to the default fields of "link" and "title".
+        /// </summary>
+        public const string AdditionalSearchResultFields = nameof(AdditionalSearchResultFields);
+
+        /// <summary>
+        /// Adds the "position" metadata to the metadata allowlist in the search index, which
+        /// enables position information for each search term in the search results at the expense of index size.
+        /// </summary>
+        /// <remarks>
+        /// See https://lunrjs.com/guides/core_concepts.html for more information.
+        /// </remarks>
+        public const string SearchAllowPositionMetadata = nameof(SearchAllowPositionMetadata);
 
         public const string MirrorResources = nameof(MirrorResources);
 
