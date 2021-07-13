@@ -127,6 +127,7 @@ namespace Statiq.Web.Build
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithArgument("-ApiKey", Config.FromSetting("STATIQ_NUGET_API_KEY"), true)
                         .WithArgument("-Source", "https://api.nuget.org/v3/index.json", true)
+                        .WithArgument("-SkipDuplicate")
                         .WithParallelExecution(false)
                         .LogOutput(),
                     new ExecuteConfig(Config.FromContext(async ctx =>
