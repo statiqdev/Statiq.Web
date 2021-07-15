@@ -1,5 +1,7 @@
 # 1.0.0-beta.33
 
+- Added `SearchStopWords` and `SearchStopWordsFilePath` settings to control stop words used in search.
+
 # 1.0.0-beta.32
 
 - Updated Statiq Framework to version [1.0.0-beta.46](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.47).

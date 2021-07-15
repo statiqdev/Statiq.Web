@@ -96,6 +96,21 @@ namespace Statiq.Web
         /// </remarks>
         public const string SearchAllowPositionMetadata = nameof(SearchAllowPositionMetadata);
 
+        /// <summary>
+        /// Specifies stops words to use for the search index. By default a pre-defined set of English stop words are used
+        /// </summary>
+        public const string SearchStopWords = nameof(SearchStopWords);
+
+        /// <summary>
+        /// Specifies an input file that contains stop words to use. The file should contain
+        /// one stop word per line.
+        /// </summary>
+        /// <remarks>
+        /// If both this setting and <see cref="SearchStopWords"/> are specified, the defined
+        /// stop words will be used and the file specified will be ignored.
+        /// </remarks>
+        public const string SearchStopWordsFilePath = nameof(SearchStopWordsFilePath);
+
         public const string MirrorResources = nameof(MirrorResources);
 
         /// <summary>

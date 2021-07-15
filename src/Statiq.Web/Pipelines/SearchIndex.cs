@@ -44,7 +44,8 @@ namespace Statiq.Web.Pipelines
                             }
                         }
 
-                        return new GenerateLunrIndex()
+                        // Create the module
+                        GenerateLunrIndex generateLunrIndex = new GenerateLunrIndex()
                             .WithIndexPath(ctx.GetPath(WebKeys.SearchScriptPath))
                             .ZipIndexFile(ctx.GetBool(WebKeys.ZipSearchIndexFile, true))
                             .ZipResultsFile(ctx.GetBool(WebKeys.ZipSearchResultsFile, true))
@@ -52,6 +53,20 @@ namespace Statiq.Web.Pipelines
                             .AllowPositionMetadata(ctx.GetBool(WebKeys.SearchAllowPositionMetadata))
                             .WithoutAnyFields()
                             .WithFields(additionalFields);
+
+                        // Set manual stop words
+                        IReadOnlyList<string> stopWords = ctx.GetList<string>(WebKeys.SearchStopWords);
+                        NormalizedPath stopWordsFilePath = ctx.GetPath(WebKeys.SearchStopWordsFilePath);
+                        if (stopWords is object)
+                        {
+                            generateLunrIndex.WithStopWords(Config.FromValue((IEnumerable<string>)stopWords));
+                        }
+                        else if (!stopWordsFilePath.IsNullOrEmpty)
+                        {
+                            generateLunrIndex.WithStopWordsFromFile(stopWordsFilePath);
+                        }
+
+                        return generateLunrIndex;
                     }))
                 }
             };
