@@ -1,10 +1,12 @@
 # 1.0.0-beta.33
 
+- Updated Statiq Framework to version [1.0.0-beta.48](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.48).
 - Added `SearchStopWords` and `SearchStopWordsFilePath` settings to control stop words used in search.
+- Added a `SearchStemming` setting to turn on the default English stemming in search.
 
 # 1.0.0-beta.32
 
-- Updated Statiq Framework to version [1.0.0-beta.46](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.47).
+- Updated Statiq Framework to version [1.0.0-beta.47](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.47).
 - Added support for generating a client-side Lunr search index by setting `GenerateSearchIndex` (along with many other controllable settings for search indexing).
 
 # 1.0.0-beta.31

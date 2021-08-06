@@ -52,7 +52,8 @@ namespace Statiq.Web.Pipelines
                             .IncludeHostInLinks(ctx.GetBool(WebKeys.SearchIncludeHost))
                             .AllowPositionMetadata(ctx.GetBool(WebKeys.SearchAllowPositionMetadata))
                             .WithoutAnyFields()
-                            .WithFields(additionalFields);
+                            .WithFields(additionalFields)
+                            .WithStemming(ctx.GetBool(WebKeys.SearchStemming));
 
                         // Set manual stop words
                         IReadOnlyList<string> stopWords = ctx.GetList<string>(WebKeys.SearchStopWords);

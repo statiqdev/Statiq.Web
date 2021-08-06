@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Statiq.Common;
+using Statiq.Lunr;
 
 namespace Statiq.Web
 {
@@ -110,6 +111,15 @@ namespace Statiq.Web
         /// stop words will be used and the file specified will be ignored.
         /// </remarks>
         public const string SearchStopWordsFilePath = nameof(SearchStopWordsFilePath);
+
+        /// <summary>
+        /// Turns on stemming for client-side search. By default an English stemmer is used
+        /// (you must define your own <see cref="GenerateLunrIndex"/> module to specify alternate
+        /// stemming behavior). Turning on stemming also results in the generated client search
+        /// JavaScript file no longer supporting typeahead searches by default since stemming and
+        /// wildcard searching don't work well together.
+        /// </summary>
+        public const string SearchStemming = nameof(SearchStemming);
 
         public const string MirrorResources = nameof(MirrorResources);
 
