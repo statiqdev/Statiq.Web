@@ -279,7 +279,7 @@ namespace Statiq.Web
         public const string ClearDataContent = nameof(ClearDataContent);
 
         /// <summary>
-        /// Indicates the layout file that should be used for this document.
+        /// Indicates the layout file that should be used for this document (used by the Razor template engine).
         /// </summary>
         public const string Layout = nameof(Layout);
 

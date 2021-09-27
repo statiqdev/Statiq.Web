@@ -10,7 +10,7 @@
   <Choose>
     <When Condition=" '$(StatiqFrameworkVersion)' == ''">
       <ItemGroup>
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
       </ItemGroup>
     </When>
     <Otherwise>
@@ -19,5 +19,5 @@
       </ItemGroup>
     </Otherwise>
   </Choose>
-  
+
 </Project>

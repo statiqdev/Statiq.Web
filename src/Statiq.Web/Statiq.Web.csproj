@@ -5,7 +5,7 @@
     <Description>Statiq Web is a flexible static site generator.</Description>
     <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="Statiq.Web.props" Pack="true" PackagePath="build\$(TargetFramework)\" />
     <None Include="Statiq.Web.props" Pack="true" PackagePath="buildTransitive\$(TargetFramework)\" />
@@ -20,22 +20,22 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" '$(StatiqFrameworkVersion)' == ''">  
+    <When Condition=" '$(StatiqFrameworkVersion)' == ''">
       <ItemGroup>
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.App\Statiq.App.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Common\Statiq.Common.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Core\Statiq.Core.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Html\Statiq.Html.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Less\Statiq.Less.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Yaml\Statiq.Yaml.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Handlebars\Statiq.Handlebars.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\extensions\Statiq.Lunr\Statiq.Lunr.csproj" />
-      </ItemGroup>      
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Html\Statiq.Html.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Less\Statiq.Less.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Yaml\Statiq.Yaml.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework)\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Handlebars\Statiq.Handlebars.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Lunr\Statiq.Lunr.csproj" />
+      </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
@@ -50,7 +50,7 @@
         <PackageReference Include="Statiq.Feeds" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Handlebars" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Lunr" Version="$(StatiqFrameworkVersion)" />
-      </ItemGroup>      
+      </ItemGroup>
     </Otherwise>
   </Choose>
 
