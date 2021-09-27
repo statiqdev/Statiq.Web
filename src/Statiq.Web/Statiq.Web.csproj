@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" '$(StatiqFrameworkVersion)' == ''">
+    <When Condition=" '$(StatiqFrameworkVersion)' == 'local'">
       <ItemGroup>
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
@@ -31,7 +31,7 @@
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Less\Statiq.Less.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Yaml\Statiq.Yaml.csproj" />
-        <ProjectReference Include="..\..\..\Statiq.Framework)\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Minification\Statiq.Minification.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Feeds\Statiq.Feeds.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Handlebars\Statiq.Handlebars.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Lunr\Statiq.Lunr.csproj" />

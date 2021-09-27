@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" '$(StatiqFrameworkVersion)' == ''">
+    <When Condition=" '$(StatiqFrameworkVersion)' == 'local'">
       <ItemGroup>
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
       </ItemGroup>
