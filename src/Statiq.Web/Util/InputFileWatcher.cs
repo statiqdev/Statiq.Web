@@ -18,8 +18,10 @@ namespace Statiq.Web
 
         private static readonly DateTime _zeroFileTime = DateTime.FromFileTime(0);
 
-        private readonly BlockingCollection<string> _changedFiles = new BlockingCollection<string>(new ConcurrentQueue<string>());
-        private readonly ConcurrentCache<string, DateTime> _fileLastWriteTimes = new ConcurrentCache<string, DateTime>();
+        private readonly BlockingCollection<string> _changedFiles =
+            new BlockingCollection<string>(new ConcurrentQueue<string>());
+        private readonly ConcurrentCache<string, DateTime> _fileLastWriteTimes =
+            new ConcurrentCache<string, DateTime>(false);
         private readonly List<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
         private readonly string _outputPath;
         private readonly Func<IEnumerable<string>, Task> _callback;

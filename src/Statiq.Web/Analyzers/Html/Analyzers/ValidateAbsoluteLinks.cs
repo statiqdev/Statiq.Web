@@ -16,7 +16,8 @@ namespace Statiq.Web
     {
         private const HttpStatusCode TooManyRequests = (HttpStatusCode)429;
 
-        private readonly ConcurrentCache<string, Task<string>> _resultCache = new ConcurrentCache<string, Task<string>>();
+        private readonly ConcurrentCache<string, Task<string>> _resultCache =
+            new ConcurrentCache<string, Task<string>>(true);
 
         /// <summary>
         /// Validating absolute links is expensive, so this should be disabled by default.
@@ -24,12 +25,6 @@ namespace Statiq.Web
         public override LogLevel LogLevel { get; set; } = LogLevel.None;
 
         private int _count;
-
-        public override Task BeforeEngineExecutionAsync(IEngine engine, Guid executionId)
-        {
-            _resultCache.Clear();
-            return Task.CompletedTask;
-        }
 
         public override async Task AnalyzeAsync(IAnalyzerContext context)
         {
@@ -53,47 +48,50 @@ namespace Statiq.Web
         // Internal for testing
         private async Task<bool> ValidateLinkAsync((string, IEnumerable<IElement>) linkAndElements, Common.IDocument document, IAnalyzerContext context)
         {
-            string result = await _resultCache.GetOrAdd(linkAndElements.Item1, async link =>
-            {
-                if (link.StartsWith("//"))
+            string result = await _resultCache.GetOrAdd(
+                linkAndElements.Item1,
+                async (link, ctx) =>
                 {
-                    // Double-slash link means use http:// or https:// depending on current protocol
-                    // Try as http first, then https
-                    if (!Uri.TryCreate($"http:{link}", UriKind.Absolute, out Uri absoluteUri))
+                    if (link.StartsWith("//"))
                     {
-                        return "Invalid protocol-relative URI";
+                        // Double-slash link means use http:// or https:// depending on current protocol
+                        // Try as http first, then https
+                        if (!Uri.TryCreate($"http:{link}", UriKind.Absolute, out Uri absoluteUri))
+                        {
+                            return "Invalid protocol-relative URI";
+                        }
+                        if (await ValidateLinkAsync(absoluteUri, ctx) != HttpStatusCode.OK)
+                        {
+                            UriBuilder uriBuilder = new UriBuilder(absoluteUri);
+                            bool hadDefaultPort = uriBuilder.Uri.IsDefaultPort;
+                            uriBuilder.Scheme = Uri.UriSchemeHttps;
+                            uriBuilder.Port = hadDefaultPort ? -1 : uriBuilder.Port;
+                            HttpStatusCode statusCode = await ValidateLinkAsync(uriBuilder.Uri, ctx);
+                            if (statusCode != HttpStatusCode.OK)
+                            {
+                                return $"Could not validate protocol-relative URI - {(int)statusCode} {statusCode}";
+                            }
+                        }
+                        return null;
                     }
-                    if (await ValidateLinkAsync(absoluteUri, context) != HttpStatusCode.OK)
+
+                    // Only validate http and https schemes
+                    Uri uri = new Uri(link, UriKind.Absolute);
+                    if (uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                     {
-                        UriBuilder uriBuilder = new UriBuilder(absoluteUri);
-                        bool hadDefaultPort = uriBuilder.Uri.IsDefaultPort;
-                        uriBuilder.Scheme = Uri.UriSchemeHttps;
-                        uriBuilder.Port = hadDefaultPort ? -1 : uriBuilder.Port;
-                        HttpStatusCode statusCode = await ValidateLinkAsync(uriBuilder.Uri, context);
+                        HttpStatusCode statusCode = await ValidateLinkAsync(uri, ctx);
                         if (statusCode != HttpStatusCode.OK)
                         {
-                            return $"Could not validate protocol-relative URI - {(int)statusCode} {statusCode}";
+                            return $"Could not validate absolute URI - {(int)statusCode} {statusCode}";
                         }
                     }
-                    return null;
-                }
-
-                // Only validate http and https schemes
-                Uri uri = new Uri(link, UriKind.Absolute);
-                if (uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
-                {
-                    HttpStatusCode statusCode = await ValidateLinkAsync(uri, context);
-                    if (statusCode != HttpStatusCode.OK)
+                    else
                     {
-                        return $"Could not validate absolute URI - {(int)statusCode} {statusCode}";
+                        ctx.Logger.LogDebug($"Skipping validation for absolute link {link}: unsupported scheme {uri.Scheme}.");
                     }
-                }
-                else
-                {
-                    context.Logger.LogDebug($"Skipping validation for absolute link {link}: unsupported scheme {uri.Scheme}.");
-                }
-                return null;
-            });
+                    return null;
+                },
+                context);
             if (result is object)
             {
                 AddAnalyzerResult(result, linkAndElements.Item2, document, context);

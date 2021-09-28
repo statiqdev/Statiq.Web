@@ -11,7 +11,8 @@ namespace Statiq.Web
     public abstract class MarkdownAnalyzer : Analyzer
     {
         // Cache generated MarkdownDocument instances
-        private readonly ConcurrentCache<IContentProvider, Task<MarkdownDocument>> _markdownDocumentCache = new ConcurrentCache<IContentProvider, Task<MarkdownDocument>>();
+        private readonly ConcurrentCache<IContentProvider, Task<MarkdownDocument>> _markdownDocumentCache =
+            new ConcurrentCache<IContentProvider, Task<MarkdownDocument>>(true);
 
         // The metadata key where a MarkdownDocument can be found (as set by the RenderMarkdown module)
         private readonly string _markdownDocumentKey;
@@ -27,13 +28,7 @@ namespace Statiq.Web
             PipelinePhases.Add(nameof(AnalyzeContent), Phase.Process);
         }
 
-        public override Task BeforeEngineExecutionAsync(IEngine engine, Guid executionId)
-        {
-            _markdownDocumentCache.Clear();
-            return Task.CompletedTask;
-        }
-
-        protected override sealed async Task AnalyzeDocumentAsync(IDocument document, IAnalyzerContext context)
+        protected sealed override async Task AnalyzeDocumentAsync(IDocument document, IAnalyzerContext context)
         {
             // Getting the Markdown content is a little tricky, that's why we have to rely on the metadata that the RenderMarkdown module saves
             // Otherwise the document contains rendered HTML by now and there's no way to view the original Markdown
@@ -44,7 +39,8 @@ namespace Statiq.Web
                 // Create (or get) a MarkdownDocument and cache it
                 markdownDocument = await _markdownDocumentCache.GetOrAdd(
                     document.ContentProvider,
-                    async _ => MarkdownHelper.RenderMarkdown(document, await document.GetContentStringAsync(), new StringWriter()));
+                    async (_, doc) => MarkdownHelper.RenderMarkdown(doc, await doc.GetContentStringAsync(), new StringWriter()),
+                    document);
             }
 
             if (markdownDocument is object)

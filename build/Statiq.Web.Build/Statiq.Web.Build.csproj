@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <Choose>
-    <When Condition=" '$(StatiqFrameworkVersion)' == ''">
+    <When Condition=" '$(StatiqFrameworkVersion)' == 'local'">
       <ItemGroup>
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.App\Statiq.App.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Common\Statiq.Common.csproj" />
-        <ProjectReference Include="$(StatiqFrameworkRoot)\src\core\Statiq.Core\Statiq.Core.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+        <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
       </ItemGroup>
     </When>
     <Otherwise>
@@ -23,5 +23,5 @@
   <ItemGroup>
     <PackageReference Include="Octokit" Version="0.46.0" />
   </ItemGroup>
-  
+
 </Project>
