@@ -45,6 +45,11 @@ namespace Statiq.Web.Build
                 {
                     new ReadFiles(ProjectPattern),
                     new StartProcess("dotnet")
+                        .WithArgument("restore")
+                        .WithArgument("--no-cache")
+                        .WithParallelExecution(false)
+                        .LogOutput(),
+                    new StartProcess("dotnet")
                         .WithArgument("build")
                         .WithArgument(Config.FromContext(context =>
                             context.GetBool(BuildServer) || context.ExecutingPipelines.ContainsKey(nameof(Publish))
