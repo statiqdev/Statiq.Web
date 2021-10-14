@@ -39,8 +39,8 @@ namespace Statiq.Web
                 // Create (or get) a MarkdownDocument and cache it
                 markdownDocument = await _markdownDocumentCache.GetOrAdd(
                     document.ContentProvider,
-                    async (_, doc) => MarkdownHelper.RenderMarkdown(doc, await doc.GetContentStringAsync(), new StringWriter()),
-                    document);
+                    async (_, args) => MarkdownHelper.RenderMarkdown(args.context, args.document, await args.document.GetContentStringAsync(), new StringWriter()),
+                    (context, document));
             }
 
             if (markdownDocument is object)

@@ -51,7 +51,7 @@ namespace Statiq.Web.Shortcodes
             arguments.RequireKeys(Path);
 
             string path = arguments.GetString(Path);
-            if (LinkGenerator.TryGetAbsoluteHttpUri(path, out string absoluteUri))
+            if (context.LinkGenerator.TryGetAbsoluteHttpUri(path, out string absoluteUri))
             {
                 return absoluteUri;
             }
@@ -75,8 +75,8 @@ namespace Statiq.Web.Shortcodes
                 : (context.Settings.GetBool(Keys.LinkHideIndexPages) ? new[] { indexFileName } : null);
 
             // If "HideExtensions" is provided and true use default hide extensions, otherwise use default hide extensions if LinkHideExtensions is true
-            IReadOnlyList<string> pageFileExtensions = context.Settings.GetPageFileExtensions();
-            IReadOnlyList<string> hideExtensions = arguments.ContainsKey(HideExtensions)
+            string[] pageFileExtensions = context.Settings.GetPageFileExtensions();
+            string[] hideExtensions = arguments.ContainsKey(HideExtensions)
                 ? (arguments.GetBool(HideExtensions) ? pageFileExtensions : null)
                 : (context.Settings.GetBool(Keys.LinkHideExtensions) ? pageFileExtensions : null);
 
@@ -85,7 +85,7 @@ namespace Statiq.Web.Shortcodes
                 ? arguments.GetBool(Lowercase)
                 : context.Settings.GetBool(Keys.LinkLowercase);
 
-            return LinkGenerator.GetLink(filePath, host, root, scheme, hidePages, hideExtensions, lowercase);
+            return context.LinkGenerator.GetLink(filePath, host, root, scheme, hidePages, hideExtensions, lowercase);
         }
     }
 }
