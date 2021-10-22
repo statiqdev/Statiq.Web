@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
@@ -11,7 +12,11 @@ namespace Statiq.Web.Pipelines
     {
         public Inputs(Templates templates)
         {
-            string[] templateAndScriptMediaTypes = templates.Keys.Concat(MediaTypes.CSharp).ToArray();
+            // These are the media types that will have front matter processed,
+            // generally the templates, scripts (.cs, .csx), and the special .statiq extension
+            string[] mediaTypesToProcess = templates.Keys
+                .Concat(new[] { MediaTypes.CSharp, MediaTypes.Statiq })
+                .ToArray();
 
             Dependencies.Add(nameof(DirectoryMetadata));
 
@@ -19,7 +24,10 @@ namespace Statiq.Web.Pipelines
             {
                 // Read files in one place so that the documents have a unified ID and we can apply metadata once
                 // Also add headless CMS support or other input sources here (probably at the end of ProcessModules as a concat if they come over with metadata)
-                new ReadFiles(Config.FromSetting<IEnumerable<string>>(WebKeys.InputFiles))
+                // Always read *.statiq files no matter what (even if previous patterns would have excluded them)
+                new ReadFiles(Config.FromSettings(settings => settings
+                    .GetList(WebKeys.InputFiles, Array.Empty<string>())
+                    .Concat("*.statiq")))
             };
 
             ProcessModules = new ModuleList
@@ -62,8 +70,14 @@ namespace Statiq.Web.Pipelines
                 },
 
                 // Process front matter for media types where we have an existing template (and scripts)
-                new ExecuteIf(Config.FromDocument(doc => templateAndScriptMediaTypes.Any(x => doc.MediaTypeEquals(x))))
+                new ExecuteIf(Config.FromDocument(doc => mediaTypesToProcess.Any(x => doc.MediaTypeEquals(x))))
                 {
+                    // Remove the file extension if this was a .statiq file
+                    new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.Statiq)))
+                    {
+                        new SetDestination(Config.FromDocument(doc => doc.Source.GetRelativeInputPath().ChangeExtension(null))),
+                    },
+
                     // Apply front matter
                     new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.CSharp)))
                     {
