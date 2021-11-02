@@ -26,7 +26,7 @@ namespace Statiq.Web.Pipelines
                     {
                         new FilterDocuments(
                             Config.FromDocument(WebKeys.ShouldOutput, true).CombineWith(
-                            Config.FromDocument(WebKeys.IncludeInSitemap, true)))
+                            Config.FromDocument(WebKeys.IncludeInSitemap, false)))
                     },
                     new ConcatDocuments(nameof(Archives))
                     {
