@@ -63,6 +63,29 @@ FeedRss: true"
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 result.Outputs[nameof(Web.Pipelines.Feeds)][Phase.Process].ShouldBeEmpty();
             }
+
+            [Test]
+            public async Task ToggleFeedWithPath()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/foo.md", "Hi!" },
+                    {
+                        "/input/feed.yml",
+                        "FeedRss: rss/custom-feed.xml"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Web.Pipelines.Feeds)][Phase.Process].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("rss/custom-feed.xml");
+            }
         }
     }
 }

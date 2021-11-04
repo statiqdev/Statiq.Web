@@ -61,9 +61,9 @@ namespace Statiq.Web.Pipelines
                         // Generate the feed(s)
                         GenerateFeeds generateFeeds = new GenerateFeeds()
                             .MaximumItems(feedDoc.GetInt(WebKeys.FeedSize))
-                            .WithRssPath(feedDoc.GetBool(WebKeys.FeedRss, false) ? feedDoc.Destination.ChangeExtension("rss") : null)
-                            .WithAtomPath(feedDoc.GetBool(WebKeys.FeedAtom, false) ? feedDoc.Destination.ChangeExtension("atom") : null)
-                            .WithRdfPath(feedDoc.GetBool(WebKeys.FeedRdf, false) ? feedDoc.Destination.ChangeExtension("rdf") : null)
+                            .WithRssPath(TryGetFeedPath(feedDoc, WebKeys.FeedRss, "rss", out NormalizedPath feedPath) ? feedPath : null)
+                            .WithAtomPath(TryGetFeedPath(feedDoc, WebKeys.FeedAtom, "atom", out feedPath) ? feedPath : null)
+                            .WithRdfPath(TryGetFeedPath(feedDoc, WebKeys.FeedRdf, "rdf", out feedPath) ? feedPath : null)
                             .WithFeedId(feedDoc.GetString(WebKeys.FeedId))
                             .WithFeedTitle(feedDoc.GetString(WebKeys.FeedTitle))
                             .WithFeedDescription(feedDoc.GetString(WebKeys.FeedDescription))
@@ -139,5 +139,19 @@ namespace Statiq.Web.Pipelines
 
         public static bool IsFeed(IDocument document) =>
             document.ContainsKey(WebKeys.FeedRss) || document.ContainsKey(WebKeys.FeedAtom) || document.ContainsKey(WebKeys.FeedRdf);
+
+        private static bool TryGetFeedPath(IDocument feedDoc, string key, string defaultExtension, out NormalizedPath path)
+        {
+            if (feedDoc.ContainsKey(key))
+            {
+                path = feedDoc.Destination.ChangeExtension(defaultExtension);
+                if ((feedDoc.TryGetValue(key, out bool includeFeedType) && includeFeedType) || feedDoc.TryGetValue(key, out path))
+                {
+                    return true;
+                }
+            }
+            path = default;
+            return false;
+        }
     }
 }
