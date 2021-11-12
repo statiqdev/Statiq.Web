@@ -34,3 +34,5 @@ jobs:
 
       - name: Build and Test
         run: dotnet run --project "build/Statiq.Web.Build/Statiq.Web.Build.csproj" -- test
+        env:
+          StatiqFrameworkVersion: local

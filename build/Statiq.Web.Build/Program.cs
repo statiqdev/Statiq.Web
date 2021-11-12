@@ -55,9 +55,6 @@ namespace Statiq.Web.Build
                             context.GetBool(BuildServer) || context.ExecutingPipelines.ContainsKey(nameof(Publish))
                                 ? "-p:ContinuousIntegrationBuild=\"true\"" // Perform a deterministic build if on the CI server or publishing
                                 : null))
-                        .WithArgument(Config.FromContext(context => context.GetBool(BuildServer)
-                            ? "-p:StatiqFrameworkVersion=\"local\"" // Use a local version of Statiq.Framework when building on CI
-                            : null))
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithParallelExecution(false)
                         .LogOutput()
@@ -76,9 +73,6 @@ namespace Statiq.Web.Build
                     new ReadFiles("tests/**/*.csproj"),
                     new StartProcess("dotnet")
                         .WithArgument("test")
-                        .WithArgument(Config.FromContext(context => context.GetBool(BuildServer)
-                            ? "-p:StatiqFrameworkVersion=\"local\"" // Use a local version of Statiq.Framework when building on CI
-                            : null))
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithParallelExecution(false)
                         .LogOutput()
