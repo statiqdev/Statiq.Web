@@ -55,6 +55,9 @@ namespace Statiq.Web.Build
                             context.GetBool(BuildServer) || context.ExecutingPipelines.ContainsKey(nameof(Publish))
                                 ? "-p:ContinuousIntegrationBuild=\"true\"" // Perform a deterministic build if on the CI server or publishing
                                 : null))
+                        .WithArgument(Config.FromContext(context => context.GetBool(BuildServer)
+                            ? "-p:StatiqFrameworkVersion=\"local\"" // Use a local update version of Statiq.Framework when building on CI
+                            : null))
                         .WithArgument(Config.FromDocument(doc => doc.Source.FullPath), true)
                         .WithParallelExecution(false)
                         .LogOutput()
