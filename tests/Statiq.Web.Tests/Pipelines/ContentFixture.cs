@@ -6,7 +6,6 @@ using Shouldly;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
 using Statiq.Testing;
 using Statiq.Web.Pipelines;
 
@@ -37,7 +36,7 @@ namespace Statiq.Web.Tests.Pipelines
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
                 document
-                    .GetDocumentList(HtmlKeys.Headings)
+                    .GetDocumentList(Keys.Headings)
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
                     .ShouldBe(new[] { "1.1", "1.2" }, true);
@@ -66,7 +65,7 @@ namespace Statiq.Web.Tests.Pipelines
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
                 document
-                    .GetDocumentList(HtmlKeys.Headings)
+                    .GetDocumentList(Keys.Headings)
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
                     .ShouldBe(new[] { "1.1", "1.2", "2.1", "2.2", "2.3" }, true);
@@ -96,7 +95,7 @@ namespace Statiq.Web.Tests.Pipelines
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
                 document
-                    .GetDocumentList(HtmlKeys.Headings)
+                    .GetDocumentList(Keys.Headings)
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
                     .ShouldBe(new[] { "1.1", "1.2", "2.1", "2.2", "2.3" }, true);

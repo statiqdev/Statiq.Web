@@ -14,7 +14,7 @@ ArchiveKey: Colors
     {
         <h5>@Html.DocumentLink(document)</h5>
         <p><b>Colors:</b> @string.Join(", ", document.GetList<string>("Colors"))</p>
-        @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+        @Html.Raw(document.GetString(Keys.Excerpt))
     }
 }
 else

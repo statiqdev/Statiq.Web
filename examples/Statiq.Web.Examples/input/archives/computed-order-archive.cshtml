@@ -13,5 +13,5 @@ ArchiveOrderDescending: false
 {
     <h5>@Html.DocumentLink(document)</h5>
     <p><b>Post Date:</b> @document.GetString("PostDate")</p>
-    @Html.Raw(document.GetString(Statiq.Html.HtmlKeys.Excerpt))
+    @Html.Raw(document.GetString(Keys.Excerpt))
 }

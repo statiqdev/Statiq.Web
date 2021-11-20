@@ -25,7 +25,6 @@
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.App\Statiq.App.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Core\Statiq.Core.csproj" />
-        <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Html\Statiq.Html.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Markdown\Statiq.Markdown.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Razor\Statiq.Razor.csproj" />
         <ProjectReference Include="..\..\..\Statiq.Framework\src\extensions\Statiq.Sass\Statiq.Sass.csproj" />
@@ -40,7 +39,6 @@
     <Otherwise>
       <ItemGroup>
         <PackageReference Include="Statiq.App" Version="$(StatiqFrameworkVersion)" />
-        <PackageReference Include="Statiq.Html" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Markdown" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Razor" Version="$(StatiqFrameworkVersion)" />
         <PackageReference Include="Statiq.Sass" Version="$(StatiqFrameworkVersion)" />

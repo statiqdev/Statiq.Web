@@ -8,7 +8,6 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;
-using Statiq.Html;
 
 namespace Statiq.Web.Modules
 {
@@ -43,7 +42,7 @@ namespace Statiq.Web.Modules
             IExecutionContext context,
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
-            IHtmlDocument htmlDocument = await HtmlHelper.ParseHtmlAsync(input, false);
+            IHtmlDocument htmlDocument = await input.ParseHtmlAsync(false);
             if (htmlDocument is object)
             {
                 // Find and replace "xref:" in links
@@ -94,15 +93,7 @@ namespace Statiq.Web.Modules
                 // Return a new document with the replacements if we performed any
                 if (modifiedDocument)
                 {
-                    using (Stream contentStream = context.GetContentStream())
-                    {
-                        using (StreamWriter writer = contentStream.GetWriter())
-                        {
-                            htmlDocument.ToHtml(writer, ProcessingInstructionFormatter.Instance);
-                            writer.Flush();
-                            return input.Clone(context.GetContentProvider(contentStream, MediaTypes.Html));
-                        }
-                    }
+                    return input.Clone(context.GetContentProvider(htmlDocument));
                 }
             }
 

@@ -1,6 +1,5 @@
 ﻿using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
 using Statiq.Web.Modules;
 
 namespace Statiq.Web.Pipelines

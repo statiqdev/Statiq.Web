@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using Statiq.Common;
-using Statiq.Html;
 using Statiq.Web.Pipelines;
 
 namespace Statiq.Web
@@ -18,7 +17,7 @@ namespace Statiq.Web
             IHtmlDocument htmlDocument = null;
             if (document.MediaTypeEquals(MediaTypes.Html))
             {
-                htmlDocument = await HtmlHelper.ParseHtmlAsync(document, false);
+                htmlDocument = await document.ParseHtmlAsync(false);
             }
 
             if (htmlDocument is object)
