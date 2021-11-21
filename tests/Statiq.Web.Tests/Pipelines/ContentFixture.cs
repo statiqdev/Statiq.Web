@@ -569,6 +569,86 @@ return $""# {foo}\nContent"";"
 ",
                     StringCompareShould.IgnoreLineEndings);
             }
+
+            [Test]
+            public async Task ShouldNotHighlightCodeByDefault()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.html",
+                        @"<pre><code>int foo = 1;</code></pre>"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.html");
+                document.GetContentStringAsync().Result.ShouldBe(
+                    "<pre><code>int foo = 1;</code></pre>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task ShouldHighlightCode()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.HighlightCode, true);
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.html",
+                        @"<pre><code>int foo = 1;</code></pre>"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.html");
+                document.GetContentStringAsync().Result.ShouldBe(
+                    "<html><head></head><body><pre><code class=\"language-ebnf hljs\"><span class=\"hljs-attribute\">int foo</span> = 1;</code></pre></body></html>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task ShouldNotHighlightCodeForUnspecifiedLanguage()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.HighlightCode, true)
+                    .AddSetting(WebKeys.HighlightUnspecifiedLanguage, false);
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.html",
+                        @"<pre><code>int foo = 1;</code></pre>"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.html");
+                document.GetContentStringAsync().Result.ShouldBe(
+                    "<pre><code>int foo = 1;</code></pre>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
         }
 
         public const string GatherHeadingsFile = @"

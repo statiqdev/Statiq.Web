@@ -189,6 +189,21 @@ namespace Statiq.Web
         /// </summary>
         public const string MinimumStatiqWebVersion = nameof(MinimumStatiqWebVersion);
 
+        /// <summary>
+        /// Indicates that generation-time code highlighting should be performed using the
+        /// highlight.js library (the highlight.js CSS files still need to be included in
+        /// the site).
+        /// </summary>
+        public const string HighlightCode = nameof(HighlightCode);
+
+        /// <summary>
+        /// Indicates that unspecified languages should be code highlighted. Highlighting
+        /// unspecified languages is much more tim consuming, so turning this off may improve
+        /// generation times if a large number of unspecified code blocks are present.
+        /// No effect if <see cref="HighlightCode"/> is <c>false</c>. The default is <c>true</c>.
+        /// </summary>
+        public const string HighlightUnspecifiedLanguage = nameof(HighlightUnspecifiedLanguage);
+
         ////////// Document
 
         /// <summary>

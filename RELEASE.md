@@ -1,7 +1,9 @@
 # 1.0.0-beta.35
 
-- Sets `IncludeInSitemap` to 'false' for data documents (#969, thanks @Turnerj).
-- Allows specifying alternate feed paths for `FeedRss`, `FeedAtom`, and `FeedRdf` (#970, #960, thanks @Turnerj).
+- Updated Statiq Framework to version [1.0.0-beta.50](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.50).
+- Set `IncludeInSitemap` to 'false' for data documents (#969, thanks @Turnerj).
+- Added support for specifying alternate feed paths for `FeedRss`, `FeedAtom`, and `FeedRdf` (#970, #960, thanks @Turnerj).
+- Added support for generation-time code highlighting by setting `HighlightCode` to `true` (#971). 
 
 # 1.0.0-beta.34
 

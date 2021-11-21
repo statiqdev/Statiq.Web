@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
+using Statiq.Highlight;
 
 namespace Statiq.Web.Modules
 {
@@ -36,6 +37,13 @@ namespace Statiq.Web.Modules
                     new ExecuteIf(Config.FromSetting<bool>(WebKeys.MakeLinksRootRelative))
                     {
                         new MakeLinksRootRelative()
+                    },
+                    new ExecuteIf(Config.FromSetting<bool>(WebKeys.HighlightCode))
+                    {
+                        new ExecuteConfig(Config.FromContext(ctx =>
+                            new HighlightCode()
+                                .WithAutoHighlightUnspecifiedLanguage(
+                                    ctx.GetBool(WebKeys.HighlightUnspecifiedLanguage, true))))
                     }
                 })
                 .ToArray())
