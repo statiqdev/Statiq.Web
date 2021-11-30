@@ -55,13 +55,12 @@ namespace Statiq.Web.Shortcodes
             {
                 return absoluteUri;
             }
-            NormalizedPath filePath = new NormalizedPath(path);
 
             // Use "Host" if it's provided, otherwise use Host setting if "IncludeHost" is true
             string host = arguments.GetString(Host, arguments.GetBool(IncludeHost) ? context.Settings.GetString(Keys.Host) : null);
 
             // Use "Root" if it's provided, otherwise LinkRoot setting
-            NormalizedPath root = arguments.GetPath(Root, context.Settings.GetPath(Keys.LinkRoot));
+            string root = arguments.GetString(Root, context.Settings.GetString(Keys.LinkRoot));
 
             // Use "Scheme" if it's provided, otherwise if "UseHttps" is true use "https" or use LinksUseHttps setting
             string scheme = arguments.GetString(Scheme, arguments.ContainsKey(UseHttps)
@@ -85,7 +84,7 @@ namespace Statiq.Web.Shortcodes
                 ? arguments.GetBool(Lowercase)
                 : context.Settings.GetBool(Keys.LinkLowercase);
 
-            return context.LinkGenerator.GetLink(filePath, host, root, scheme, hidePages, hideExtensions, lowercase);
+            return context.LinkGenerator.GetLink(path, host, root, scheme, hidePages, hideExtensions, lowercase);
         }
     }
 }

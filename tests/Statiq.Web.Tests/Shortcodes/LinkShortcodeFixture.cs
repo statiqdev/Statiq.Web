@@ -17,7 +17,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [TestCase("https://foo.com/bar", "https://foo.com/bar")]
             [TestCase("foo/bar", "/foo/bar")]
             [TestCase("/foo/bar", "/foo/bar")]
-            [TestCase("//foo/bar", "/foo/bar")]
+            [TestCase("//foo/bar", "//foo/bar")]
             public void RendersLink(string path, string expected)
             {
                 // Given
@@ -40,7 +40,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [TestCase("https://foo.com/bar", "https://foo.com/bar")]
             [TestCase("foo/bar", "http://domain.com/foo/bar")]
             [TestCase("/foo/bar", "http://domain.com/foo/bar")]
-            [TestCase("//foo/bar", "http://domain.com/foo/bar")]
+            [TestCase("//foo/bar", "http://domain.com//foo/bar")]
             public void RendersLinkWithHost(string path, string expected)
             {
                 // Given
@@ -65,7 +65,7 @@ namespace Statiq.Web.Tests.Shortcodes
             [TestCase("https://foo.com/bar", "https://foo.com/bar")]
             [TestCase("foo/bar", "http://google.com/foo/bar")]
             [TestCase("/foo/bar", "http://google.com/foo/bar")]
-            [TestCase("//foo/bar", "http://google.com/foo/bar")]
+            [TestCase("//foo/bar", "http://google.com//foo/bar")]
             public void RendersLinkWithAlternateHost(string path, string expected)
             {
                 // Given
