@@ -4,7 +4,7 @@ using Statiq.Common;
 namespace Statiq.Web.Shortcodes
 {
     /// <summary>
-    /// Renders a link from the given path, using default settings or specifying overrides as appropriate.
+    /// Renders a link for the given path, using default settings or specifying overrides as appropriate.
     /// </summary>
     /// <example>
     /// <code>
@@ -23,6 +23,16 @@ namespace Statiq.Web.Shortcodes
     /// <parameter name="HideIndexPages">If set to <c>true</c>, index files will be hidden.</parameter>
     /// <parameter name="HideExtensions">If set to <c>true</c>, extensions will be hidden.</parameter>
     /// <parameter name="Lowercase">If set to <c>true</c>, links will be rendered in all lowercase.</parameter>
+    /// <parameter name="makeAbsolute">
+    /// If Path is relative, setting this to <c>true</c> (the default) will assume the path relative from the root of the site
+    /// and make it absolute by prepending a slash and Root to the path. Otherwise, <c>false</c> will leave relative paths as relative
+    /// and won't prepend a slash (but Host, Scheme, and Root will have no effect).
+    /// If Path is absolute, this value has no effect and Host, Scheme, and Root will be applied as appropriate.
+    /// </parameter>
+    /// <parameter name="hiddenPageTrailingSlash">
+    /// Indicates that a trailing slash should be appended when hiding a page due to HideIndexPages.
+    /// Setting to <c>false</c> means that hiding a page will result in the parent path without a trailing slash.
+    /// </parameter>
     public class LinkShortcode : SyncShortcode
     {
         private const string Path = nameof(Path);
@@ -34,6 +44,8 @@ namespace Statiq.Web.Shortcodes
         private const string HideIndexPages = nameof(HideIndexPages);
         private const string HideExtensions = nameof(HideExtensions);
         private const string Lowercase = nameof(Lowercase);
+        private const string MakeAbsolute = nameof(MakeAbsolute);
+        private const string HiddenPageTrailingSlash = nameof(HiddenPageTrailingSlash);
 
         /// <inheritdoc />
         public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document, IExecutionContext context)
@@ -47,7 +59,9 @@ namespace Statiq.Web.Shortcodes
                 UseHttps,
                 HideIndexPages,
                 HideExtensions,
-                Lowercase);
+                Lowercase,
+                MakeAbsolute,
+                HiddenPageTrailingSlash);
             arguments.RequireKeys(Path);
 
             string path = arguments.GetString(Path);
@@ -84,7 +98,23 @@ namespace Statiq.Web.Shortcodes
                 ? arguments.GetBool(Lowercase)
                 : context.Settings.GetBool(Keys.LinkLowercase);
 
-            return context.LinkGenerator.GetLink(path, host, root, scheme, hidePages, hideExtensions, lowercase);
+            bool makeAbsolute = arguments.GetBool(MakeAbsolute, true);
+
+            // If "HiddenPageTrailingSlash" is provided use that, otherwise use LinkLowercase setting
+            bool hiddenPageTrailingSlash = arguments.ContainsKey(HiddenPageTrailingSlash)
+                ? arguments.GetBool(HiddenPageTrailingSlash)
+                : context.Settings.GetBool(Keys.LinkHiddenPageTrailingSlash);
+
+            return context.LinkGenerator.GetLink(
+                path,
+                host,
+                root,
+                scheme,
+                hidePages,
+                hideExtensions,
+                lowercase,
+                makeAbsolute,
+                hiddenPageTrailingSlash);
         }
     }
 }

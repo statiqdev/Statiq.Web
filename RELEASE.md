@@ -1,5 +1,8 @@
 # 1.0.0-beta.37
 
+- Updated Statiq Framework to version [1.0.0-beta.52](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.52).
+- Added arguments for making links absolute and for adding a trailing slash when hiding index pages to the `LinkGeneratorShortcode`.
+
 # 1.0.0-beta.36
 
 - Updated Statiq Framework to version [1.0.0-beta.51](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.51).

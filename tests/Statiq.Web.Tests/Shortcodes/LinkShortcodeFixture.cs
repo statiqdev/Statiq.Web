@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
@@ -81,6 +82,59 @@ namespace Statiq.Web.Tests.Shortcodes
 
                 // When
                 ShortcodeResult result = shortcode.Execute(args, string.Empty, document, context);
+
+                // Then
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
+            }
+
+            [TestCase("index.html", "/index.html", null)]
+            [TestCase("index.html", "/index.html", "true")]
+            [TestCase("index.html", "index.html", "false")]
+            public void ShouldRenderAbsoluteLink(string path, string expected, string makeAbsolute)
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Settings[Keys.Host] = "domain.com";
+                TestDocument document = new TestDocument();
+                Dictionary<string, string> args = new Dictionary<string, string>
+                {
+                    { "Path", path }
+                };
+                if (makeAbsolute is object)
+                {
+                    args.Add("MakeAbsolute", makeAbsolute);
+                }
+                LinkShortcode shortcode = new LinkShortcode();
+
+                // When
+                ShortcodeResult result = shortcode.Execute(args.ToArray(), string.Empty, document, context);
+
+                // Then
+                result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
+            }
+
+            [TestCase("/a/b/index.html", "/a/b", null)]
+            [TestCase("/a/b/index.html", "/a/b", "false")]
+            [TestCase("/a/b/index.html", "/a/b/", "true")]
+            public void ShouldPreserveTrailingSlashForHiddenPages(string path, string expected, string hiddenPageTrailingSlash)
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Settings[Keys.Host] = "domain.com";
+                TestDocument document = new TestDocument();
+                Dictionary<string, string> args = new Dictionary<string, string>
+                {
+                    { "Path", path },
+                    { "HideIndexPages", "true" }
+                };
+                if (hiddenPageTrailingSlash is object)
+                {
+                    args.Add("HiddenPageTrailingSlash", hiddenPageTrailingSlash);
+                }
+                LinkShortcode shortcode = new LinkShortcode();
+
+                // When
+                ShortcodeResult result = shortcode.Execute(args.ToArray(), string.Empty, document, context);
 
                 // Then
                 result.ContentProvider.GetStream().ReadToEnd().ShouldBe(expected);
