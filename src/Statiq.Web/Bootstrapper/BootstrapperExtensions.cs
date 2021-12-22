@@ -21,11 +21,11 @@ namespace Statiq.Web
         /// for example because you created the bootstrapper without certain default functionality
         /// by calling <see cref="Statiq.App.BootstrapperFactoryExtensions.CreateDefaultWithout(BootstrapperFactory, string[], DefaultFeatures)"/>.
         /// </remarks>
-        /// <param name="boostrapper">The bootstrapper to add Statiq Web functionality to.</param>
+        /// <param name="bootstrapper">The bootstrapper to add Statiq Web functionality to.</param>
         /// <returns>The bootstrapper.</returns>
-        public static TBootstrapper AddWeb<TBootstrapper>(this TBootstrapper boostrapper)
+        public static TBootstrapper AddWeb<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
-            boostrapper
+            bootstrapper
                 .AddPipelines(typeof(BootstrapperFactoryExtensions).Assembly)
                 .AddHostingCommands()
                 .AddWebServices()
@@ -51,15 +51,15 @@ namespace Statiq.Web
         private static TBootstrapper AddInputPaths<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings) =>
                 {
-                    IReadOnlyList<NormalizedPath> paths = engine.Settings.GetList<NormalizedPath>(WebKeys.InputPaths);
+                    IReadOnlyList<NormalizedPath> paths = settings.GetList<NormalizedPath>(WebKeys.InputPaths);
                     if (paths?.Count > 0)
                     {
-                        engine.FileSystem.InputPaths.Clear();
+                        fileSystem.InputPaths.Clear();
                         foreach (NormalizedPath path in paths)
                         {
-                            engine.FileSystem.InputPaths.Add(path);
+                            fileSystem.InputPaths.Add(path);
                         }
                     }
                 });
@@ -67,15 +67,15 @@ namespace Statiq.Web
         private static TBootstrapper AddExcludedPaths<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings) =>
                 {
-                    IReadOnlyList<NormalizedPath> paths = engine.Settings.GetList<NormalizedPath>(WebKeys.ExcludedPaths);
+                    IReadOnlyList<NormalizedPath> paths = settings.GetList<NormalizedPath>(WebKeys.ExcludedPaths);
                     if (paths?.Count > 0)
                     {
-                        engine.FileSystem.ExcludedPaths.Clear();
+                        fileSystem.ExcludedPaths.Clear();
                         foreach (NormalizedPath path in paths)
                         {
-                            engine.FileSystem.ExcludedPaths.Add(path);
+                            fileSystem.ExcludedPaths.Add(path);
                         }
                     }
                 });
@@ -83,48 +83,50 @@ namespace Statiq.Web
         private static TBootstrapper SetOutputPath<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings) =>
                 {
-                    NormalizedPath path = engine.Settings.GetPath(WebKeys.OutputPath);
+                    NormalizedPath path = settings.GetPath(WebKeys.OutputPath);
                     if (!path.IsNullOrEmpty)
                     {
-                        engine.FileSystem.OutputPath = path;
+                        fileSystem.OutputPath = path;
                     }
                 });
 
         private static TBootstrapper SetTempPath<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings) =>
                 {
-                    NormalizedPath path = engine.Settings.GetPath(WebKeys.TempPath);
+                    NormalizedPath path = settings.GetPath(WebKeys.TempPath);
                     if (!path.IsNullOrEmpty)
                     {
-                        engine.FileSystem.TempPath = path;
+                        fileSystem.TempPath = path;
                     }
                 });
 
         private static TBootstrapper SetCachePath<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings) =>
                 {
-                    NormalizedPath path = engine.Settings.GetPath(WebKeys.CachePath);
+                    NormalizedPath path = settings.GetPath(WebKeys.CachePath);
                     if (!path.IsNullOrEmpty)
                     {
-                        engine.FileSystem.CachePath = path;
+                        fileSystem.CachePath = path;
                     }
                 });
 
         private static TBootstrapper AddThemePaths<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
-                .ConfigureEngine(engine =>
+                .ConfigureFileSystem((fileSystem, settings, serviceCollection) =>
                 {
-                    ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
+                    // Create a temporary service provider to get the theme manager
+                    IServiceProvider services = serviceCollection.BuildServiceProvider();
+                    ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
 
                     // Add theme paths from settings
-                    IReadOnlyList<NormalizedPath> settingsThemePaths = engine.Settings.GetList<NormalizedPath>(WebKeys.ThemePaths);
+                    IReadOnlyList<NormalizedPath> settingsThemePaths = settings.GetList<NormalizedPath>(WebKeys.ThemePaths);
                     if (settingsThemePaths?.Count > 0)
                     {
                         themeManager.ThemePaths.Clear();
@@ -138,9 +140,41 @@ namespace Statiq.Web
                     foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
                     {
                         // Inserting at 0 preserves the original order since we're iterating in reverse
-                        engine.FileSystem.InputPaths.Insert(0, themePath.Combine("input"));
+                        fileSystem.InputPaths.Insert(0, themePath.Combine("input"));
+                    }
+                })
+                .ConfigureSettings((settings, serviceCollection, fileSystem) =>
+                {
+                    // Build any csproj files in the theme directory
+                    // This needs to be done here because it's after the file system is configured so the root path is set,
+                    // but it's before the engine is created so we can still manipulate the services and settings
 
-                        // Build a configuration for each of the theme paths
+                    // Create a temporary service provider to get the theme manager
+                    IServiceProvider services = serviceCollection.BuildServiceProvider();
+                    ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
+
+                    // Iterate in reverse order so we start with the highest priority
+                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
+                    {
+                        // Get and build any csproj files in the theme directory
+                        IDirectory themeDirectory = fileSystem.GetRootDirectory(themePath);
+                        if (themeDirectory.Exists)
+                        {
+                            // TODO: compile csproj files, add them to the class collection, and execute any ITheme classes (which can manipulate the services and settings)
+                            // Make sure to note in the ITheme description that settings from theme .yaml or .json files are not added yet
+                            // Consider how to implement adding pipelines, etc. - an IThemeBootstrapper? Make extensions for addpipeline on IServiceCollection?
+                        }
+                    }
+                })
+                .ConfigureEngine(engine =>
+                {
+                    ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
+
+                    // Iterate in reverse order so we start with the highest priority
+                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
+                    {
+                        // Build a configuration for each of the theme paths and manually merge the
+                        // values into the engine settings since it's already created
                         IDirectory themeDirectory = engine.FileSystem.GetRootDirectory(themePath);
                         if (themeDirectory.Exists)
                         {
@@ -153,6 +187,7 @@ namespace Statiq.Web
                             foreach (KeyValuePair<string, string> config in configuration.AsEnumerable())
                             {
                                 // Since we're iterating highest priority first, the first key will set and lower priority will be ignored
+                                // I.e. if the setting already exists, the theme setting will be ignored
                                 if (!engine.Settings.ContainsKey(config.Key))
                                 {
                                     engine.Settings[config.Key] = config.Value;

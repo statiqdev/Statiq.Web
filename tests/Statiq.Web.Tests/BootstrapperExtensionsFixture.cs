@@ -24,7 +24,7 @@ namespace Statiq.Web.Tests
                 Bootstrapper bootstrapper = Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
-                    .AddSetting(
+                    .AddInitialSetting(
                         WebKeys.ThemePaths,
                         new NormalizedPath[]
                         {

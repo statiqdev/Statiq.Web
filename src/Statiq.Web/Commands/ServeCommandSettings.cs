@@ -6,9 +6,9 @@ namespace Statiq.Web.Commands
 {
     public class ServeCommandSettings : BaseCommandSettings
     {
-        [CommandArgument(0, "[root]")]
-        [Description("The root folder to serve (the output directory by default).")]
-        public string RootPath { get; set; }
+        [CommandArgument(0, "[serve]")]
+        [Description("The folder to serve (the output directory by default).")]
+        public string ServePath { get; set; }
 
         [CommandOption("--port <PORT>")]
         [Description("Start the preview web server on the specified port (default is 5080).")]

@@ -25,11 +25,13 @@ namespace Statiq.Web.Commands
             IConfiguratorCollection configurators,
             Settings settings,
             IServiceCollection serviceCollection,
+            IFileSystem fileSystem,
             Bootstrapper bootstrapper)
             : base(
                   configurators,
                   settings,
                   serviceCollection,
+                  fileSystem,
                   bootstrapper)
         {
         }
@@ -43,18 +45,16 @@ namespace Statiq.Web.Commands
             ILogger logger = engineManager.Engine.Services.GetRequiredService<ILogger<Bootstrapper>>();
 
             // Set folders
-            IFileSystem fileSystem = engineManager.Engine.FileSystem;
             NormalizedPath currentDirectory = Environment.CurrentDirectory;
             IDirectory serveDirectory;
-            if (string.IsNullOrEmpty(commandSettings.RootPath))
+            if (string.IsNullOrEmpty(commandSettings.ServePath))
             {
-                fileSystem.RootPath = currentDirectory;
-                serveDirectory = fileSystem.GetOutputDirectory();
+                serveDirectory = FileSystem.GetOutputDirectory();
             }
             else
             {
-                fileSystem.RootPath = currentDirectory.Combine(commandSettings.RootPath);
-                serveDirectory = fileSystem.GetRootDirectory();
+                FileSystem.RootPath = currentDirectory.Combine(commandSettings.ServePath);
+                serveDirectory = FileSystem.GetRootDirectory();
             }
 
             Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0

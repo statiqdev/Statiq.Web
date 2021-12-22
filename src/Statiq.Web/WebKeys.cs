@@ -136,31 +136,61 @@ namespace Statiq.Web
         /// <summary>
         /// Theme paths specified as settings.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperThemeExtensions"/> to change theme paths.
+        /// </remarks>
         public const string ThemePaths = nameof(ThemePaths);
 
         /// <summary>
         /// Input directory paths specified as settings.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperFileSystemExtensions"/> to change file system paths.
+        /// </remarks>
         public const string InputPaths = nameof(InputPaths);
 
         /// <summary>
         /// Output directory path specified as a setting.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperFileSystemExtensions"/> to change file system paths.
+        /// </remarks>
         public const string OutputPath = nameof(OutputPath);
 
         /// <summary>
         /// Temp directory path specified as a setting.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperFileSystemExtensions"/> to change file system paths.
+        /// </remarks>
         public const string TempPath = nameof(TempPath);
 
         /// <summary>
         /// Cache directory path specified as a setting.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperFileSystemExtensions"/> to change file system paths.
+        /// </remarks>
         public const string CachePath = nameof(CachePath);
 
         /// <summary>
         /// Excluded directory paths specified as a setting.
         /// </summary>
+        /// <remarks>
+        /// Note that paths are processed before the normal extensions in <see cref="BootstrapperSettingsExtensions"/>
+        /// so you must use the <c>Initial...()</c> settings extensions, a setting file, or the extensions in
+        /// <see cref="BootstrapperFileSystemExtensions"/> to change file system paths.
+        /// </remarks>
         public const string ExcludedPaths = nameof(ExcludedPaths);
 
         /// <summary>

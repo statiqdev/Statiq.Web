@@ -29,11 +29,13 @@ namespace Statiq.Web.Commands
             IConfiguratorCollection configurators,
             Settings settings,
             IServiceCollection serviceCollection,
+            IFileSystem fileSystem,
             Bootstrapper bootstrapper)
             : base(
                   configurators,
                   settings,
                   serviceCollection,
+                  fileSystem,
                   bootstrapper)
         {
             // Add a lazy ResetCache value - we need to add it here and make it lazy since

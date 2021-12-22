@@ -20,12 +20,12 @@ namespace Statiq.Web.Build
         public static async Task<int> Main(string[] args) => await Bootstrapper
             .Factory
             .CreateDefault(args)
-            .ConfigureEngine(x =>
+            .ConfigureFileSystem(x =>
             {
-                x.FileSystem.RootPath = new NormalizedPath(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.Parent.Parent;
-                x.FileSystem.OutputPath = x.FileSystem.RootPath / ArtifactsFolder;
-                x.FileSystem.InputPaths.Clear();
-                x.FileSystem.InputPaths.Add(x.FileSystem.RootPath);
+                x.RootPath = new NormalizedPath(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.Parent.Parent;
+                x.OutputPath = x.RootPath / ArtifactsFolder;
+                x.InputPaths.Clear();
+                x.InputPaths.Add(x.RootPath);
             })
             .ConfigureSettings(settings =>
             {
