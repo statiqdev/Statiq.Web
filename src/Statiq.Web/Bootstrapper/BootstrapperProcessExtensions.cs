@@ -15,12 +15,7 @@ namespace Statiq.Web
         public static TBootstrapper ConfigureProcesses<TBootstrapper>(this TBootstrapper bootstrapper, Action<Processes> action)
             where TBootstrapper : IBootstrapper =>
             bootstrapper.ConfigureServices(services =>
-                action(services
-
-                    // We need to build an intermediate service provider to get access to the singleton (which is okay
-                    // since it was registered as a singleton instance, not constructed by the service provider)
-                    .BuildServiceProvider()
-                    .GetRequiredService<Processes>()));
+                action(services.GetRequiredImplementationInstance<Processes>()));
 
         // Normal
 

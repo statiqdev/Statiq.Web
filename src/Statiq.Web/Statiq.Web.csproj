@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.5" />
+    <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.6" />
     <PackageReference Include="Microsoft.Build" Version="16.10.0">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>

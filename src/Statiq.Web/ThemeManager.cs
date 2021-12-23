@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Buildalyzer;
+using Buildalyzer.Environment;
 using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
@@ -19,6 +20,8 @@ namespace Statiq.Web
 {
     public class ThemeManager
     {
+        private static readonly EmitOptions AssemblyEmitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
+
         private readonly List<Assembly> _compiledProjects = new List<Assembly>();
 
         public PathCollection ThemePaths { get; } = new PathCollection
@@ -68,14 +71,53 @@ namespace Statiq.Web
                         IProjectAnalyzer projectAnalyzer = analyzerManager.GetProject(projectFile.Path.FullPath);
                         Workspace workspace = projectAnalyzer.GetWorkspace();
                         Compilation compilation = workspace.CurrentSolution.Projects.First().GetCompilationAsync().Result;
-                        using (MemoryStream memoryStream = new MemoryStream())
+
+                        // Emit the assembly and PDB
+                        MemoryStream assemblyStream = new MemoryStream();
+                        MemoryStream pdbStream = new MemoryStream();
+                        EmitResult result = compilation.Emit(
+                            assemblyStream, pdbStream, options: AssemblyEmitOptions);
+                        foreach (Diagnostic diagnostic in result.Diagnostics.Where(x => !x.IsSuppressed))
                         {
-                            EmitResult result = compilation.Emit(memoryStream);
-                            ScriptHelper.LogAndEnsureCompilationSuccess(result, logger, projectFile.Path.Name);
-                            memoryStream.Seek(0, SeekOrigin.Begin);
-                            byte[] rawAssembly = memoryStream.ToArray();
-                            _compiledProjects.Add(Assembly.Load(rawAssembly));
+                            LogLevel logLevel = diagnostic.Severity switch
+                            {
+                                DiagnosticSeverity.Error => LogLevel.Error,
+                                DiagnosticSeverity.Warning => LogLevel.Warning,
+                                DiagnosticSeverity.Info => LogLevel.Information,
+                                _ => LogLevel.Debug
+                            };
+                            logger.Log(logLevel, diagnostic.ToString());
                         }
+                        if (!result.Success)
+                        {
+                            throw new Exception("Theme compilation failed for " + projectFile.Path.FullPath);
+                        }
+
+                        // Save them to disk in a "bin" directory under the project file
+                        // which seems like a reasonable guess - we can't save them in temp
+                        // because that gets cleared before and after every execution
+                        assemblyStream.Seek(0, SeekOrigin.Begin);
+                        pdbStream.Seek(0, SeekOrigin.Begin);
+                        IFile assemblyFile = fileSystem.GetFile(
+                            projectFile.Path.Parent.Combine("bin").Combine(
+                                projectFile.Path.FileNameWithoutExtension.AppendExtension(".dll")));
+                        using (Stream assemblyFileStream = assemblyFile.OpenWrite())
+                        {
+                            assemblyStream.CopyTo(assemblyFileStream);
+                            assemblyFileStream.SetLength(assemblyStream.Length);
+                        }
+                        IFile pdbFile = fileSystem.GetFile(
+                            projectFile.Path.Parent.Combine("bin").Combine(
+                                projectFile.Path.FileNameWithoutExtension.AppendExtension(".pdb")));
+                        using (Stream pdbFileStream = pdbFile.OpenWrite())
+                        {
+                            pdbStream.WriteTo(pdbFileStream);
+                            pdbFileStream.SetLength(pdbStream.Length);
+                        }
+
+                        // Load the assembly from the files
+                        Assembly assembly = Assembly.LoadFile(assemblyFile.Path.FullPath);
+                        _compiledProjects.Add(assembly);
                     }
                 }
             }

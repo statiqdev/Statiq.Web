@@ -121,10 +121,7 @@ namespace Statiq.Web
             bootstrapper
                 .ConfigureFileSystem((fileSystem, settings, serviceCollection) =>
                 {
-                    // Create a temporary service provider to get the theme manager (which is okay
-                    // since it was registered as a singleton instance, not constructed by the service provider)
-                    IServiceProvider services = serviceCollection.BuildServiceProvider();
-                    ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
+                    ThemeManager themeManager = serviceCollection.GetRequiredImplementationInstance<ThemeManager>();
                     themeManager.AddPathsFromSettings(settings, fileSystem);
                 })
                 .ConfigureSettings((settings, serviceCollection, fileSystem) =>
@@ -134,12 +131,13 @@ namespace Statiq.Web
                     // so the root path is set, but it's before the engine is created so we can still manipulate
                     // the services and settings
 
-                    // Create a temporary service provider to get the theme manager (which is okay
-                    // since it was registered as a singleton instance, not constructed by the service provider)
+                    // Build a service provider just to get a logger
                     IServiceProvider services = serviceCollection.BuildServiceProvider();
-                    ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
-                    ClassCatalog classCatalog = services.GetRequiredService<ClassCatalog>();
                     ILogger logger = services.GetRequiredService<ILogger<ThemeManager>>();
+
+                    // Compile the projects
+                    ThemeManager themeManager = serviceCollection.GetRequiredImplementationInstance<ThemeManager>();
+                    ClassCatalog classCatalog = serviceCollection.GetRequiredImplementationInstance<ClassCatalog>();
                     themeManager.CompileProjects(settings, serviceCollection, fileSystem, classCatalog, logger);
                 })
                 .ConfigureEngine(engine =>
