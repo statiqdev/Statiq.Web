@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
@@ -38,13 +39,14 @@ namespace Statiq.Web
                 .AddProcessEventHandlers()
                 .ConfigureEngine(e => e.LogAndCheckVersion(typeof(BootstrapperExtensions).Assembly, "Statiq Web", WebKeys.MinimumStatiqWebVersion));
 
+        // Add these as new instances so that the same singleton gets returned for a temporary BuildServiceCollection()
         private static TBootstrapper AddWebServices<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureServices(services => services
-                    .AddSingleton<Templates>()
-                    .AddSingleton<Processes>()
-                    .AddSingleton<ThemeManager>());
+                    .AddSingleton(new Templates())
+                    .AddSingleton(new Processes())
+                    .AddSingleton(new ThemeManager()));
 
         private static TBootstrapper AddInputPaths<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
@@ -119,7 +121,8 @@ namespace Statiq.Web
             bootstrapper
                 .ConfigureFileSystem((fileSystem, settings, serviceCollection) =>
                 {
-                    // Create a temporary service provider to get the theme manager
+                    // Create a temporary service provider to get the theme manager (which is okay
+                    // since it was registered as a singleton instance, not constructed by the service provider)
                     IServiceProvider services = serviceCollection.BuildServiceProvider();
                     ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
                     themeManager.AddPathsFromSettings(settings, fileSystem);
@@ -131,15 +134,19 @@ namespace Statiq.Web
                     // so the root path is set, but it's before the engine is created so we can still manipulate
                     // the services and settings
 
-                    // Create a temporary service provider to get the theme manager
+                    // Create a temporary service provider to get the theme manager (which is okay
+                    // since it was registered as a singleton instance, not constructed by the service provider)
                     IServiceProvider services = serviceCollection.BuildServiceProvider();
                     ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
-                    themeManager.CompileProjects(settings, serviceCollection, fileSystem);
+                    ClassCatalog classCatalog = services.GetRequiredService<ClassCatalog>();
+                    ILogger logger = services.GetRequiredService<ILogger<ThemeManager>>();
+                    themeManager.CompileProjects(settings, serviceCollection, fileSystem, classCatalog, logger);
                 })
                 .ConfigureEngine(engine =>
                 {
                     ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
                     themeManager.AddSettingsToEngine(engine);
+                    themeManager.AddCompiledNamespacesToEngine(engine);
                 });
 
         private static TBootstrapper AddDefaultWebSettings<TBootstrapper>(this TBootstrapper bootstrapper)

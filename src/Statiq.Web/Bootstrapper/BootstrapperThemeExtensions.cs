@@ -10,7 +10,10 @@ namespace Statiq.Web
             where TBootstrapper : IBootstrapper =>
             bootstrapper.ConfigureServices(services =>
                 action(services
-                    .BuildServiceProvider() // We need to build an intermediate service provider to get access to the singleton
+
+                    // We need to build an intermediate service provider to get access to the singleton (which is okay
+                    // since it was registered as a singleton instance, not constructed by the service provider)
+                    .BuildServiceProvider()
                     .GetRequiredService<ThemeManager>()
                     .ThemePaths));
 

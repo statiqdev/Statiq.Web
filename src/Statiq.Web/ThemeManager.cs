@@ -19,14 +19,7 @@ namespace Statiq.Web
 {
     public class ThemeManager
     {
-        private readonly ClassCatalog _classCatalog;
-        private readonly ILogger<ThemeManager> _logger;
-
-        public ThemeManager(ClassCatalog classCatalog, ILogger<ThemeManager> logger)
-        {
-            _classCatalog = classCatalog;
-            _logger = logger;
-        }
+        private readonly List<Assembly> _compiledProjects = new List<Assembly>();
 
         public PathCollection ThemePaths { get; } = new PathCollection
         {
@@ -54,10 +47,14 @@ namespace Statiq.Web
             }
         }
 
-        internal void CompileProjects(ISettings settings, IServiceCollection serviceCollection, IReadOnlyFileSystem fileSystem)
+        internal void CompileProjects(
+            ISettings settings,
+            IServiceCollection serviceCollection,
+            IReadOnlyFileSystem fileSystem,
+            ClassCatalog classCatalog,
+            ILogger logger)
         {
             // Iterate in reverse order so we start with the highest priority
-            List<Assembly> assemblies = new List<Assembly>();
             foreach (NormalizedPath themePath in ThemePaths.Reverse())
             {
                 // Get and build any csproj files in the theme directory
@@ -74,24 +71,24 @@ namespace Statiq.Web
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             EmitResult result = compilation.Emit(memoryStream);
-                            ScriptHelper.LogAndEnsureCompilationSuccess(result, _logger, projectFile.Path.Name);
+                            ScriptHelper.LogAndEnsureCompilationSuccess(result, logger, projectFile.Path.Name);
                             memoryStream.Seek(0, SeekOrigin.Begin);
                             byte[] rawAssembly = memoryStream.ToArray();
-                            assemblies.Add(Assembly.Load(rawAssembly));
+                            _compiledProjects.Add(Assembly.Load(rawAssembly));
                         }
                     }
                 }
             }
 
             // Add the new assemblies and any references to the class catalog
-            if (assemblies.Count > 0)
+            if (_compiledProjects.Count > 0)
             {
-                _classCatalog.AddAssemblies(assemblies);
-                _classCatalog.LogDebugMessagesTo(_logger);
+                classCatalog.AddAssemblies(_compiledProjects);
+                classCatalog.LogDebugMessagesTo(logger);
             }
 
             // Run any theme initializers
-            foreach (IThemeInitializer initializer in _classCatalog.GetInstances<IThemeInitializer>())
+            foreach (IThemeInitializer initializer in classCatalog.GetInstances<IThemeInitializer>())
             {
                 initializer.Initialize(settings, serviceCollection, fileSystem);
             }
@@ -123,6 +120,19 @@ namespace Statiq.Web
                         }
                     }
                 }
+            }
+        }
+
+        internal void AddCompiledNamespacesToEngine(IEngine engine)
+        {
+            foreach (Assembly assembly in _compiledProjects)
+            {
+                engine.Namespaces.AddRange(
+                    engine.ClassCatalog
+                        .GetTypesFromAssembly(assembly, true)
+                        .Select(x => x.Namespace)
+                        .Where(x => !x.IsNullOrWhiteSpace())
+                        .Distinct());
             }
         }
     }
