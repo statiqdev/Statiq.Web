@@ -18,7 +18,7 @@ namespace Statiq.Web
     {
         private readonly List<KeyValuePair<string, Template>> _templates = new List<KeyValuePair<string, Template>>();
 
-        internal Templates()
+        public Templates()
         {
             // Assets
             Add(MediaTypes.Less, new Template(ContentType.Asset, Phase.Process, new CacheDocuments { new CompileLess() }));

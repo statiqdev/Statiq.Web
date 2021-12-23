@@ -7,7 +7,6 @@
     <Authors>Dave Glick</Authors>
     <Description>Templates to use when creating a Statiq Web application, Statiq Web is a flexible static site generator.</Description>
     <PackageTags>dotnet-new;templates;Statiq;Static;StaticContent;StaticSite;Blog;BlogEngine </PackageTags>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>

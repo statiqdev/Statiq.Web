@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Statiq.App;
 using Statiq.Common;
@@ -34,7 +32,7 @@ namespace Statiq.Web
                 .SetOutputPath()
                 .SetTempPath()
                 .SetCachePath()
-                .AddThemePaths()
+                .AddThemes()
                 .AddDefaultWebSettings()
                 .AddWebAnalyzers()
                 .AddProcessEventHandlers()
@@ -44,9 +42,9 @@ namespace Statiq.Web
             where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureServices(services => services
-                    .AddSingleton(new Templates())
-                    .AddSingleton(new Processes())
-                    .AddSingleton(new ThemeManager()));
+                    .AddSingleton<Templates>()
+                    .AddSingleton<Processes>()
+                    .AddSingleton<ThemeManager>());
 
         private static TBootstrapper AddInputPaths<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
@@ -116,7 +114,7 @@ namespace Statiq.Web
                     }
                 });
 
-        private static TBootstrapper AddThemePaths<TBootstrapper>(this TBootstrapper bootstrapper)
+        private static TBootstrapper AddThemes<TBootstrapper>(this TBootstrapper bootstrapper)
             where TBootstrapper : IBootstrapper =>
             bootstrapper
                 .ConfigureFileSystem((fileSystem, settings, serviceCollection) =>
@@ -124,77 +122,24 @@ namespace Statiq.Web
                     // Create a temporary service provider to get the theme manager
                     IServiceProvider services = serviceCollection.BuildServiceProvider();
                     ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
-
-                    // Add theme paths from settings
-                    IReadOnlyList<NormalizedPath> settingsThemePaths = settings.GetList<NormalizedPath>(WebKeys.ThemePaths);
-                    if (settingsThemePaths?.Count > 0)
-                    {
-                        themeManager.ThemePaths.Clear();
-                        foreach (NormalizedPath settingsThemePath in settingsThemePaths)
-                        {
-                            themeManager.ThemePaths.Add(settingsThemePath);
-                        }
-                    }
-
-                    // Iterate in reverse order so we start with the highest priority
-                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
-                    {
-                        // Inserting at 0 preserves the original order since we're iterating in reverse
-                        fileSystem.InputPaths.Insert(0, themePath.Combine("input"));
-                    }
+                    themeManager.AddPathsFromSettings(settings, fileSystem);
                 })
                 .ConfigureSettings((settings, serviceCollection, fileSystem) =>
                 {
                     // Build any csproj files in the theme directory
-                    // This needs to be done here because it's after the file system is configured so the root path is set,
-                    // but it's before the engine is created so we can still manipulate the services and settings
+                    // This needs to be done in ConfigureSettings because it's after the file system is configured
+                    // so the root path is set, but it's before the engine is created so we can still manipulate
+                    // the services and settings
 
                     // Create a temporary service provider to get the theme manager
                     IServiceProvider services = serviceCollection.BuildServiceProvider();
                     ThemeManager themeManager = services.GetRequiredService<ThemeManager>();
-
-                    // Iterate in reverse order so we start with the highest priority
-                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
-                    {
-                        // Get and build any csproj files in the theme directory
-                        IDirectory themeDirectory = fileSystem.GetRootDirectory(themePath);
-                        if (themeDirectory.Exists)
-                        {
-                            // TODO: compile csproj files, add them to the class collection, and execute any ITheme classes (which can manipulate the services and settings)
-                            // Make sure to note in the ITheme description that settings from theme .yaml or .json files are not added yet
-                            // Consider how to implement adding pipelines, etc. - an IThemeBootstrapper? Make extensions for addpipeline on IServiceCollection?
-                        }
-                    }
+                    themeManager.CompileProjects(settings, serviceCollection, fileSystem);
                 })
                 .ConfigureEngine(engine =>
                 {
                     ThemeManager themeManager = engine.Services.GetRequiredService<ThemeManager>();
-
-                    // Iterate in reverse order so we start with the highest priority
-                    foreach (NormalizedPath themePath in themeManager.ThemePaths.Reverse())
-                    {
-                        // Build a configuration for each of the theme paths and manually merge the
-                        // values into the engine settings since it's already created
-                        IDirectory themeDirectory = engine.FileSystem.GetRootDirectory(themePath);
-                        if (themeDirectory.Exists)
-                        {
-                            IConfigurationRoot configuration = new ConfigurationBuilder()
-                                .SetBasePath(themeDirectory.Path.FullPath)
-                                .AddSettingsFile("themesettings")
-                                .AddSettingsFile("settings")
-                                .AddSettingsFile("statiq")
-                                .Build();
-                            foreach (KeyValuePair<string, string> config in configuration.AsEnumerable())
-                            {
-                                // Since we're iterating highest priority first, the first key will set and lower priority will be ignored
-                                // I.e. if the setting already exists, the theme setting will be ignored
-                                if (!engine.Settings.ContainsKey(config.Key))
-                                {
-                                    engine.Settings[config.Key] = config.Value;
-                                }
-                            }
-                        }
-                    }
+                    themeManager.AddSettingsToEngine(engine);
                 });
 
         private static TBootstrapper AddDefaultWebSettings<TBootstrapper>(this TBootstrapper bootstrapper)

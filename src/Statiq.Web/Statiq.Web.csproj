@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>Statiq Web is a flexible static site generator.</Description>
     <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
@@ -12,11 +11,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.5" />
+    <PackageReference Include="Microsoft.Build" Version="16.10.0">
+      <NoWarn>NU1701</NoWarn>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Statiq.Web.Aws\Statiq.Web.Aws.csproj" />
     <ProjectReference Include="..\Statiq.Web.Azure\Statiq.Web.Azure.csproj" />
     <ProjectReference Include="..\Statiq.Web.GitHub\Statiq.Web.GitHub.csproj" />
     <ProjectReference Include="..\Statiq.Web.Hosting\Statiq.Web.Hosting.csproj" />
     <ProjectReference Include="..\Statiq.Web.Netlify\Statiq.Web.Netlify.csproj" />
+    <ProjectReference Include="..\Statiq.Web.Theme\Statiq.Web.Theme.csproj" />
   </ItemGroup>
 
   <Choose>

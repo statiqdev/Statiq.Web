@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <Description>Statiq is a configurable static content generation framework. This library provides support for themes.</Description>
+      <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine</PackageTags>
+      <RootNamespace>Statiq.Web.Themes</RootNamespace>
+    </PropertyGroup>
+  
+    <ItemGroup>
+      <None Include="Statiq.Web.Theme.props" Pack="true" PackagePath="build\$(TargetFramework)\" />
+      <None Include="Statiq.Web.Theme.props" Pack="true" PackagePath="buildTransitive\$(TargetFramework)\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.18" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.18" />
+    </ItemGroup>
+
+    <Choose>
+      <When Condition=" '$(StatiqFrameworkVersion)' == 'local'">
+        <ItemGroup>
+          <ProjectReference Include="..\..\..\Statiq.Framework\src\core\Statiq.Common\Statiq.Common.csproj" />
+        </ItemGroup>
+      </When>
+      <Otherwise>
+        <ItemGroup>
+          <PackageReference Include="Statiq.Common" Version="$(StatiqFrameworkVersion)" />
+        </ItemGroup>
+      </Otherwise>
+    </Choose>
+
+</Project>

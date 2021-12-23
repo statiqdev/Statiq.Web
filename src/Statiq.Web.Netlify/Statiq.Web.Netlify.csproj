@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <Description>Statiq is a configurable static content generation framework. This library provides support for interacting with Netlify.</Description>
     <PackageTags>Statiq Static StaticContent StaticSite Blog BlogEngine Netlify</PackageTags>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NetlifySharp" Version="1.1.0" />
   </ItemGroup>

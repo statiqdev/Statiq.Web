@@ -14,7 +14,7 @@ namespace Statiq.Web
 
         private KeyValuePair<ProcessLauncherFactory, ProcessLauncher>[] _processLaunchers;
 
-        internal Processes()
+        public Processes()
         {
         }
 
