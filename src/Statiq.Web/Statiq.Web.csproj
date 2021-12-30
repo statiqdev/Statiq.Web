@@ -23,7 +23,6 @@
     <ProjectReference Include="..\Statiq.Web.GitHub\Statiq.Web.GitHub.csproj" />
     <ProjectReference Include="..\Statiq.Web.Hosting\Statiq.Web.Hosting.csproj" />
     <ProjectReference Include="..\Statiq.Web.Netlify\Statiq.Web.Netlify.csproj" />
-    <ProjectReference Include="..\Statiq.Web.Theme\Statiq.Web.Theme.csproj" />
   </ItemGroup>
 
   <Choose>

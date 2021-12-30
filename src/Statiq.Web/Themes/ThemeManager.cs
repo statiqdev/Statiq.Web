@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Web.Theme;
 
 namespace Statiq.Web
 {
@@ -115,8 +114,8 @@ namespace Statiq.Web
                             pdbFileStream.SetLength(pdbStream.Length);
                         }
 
-                        // Load the assembly from the files
-                        Assembly assembly = Assembly.LoadFile(assemblyFile.Path.FullPath);
+                        // Load the assembly from the file (make sure to use LoadFrom and not LoadFile so it binds later to Razor, etc.)
+                        Assembly assembly = Assembly.LoadFrom(assemblyFile.Path.FullPath);
                         _compiledProjects.Add(assembly);
                     }
                 }

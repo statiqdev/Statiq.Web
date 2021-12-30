@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Statiq.Common;
 
-namespace Statiq.Web.Theme
+namespace Statiq.Web
 {
     /// <summary>
     /// Implement this interface to define an initializer that will get automatically
