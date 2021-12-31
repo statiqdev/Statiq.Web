@@ -1,3 +1,5 @@
+# 1.0.0-beta.40
+
 # 1.0.0-beta.39
 
 - Added a `Microsoft.Build` `PackageReference` to the `Statiq.Web.props` that gets imported on package restore to turn off warnings for NU1701 (restored using a different target). This can eventually be taken back out once Statiq targets .NET 6.
