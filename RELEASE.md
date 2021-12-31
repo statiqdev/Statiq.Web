@@ -1,5 +1,6 @@
 # 1.0.0-beta.38
 
+- Updated Statiq Framework to version [1.0.0-beta.53](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.53).
 - Added support for `.csproj` projects in theme folders, which will get compiled and included in the execution.
 - Added a new `IThemeInitializer` that themes can implement to add services, etc. during initialization.
 
