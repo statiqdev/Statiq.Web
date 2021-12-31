@@ -15,4 +15,13 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <!--
+      This can be removed once Buildalyzer and Statiq are updated to .NET 6
+      and the upstream Microsoft.Build reference in Buildalyzer are updated
+    -->
+    <PackageReference Include="Microsoft.Build" Version="16.10.0">
+      <NoWarn>NU1701</NoWarn>
+    </PackageReference>
+  </ItemGroup>
 </Project>
