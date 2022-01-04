@@ -1,5 +1,8 @@
 # 1.0.0-beta.40
 
+- Fixed a bug with input path modification ordering where theme paths were getting removed when other input paths were specified (#975).
+- Updated Statiq Framework to version [1.0.0-beta.54](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.54).
+
 # 1.0.0-beta.39
 
 - Added a `Microsoft.Build` `PackageReference` to the `Statiq.Web.props` that gets imported on package restore to turn off warnings for NU1701 (restored using a different target). This can eventually be taken back out once Statiq targets .NET 6.

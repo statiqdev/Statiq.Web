@@ -56,7 +56,7 @@ namespace Statiq.Web
                     IReadOnlyList<NormalizedPath> paths = settings.GetList<NormalizedPath>(WebKeys.InputPaths);
                     if (paths?.Count > 0)
                     {
-                        fileSystem.InputPaths.Clear();
+                        fileSystem.InputPaths.RemoveDefault();
                         foreach (NormalizedPath path in paths)
                         {
                             fileSystem.InputPaths.Add(path);
