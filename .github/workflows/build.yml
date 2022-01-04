@@ -33,6 +33,4 @@ jobs:
           dotnet-version: '3.1.x'
 
       - name: Build and Test
-        run: dotnet run --project "build/Statiq.Web.Build/Statiq.Web.Build.csproj" -- test
-        env:
-          StatiqFrameworkVersion: local
+        run: dotnet test
