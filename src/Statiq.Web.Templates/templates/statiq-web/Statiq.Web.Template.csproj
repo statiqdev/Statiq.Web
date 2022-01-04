@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\src\Statiq.Web\Statiq.Web.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Statiq.Web" Version="1.0.0-beta.40" />
+    <PackageReference Include="Statiq.Web" Version="1.0.0-beta.39" />
   </ItemGroup>
 </Project>

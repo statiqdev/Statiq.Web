@@ -1,6 +1,0 @@
-<Project>
-  <Import Project="../Directory.Build.props" />
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\statiq.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-</Project>
