@@ -5,6 +5,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Statiq.Web" Version="1.0.0-beta.39" />
+    <PackageReference Include="Statiq.Web" Version="1.0.0" />
   </ItemGroup>
 </Project>

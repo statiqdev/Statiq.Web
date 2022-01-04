@@ -38,3 +38,4 @@ TestResult.xml
 .vscode
 *.pfx
 cache/
+.idea
