@@ -2,6 +2,7 @@
 
 - Refactored GitHub error handling to try and better mitigate transient failures (rate limiting, abuse detection, etc.) (#974).
 - Fixed a regression when defining input paths via a setting (#978).
+- Updated Statiq Framework to version [1.0.0-beta.55](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.55).
 
 # 1.0.0-beta.40
 
