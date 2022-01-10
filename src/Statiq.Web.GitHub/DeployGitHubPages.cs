@@ -109,9 +109,13 @@ namespace Statiq.Web.GitHub
             // Get the current head tree
             string branch = values.GetString(Branch, DefaultBranch);
             context.LogInformation($"Deploying to GitHub Pages at {owner}/{name} branch {branch}");
-            Reference reference = await github.ThrottleAsync(async x => await x.Git.Reference.Get(owner, name, "heads/" + branch), context.CancellationToken);
+            Reference reference = await github.ThrottleAsync(
+                async x => await x.Git.Reference.Get(owner, name, "heads/" + branch),
+                context);
             context.LogDebug($"Got head reference SHA {reference.Object.Sha}");
-            Commit commit = await github.ThrottleAsync(async x => await x.Git.Commit.Get(owner, name, reference.Object.Sha), context.CancellationToken);
+            Commit commit = await github.ThrottleAsync(
+                async x => await x.Git.Commit.Get(owner, name, reference.Object.Sha),
+                context);
             context.LogDebug($"Got latest commit with message: {commit.Message}");
 
             // Iterate the output path, adding new tree items
@@ -128,7 +132,7 @@ namespace Statiq.Web.GitHub
                         Content = Convert.ToBase64String(await File.ReadAllBytesAsync(outputFile)),
                         Encoding = EncodingType.Base64
                     }),
-                    context.CancellationToken);
+                    context);
 
                 // Add the new blob to the tree
                 string relativePath = Path.GetRelativePath(sourcePath.FullPath, outputFile).Replace("\\", "/");
@@ -143,15 +147,21 @@ namespace Statiq.Web.GitHub
 
             // Create the new tree
             context.LogDebug("Creating a new git tree");
-            TreeResponse newTreeResponse = await github.ThrottleAsync(x => x.Git.Tree.Create(owner, name, newTree), context.CancellationToken);
+            TreeResponse newTreeResponse = await github.ThrottleAsync(
+                x => x.Git.Tree.Create(owner, name, newTree),
+                context);
 
             // Create the commit
             context.LogDebug("Creating a new git commit");
-            Commit newCommit = await github.ThrottleAsync(x => x.Git.Commit.Create(owner, name, new NewCommit($"Deployment from Statiq", newTreeResponse.Sha, commit.Sha)));
+            Commit newCommit = await github.ThrottleAsync(
+                x => x.Git.Commit.Create(owner, name, new NewCommit($"Deployment from Statiq", newTreeResponse.Sha, commit.Sha)),
+                context);
 
             // Update the head ref
             context.LogDebug("Updating the head ref");
-            await github.ThrottleAsync(x => x.Git.Reference.Update(owner, name, reference.Ref, new ReferenceUpdate(newCommit.Sha, true)), context.CancellationToken);
+            await github.ThrottleAsync(
+                x => x.Git.Reference.Update(owner, name, reference.Ref, new ReferenceUpdate(newCommit.Sha, true)),
+                context);
 
             return await input.YieldAsync();
         }

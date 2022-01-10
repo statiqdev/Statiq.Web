@@ -4,13 +4,41 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Octokit;
+using Polly;
+using Polly.Retry;
 using Statiq.Common;
 
 namespace Statiq.Web.GitHub
 {
     public static class GitHubClientExtensions
     {
+        private const int RetryCount = 5;
+
+        private static readonly AsyncRetryPolicy _retryPolicy = Policy
+            .Handle<ApiException>()
+            .WaitAndRetryAsync(
+                RetryCount,
+                (_, ex, __) =>
+                {
+                    return ex switch
+                    {
+                        AbuseException abuseEx => TimeSpan.FromSeconds(abuseEx.RetryAfterSeconds is object
+                            ? abuseEx.RetryAfterSeconds.Value * 1.5
+                            : 30),
+                        RateLimitExceededException rateEx => TimeSpan.FromSeconds(
+                            (rateEx.Reset - DateTimeOffset.Now).TotalSeconds * 1.5),
+                        _ => TimeSpan.FromSeconds(30)
+                    };
+                },
+                (ex, ts, retry, ctx) =>
+                {
+                    IExecutionContext context = (IExecutionContext)ctx[nameof(IExecutionContext)];
+                    context.LogWarning($"GitHub exception {ex.GetType().Name} (retry {retry.ToString()}/{RetryCount.ToString()}, waiting {ts.ToString()}): {ex.Message}");
+                    return Task.CompletedTask;
+                });
+
         /// <summary>
         /// Throttles the <see cref="GitHubAppsClient"/> when <see cref="AbuseException"/> or <see cref="RateLimitExceededException"/> is received.
         /// </summary>
@@ -20,26 +48,15 @@ namespace Statiq.Web.GitHub
         public static async Task<T> ThrottleAsync<T>(
             this GitHubClient client,
             Func<GitHubClient, Task<T>> operation,
-            CancellationToken cancellationToken = default,
-            bool throwIfRateLimitExceeded = false)
-        {
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                try
+            IExecutionContext context) =>
+            await _retryPolicy.ExecuteAsync(
+                async (ctx, _) => await operation((GitHubClient)ctx[nameof(GitHubClient)]),
+                new Context
                 {
-                    return await operation(client).ConfigureAwait(false);
-                }
-                catch (AbuseException abuseException)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(abuseException.RetryAfterSeconds ?? 30), cancellationToken).ConfigureAwait(false);
-                }
-                catch (RateLimitExceededException limitException) when (!throwIfRateLimitExceeded)
-                {
-                    await Task.Delay(limitException.Reset - DateTimeOffset.Now, cancellationToken).ConfigureAwait(false);
-                }
-            }
-        }
+                    { nameof(IExecutionContext), context },
+                    { nameof(GitHubClient), client }
+                },
+                context.CancellationToken);
 
         /// <summary>
         /// Throttles the <see cref="GitHubAppsClient"/> when <see cref="AbuseException"/> or <see cref="RateLimitExceededException"/> is received.
@@ -50,26 +67,14 @@ namespace Statiq.Web.GitHub
         public static async Task ThrottleAsync(
             this GitHubClient client,
             Func<GitHubClient, Task> operation,
-            CancellationToken cancellationToken = default,
-            bool throwIfRateLimitExceeded = false)
-        {
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                try
+            IExecutionContext context) =>
+            await _retryPolicy.ExecuteAsync(
+                async (ctx, _) => await operation((GitHubClient)ctx[nameof(GitHubClient)]),
+                new Context
                 {
-                    await operation(client).ConfigureAwait(false);
-                    return;
-                }
-                catch (AbuseException abuseException)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(abuseException.RetryAfterSeconds ?? 30), cancellationToken).ConfigureAwait(false);
-                }
-                catch (RateLimitExceededException limitException) when (!throwIfRateLimitExceeded)
-                {
-                    await Task.Delay(limitException.Reset - DateTimeOffset.Now, cancellationToken).ConfigureAwait(false);
-                }
-            }
-        }
+                    { nameof(IExecutionContext), context },
+                    { nameof(GitHubClient), client }
+                },
+                context.CancellationToken);
     }
 }

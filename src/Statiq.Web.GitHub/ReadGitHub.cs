@@ -132,7 +132,7 @@ namespace Statiq.Web.GitHub
             Func<GitHubClient, Task<object>> request = values.Get<Func<GitHubClient, Task<object>>>(Request);
             bool throttle = values.GetBool(Throttle, true);
             object result = throttle
-                ? await github.ThrottleAsync(async x => await request(x), context.CancellationToken)
+                ? await github.ThrottleAsync(async x => await request(x), context)
                 : await request(github);
             return result is IEnumerable results
                 ? results.Cast<object>().ToDocuments()

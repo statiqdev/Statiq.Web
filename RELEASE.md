@@ -1,3 +1,7 @@
+# 1.0.0-beta.41
+
+- Refactored GitHub error handling to try and better mitigate transient failures (rate limiting, abuse detection, etc.) (#974).
+
 # 1.0.0-beta.40
 
 - Fixed a bug with input path modification ordering where theme paths were getting removed when other input paths were specified (#975).

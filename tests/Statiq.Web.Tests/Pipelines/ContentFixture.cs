@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Markdig.Extensions.Bootstrap;
 using NUnit.Framework;
 using Shouldly;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
+using Statiq.Markdown;
 using Statiq.Testing;
 using Statiq.Web.Pipelines;
 
@@ -647,6 +649,106 @@ return $""# {foo}\nContent"";"
                 document.Destination.ShouldBe("foo.html");
                 document.GetContentStringAsync().Result.ShouldBe(
                     "<pre><code>int foo = 1;</code></pre>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task ShouldChangeMarkdownExtensionsViaTemplates()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .ModifyTemplate(
+                        MediaTypes.Markdown,
+                        x => ((RenderMarkdown)x).UseExtension<BootstrapExtension>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.md",
+                        @"# Hi!
+
+A simple | table
+-- | --
+with multiple | lines
+
+End"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.html");
+                document.GetContentStringAsync().Result.ShouldBe(
+                    @"<h1 id=""hi"">Hi!</h1>
+<table class=""table"">
+<thead>
+<tr>
+<th>A simple</th>
+<th>table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>with multiple</td>
+<td>lines</td>
+</tr>
+</tbody>
+</table>
+<p>End</p>
+",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task ShouldChangeMarkdownExtensionsViaSettings()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(MarkdownKeys.MarkdownExtensions, "Bootstrap");
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/foo.md",
+                        @"# Hi!
+
+A simple | table
+-- | --
+with multiple | lines
+
+End"
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.Destination.ShouldBe("foo.html");
+                document.GetContentStringAsync().Result.ShouldBe(
+                    @"<h1 id=""hi"">Hi!</h1>
+<table class=""table"">
+<thead>
+<tr>
+<th>A simple</th>
+<th>table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>with multiple</td>
+<td>lines</td>
+</tr>
+</tbody>
+</table>
+<p>End</p>
+",
                     StringCompareShould.IgnoreLineEndings);
             }
         }
