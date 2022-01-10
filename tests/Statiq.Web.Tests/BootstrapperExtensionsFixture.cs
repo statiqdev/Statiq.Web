@@ -24,7 +24,7 @@ namespace Statiq.Web.Tests
                 Bootstrapper bootstrapper = Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
-                    .AddInitialSetting(
+                    .AddSetting(
                         WebKeys.ThemePaths,
                         new NormalizedPath[]
                         {
@@ -116,6 +116,45 @@ namespace Statiq.Web.Tests
                 // Then
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 themeManager.ThemePaths.ShouldBe(new NormalizedPath[] { "foo" });
+            }
+        }
+
+        public class AddSettingTests : BootstrapperExtensionsFixture
+        {
+            [Test]
+            public async Task ShouldAddInputPaths()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(WebKeys.InputPaths, new string[] { "foo", "bar" });
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync();
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                result.Engine.FileSystem.InputPaths.ShouldBe(
+                    new NormalizedPath[] { "theme/input", "foo", "bar" });
+            }
+
+            [Test]
+            public async Task CommandLineShouldOverrideSettingsInputPaths()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper
+                    .Factory
+                    .CreateWeb(new string[] { "-i", "fizz", "-i", "buzz" })
+                    .AddSetting(WebKeys.InputPaths, new string[] { "foo", "bar" });
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync();
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                result.Engine.FileSystem.InputPaths.ShouldBe(
+                    new NormalizedPath[] { "theme/input", "buzz", "fizz" });
             }
         }
     }

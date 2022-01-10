@@ -117,7 +117,7 @@ namespace Statiq.Web.Tests.Themes
                 // Given
                 Bootstrapper bootstrapper = Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
-                    .AddInitialSetting(WebKeys.InputPaths, new[] { "foo" });
+                    .AddSetting(WebKeys.InputPaths, new[] { "foo" });
 
                 // When
                 BootstrapperTestResult result = await bootstrapper.RunTestAsync();

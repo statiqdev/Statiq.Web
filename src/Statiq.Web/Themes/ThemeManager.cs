@@ -45,7 +45,8 @@ namespace Statiq.Web
             foreach (NormalizedPath themePath in ThemePaths.Reverse())
             {
                 // Inserting at 0 preserves the original order since we're iterating in reverse
-                fileSystem.InputPaths.Insert(0, themePath.Combine("input"));
+                // Add theme paths as non-removable so they persist though input path changes
+                fileSystem.InputPaths.Insert(0, themePath.Combine("input"), false);
             }
         }
 
