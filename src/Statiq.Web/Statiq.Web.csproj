@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.6" />
+    <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.7" />
     <!--
       This can be removed once Buildalyzer and Statiq are updated to .NET 6
       and the upstream Microsoft.Build reference in Buildalyzer are updated
