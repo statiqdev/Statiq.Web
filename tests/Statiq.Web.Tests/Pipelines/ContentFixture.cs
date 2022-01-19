@@ -753,6 +753,84 @@ End"
             }
         }
 
+        [Test]
+        public async Task GenerateExcerptForHtml()
+        {
+            // Given
+            Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+            TestFileProvider fileProvider = new TestFileProvider
+            {
+                {
+                    "/input/foo.html",
+                    "<p>Excerpt</p>"
+                }
+            };
+
+            // When
+            BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+            // Then
+            result.ExitCode.ShouldBe((int)ExitCode.Normal);
+            IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
+            document.Get<string>(Keys.Excerpt).ShouldBe("<p>Excerpt</p>");
+        }
+
+        [Test]
+        public async Task GenerateExcerptForMarkdown()
+        {
+            // Given
+            Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+            TestFileProvider fileProvider = new TestFileProvider
+            {
+                {
+                    "/input/foo.md",
+                    "Excerpt"
+                }
+            };
+
+            // When
+            BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+            // Then
+            result.ExitCode.ShouldBe((int)ExitCode.Normal);
+            IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
+            document.Get<string>(Keys.Excerpt).ShouldBe("<p>Excerpt</p>");
+        }
+
+        [Test]
+        public async Task GenerateExcerptForRazor()
+        {
+            // Given
+            Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+            TestFileProvider fileProvider = new TestFileProvider
+            {
+                {
+                    "/input/Test.cshtml",
+                    "<p>Excerpt</p>"
+                },
+                {
+                    "/input/_Layout.cshtml",
+                    @"<html><head></head><body>
+    @RenderBody()
+</body></html>"
+                },
+                {
+                    "/input/_ViewStart.cshtml",
+                    @"@{
+    Layout = ""_Layout"";
+}"
+                },
+            };
+
+            // When
+            BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+            // Then
+            result.ExitCode.ShouldBe((int)ExitCode.Normal);
+            IDocument document = result.Outputs[nameof(Content)][Phase.Process].ShouldHaveSingleItem();
+            document.Get<string>(Keys.Excerpt).ShouldBe("<p>Excerpt</p>");
+        }
+
         public const string GatherHeadingsFile = @"
 <html>
   <head>

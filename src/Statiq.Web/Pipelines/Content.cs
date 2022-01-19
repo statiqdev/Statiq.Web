@@ -27,7 +27,8 @@ namespace Statiq.Web.Pipelines
                         new OptimizeFileName()
                     },
                     new RenderContentProcessTemplates(templates),
-                    new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.Html)))
+                    new ExecuteIf(Config.FromDocument(
+                        doc => doc.MediaTypeEquals(MediaTypes.Html) || doc.MediaTypeEquals(MediaTypes.Razor)))
                     {
                         // Excerpts and headings only work for HTML content
                         new GenerateExcerpt(),
