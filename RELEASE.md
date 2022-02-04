@@ -1,3 +1,7 @@
+# 1.0.0-beta.42
+
+- Updated Statiq Framework to version [1.0.0-beta.56](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.56).
+
 # 1.0.0-beta.41
 
 - Refactored GitHub error handling to try and better mitigate transient failures (rate limiting, abuse detection, etc.) (#974).
