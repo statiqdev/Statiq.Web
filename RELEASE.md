@@ -1,3 +1,7 @@
+# 1.0.0-beta.43
+
+- Added an additional shortcode processing phase after process templates are executed but before post-process templates are (for example, in between Markdown and Razor).
+
 # 1.0.0-beta.42
 
 - Updated Statiq Framework to version [1.0.0-beta.56](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.56).

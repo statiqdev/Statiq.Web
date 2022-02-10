@@ -15,12 +15,9 @@ namespace Statiq.Web.Modules
     {
         public RenderContentProcessTemplates(Templates templates)
             : base(
-                new IModule[]
-                {
-                    new ProcessShortcodes("!")
-                }
-                .Concat(templates.GetModule(ContentType.Content, Phase.Process))
-                .ToArray())
+                new ProcessShortcodes("!"),
+                templates.GetModule(ContentType.Content, Phase.Process),
+                new ProcessShortcodes("^"))
         {
         }
     }
