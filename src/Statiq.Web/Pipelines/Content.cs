@@ -31,7 +31,7 @@ namespace Statiq.Web.Pipelines
                     {
                         // Excerpts and headings only work for HTML content
                         new GenerateExcerpt(),
-                        new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 1))
+                        new GatherHeadings(Config.FromDocument(WebKeys.GatherHeadingsLevel, 2))
                     }
                 },
 

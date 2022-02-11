@@ -1,6 +1,7 @@
 # 1.0.0-beta.43
 
 - Added an additional shortcode processing phase after process templates are executed but before post-process templates are (for example, in between Markdown and Razor).
+- Increased the default `GatherHeadingsLevel` to two instead of just the first level of headings.
 
 # 1.0.0-beta.42
 
