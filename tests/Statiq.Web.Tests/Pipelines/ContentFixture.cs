@@ -18,6 +18,31 @@ namespace Statiq.Web.Tests.Pipelines
     {
         public class ExecuteTests : DataFixture
         {
+            // https://github.com/statiqdev/Statiq.Web/issues/981
+            // Markdig will encode the quote character reference, but we need to make sure AngleSharp
+            // doesn't double-encode the "&" part of the "&quot;" that Markdig produced
+            [Test]
+            public async Task ExcerptShouldNotDoubleEscapeEntities()
+            {
+                // Given
+                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddFile("/input/foo.md", @"# Hello World
+
+Sunny ""day"" chasing
+
+the clouds away
+                ");
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
+                document.GetString(Keys.Excerpt).ShouldBe(@"<p>Sunny &quot;day&quot; chasing</p>");
+            }
+
             [Test]
             public async Task DefaultGatherHeadingsLevel()
             {
@@ -41,7 +66,7 @@ namespace Statiq.Web.Tests.Pipelines
                     .GetDocumentList(Keys.Headings)
                     .Flatten()
                     .Select(x => x.GetContentStringAsync().Result)
-                    .ShouldBe(new[] { "1.1", "1.2" }, true);
+                    .ShouldBe(new[] { "1.1", "1.2", "2.1", "2.2", "2.3" }, true);
             }
 
             [Test]
