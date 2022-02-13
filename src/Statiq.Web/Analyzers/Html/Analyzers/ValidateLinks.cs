@@ -29,12 +29,13 @@ namespace Statiq.Web
                 documentDestinationDirectory = documentDestinationDirectory.Parent;
             }
 
+            string baseHref = htmlDocument.GetElementsByTagName("base").FirstOrDefault()?.GetAttribute("href");
             return htmlDocument.Links.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e))
                 .Concat(htmlDocument.GetElementsByTagName("link").Where(e => e.HasAttribute("href") && !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("href"), (IElement)e)))
                 .Concat(htmlDocument.Images.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.GetAttribute("src"), (IElement)e)))
                 .Concat(htmlDocument.Scripts.Where(e => !e.HasAttribute("data-no-validate")).Select(e => (e.Source, (IElement)e)))
                 .GroupBy(x => x.Item1, x => x.Item2)
-                .Select(g => (GetLink(g.Key, g, htmlDocument.GetElementsByTagName("base").FirstOrDefault()?.GetAttribute("href"), document, documentDestinationDirectory, context, absolute), (IEnumerable<IElement>)g))
+                .Select(g => (GetLink(g.Key, g, baseHref, document, documentDestinationDirectory, context, absolute), (IEnumerable<IElement>)g))
                 .Where(x => x.Item1 is object);
         }
 
