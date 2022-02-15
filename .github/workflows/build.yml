@@ -1,4 +1,3 @@
-
 name: Build
 on:
   pull_request:
@@ -15,22 +14,33 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+    env:
+      # https://github.com/NuGet/Home/issues/11548
+      # https://twitter.com/xoofx/status/1488617114940452872?s=20&t=BKSN4j9rP6fOyg8l7aW0eg
+      NUGET_CERT_REVOCATION_MODE: offline
     steps:
       - name: Get Source
         uses: actions/checkout@v2
         with:
           path: Statiq.Web
-
+          submodules: recursive
       - name: Checkout Statiq.Framework
         uses: actions/checkout@v2
         with:
           repository: statiqdev/Statiq.Framework
           path: Statiq.Framework
-
+          submodules: recursive
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
-
+          dotnet-version: |
+            3.1.x
+            6.0.x
       - name: Build and Test
-        run: dotnet test
+        run: dotnet test --logger "trx;LogFileName=test-results.trx"
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: test-results-${{ matrix.os }}
+          path: '**/test-results.trx'
