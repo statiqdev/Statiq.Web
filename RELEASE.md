@@ -2,6 +2,8 @@
 
 - Added an additional shortcode processing phase after process templates are executed but before post-process templates are (for example, in between Markdown and Razor).
 - Increased the default `GatherHeadingsLevel` to two instead of just the first level of headings.
+- Performance improvements in the `ValidateLinks` analyzer (#982, thanks @phil-scott-78).
+- Updated Statiq Framework to version [1.0.0-beta.57](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.57).
 
 # 1.0.0-beta.42
 
