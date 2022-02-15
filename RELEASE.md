@@ -1,3 +1,8 @@
+# 1.0.0-beta.44
+
+- Updated Buildalyzer to 4.1.0 which removes some dependencies on .NET Framework and resolves some package resolution problems.
+- Updated Statiq Framework to version [1.0.0-beta.58](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.58).
+- 
 # 1.0.0-beta.43
 
 - Added an additional shortcode processing phase after process templates are executed but before post-process templates are (for example, in between Markdown and Razor).
