@@ -70,7 +70,11 @@ namespace Statiq.Web
                         AnalyzerManager analyzerManager = new AnalyzerManager();
                         IProjectAnalyzer projectAnalyzer = analyzerManager.GetProject(projectFile.Path.FullPath);
                         Workspace workspace = projectAnalyzer.GetWorkspace();
-                        Compilation compilation = workspace.CurrentSolution.Projects.First().GetCompilationAsync().Result;
+
+                        // Being called from a synchronous method so we've got to get the result synchronously here
+#pragma warning disable VSTHRD002 // Synchronously waiting on tasks or awaiters may cause deadlocks. Use await or JoinableTaskFactory.Run instead.
+                        Compilation compilation = workspace.CurrentSolution.Projects.First().GetCompilationAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
 
                         // Emit the assembly and PDB
                         MemoryStream assemblyStream = new MemoryStream();

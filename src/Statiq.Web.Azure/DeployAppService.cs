@@ -13,7 +13,7 @@ namespace Statiq.Web.Azure
     /// <summary>
     /// Deploys output files to Azure App Service using a zip file.
     /// </summary>
-    /// <category>Deployment</category>
+    /// <category name="Deployment" />
     public class DeployAppService : MultiConfigModule
     {
         // Config keys

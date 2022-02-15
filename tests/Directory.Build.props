@@ -1,7 +1,6 @@
 <Project>
   <Import Project="../Directory.Build.props" />
   <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\tests.ruleset</CodeAnalysisRuleSet>
     <!-- Treats projects as executables so things like unmanaged dependencies are copied to output -->
     <HasRuntimeOutput>true</HasRuntimeOutput>
   </PropertyGroup>

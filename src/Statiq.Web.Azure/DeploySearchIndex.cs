@@ -17,7 +17,7 @@ namespace Statiq.Web.Azure
     /// <summary>
     /// Deploys an Azure Search Service index from the input document metadata.
     /// </summary>
-    /// <category>Deployment</category>
+    /// <category name="Deployment" />
     public class DeploySearchIndex : MultiConfigModule
     {
         private const int BatchSize = 1000;

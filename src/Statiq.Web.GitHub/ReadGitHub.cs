@@ -26,7 +26,7 @@ namespace Statiq.Web.GitHub
     /// for the specified request.
     /// </para>
     /// </remarks>
-    /// <category>Metadata</category>
+    /// <category name="Metadata" />
     public class ReadGitHub : MultiConfigModule
     {
         private const string Request = nameof(Request); // Func<GitHubClient, Task<object>>

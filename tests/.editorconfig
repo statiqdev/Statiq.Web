@@ -1,0 +1,6 @@
+# Test Rules
+# These rules apply to all test projects and relax some severity levels as appropriate
+[*.{cs,vb}]
+dotnet_diagnostic.RCS1046.severity = none
+dotnet_diagnostic.VSTHRD200.severity = none
+dotnet_diagnostic.VSTHRD103.severity = suggestion

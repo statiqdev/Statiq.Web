@@ -98,7 +98,7 @@ namespace Statiq.Web
         public const string SearchAllowPositionMetadata = nameof(SearchAllowPositionMetadata);
 
         /// <summary>
-        /// Specifies stops words to use for the search index. By default a pre-defined set of English stop words are used
+        /// Specifies stops words to use for the search index. By default a pre-defined set of English stop words are used.
         /// </summary>
         public const string SearchStopWords = nameof(SearchStopWords);
 

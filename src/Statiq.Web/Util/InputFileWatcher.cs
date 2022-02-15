@@ -50,7 +50,10 @@ namespace Statiq.Web
             }
             _outputPath = outputDirectory.FullPath;
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
+
+#pragma warning disable VSTHRD110 // Observe the awaitable result of this method call by awaiting it, assigning to a variable, or passing it to another method.
             Task.Run(ProcessChangedFilesAsync);
+#pragma warning restore VSTHRD110
         }
 
         public void Dispose()

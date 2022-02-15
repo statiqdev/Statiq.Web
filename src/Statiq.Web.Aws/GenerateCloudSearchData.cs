@@ -15,7 +15,7 @@ namespace Statiq.Web.Aws
     /// Note that this just creates the document. Once that document is written to the file system, you will still need to upload the document
     /// to a correctly configured CloudSearch instance using the API or Amazon CLI.
     /// </remarks>
-    /// <category>Content</category>
+    /// <category name="Content" />
     public class GenerateCloudSearchData : Module
     {
         private readonly string _idMetaKey;
@@ -71,25 +71,25 @@ namespace Statiq.Web.Aws
             {
                 using (JsonWriter writer = new JsonTextWriter(textWriter))
                 {
-                    writer.WriteStartArray();
+                    await writer.WriteStartArrayAsync();
 
                     foreach (IDocument input in context.Inputs)
                     {
-                        writer.WriteStartObject();
+                        await writer.WriteStartObjectAsync();
 
-                        writer.WritePropertyName("type");
-                        writer.WriteValue("add");
+                        await writer.WritePropertyNameAsync("type");
+                        await writer.WriteValueAsync("add");
 
-                        writer.WritePropertyName("id");
-                        writer.WriteValue(_idMetaKey is object ? input.GetString(_idMetaKey) : input.Id.ToString());
+                        await writer.WritePropertyNameAsync("id");
+                        await writer.WriteValueAsync(_idMetaKey is object ? input.GetString(_idMetaKey) : input.Id.ToString());
 
-                        writer.WritePropertyName("fields");
-                        writer.WriteStartObject();
+                        await writer.WritePropertyNameAsync("fields");
+                        await writer.WriteStartObjectAsync();
 
                         if (_bodyField is object)
                         {
-                            writer.WritePropertyName(_bodyField);
-                            writer.WriteValue(await input.GetContentStringAsync());
+                            await writer.WritePropertyNameAsync(_bodyField);
+                            await writer.WriteValueAsync(await input.GetContentStringAsync());
                         }
 
                         foreach (Field field in _fields)
@@ -102,8 +102,8 @@ namespace Statiq.Web.Aws
                                 continue;
                             }
 
-                            writer.WritePropertyName(name);
-                            writer.WriteRawValue(JsonConvert.SerializeObject(value));
+                            await writer.WritePropertyNameAsync(name);
+                            await writer.WriteRawValueAsync(JsonConvert.SerializeObject(value));
                         }
 
                         foreach (MetaFieldMapping field in _metaFields)
@@ -133,17 +133,17 @@ namespace Statiq.Web.Aws
                                 continue;
                             }
 
-                            writer.WritePropertyName(fieldName);
-                            writer.WriteRawValue(JsonConvert.SerializeObject(value));
+                            await writer.WritePropertyNameAsync(fieldName);
+                            await writer.WriteRawValueAsync(JsonConvert.SerializeObject(value));
                         }
 
-                        writer.WriteEndObject();
+                        await writer.WriteEndObjectAsync();
 
-                        writer.WriteEndObject();
+                        await writer.WriteEndObjectAsync();
                     }
 
-                    writer.WriteEndArray();
-                    textWriter.Flush();
+                    await writer.WriteEndArrayAsync();
+                    await textWriter.FlushAsync();
 
                     return context.CreateDocument(context.GetContentProvider(contentStream, MediaTypes.Json)).Yield();
                 }

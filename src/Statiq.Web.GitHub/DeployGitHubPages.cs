@@ -12,7 +12,7 @@ namespace Statiq.Web.GitHub
     /// <summary>
     /// Deploys output files to GitHub Pages.
     /// </summary>
-    /// <category>Deployment</category>
+    /// <category name="Deployment" />
     public class DeployGitHubPages : MultiConfigModule
     {
         public const string DefaultBranch = "gh-pages";
