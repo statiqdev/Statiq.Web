@@ -25,7 +25,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ExcerptShouldNotDoubleEscapeEntities()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider();
                 fileProvider.AddFile("/input/foo.md", @"# Hello World
 
@@ -47,7 +47,7 @@ the clouds away
             public async Task DefaultGatherHeadingsLevel()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -73,7 +73,7 @@ the clouds away
             public async Task GlobalGatherHeadingsLevelSetting()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.GatherHeadingsLevel, 2);
@@ -102,7 +102,7 @@ the clouds away
             public async Task DocumentGatherHeadingsLevelSetting()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.GatherHeadingsLevel, 3);
@@ -132,7 +132,7 @@ the clouds away
             public async Task LayoutViewStart()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
@@ -178,7 +178,7 @@ This is a test"
             public async Task HtmlFragmentFileAppliesLayout()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
@@ -220,7 +220,7 @@ This is a test"
             public async Task HtmlFragmentAppliesLayout()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
@@ -262,7 +262,7 @@ This is a test"
             public async Task HtmlDoesNotApplyLayout()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
@@ -301,7 +301,7 @@ This is a test"
             public async Task HtmlFragmentFileAppliesAlternateLayout()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddTemplate(
@@ -346,7 +346,7 @@ This is a test"
             public async Task HtmlFragmentAppliesAlternateLayout()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .SetDefaultLayoutModule(new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")));
@@ -386,7 +386,7 @@ This is a test"
             public async Task HtmlFragmentFileAppliesAlternateLayoutModule()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .SetDefaultLayoutModule(new ExecuteConfig(Config.FromDocument(async doc => "start" + (await doc.GetContentStringAsync()) + "end")));
@@ -426,7 +426,7 @@ This is a test"
             public async Task HtmlFragmentAppliesAlternateLayoutModule()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddTemplate(
@@ -471,7 +471,7 @@ This is a test"
             public async Task LayoutMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
@@ -509,7 +509,7 @@ This is a test"
             public async Task ScriptWithMarkdownExtensionReturnsMarkdownContent()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -540,7 +540,7 @@ return $""# {foo}\nContent"";"
             public async Task ScriptWithCsxExtensionAndMediaTypeReturnsMarkdownContent()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -572,7 +572,7 @@ return $""# {foo}\nContent"";"
             public async Task ScriptWithMdAndCsxExtensionReturnsMarkdownContent()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -601,7 +601,7 @@ return $""# {foo}\nContent"";"
             public async Task ShouldNotHighlightCodeByDefault()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -626,7 +626,7 @@ return $""# {foo}\nContent"";"
             public async Task ShouldHighlightCode()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.HighlightCode, true);
                 TestFileProvider fileProvider = new TestFileProvider
@@ -653,7 +653,7 @@ return $""# {foo}\nContent"";"
             public async Task ShouldNotHighlightCodeForUnspecifiedLanguage()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.HighlightCode, true)
                     .AddSetting(WebKeys.HighlightUnspecifiedLanguage, false);
@@ -681,7 +681,7 @@ return $""# {foo}\nContent"";"
             public async Task ShouldChangeMarkdownExtensionsViaTemplates()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .ModifyTemplate(
                         MediaTypes.Markdown,
@@ -732,7 +732,7 @@ End"
             public async Task ShouldChangeMarkdownExtensionsViaSettings()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(MarkdownKeys.MarkdownExtensions, "Bootstrap");
                 TestFileProvider fileProvider = new TestFileProvider

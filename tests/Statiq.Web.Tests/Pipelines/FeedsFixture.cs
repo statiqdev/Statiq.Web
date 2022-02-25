@@ -20,7 +20,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task AllowsStringIds()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },
@@ -44,7 +44,7 @@ FeedRss: true"
             public async Task ExcludesAssetContentType()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },
@@ -68,7 +68,7 @@ FeedRss: true"
             public async Task ToggleFeedWithPath()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },

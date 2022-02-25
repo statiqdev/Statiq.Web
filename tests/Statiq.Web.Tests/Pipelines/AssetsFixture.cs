@@ -20,7 +20,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ProcessesJsonSidecarFileWithDifferentExtension()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.foo", "Foobar" },
@@ -42,7 +42,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ReturnsStringContent()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.csx", "int a = 1; int b = 2; return $\"The number is {a + b}.\";" }
@@ -62,7 +62,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task SetsDestinationFromFrontMatter()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -88,7 +88,7 @@ int a = 1; int b = 2; return $""The number is {a + b}."";"
             public async Task ReturnsSingleDocument()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -119,7 +119,7 @@ return Context.CreateDocument(
             public async Task ReturnsMultipleDocuments()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -160,7 +160,7 @@ return new IDocument[]
             public async Task RemoveScriptExtensionIsFalse()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {

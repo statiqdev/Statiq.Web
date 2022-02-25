@@ -17,7 +17,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldAddThemePathsBeforeDefaultInputPath()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
 
                 // When
                 BootstrapperTestResult result = await bootstrapper.RunTestAsync();
@@ -35,7 +35,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldAddThemePathsBeforeCliInputPaths()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(new[] { "-i", "foo" });
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(new[] { "-i", "foo" });
 
                 // When
                 BootstrapperTestResult result = await bootstrapper.RunTestAsync();
@@ -53,7 +53,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldAddThemePathsBeforeBootstrapperInputPaths()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddInputPath("foo");
 
@@ -74,7 +74,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldAddThemePathsInCorrectOrder()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddThemePath("foo");
 
@@ -95,7 +95,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldSetThemePath()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .SetThemePath("foo");
 
@@ -115,7 +115,7 @@ namespace Statiq.Web.Tests.Themes
             public async Task ShouldAddThemePathsBeforeSettingsInputPaths()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.InputPaths, new[] { "foo" });
 

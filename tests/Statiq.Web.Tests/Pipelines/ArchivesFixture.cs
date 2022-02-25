@@ -20,7 +20,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ScriptArchive()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/1.json", "{ \"A\": \"a1\", \"B\": \"b1\" }" },
@@ -51,7 +51,7 @@ return Document.GetChildren().Select(x => x.FilterMetadata(""A"", ""B"")).ToJson
             public async Task ScriptArchiveWithExtensionPrefix()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/1.json", "{ \"A\": \"a1\", \"B\": \"b1\" }" },
@@ -81,7 +81,7 @@ return Document.GetChildren().Select(x => x.FilterMetadata(""A"", ""B"")).ToJson
             public async Task GeneratesArchiveWithChildren()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/1.cshtml", "{ \"A\": \"a1\", \"B\": \"b1\" }" },
@@ -110,7 +110,7 @@ return Document.GetChildren().Select(x => x.FilterMetadata(""A"", ""B"")).ToJson
             public async Task ExcludesAssetContentType()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/1.cshtml", "{ \"A\": \"a1\", \"B\": \"b1\" }" },
@@ -137,7 +137,7 @@ ContentType: Asset
             public async Task KeyedOrder()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -177,7 +177,7 @@ ArchiveOrderKey: A
             public async Task ComputedOrder()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -217,7 +217,7 @@ ArchiveOrder: => int.Parse(GetString(""A"").Substring(1))
             public async Task ComputedOrderAfterKeyedOrder()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -258,7 +258,7 @@ ArchiveOrder: => int.Parse(GetString(""B"").Substring(1))
             public async Task ArchiveKey()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -341,7 +341,7 @@ ArchiveKey: G
             public async Task ComputedArchiveKey()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {

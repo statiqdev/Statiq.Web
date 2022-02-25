@@ -20,7 +20,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ParsesJson()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" }
@@ -39,7 +39,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task DoesNotClearDataContentIfNotSet()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
@@ -60,7 +60,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ClearsDataContentIfSet()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.ClearDataContent, true);
                 TestFileProvider fileProvider = new TestFileProvider
@@ -82,7 +82,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ParsesYaml()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.yaml", "Foo: Bar" }
@@ -101,7 +101,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task IncludesDocumentsFromDependencies()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.InputFiles, "x/**/*");
                 bootstrapper.BuildPipeline("Test", builder => builder
@@ -125,7 +125,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task AddsDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -146,7 +146,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task DoesNotApplyDirectoryMetadataIfSettingIsFalse()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.ApplyDirectoryMetadata, false);
                 TestFileProvider fileProvider = new TestFileProvider
@@ -169,7 +169,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task DoesNotAddNonRecursiveDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -190,7 +190,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task AddsLocalRecursiveDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -211,7 +211,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task LocalMetadataOverridesDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -231,7 +231,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task CloserMetadataOverridesDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ }" },
@@ -252,7 +252,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task FiltersExcludedFiles()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -272,7 +272,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task DoesNotReadUnderscoreFilesByDefault()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -292,7 +292,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ParsesJsonWithFrontMatter()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -317,7 +317,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ParsesYamlWithFrontMatter()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -342,7 +342,7 @@ Foo: Bar"
             public async Task FrontMatterOverridesDirectoryMetadata()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -369,7 +369,7 @@ Foo: Bar"
             public async Task ProcessesJsonSidecarFile()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -391,7 +391,7 @@ Foo: Bar"
             public async Task ContentOverridesSidecarFile()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -412,7 +412,7 @@ Foo: Bar"
             public async Task SidecarFileWithDifferentExtension()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -434,7 +434,7 @@ Foo: Bar"
             public async Task SidecarFileWithAppendedExtension()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/a/b/c.json", "{ \"Foo\": \"Bar\" }" },
@@ -456,7 +456,7 @@ Foo: Bar"
             public async Task EnumeratesValues()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -481,7 +481,7 @@ Foo: Bar"
             public async Task JsonScriptReturn()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {

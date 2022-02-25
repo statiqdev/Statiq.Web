@@ -21,7 +21,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ShouldRemoveStatiqFileExtension(string path, string destinationPath)
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { path, string.Empty }
@@ -40,7 +40,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ShouldExcludeUnderscoreFiles()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo", string.Empty },
@@ -60,7 +60,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ShouldNotExcludeUnderscoreStatiqFiles()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo", string.Empty },
@@ -82,7 +82,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ShouldChangeDestinationOfStatiqFile()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -106,7 +106,7 @@ Fizz buzz"
             public async Task ShouldProcessFrontMatterForStatiqFile()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -131,7 +131,7 @@ Fizz buzz"
             public async Task ShouldSkipFrontMatterDelimiterInStatiqBodyFileWithEmptyFrontMatter()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {

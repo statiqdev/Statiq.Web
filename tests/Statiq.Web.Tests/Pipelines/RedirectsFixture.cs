@@ -20,7 +20,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task GeneratesClientRedirects()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     {
@@ -49,7 +49,7 @@ Foo"
             public async Task GeneratesNetlifyRedirects()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper.Factory
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.NetlifyRedirects, true)
                     .AddSetting(WebKeys.MetaRefreshRedirects, false);

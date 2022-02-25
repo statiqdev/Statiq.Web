@@ -18,7 +18,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task IncludeInSitemapByDefault()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>());
 
@@ -44,7 +44,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task IncludeInSitemapWhenSpecified()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.GenerateSitemap, true);
@@ -72,7 +72,7 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task ExcludeFromSitemapWhenSpecified()
             {
                 // Given
-                Bootstrapper bootstrapper = Bootstrapper
+                App.Bootstrapper bootstrapper = App.Bootstrapper
                     .Factory
                     .CreateWeb(Array.Empty<string>())
                     .AddSetting(WebKeys.GenerateSitemap, true);
