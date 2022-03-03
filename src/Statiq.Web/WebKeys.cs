@@ -234,6 +234,19 @@ namespace Statiq.Web
         /// </summary>
         public const string HighlightUnspecifiedLanguage = nameof(HighlightUnspecifiedLanguage);
 
+        /// <summary>
+        /// The regular expressions used to identify front matter. Change this setting if you want
+        /// to define entirely new front matter expressions. Otherwise, set
+        /// <see cref="AdditionalFrontMatterRegexes"/> if you want to keep the defaults and only
+        /// want to add new patterns.
+        /// </summary>
+        public const string FrontMatterRegexes = nameof(FrontMatterRegexes);
+
+        /// <summary>
+        /// Additional regular expressions used to identify front matter.
+        /// </summary>
+        public const string AdditionalFrontMatterRegexes = nameof(AdditionalFrontMatterRegexes);
+
         ////////// Document
 
         /// <summary>

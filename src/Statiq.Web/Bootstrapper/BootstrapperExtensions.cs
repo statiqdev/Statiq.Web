@@ -156,7 +156,17 @@ namespace Statiq.Web
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.*" },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
-                    { WebKeys.PublishedUsesLastModifiedDate, true }
+                    { WebKeys.PublishedUsesLastModifiedDate, true },
+                    {
+                        WebKeys.FrontMatterRegexes,
+                        new string[]
+                        {
+                            ExtractFrontMatter.GetDelimiterRegex("-", true), // Jekyll-style: --- ... ---
+                            @"\A(?:^\r*/\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*/[^\S\n]*$\r?\n)", // C-style: /*- ... -*/
+                            @"\A(?:^\r*<!---+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+-->[^\S\n]*$\r?\n)", // HTML-style: <!--- ... ---!>
+                            @"\A(?:^\r*@\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*@[^\S\n]*$\r?\n)", // Razor-style: @*- ... -*@
+                        }
+                    }
                 });
 
         private static TBootstrapper AddWebAnalyzers<TBootstrapper>(this TBootstrapper bootstrapper)

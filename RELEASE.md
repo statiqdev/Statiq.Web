@@ -1,8 +1,14 @@
+# 1.0.0-beta.45
+
+- **Breaking change:** To make the distinction between normal beginning of file block comments in a C# file and front matter comments, front matter block comments in C# files must now use an extra dash like `/*-` and `-*/`.
+- Added support for more types of front matter delimiters in more places. For example, Razor files can now define front matter using Razor block comment syntax and a dash like `@*-` and `-*@` at the beginning of a file. HTML files can now define front matter using `<!---` and `--->` at the beginning of a file (notice three or more `-` characters instead of two). The various front matter delimiters are also universal and can be used in any file (I.e. you can new use C-style front matter block comments in `.css` files).
+- Added `FrontMatterRegexes` and `AdditionalFrontMatterRegexes` settings to help customize the regular expressions used to find front matter.
+
 # 1.0.0-beta.44
 
 - Updated Buildalyzer to 4.1.0 which removes some dependencies on .NET Framework and resolves some package resolution problems.
 - Updated Statiq Framework to version [1.0.0-beta.58](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.58).
-- 
+
 # 1.0.0-beta.43
 
 - Added an additional shortcode processing phase after process templates are executed but before post-process templates are (for example, in between Markdown and Razor).

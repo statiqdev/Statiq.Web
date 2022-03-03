@@ -152,7 +152,7 @@ namespace Statiq.Web.Azure
         /// </summary>
         /// <remarks>
         /// See https://github.com/projectkudu/kudu/wiki/Deploying-from-a-zip-file-or-url#asynchronous-zip-deployment
-        /// for more information about Kudu and asychronous deployment. When using asynchronous deployment, the module
+        /// for more information about Kudu and asynchronous deployment. When using asynchronous deployment, the module
         /// will poll for completion every 10 seconds until the <see cref="WithTimeout(Config{TimeSpan})"/>
         /// is reached.
         /// </remarks>

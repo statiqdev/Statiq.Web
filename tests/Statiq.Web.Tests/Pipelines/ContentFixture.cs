@@ -506,6 +506,80 @@ This is a test"
             }
 
             [Test]
+            public async Task RazorCommentFrontMatter()
+            {
+                // Given
+                App.Bootstrapper bootstrapper = App.Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Layout/Test.cshtml",
+                        @"@*---
+Layout: _Layout.cshtml
+---*@
+<h1>Heading</h1>
+<p>This is a test</p>"
+                    },
+                    {
+                        "/input/Layout/_Layout.cshtml",
+                        @"<div>LAYOUT</div>
+    @RenderBody()"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<div>LAYOUT</div>
+    <h1>Heading</h1>
+<p>This is a test</p>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
+            public async Task HtmlCommentFrontMatter()
+            {
+                // Given
+                App.Bootstrapper bootstrapper = App.Bootstrapper
+                    .Factory
+                    .CreateWeb(Array.Empty<string>());
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    {
+                        "/input/Layout/Test.cshtml",
+                        @"<!---
+Layout: _Layout.cshtml
+--->
+<h1>Heading</h1>
+<p>This is a test</p>"
+                    },
+                    {
+                        "/input/Layout/_Layout.cshtml",
+                        @"<div>LAYOUT</div>
+    @RenderBody()"
+                    },
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Content)][Phase.Output].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldBe(
+                    @"<div>LAYOUT</div>
+    <h1>Heading</h1>
+<p>This is a test</p>",
+                    StringCompareShould.IgnoreLineEndings);
+            }
+
+            [Test]
             public async Task ScriptWithMarkdownExtensionReturnsMarkdownContent()
             {
                 // Given
@@ -545,10 +619,10 @@ return $""# {foo}\nContent"";"
                 {
                     {
                         "/input/foo.csx",
-                        @"/*
+                        @"/*-
 MediaType: text/markdown
 Script: true
-*/
+-*/
 string foo = ""Bar"";
 return $""# {foo}\nContent"";"
                     }

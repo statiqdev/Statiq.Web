@@ -78,13 +78,17 @@ namespace Statiq.Web.Pipelines
                         new SetDestination(Config.FromDocument(doc => doc.Source.GetRelativeInputPath().ChangeExtension(null))),
                     },
 
-                    // Apply front matter
-                    new ExecuteIf(Config.FromDocument(doc => doc.MediaTypeEquals(MediaTypes.CSharp)))
-                    {
-                        // Special case to pre-process C# files with comment-style front matter delimiters first
-                        new ExtractFrontMatter("*/", GetFrontMatterModules()).RequireStartDelimiter("/*")
-                    },
-                    new ExtractFrontMatter(GetFrontMatterModules()),
+                    // Extract front matter
+                    // TODO: accept other types of front matter based on first char (`<` = XML, `{` = JSON)
+                    new ExtractFrontMatter(
+                        Config.FromSettings<IEnumerable<string>>(settings =>
+                        {
+                            List<string> regexes = new List<string>();
+                            regexes.AddRange(settings.GetList<string>(WebKeys.FrontMatterRegexes, Array.Empty<string>()));
+                            regexes.AddRange(settings.GetList(WebKeys.AdditionalFrontMatterRegexes, Array.Empty<string>()));
+                            return regexes;
+                        }),
+                        new ParseYaml()),
 
                     // Set new media type from metadata (in case front matter changed it)
                     new ExecuteIf(Config.FromDocument(doc => doc.ContainsKey(WebKeys.MediaType)))
@@ -127,16 +131,6 @@ namespace Statiq.Web.Pipelines
                 // Filter out excluded documents
                 new FilterDocuments(Config.FromDocument(doc => !doc.GetBool(WebKeys.Excluded))),
             };
-        }
-
-        private static IModule[] GetFrontMatterModules()
-        {
-            ModuleList modules = new ModuleList();
-
-            // TODO: accept other types of front matter based on first char
-            modules.Add(new ParseYaml());
-
-            return modules.ToArray();
         }
     }
 }
