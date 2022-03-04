@@ -129,6 +129,7 @@ namespace Statiq.Web
                 .FromPipelines(
                     context.Settings.GetList(WebKeys.XrefPipelines, Array.Empty<string>())
                         .Concat(context.Settings.GetList(WebKeys.AdditionalXrefPipelines, Array.Empty<string>()))
+                        .Where(x => context.Pipelines.ContainsKey(x))
                         .ToArray())
                 .Flatten()
                 .Select(x => (x.GetString(WebKeys.Xref), x))
