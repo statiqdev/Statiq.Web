@@ -8,6 +8,7 @@ jobs:
   report:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:

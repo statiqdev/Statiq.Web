@@ -12,6 +12,7 @@ jobs:
       run:
         working-directory: Statiq.Web
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     env:
