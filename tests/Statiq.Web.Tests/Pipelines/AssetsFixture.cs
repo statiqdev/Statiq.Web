@@ -152,8 +152,9 @@ return new IDocument[]
                 result.ExitCode.ShouldBe((int)ExitCode.Normal);
                 ImmutableArray<IDocument> documents = result.Outputs[nameof(Assets)][Phase.Process];
                 documents.Length.ShouldBe(2);
-                documents.Select(x => x.GetContentStringAsync().Result).ShouldBe(new[] { "The number is 1.", "The number is 2." });
-                documents.Select(x => x["Foo"]).ShouldBe(new[] { "Bar", "Baz" });
+                documents.Select(x => x.GetContentStringAsync().Result)
+                    .ShouldBe(new[] { "The number is 1.", "The number is 2." }); // Should be returned in natural order
+                documents.Select(x => x["Foo"]).ShouldBe(new[] { "Bar", "Baz" });  // Should be returned in natural order
             }
 
             [Test]

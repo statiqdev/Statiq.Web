@@ -26,6 +26,8 @@ namespace Statiq.Web.Tests.Modules
                     { WebKeys.Xref, "fizzbuzz" }
                 };
                 TestExecutionContext context = new TestExecutionContext();
+                context.Settings.Add(WebKeys.XrefPipelines, new string[] { nameof(Content) });
+                context.Pipelines.Add(nameof(Content)); // Pipeline must exist for xref
                 context.Outputs.Dictionary.Add(
                     nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
@@ -58,6 +60,8 @@ namespace Statiq.Web.Tests.Modules
                     { WebKeys.Xref, "fizzbuzz" }
                 };
                 TestExecutionContext context = new TestExecutionContext();
+                context.Settings.Add(WebKeys.XrefPipelines, new string[] { nameof(Content) });
+                context.Pipelines.Add(nameof(Content)); // Pipeline must exist for xref
                 context.Outputs.Dictionary.Add(
                     nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
@@ -85,6 +89,8 @@ namespace Statiq.Web.Tests.Modules
                     { WebKeys.Xref, "fizzbuzz" }
                 };
                 TestExecutionContext context = new TestExecutionContext();
+                context.Settings.Add(WebKeys.XrefPipelines, new string[] { nameof(Content) });
+                context.Pipelines.Add(nameof(Content)); // Pipeline must exist for xref
                 context.Outputs.Dictionary.Add(
                     nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
@@ -117,6 +123,8 @@ namespace Statiq.Web.Tests.Modules
                     { WebKeys.Xref, "fizzbuzz" }
                 };
                 TestExecutionContext context = new TestExecutionContext();
+                context.Settings.Add(WebKeys.XrefPipelines, new string[] { nameof(Content) });
+                context.Pipelines.Add(nameof(Content)); // Pipeline must exist for xref
                 context.Outputs.Dictionary.Add(
                     nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
@@ -149,6 +157,8 @@ namespace Statiq.Web.Tests.Modules
                     { WebKeys.Xref, "fizzbuzz" }
                 };
                 TestExecutionContext context = new TestExecutionContext();
+                context.Settings.Add(WebKeys.XrefPipelines, new string[] { nameof(Content) });
+                context.Pipelines.Add(nameof(Content)); // Pipeline must exist for xref
                 context.Outputs.Dictionary.Add(
                     nameof(Content),
                     new IDocument[] { target }.ToImmutableArray());
