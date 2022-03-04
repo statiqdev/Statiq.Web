@@ -154,7 +154,19 @@ namespace Statiq.Web
                 {
                     { WebKeys.InputFiles, "**/{!_,}*" },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.*" },
-                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle().Replace(' ', '-')) },
+                    {
+                        WebKeys.XrefPipelines,
+                        new string[]
+                        {
+                            nameof(Pipelines.Content),
+                            nameof(Pipelines.Assets),
+                            nameof(Pipelines.Data),
+                            nameof(Pipelines.Archives),
+                            nameof(Pipelines.Feeds),
+                            "api" // to support Statiq Docs
+                        }
+                    },
+                    { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle()?.Replace(' ', '-')) }, // Not all documents have a title (I.e. no title metadata and no source)
                     { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
                     { WebKeys.PublishedUsesLastModifiedDate, true },
                     {

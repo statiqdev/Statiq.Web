@@ -247,6 +247,19 @@ namespace Statiq.Web
         /// </summary>
         public const string AdditionalFrontMatterRegexes = nameof(AdditionalFrontMatterRegexes);
 
+        /// <summary>
+        /// The name(s) of pipelines to use for xref lookups (defaults to "content", "archives", "assets", "data", "feeds").
+        /// Change this setting if you want to define entirely new xref pipelines. Otherwise, set
+        /// <see cref="AdditionalXrefPipelines"/> if you want to keep the defaults and only want to add new pipelines.
+        /// </summary>
+        public const string XrefPipelines = nameof(XrefPipelines);
+
+        /// <summary>
+        /// The name(s) of additional pipelines to use for xref lookups
+        /// (defaults to "content", "archives", "assets", "data", "feeds", and "api").
+        /// </summary>
+        public const string AdditionalXrefPipelines = nameof(AdditionalXrefPipelines);
+
         ////////// Document
 
         /// <summary>

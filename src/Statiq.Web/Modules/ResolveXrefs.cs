@@ -8,20 +8,22 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
 using Statiq.Common;
+using IDocument = Statiq.Common.IDocument;
 
 namespace Statiq.Web.Modules
 {
     public class ResolveXrefs : Module
     {
-        protected override async Task<IEnumerable<Common.IDocument>> ExecuteContextAsync(IExecutionContext context)
+        protected override async Task<IEnumerable<IDocument>> ExecuteContextAsync(IExecutionContext context)
         {
             // Key = source, Value = tag HTML
             ConcurrentDictionary<string, ConcurrentBag<string>> failures =
                 new ConcurrentDictionary<string, ConcurrentBag<string>>();
 
-            // Resolve the xrefs in parallel
-            IEnumerable<Common.IDocument> outputs = await context.Inputs
-                .ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context, failures));
+            // Resolve the xrefs in parallel, using a single mapping dictionary for all documents for efficiency
+            IDictionary<string, ICollection<IDocument>> xrefMappings = context.GetXrefMappings();
+            IEnumerable<IDocument> outputs = await context.Inputs
+                .ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context, xrefMappings, failures));
 
             // Report failures and throw if there are any
             if (failures.Count > 0)
@@ -37,9 +39,10 @@ namespace Statiq.Web.Modules
             return outputs;
         }
 
-        private static async Task<Common.IDocument> ResolveDocumentXrefsAsync(
-            Common.IDocument input,
+        private static async Task<IDocument> ResolveDocumentXrefsAsync(
+            IDocument input,
             IExecutionContext context,
+            IDictionary<string, ICollection<IDocument>> xrefMappings,
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
             IHtmlDocument htmlDocument = await input.ParseHtmlAsync(false);
@@ -63,7 +66,7 @@ namespace Statiq.Web.Modules
                             queryAndFragment = xref.Substring(queryAndFragmentIndex);
                             xref = xref.Substring(0, queryAndFragmentIndex);
                         }
-                        if (context.TryGetXrefLink(xref, out string xrefLink, out string error))
+                        if (context.TryGetXrefLink(xref, xrefMappings, out string xrefLink, out string error))
                         {
                             element.Attributes["href"].Value = xrefLink + queryAndFragment;
                         }
