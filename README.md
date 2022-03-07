@@ -4,11 +4,13 @@
 
 Statiq Web is a powerful static web site generation toolkit suitable for most use cases. It’s built on top of [Statiq Framework](https://statiq.dev/framework) so you can always extend or customize it.
 
-📖 Visit [the Statiq Web guide](https://statiq.dev/web) for updated quick start instructions as well as more detailed documentation.
+[📖 Read the documentation](https://statiq.dev/web) for updated quick start instructions as well as a more detailed guide.
 
-💬 Visit [the Discussions repo](https://github.com/statiqdev/Discussions/discussions) for general discussion about all Statiq projects.
+[💬 Use the Discussions repo](https://github.com/statiqdev/Discussions/discussions) for assistance, questions, and general discussion about all Statiq projects.
 
-💙 If you find Statiq useful, please consider [supporting the project](https://www.statiq.dev/support/).
+[🐞 File an issue](https://github.com/statiqdev/Statiq.Web/issues) if you find a bug or have a feature request related to Statiq Web.
+
+[💙 Support the project](https://www.statiq.dev/support/) if you find Statiq useful.
 
 ## Licensing
 
