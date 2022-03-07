@@ -158,12 +158,12 @@ namespace Statiq.Web
                         WebKeys.XrefPipelines,
                         new string[]
                         {
+                            // We don't need to include the Api pipeline from Statiq Docs because it's a dependency of Content
                             nameof(Pipelines.Content),
                             nameof(Pipelines.Assets),
                             nameof(Pipelines.Data),
                             nameof(Pipelines.Archives),
-                            nameof(Pipelines.Feeds),
-                            "api" // to support Statiq Docs
+                            nameof(Pipelines.Feeds)
                         }
                     },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle()?.Replace(' ', '-')) }, // Not all documents have a title (I.e. no title metadata and no source)
@@ -173,10 +173,10 @@ namespace Statiq.Web
                         WebKeys.FrontMatterRegexes,
                         new string[]
                         {
-                            ExtractFrontMatter.GetDelimiterRegex("-", true), // Jekyll-style: --- ... ---
                             @"\A(?:^\r*/\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*/[^\S\n]*$\r?\n)", // C-style: /*- ... -*/
                             @"\A(?:^\r*<!---+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+-->[^\S\n]*$\r?\n)", // HTML-style: <!--- ... ---!>
                             @"\A(?:^\r*@\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*@[^\S\n]*$\r?\n)", // Razor-style: @*- ... -*@
+                            ExtractFrontMatter.GetDelimiterRegex("-", true), // Jekyll-style: --- ... ---, comes last since it's more general and doesn't require a start delimiter
                         }
                     }
                 });
