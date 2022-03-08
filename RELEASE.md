@@ -4,6 +4,7 @@
 - Added support for more types of front matter delimiters in more places. For example, Razor files can now define front matter using Razor block comment syntax and a dash like `@*-` and `-*@` at the beginning of a file. HTML files can now define front matter using `<!---` and `--->` at the beginning of a file (notice three or more `-` characters instead of two). The various front matter delimiters are also universal and can be used in any file (I.e. you can new use C-style front matter block comments in `.css` files).
 - Added `FrontMatterRegexes` and `AdditionalFrontMatterRegexes` settings to help customize the regular expressions used to find front matter.
 - Expanded xref lookup behavior to look in all relevant pipelines, not just the "content" pipeline (exclusions can be customized using the `XrefPipelines` and `AdditionalXrefPipelines` settings).
+- Updated Statiq Framework to version [1.0.0-beta.59](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.59).
 
 # 1.0.0-beta.44
 
