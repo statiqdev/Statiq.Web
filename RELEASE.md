@@ -1,3 +1,7 @@
+# 1.0.0-beta.46
+
+- Updated Statiq Framework to version [1.0.0-beta.60](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.60).
+
 # 1.0.0-beta.45
 
 - **Breaking change:** To make the distinction between normal beginning of file block comments in a C# file and front matter comments, front matter block comments in C# files must now use an extra dash like `/*-` and `-*/`.
