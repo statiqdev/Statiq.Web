@@ -47,8 +47,10 @@ namespace Statiq.Web.Tests
                 error.ShouldBeNull();
             }
 
+            // Xrefs should usually be documents that get output to disk, so it doesn't make
+            // sense to scan in child documents for them since they typically don't get output
             [Test]
-            public void FindsXrefInChildDocuments()
+            public void DoesNotIncludeChildDocuments()
             {
                 // Given
                 TestDocument a = new TestDocument
@@ -79,9 +81,8 @@ namespace Statiq.Web.Tests
                 bool success = context.TryGetXrefDocument("78", out IDocument result, out string error);
 
                 // Then
-                success.ShouldBeTrue();
-                result.ShouldBe(child);
-                error.ShouldBeNull();
+                success.ShouldBeFalse();
+                error.ShouldBe("Couldn't find document with xref \"78\"");
             }
 
             [Test]
