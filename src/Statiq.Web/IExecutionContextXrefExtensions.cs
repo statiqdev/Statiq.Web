@@ -11,7 +11,7 @@ namespace Statiq.Web
         public static bool TryGetXrefDocument(
             this IExecutionContext context,
             string xref,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             out IDocument document,
             out string error)
         {
@@ -19,7 +19,8 @@ namespace Statiq.Web
             xrefMappings.ThrowIfNull(nameof(xrefMappings));
 
             // Does the xref exist?
-            if (!xrefMappings.TryGetValue(xref, out ICollection<IDocument> matches) || matches.Count == 0)
+            if (!xrefMappings.TryGetValue(xref, out ICollection<(string PipelineName, IDocument Document)> matches)
+                || matches.Count == 0)
             {
                 document = default;
                 error = $"Couldn't find document with xref \"{xref}\"";
@@ -30,12 +31,14 @@ namespace Statiq.Web
             if (matches.Count > 1)
             {
                 document = default;
-                error = $"Multiple ambiguous matching documents found for xref \"{xref}\"";
+                error = $"Multiple ambiguous matching documents found for xref \"{xref}\":"
+                    + Environment.NewLine
+                    + string.Join(Environment.NewLine, matches.Select(m => $"- Pipeline: {m.PipelineName}, Document ID: {m.Document.Id}"));
                 return false;
             }
 
             // Success
-            document = matches.First();
+            document = matches.First().Document;
             error = default;
             return true;
         }
@@ -57,7 +60,7 @@ namespace Statiq.Web
             this IExecutionContext context,
             string xref,
             bool includeHost,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             out string link,
             out string error)
         {
@@ -84,7 +87,7 @@ namespace Statiq.Web
         public static bool TryGetXrefLink(
             this IExecutionContext context,
             string xref,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             out string link,
             out string error) =>
             context.TryGetXrefLink(xref, false, xrefMappings, out link, out error);
@@ -96,7 +99,7 @@ namespace Statiq.Web
             this IExecutionContext context,
             string xref,
             bool includeHost,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             out string link) =>
             context.TryGetXrefLink(xref, includeHost, xrefMappings, out link, out string _);
 
@@ -106,7 +109,7 @@ namespace Statiq.Web
         public static bool TryGetXrefLink(
             this IExecutionContext context,
             string xref,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             out string link) =>
             context.TryGetXrefLink(xref, false, xrefMappings, out link, out string _);
 
@@ -116,25 +119,23 @@ namespace Statiq.Web
         public static string GetXrefLink(
             this IExecutionContext context,
             string xref,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             bool includeHost = false) =>
             context.TryGetXrefLink(xref, includeHost, xrefMappings, out string link, out string error) ? link : throw new ExecutionException(error);
 
         public static string GetXrefLink(this IExecutionContext context, string xref, bool includeHost = false) =>
             context.TryGetXrefLink(xref, includeHost, out string link, out string error) ? link : throw new ExecutionException(error);
 
-        public static IDictionary<string, ICollection<IDocument>> GetXrefMappings(this IExecutionContext context) =>
-            context
-                .Outputs
-                .FromPipelines(
-                    context.Settings.GetList(WebKeys.XrefPipelines, Array.Empty<string>())
-                        .Concat(context.Settings.GetList(WebKeys.AdditionalXrefPipelines, Array.Empty<string>()))
-                        .Where(x => context.Pipelines.ContainsKey(x))
-                        .ToArray())
-                .Flatten()
-                .Select(x => (x.GetString(WebKeys.Xref), x))
+        public static IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> GetXrefMappings(
+            this IExecutionContext context) =>
+            context.Settings
+                .GetList(WebKeys.XrefPipelines, Array.Empty<string>())
+                .Concat(context.Settings.GetList(WebKeys.AdditionalXrefPipelines, Array.Empty<string>()))
+                .Where(x => context.Pipelines.ContainsKey(x))
+                .SelectMany(x => context.Outputs.FromPipeline(x).Select(y => (PipelineName: x, Document: y)))
+                .Select(x => (x.Document.GetString(WebKeys.Xref), x))
                 .Where(x => x.Item1 is object)
                 .GroupBy(x => x.Item1, x => x.Item2, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(x => x.Key, x => (ICollection<IDocument>)x.ToArray(), StringComparer.OrdinalIgnoreCase);
+                .ToDictionary(x => x.Key, x => (ICollection<(string, IDocument)>)x.ToArray(), StringComparer.OrdinalIgnoreCase);
     }
 }

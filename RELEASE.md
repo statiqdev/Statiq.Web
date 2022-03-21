@@ -1,3 +1,7 @@
+# 1.0.0-beta.47
+
+- Fixed a regression with xref identification finding nested documents that shouldn't be considered (#988).
+
 # 1.0.0-beta.46
 
 - Updated Statiq Framework to version [1.0.0-beta.60](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.60).

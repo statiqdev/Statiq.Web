@@ -21,7 +21,7 @@ namespace Statiq.Web.Modules
                 new ConcurrentDictionary<string, ConcurrentBag<string>>();
 
             // Resolve the xrefs in parallel, using a single mapping dictionary for all documents for efficiency
-            IDictionary<string, ICollection<IDocument>> xrefMappings = context.GetXrefMappings();
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings = context.GetXrefMappings();
             IEnumerable<IDocument> outputs = await context.Inputs
                 .ParallelSelectAsync(async input => await ResolveDocumentXrefsAsync(input, context, xrefMappings, failures));
 
@@ -42,7 +42,7 @@ namespace Statiq.Web.Modules
         private static async Task<IDocument> ResolveDocumentXrefsAsync(
             IDocument input,
             IExecutionContext context,
-            IDictionary<string, ICollection<IDocument>> xrefMappings,
+            IDictionary<string, ICollection<(string PipelineName, IDocument Document)>> xrefMappings,
             ConcurrentDictionary<string, ConcurrentBag<string>> failures)
         {
             IHtmlDocument htmlDocument = await input.ParseHtmlAsync(false);
