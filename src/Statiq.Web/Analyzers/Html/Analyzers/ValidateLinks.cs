@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Statiq.Common;
@@ -54,7 +55,9 @@ namespace Statiq.Web
             }
 
             // Parse the link
-            if (!Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out Uri uri))
+            // Decode umlauts, the file name might have contained them and they were URLEncoded automatically.
+            // This will end up with disallowed characters in URL, but this is only used for file name matching.
+            if (!Uri.TryCreate(HttpUtility.HtmlDecode(link), UriKind.RelativeOrAbsolute, out Uri uri))
             {
                 AddAnalyzerResult("Invalid URI", elements, document, context);
                 return null;
