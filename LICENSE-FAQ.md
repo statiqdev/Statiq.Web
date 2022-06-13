@@ -5,16 +5,26 @@
 Statiq is licensed differently depending on the particular project:
 
 - [Statiq Web](https://github.com/statiqdev/Statiq.Web) and other Statiq projects
-that build on top of [Statiq Framework](https://github.com/statiqdev/Statiq.Framework) are dual-licensed under 
-a [public license](https://github.com/statiqdev/Statiq.Web/blob/main/LICENSE.md)
-for public use and a [private license](https://github.com/statiqdev/Statiq.Web/blob/main/LICENSE-PRIVATE.md)
-for commercial use.
-Both licenses are similar to other open licenses like MIT with additional restrictions on use.
-  - The public license limits commercial use to fewer than 10 total individuals
-working as employees and independent contractors and less than 100,000 USD total revenue in the prior tax year.
-It also has exceptions for non-commercial use and trial use.
-  - The private license is similar to open licenses such as MIT with additional limits on assignment and sublicensing.
+  that build on top of [Statiq Framework](https://github.com/statiqdev/Statiq.Framework) are dual-licensed under
+  a [public license](https://github.com/statiqdev/Statiq.Web/blob/main/LICENSE.md)
+  for public use and a [private license](https://github.com/statiqdev/Statiq.Web/blob/main/LICENSE-PRIVATE.md)
+  for commercial use.
+  Both licenses are similar to other open licenses like MIT, with additional restrictions on use.
+    - The public license limits commercial use to fewer than 10 total individuals
+      working as employees and independent contractors and less than 100,000 USD total revenue in the prior tax year.
+      It also has exceptions for non-commercial use and trial use.
+    - The private license is per-developer and is similar to open licenses such as MIT with additional limits on assignment and sublicensing.
 - [Statiq Framework](https://github.com/statiqdev/Statiq.Framework) and most other peripheral Statiq projects such as the [web site](https://github.com/statiqdev/statiqdev.github.io) are provided under a permissive MIT open-source license. This scheme is commonly referred to as "[open-core](https://en.wikipedia.org/wiki/Open-core_model)" because the core of the project is available as open-source while expanded capabilities are offered under more restrictive terms.
+
+## How do I purchase a private license for one or more developers?
+
+Please purchase licenses from the Statiq website at [https://www.statiq.dev/support/](https://www.statiq.dev/support/).
+
+If you require an invoice, please [contact me](mailto:dave@daveaglick.com) and I can send you one that contains payment
+instructions and a link for direct payment. Please include your billing name (or company name), billing email address,
+billing postal address, how many licenses should be included on the invoice, and any other details.
+
+**Note that only commercial use requires a license**. If you are only using Statiq Framework or are using Statiq Web or other Statiq projects that are licensed under the public license but aren't exceeding the small business thresholds of employees and revenue, you don't need a private license. Other than the small business employee and revenue clause, the public license is essentially the same as any other permissive open-source license. Explicit exceptions are also provided in the public license for non-commercial and trial use to make that distinction clear.
 
 ## How much is the license fee for the private license?
 
@@ -27,8 +37,6 @@ if a new major version of Statiq is released within a one year grace period of p
 a new private license covering the newly released major version will be provided.
 When a new major version of Statiq is released outside your one year grace period,
 you must obtain a new license to continue using it commercially.
-
-**Note that only commercial use requires a license**. If you are only using Statiq Framework or are using Statiq Web or other Statiq projects that are licensed under the public license but aren't exceeding the small business thresholds of employees and revenue, you don't need a private license. Other than the small business employee and revenue clause, the public license is essentially the same as any other permissive open-source license. Explicit exceptions are also provided in the public license for non-commercial and trial use to make that distinction clear.
 
 ## I still have concerns about the vagueness and lack of legalese in the license.
 
