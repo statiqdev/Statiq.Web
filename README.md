@@ -10,10 +10,14 @@ Statiq Web is a powerful static web site generation toolkit suitable for most us
 
 [🐞 File an issue](https://github.com/statiqdev/Statiq.Web/issues) if you find a bug or have a feature request related to Statiq Web.
 
-[💙 Support the project](https://www.statiq.dev/support/) if you find Statiq useful.
+[💙 Support the project](https://www.statiq.dev/support/) if you find Statiq useful or need to purchase a private license.
 
 ## Licensing
 
-Statiq Web is dual-licensed under the [License Zero Prosperity Public License](https://licensezero.com/licenses/prosperity) and the [License Zero Private License](https://licensezero.com/licenses/private). The Prosperity License limits commercial use to a 32 day trial period, after which a license fee must be paid to [obtain a Private License](https://www.statiq.dev/support/).
+Statiq Web is dual-licensed under a [public license](LICENSE.md)
+(which is an open license such as MIT that limits commercial use to fewer than 10 total individuals
+working as employees and independent contractors and less than 100,000 USD total revenue in the prior tax year)
+and a [private license](LICENSE-PRIVATE.md)
+(which is an open license such as MIT with additional limits on assignment and sublicensing).
 
 Please see the [licensing FAQs](LICENSE-FAQ.md) for more information.
