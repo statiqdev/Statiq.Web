@@ -1,6 +1,7 @@
 # 1.0.0-beta.48
 
 - Updated the included `Statiq.Web.props` to include default Statiq namespaces for use in .NET 6 projects with implicit usings.
+- Updated Statiq Framework reference to version [1.0.0-beta.61](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.61).
 
 # 1.0.0-beta.47
 
