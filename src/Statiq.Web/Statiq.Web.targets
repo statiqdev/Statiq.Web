@@ -1,7 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="theme\**" />
     <Compile Remove="extensions\**" />
@@ -19,10 +16,6 @@
     </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Language)' == 'C#' AND ('$(ImplicitUsings)' == 'true' or '$(ImplicitUsings)' == 'enable')">
-    <Using Include="Statiq" />
-    <Using Include="Statiq.Common" />
-    <Using Include="Statiq.Core" />
-    <Using Include="Statiq.App" />
     <Using Include="Statiq.Web" />
   </ItemGroup>
 </Project>
