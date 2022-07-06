@@ -32,8 +32,15 @@ namespace Statiq.Web.Modules
                 string failureMessage = string.Join(
                     Environment.NewLine,
                     failures.Select(x => $"{x.Key}{Environment.NewLine} - {string.Join(Environment.NewLine + " - ", x.Value)}"));
-                context.LogError($"{failureCount} xref resolution failures:{Environment.NewLine}{failureMessage}");
-                throw new ExecutionException("Encountered some invalid xrefs");
+                if (context.GetBool(WebKeys.IgnoreInvalidXrefs))
+                {
+                    context.LogWarning($"{failureCount} xref resolution failures:{Environment.NewLine}{failureMessage}");
+                }
+                else
+                {
+                    context.LogError($"{failureCount} xref resolution failures:{Environment.NewLine}{failureMessage}");
+                    throw new ExecutionException("Encountered some invalid xrefs");
+                }
             }
 
             return outputs;
@@ -50,7 +57,6 @@ namespace Statiq.Web.Modules
             {
                 // Find and replace "xref:" in links
                 bool modifiedDocument = false;
-                bool errors = false;
                 foreach (IElement element in htmlDocument
                     .GetElementsByTagName("a")
                     .Where(x => x.HasAttribute("href")))
@@ -69,6 +75,7 @@ namespace Statiq.Web.Modules
                         if (context.TryGetXrefLink(xref, xrefMappings, out string xrefLink, out string error))
                         {
                             element.Attributes["href"].Value = xrefLink + queryAndFragment;
+                            modifiedDocument = true;
                         }
                         else
                         {
@@ -81,16 +88,8 @@ namespace Statiq.Web.Modules
                                     list.Add(error);
                                     return list;
                                 });
-                            errors = true;
                         }
-                        modifiedDocument = true;
                     }
-                }
-
-                // Exit if there were errors
-                if (errors)
-                {
-                    return null;
                 }
 
                 // Return a new document with the replacements if we performed any

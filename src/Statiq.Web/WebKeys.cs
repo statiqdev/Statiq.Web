@@ -260,6 +260,12 @@ namespace Statiq.Web
         /// </summary>
         public const string AdditionalXrefPipelines = nameof(AdditionalXrefPipelines);
 
+        /// <summary>
+        /// Normally invalid xref targets result in an error. Set this to <c>true</c> to output
+        /// a warning instead and continue execution.
+        /// </summary>
+        public const string IgnoreInvalidXrefs = nameof(IgnoreInvalidXrefs);
+
         ////////// Document
 
         /// <summary>

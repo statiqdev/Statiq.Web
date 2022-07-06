@@ -1,3 +1,7 @@
+# 1.0.0-beta.50
+
+- Added a `WebKeys.IgnoreInvalidXrefs` setting to control whether invalid xrefs output a warning instead of a critical error.
+
 # 1.0.0-beta.49
 
 - Changed `Statiq.Web.props` to `Statiq.Web.targets` to resolve some import ordering bugs.
