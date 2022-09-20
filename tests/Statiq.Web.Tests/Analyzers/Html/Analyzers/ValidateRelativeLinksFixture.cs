@@ -376,6 +376,24 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                     context.AnalyzerResults.Count.ShouldBe(2); // +1 for the summary message
                 }
             }
+
+            [TestCase("mailto:foo@bar.com")] // Unescaped
+            [TestCase("mailto:foo&#64;bar.com")] // Escaped
+            public async Task DoesNotValidateMailToLinks(string mailto)
+            {
+                // Given
+                TestDocument document = new TestDocument(
+                    $"<html><head></head><body><a href=\"{mailto}\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document);
+                ValidateRelativeLinks validateRelativeLinks = new ValidateRelativeLinks();
+
+                // When
+                await validateRelativeLinks.AnalyzeAsync(context);
+
+                // Then
+                context.AnalyzerResults.ShouldBeEmpty();
+            }
         }
     }
 }

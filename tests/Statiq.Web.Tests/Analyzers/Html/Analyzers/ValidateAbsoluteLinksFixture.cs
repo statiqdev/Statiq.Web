@@ -104,6 +104,30 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 // Then
                 requestUri.ShouldBe("https://statiq.dev/page");
             }
+
+            [TestCase("mailto:foo@bar.com")] // Unescaped
+            [TestCase("mailto:foo&#64;bar.com")] // Escaped
+            public async Task DoesNotValidateMailToLinks(string mailto)
+            {
+                // Given
+                TestDocument document = new TestDocument(
+                    $"<html><head></head><body><a href=\"{mailto}\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document);
+                context.HttpResponseFunc = (_, __) => new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Content = new System.Net.Http.StringContent(string.Empty)
+                };
+                ValidateAbsoluteLinks validateAbsoluteLinks = new ValidateAbsoluteLinks();
+
+                // When
+                await validateAbsoluteLinks.AnalyzeAsync(context);
+
+                // Then
+                context.AnalyzerResults.ShouldBeEmpty();
+                context.LogMessages.ShouldContain(x => x.FormattedMessage.Contains("unsupported scheme mailto"));
+            }
         }
     }
 }

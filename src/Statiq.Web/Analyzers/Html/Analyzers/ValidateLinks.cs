@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Statiq.Common;
@@ -53,7 +54,9 @@ namespace Statiq.Web
                 return null;
             }
 
-            // Parse the link
+            // Parse the link, but unescape it first
+            // One way it can become escaped is if we escape the "@" symbol due to wanting to avoid Razor parsing
+            link = WebUtility.HtmlDecode(link);
             if (!Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out Uri uri))
             {
                 AddAnalyzerResult("Invalid URI", elements, document, context);
