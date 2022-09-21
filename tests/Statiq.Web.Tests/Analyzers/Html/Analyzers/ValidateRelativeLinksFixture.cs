@@ -281,6 +281,36 @@ namespace Statiq.Web.Tests.Analyzers.Html.Analyzers
                 context.AnalyzerResults.ShouldBeEmpty();
             }
 
+            [Test]
+            public async Task HandlesEscapedUnicode()
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/output");
+                fileProvider.AddFile("/output/ไทย.html", "<html><head></head><body><h1>Hello World!</h1></body></html>");
+                TestFileSystem fileSystem = new TestFileSystem
+                {
+                    FileProvider = fileProvider
+                };
+                TestDocument document = new TestDocument(
+                    new NormalizedPath("/document.html"),
+                    new NormalizedPath("document.html"),
+                    $"<html><head></head><body><a href=\"&#xE44;&#xE17;&#xE22;\">foo</a></body></html>",
+                    MediaTypes.Html);
+                TestAnalyzerContext context = new TestAnalyzerContext(document)
+                {
+                    FileSystem = fileSystem
+                };
+                ValidateRelativeLinks validateRelativeLinks = new ValidateRelativeLinks();
+
+                // When
+                await validateRelativeLinks.AnalyzeAsync(context);
+
+                // Then
+                context.AnalyzerResults.ShouldBeEmpty();
+            }
+
             [TestCase("#", "/document.html", true)]
             [TestCase("#foo", "/document.html", true)]
             [TestCase("target#foo", "/document.html", true)]

@@ -1,6 +1,7 @@
 # 1.0.0-beta.50
 
 - Added a `WebKeys.IgnoreInvalidXrefs` setting to control whether invalid xrefs output a warning instead of a critical error.
+- Improved link validation in certain cases where links are escaped like `mailto` and unicode (#997, #998).
 
 # 1.0.0-beta.49
 
