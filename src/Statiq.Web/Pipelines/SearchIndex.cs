@@ -46,7 +46,9 @@ namespace Statiq.Web.Pipelines
 
                         // Create the module
                         GenerateLunrIndex generateLunrIndex = new GenerateLunrIndex()
-                            .WithIndexPath(ctx.GetPath(WebKeys.SearchScriptPath))
+                            .WithScriptPath(ctx.GetPath(WebKeys.SearchScriptPath, NormalizedPath.Null))
+                            .WithIndexPath(ctx.GetPath(WebKeys.SearchIndexPath, NormalizedPath.Null))
+                            .WithResultsPath(ctx.GetPath(WebKeys.SearchResultsPath, NormalizedPath.Null))
                             .ZipIndexFile(ctx.GetBool(WebKeys.ZipSearchIndexFile, true))
                             .ZipResultsFile(ctx.GetBool(WebKeys.ZipSearchResultsFile, true))
                             .IncludeHostInLinks(ctx.GetBool(WebKeys.SearchIncludeHost))
