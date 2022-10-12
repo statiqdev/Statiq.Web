@@ -60,12 +60,12 @@ namespace Statiq.Web
         /// The destination path of the client-side Lunr search file ("search.js" by default).
         /// </summary>
         public const string SearchScriptPath = nameof(SearchScriptPath);
-        
+
         /// <summary>
         /// The destination path of the search index file ("search.index.json" or "search.index.json.gz" by default).
         /// </summary>
         public const string SearchIndexPath = nameof(SearchIndexPath);
-        
+
         /// <summary>
         /// The destination path of the search results file ("search.results.json" or "search.results.json.gz" by default).
         /// </summary>
