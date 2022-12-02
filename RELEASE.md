@@ -1,3 +1,7 @@
+# 1.0.0-beta.51
+
+- Fixed a bug with the default search script path when `WebKeys.GenerateSearchIndex` is `true` (#1001).
+
 # 1.0.0-beta.50
 
 - Added a `WebKeys.IgnoreInvalidXrefs` setting to control whether invalid xrefs output a warning instead of a critical error.
