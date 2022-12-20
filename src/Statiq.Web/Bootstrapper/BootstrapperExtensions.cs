@@ -167,7 +167,7 @@ namespace Statiq.Web
                         }
                     },
                     { WebKeys.Xref, Config.FromDocument(doc => doc.GetTitle()?.Replace(' ', '-')) }, // Not all documents have a title (I.e. no title metadata and no source)
-                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Today.AddDays(1)) }, // Add +1 days so the threshold is midnight on the current day
+                    { WebKeys.Excluded, Config.FromDocument(doc => doc.GetDateTime(WebKeys.Published) > DateTime.Now) },
                     { WebKeys.PublishedUsesLastModifiedDate, true },
                     {
                         WebKeys.FrontMatterRegexes,

@@ -1,3 +1,7 @@
+# 1.0.0-beta.52
+
+- Fixed a bug regarding published date vs. current date publishing items a day early (#1005).
+
 # 1.0.0-beta.51
 
 - Fixed a bug with the default search script path when `WebKeys.GenerateSearchIndex` is `true` (#1001).
