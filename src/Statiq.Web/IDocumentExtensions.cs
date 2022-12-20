@@ -56,7 +56,7 @@ namespace Statiq.Web
             }
 
             // If all else fails, use today
-            return DateTime.Today;
+            return context.GetCurrentDateTime().Date;
         }
     }
 }
