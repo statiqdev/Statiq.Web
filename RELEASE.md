@@ -1,7 +1,7 @@
 # 1.0.0-beta.53
 
 - Added a new `AdditionalInputFiles` setting that can be used to explicitly include input files that would otherwise be excluded by the `InputFiles` setting such as underscore files.
-- Added an explicit override for Netlify-style `_redirects` files so they're always included.
+- Updated the `NetlifyRedirects` setting so that when `true`, any existing Netlify-style `_redirects` file will be output (underscore files are normally excluded by default).
 
 # 1.0.0-beta.52
 

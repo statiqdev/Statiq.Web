@@ -151,7 +151,10 @@ namespace Statiq.Web
         public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
 
         /// <summary>
-        /// Generates a Netlify redirects file.
+        /// Generates a Netlify redirects file (or adds to an existing one) for any
+        /// <see cref="Keys.RedirectFrom" /> and/or <see cref="Keys.RedirectTo" />
+        /// metadata. Also ensures a Netlify-style <c>_redirects</c> file is not
+        /// excluded if one exists in the input folder.
         /// </summary>
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 

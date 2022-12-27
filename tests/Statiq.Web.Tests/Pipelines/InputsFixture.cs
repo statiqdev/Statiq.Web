@@ -80,29 +80,6 @@ namespace Statiq.Web.Tests.Pipelines
             }
 
             [Test]
-            public async Task ShouldIncludeNetlifyRedirectsFiles()
-            {
-                // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
-                    .CreateWeb(Array.Empty<string>());
-                TestFileProvider fileProvider = new TestFileProvider
-                {
-                    { "/input/foo", string.Empty },
-                    { "/input/_foo", string.Empty },
-                    { "/input/_redirects", string.Empty }
-                };
-
-                // When
-                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
-
-                // Then
-                result.ExitCode.ShouldBe((int)ExitCode.Normal);
-                result.Outputs[nameof(Inputs)][Phase.Process]
-                    .Select(x => x.Destination.FullPath)
-                    .ShouldBe(new[] { "foo", "_redirects" }, true);
-            }
-
-            [Test]
             public async Task ShouldNotExcludeUnderscoreStatiqFiles()
             {
                 // Given

@@ -156,10 +156,7 @@ namespace Statiq.Web
                         WebKeys.InputFiles,
                         new[]
                         {
-                            "**/{!_,}*",
-
-                            // Always include Netlify-style _redirects files
-                            "_redirects"
+                            "**/{!_,}*"
                         }
                     },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.*" },
