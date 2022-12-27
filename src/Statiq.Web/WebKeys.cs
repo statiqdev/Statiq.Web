@@ -19,6 +19,18 @@ namespace Statiq.Web
         public const string InputFiles = nameof(InputFiles);
 
         /// <summary>
+        /// Additional globbing pattern(s) used to read input files.
+        /// </summary>
+        /// <remarks>
+        /// This lets you define additional input file globbing patterns (or file names)
+        /// without having to redefine or change the default <see cref="InputFiles" /> value.
+        /// The files will be processed by the appropriate pipeline based on their
+        /// media type and registered <see cref="Templates"/>. Files that don't match
+        /// templates for data or content are treated as assets.
+        /// </remarks>
+        public const string AdditionalInputFiles = nameof(AdditionalInputFiles);
+
+        /// <summary>
         /// The globbing pattern(s) that will be used to filter directory metadata files.
         /// </summary>
         /// <remarks>

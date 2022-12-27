@@ -1,3 +1,8 @@
+# 1.0.0-beta.53
+
+- Added a new `AdditionalInputFiles` setting that can be used to explicitly include input files that would otherwise be excluded by the `InputFiles` setting such as underscore files.
+- Added an explicit override for Netlify-style `_redirects` files so they're always included.
+
 # 1.0.0-beta.52
 
 - Fixed a bug regarding published date vs. current date publishing items a day early (#1005).

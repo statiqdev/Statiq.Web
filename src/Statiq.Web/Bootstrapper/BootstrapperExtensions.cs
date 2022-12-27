@@ -152,7 +152,16 @@ namespace Statiq.Web
             bootstrapper
                 .AddSettingsIfNonExisting(new Dictionary<string, object>
                 {
-                    { WebKeys.InputFiles, "**/{!_,}*" },
+                    {
+                        WebKeys.InputFiles,
+                        new[]
+                        {
+                            "**/{!_,}*",
+
+                            // Always include Netlify-style _redirects files
+                            "_redirects"
+                        }
+                    },
                     { WebKeys.DirectoryMetadataFiles, "**/_{d,D}irectory.*" },
                     {
                         WebKeys.XrefPipelines,

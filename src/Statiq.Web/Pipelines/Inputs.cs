@@ -25,9 +25,10 @@ namespace Statiq.Web.Pipelines
                 // Read files in one place so that the documents have a unified ID and we can apply metadata once
                 // Also add headless CMS support or other input sources here (probably at the end of ProcessModules as a concat if they come over with metadata)
                 // Always read *.statiq files no matter what (even if previous patterns would have excluded them)
-                new ReadFiles(Config.FromSettings(settings => settings
-                    .GetList(WebKeys.InputFiles, Array.Empty<string>())
-                    .Concat("*.statiq")))
+                new ReadFiles(Config.FromSettings(settings =>
+                    settings.GetList(WebKeys.InputFiles, Array.Empty<string>())
+                        .Concat(settings.GetList(WebKeys.AdditionalInputFiles, Array.Empty<string>()))
+                        .Concat("*.statiq")))
             };
 
             ProcessModules = new ModuleList
