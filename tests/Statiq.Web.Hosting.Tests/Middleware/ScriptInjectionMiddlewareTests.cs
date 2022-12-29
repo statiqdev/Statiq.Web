@@ -15,10 +15,10 @@ namespace Statiq.Web.Hosting.Tests.Middleware
     [TestFixture]
     public class ScriptInjectionMiddlewareTests
     {
-        [TestCase("BasicHtmlDocument.html", true)]
-        [TestCase("BasicHtmlDocumentNoBodyEnd.html", false)]
-        [TestCase("NonHtmlDocument.css", false)]
-        public async Task InjectScriptWhenAppropriate(string filename, bool inject)
+        [TestCase("BasicHtmlDocument.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></body>", 151)]
+        [TestCase("BasicHtmlDocumentNoBody.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></html>", 146)]
+        [TestCase("BasicHtmlDocumentNoHtml.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script>", 89)]
+        public async Task ShouldInjectScriptAtCorrectLocation(string filename, string injected, int injectionPosition)
         {
             // Given
             TestServer server = GetServer();
@@ -29,14 +29,21 @@ namespace Statiq.Web.Hosting.Tests.Middleware
 
             // Then
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-            if (inject)
-            {
-                body.ShouldContain("<script type=\"text/javascript\" src=\"/livereload.js\"></script></body>");
-            }
-            else
-            {
-                body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile(filename));
-            }
+            body.LastIndexOf(injected).ShouldBe(injectionPosition);
+        }
+
+        [Test]
+        public async Task ShouldNotInjectNonHtmlContent()
+        {
+            // Given
+            TestServer server = GetServer();
+
+            // When
+            HttpResponseMessage response = await server.CreateRequest("NonHtmlDocument.css").GetAsync();
+            string body = await response.Content.ReadAsStringAsync();
+
+            // Then
+            body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile("NonHtmlDocument.css"));
         }
 
         private TestServer GetServer() => new TestServer(

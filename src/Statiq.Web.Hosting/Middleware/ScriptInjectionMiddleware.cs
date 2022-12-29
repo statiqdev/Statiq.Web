@@ -40,17 +40,34 @@ namespace Statiq.Web.Hosting.Middleware
             if (string.Equals(context.Response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
             {
                 StreamReader reader = new StreamReader(interceptedBody);
-                string body = await reader.ReadToEndAsync();
-                int closingTag = body.LastIndexOf("</body>", StringComparison.Ordinal);
-                if (closingTag > -1)
-                {
-                    interceptedBody = new MemoryStream(reader.CurrentEncoding.GetBytes(body.Insert(closingTag, _injectionCode)));
-                    context.Response.ContentLength = interceptedBody.Length;
-                }
+                string document = await reader.ReadToEndAsync();
+                int injectionPosition = GetInjectionPosition(document);
+                interceptedBody = new MemoryStream(reader.CurrentEncoding.GetBytes(document.Insert(injectionPosition, _injectionCode)));
+                context.Response.ContentLength = interceptedBody.Length;
             }
             interceptedBody.Position = 0;
             await interceptedBody.CopyToAsync(originalBody);
             context.Response.Body = originalBody;
+        }
+
+        private int GetInjectionPosition(string document)
+        {
+            // Try for the </body> tag first
+            int position = document.LastIndexOf("</body", StringComparison.OrdinalIgnoreCase);
+
+            // If we didn't find a body, try for the </html> tag
+            if (position == -1)
+            {
+                position = document.LastIndexOf("</html", StringComparison.OrdinalIgnoreCase);
+            }
+
+            // If we didn't find a body or html, just inject at the end
+            if (position == -1)
+            {
+                position = document.Length;
+            }
+
+            return position;
         }
     }
 }

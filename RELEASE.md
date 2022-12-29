@@ -3,6 +3,7 @@
 - Added a new `AdditionalInputFiles` setting that can be used to explicitly include input files that would otherwise be excluded by the `InputFiles` setting such as underscore files.
 - Updated the `NetlifyRedirects` setting so that when `true`, any existing Netlify-style `_redirects` file will be output (underscore files are normally excluded by default).
 - Added a new `NetlifyPrefixRedirects` setting (`true` by default) that will automatically create redirect entries to files and folders that are prefixed with a specific value (`^` by default) from requests without the prefix. This is helpful when needing to publish files or folder prefixed with a `.` since [Netlify deployment doesn't support them](https://answers.netlify.com/t/netlify-deploy-api-removes-files-and-directories-beginning-with-a-period/37728/9) (#1002).
+- Improved script injection behavior (I.e. for live reload support) when the HTML document deviates from standards (I.e. directly after Markdown rendering).
 
 # 1.0.0-beta.52
 

@@ -19,7 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\BasicHtmlDocument.html" />
-    <EmbeddedResource Include="wwwroot\BasicHtmlDocumentNoBodyEnd.html" />
+    <EmbeddedResource Include="wwwroot\BasicHtmlDocumentNoBody.html" />
+    <EmbeddedResource Include="wwwroot\BasicHtmlDocumentNoHtml.html" />
     <EmbeddedResource Include="wwwroot\NonHtmlDocument.css" />
   </ItemGroup>
 
