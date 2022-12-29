@@ -13,7 +13,7 @@ namespace Statiq.Web.Pipelines
     {
         public Redirects()
         {
-            Dependencies.AddRange(nameof(Content), nameof(Archives), nameof(Data), nameof(Feeds));
+            Dependencies.AddRange(nameof(Content), nameof(Assets), nameof(Archives), nameof(Data), nameof(Feeds));
 
             PostProcessHasDependencies = true;
 
