@@ -159,6 +159,35 @@ namespace Statiq.Web
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
         /// <summary>
+        /// Generates redirects in a Netlify redirects file for any file or folder
+        /// that starts with the prefix specified in <see cref="NetlifyRedirectPrefix"/>
+        /// (<c>^</c> by default) to the same name without them.
+        /// The default value is <c>true</c> so set this to <c>false</c> to prevent
+        /// this behavior.
+        /// </summary>
+        /// <remarks>
+        /// This is useful when you need to output and upload a file or folder with a
+        /// different name than what you want Netlify to serve.
+        /// In particular, it's required to support uploading files or folders that start
+        /// with a dot to Netlify since Netlify doesn't support uploading those artifacts
+        /// normally (see https://answers.netlify.com/t/netlify-deploy-api-removes-files-and-directories-beginning-with-a-period/37728/9).
+        /// This setting has no effect if <see cref="NetlifyRedirects"/> is <c>false</c>.
+        /// </remarks>
+        public const string NetlifyPrefixRedirects = nameof(NetlifyPrefixRedirects);
+
+        /// <summary>
+        /// Sets the prefix used when <see cref="NetlifyPrefixRedirects"/> is <c>true</c> (<c>^</c> by default).
+        /// </summary>
+        /// <remarks>
+        /// This prefix is checked after document destinations have been set and file name optimization has been
+        /// performed (I.e. if <see cref="OptimizeContentFileNames"/> and/or <see cref="OptimizeDataFileNames"/>
+        /// is <c>true</c>) so the prefix should be specified without those optimizations in mind (I.e. it should
+        /// generally not use characters in <see cref="NormalizedPath.OptimizeFileNameReservedChars"/> unless alternate
+        /// optimization settings have been specified).
+        /// </remarks>
+        public const string NetlifyRedirectPrefix = nameof(NetlifyRedirectPrefix);
+
+        /// <summary>
         /// Theme paths specified as settings.
         /// </summary>
         /// <remarks>
