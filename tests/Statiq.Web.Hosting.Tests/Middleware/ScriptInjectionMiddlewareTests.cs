@@ -15,9 +15,9 @@ namespace Statiq.Web.Hosting.Tests.Middleware
     [TestFixture]
     public class ScriptInjectionMiddlewareTests
     {
-        [TestCase("BasicHtmlDocument.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></body>", 151)]
-        [TestCase("BasicHtmlDocumentNoBody.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></html>", 146)]
-        [TestCase("BasicHtmlDocumentNoHtml.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script>", 89)]
+        [TestCase("BasicHtmlDocument.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></body>", 133)]
+        [TestCase("BasicHtmlDocumentNoBody.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script></html>", 130)]
+        [TestCase("BasicHtmlDocumentNoHtml.html", "<script type=\"text/javascript\" src=\"/livereload.js\"></script>", 77)]
         public async Task ShouldInjectScriptAtCorrectLocation(string filename, string injected, int injectionPosition)
         {
             // Given
@@ -29,7 +29,7 @@ namespace Statiq.Web.Hosting.Tests.Middleware
 
             // Then
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-            body.LastIndexOf(injected).ShouldBe(injectionPosition);
+            body.Replace("\r", string.Empty).Replace("\n", string.Empty).LastIndexOf(injected).ShouldBe(injectionPosition);
         }
 
         [Test]
