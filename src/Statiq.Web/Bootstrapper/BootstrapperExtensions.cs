@@ -179,9 +179,9 @@ namespace Statiq.Web
                         WebKeys.FrontMatterRegexes,
                         new string[]
                         {
-                            @"\A(?:^\r*/\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*/[^\S\n]*$\r?\n)", // C-style: /*- ... -*/
-                            @"\A(?:^\r*<!---+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+-->[^\S\n]*$\r?\n)", // HTML-style: <!--- ... ---!>
-                            @"\A(?:^\r*@\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*@[^\S\n]*$\r?\n)", // Razor-style: @*- ... -*@
+                            @"\A(?:^\r*/\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*/[^\S\n]*$(\r?\n)?)", // C-style: /*- ... -*/
+                            @"\A(?:^\r*<!---+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+-->[^\S\n]*$(\r?\n)?)", // HTML-style: <!--- ... ---!>
+                            @"\A(?:^\r*@\*-+[^\S\n]*$\r?\n)(.*?)(?:^\r*-+\*@[^\S\n]*$(\r?\n)?)", // Razor-style: @*- ... -*@
                             ExtractFrontMatter.GetDelimiterRegex("-", true), // Jekyll-style: --- ... ---, comes last since it's more general and doesn't require a start delimiter
                         }
                     }

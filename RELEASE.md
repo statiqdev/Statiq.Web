@@ -1,3 +1,8 @@
+# 1.0.0-beta.54
+
+- Fixed a bug in front matter regular expressions to ensure front matter is extracted when the delimiter is on the last line of the file.
+- Updated Statiq Framework reference to version [1.0.0-beta.66](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.66).
+
 # 1.0.0-beta.53
 
 - Added a new `AdditionalInputFiles` setting that can be used to explicitly include input files that would otherwise be excluded by the `InputFiles` setting such as underscore files.
