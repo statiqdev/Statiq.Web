@@ -230,7 +230,7 @@ namespace Statiq.Web.Commands
             foreach (string keyAndValue in keysAndValues)
             {
                 string[] split = keyAndValue.Split('=');
-                if (split.Length != 2)
+                if (split.Length < 2)
                 {
                     throw new ArgumentException($"Invalid {optionName} {keyAndValue} specified.");
                 }
