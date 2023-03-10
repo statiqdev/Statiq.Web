@@ -1,3 +1,8 @@
+# 1.0.0-beta.55
+
+- Added a new `ServerFactory` class in `Statiq.Web.Hosting` that makes it easier to set individual properties of the built-in Statiq preview server.
+- Added the ability to specify additional custom headers served by the Statiq preview server using one or more `--custom-header name=value` options on the command line. 
+
 # 1.0.0-beta.54
 
 - Fixed a bug in front matter regular expressions to ensure front matter is extracted when the delimiter is on the last line of the file.

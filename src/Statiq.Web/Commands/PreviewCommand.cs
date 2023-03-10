@@ -23,6 +23,7 @@ namespace Statiq.Web.Commands
         private InputFileWatcher _inputFolderWatcher;
         private Server _previewServer;
         private Dictionary<string, string> _contentTypes;
+        private Dictionary<string, string> _customHeaders;
         private bool _resetCache = false;
 
         public PreviewCommand(
@@ -53,7 +54,10 @@ namespace Statiq.Web.Commands
 
             // Start the preview server
             _contentTypes = commandSettings.ContentTypes?.Length > 0
-                ? GetContentTypes(commandSettings.ContentTypes)
+                ? GetKeyValues(commandSettings.ContentTypes, "content type")
+                : new Dictionary<string, string>();
+            _customHeaders = commandSettings.CustomHeaders?.Length > 0
+                ? GetKeyValues(commandSettings.CustomHeaders, "custom header")
                 : new Dictionary<string, string>();
             IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
             IDirectory outputDirectory = engineManager.Engine.FileSystem.GetOutputDirectory();
@@ -66,6 +70,7 @@ namespace Statiq.Web.Commands
                     commandSettings.VirtualDirectory,
                     !commandSettings.NoReload,
                     _contentTypes,
+                    _customHeaders,
                     loggerProviders,
                     logger);
             }
@@ -158,6 +163,7 @@ namespace Statiq.Web.Commands
                             commandSettings.VirtualDirectory,
                             !commandSettings.NoReload,
                             _contentTypes,
+                            _customHeaders,
                             loggerProviders,
                             logger);
                     }
@@ -179,19 +185,19 @@ namespace Statiq.Web.Commands
             return Task.CompletedTask;
         }
 
-        internal static Dictionary<string, string> GetContentTypes(string[] contentTypes)
+        internal static Dictionary<string, string> GetKeyValues(string[] keysAndValues, string optionName)
         {
-            Dictionary<string, string> contentTypeDictionary = new Dictionary<string, string>();
-            foreach (string contentType in contentTypes)
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            foreach (string keyAndValue in keysAndValues)
             {
-                string[] splitContentType = contentType.Split('=');
-                if (splitContentType.Length != 2)
+                string[] split = keyAndValue.Split('=');
+                if (split.Length != 2)
                 {
-                    throw new ArgumentException($"Invalid content type {contentType} specified.");
+                    throw new ArgumentException($"Invalid {optionName} {keyAndValue} specified.");
                 }
-                contentTypeDictionary[splitContentType[0].Trim().Trim('\"')] = splitContentType[1].Trim().Trim('\"');
+                dictionary[split[0].Trim().Trim('\"')] = split[1].Trim().Trim('\"');
             }
-            return contentTypeDictionary;
+            return dictionary;
         }
 
         internal static async Task<Server> StartPreviewServerAsync(
@@ -200,14 +206,22 @@ namespace Statiq.Web.Commands
             bool forceExtension,
             NormalizedPath virtualDirectory,
             bool liveReload,
-            IDictionary<string, string> contentTypes,
+            IReadOnlyDictionary<string, string> contentTypes,
+            IReadOnlyDictionary<string, string> customHeaders,
             IEnumerable<ILoggerProvider> loggerProviders,
             ILogger logger)
         {
             Server server;
             try
             {
-                server = new Server(path.FullPath, port, !forceExtension, virtualDirectory.IsNull ? null : virtualDirectory.FullPath, liveReload, contentTypes, loggerProviders);
+                ServerFactory serverFactory = new ServerFactory()
+                    .WithExtensionless(!forceExtension)
+                    .WithVirtualDirectory(virtualDirectory.IsNull ? null : virtualDirectory.FullPath)
+                    .WithLiveReload(liveReload)
+                    .WithContentTypes(contentTypes)
+                    .WithCustomHeaders(customHeaders)
+                    .WithLoggerProviders(loggerProviders);
+                server = serverFactory.CreateServer(path.FullPath, port);
                 await server.StartAsync();
             }
             catch (Exception ex)

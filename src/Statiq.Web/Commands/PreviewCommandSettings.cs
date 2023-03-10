@@ -22,6 +22,10 @@ namespace Statiq.Web.Commands
         [Description("Specifies additional supported content types for the preview server as extension=contenttype.")]
         public string[] ContentTypes { get; set; }
 
+        [CommandOption("--custom-header <TYPE>")]
+        [Description("Specifies custom headers for the preview server as name=value.")]
+        public string[] CustomHeaders { get; set; }
+
         [CommandOption("--no-watch")]
         [Description("Turns off watching the input folder(s) for changes and rebuilding.")]
         public bool NoWatch { get; set; }

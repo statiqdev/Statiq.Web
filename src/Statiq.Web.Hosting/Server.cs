@@ -23,7 +23,8 @@ namespace Statiq.Web.Hosting
     /// </summary>
     public class Server : IWebHost
     {
-        private readonly IDictionary<string, string> _contentTypes;
+        private readonly IReadOnlyDictionary<string, string> _contentTypes;
+        private readonly IReadOnlyDictionary<string, string> _customHeaders;
         private readonly IWebHost _host;
         private readonly LiveReloadServer _liveReloadServer;
 
@@ -62,8 +63,14 @@ namespace Statiq.Web.Hosting
         /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
         /// <param name="liveReload">Enables support for LiveReload.</param>
         /// <param name="loggerProviders">The logger providers to use.</param>
-        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IEnumerable<ILoggerProvider> loggerProviders)
-            : this(localPath, port, extensionless, virtualDirectory, liveReload, null, loggerProviders)
+        public Server(
+            string localPath,
+            int port,
+            bool extensionless,
+            string virtualDirectory,
+            bool liveReload,
+            IEnumerable<ILoggerProvider> loggerProviders)
+            : this(localPath, port, extensionless, virtualDirectory, liveReload, null, null, loggerProviders)
         {
         }
 
@@ -75,11 +82,21 @@ namespace Statiq.Web.Hosting
         /// <param name="extensionless"><c>true</c> if the server should support extensionless URLs, <c>false</c> otherwise.</param>
         /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
         /// <param name="liveReload">Enables support for LiveReload.</param>
+        /// <param name="customHeaders">Custom headers that will be added to every response.</param>
         /// <param name="loggerProviders">The logger providers to use.</param>
         /// <param name="contentTypes">Additional content types the server should support.</param>
-        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, IEnumerable<ILoggerProvider> loggerProviders)
+        public Server(
+            string localPath,
+            int port,
+            bool extensionless,
+            string virtualDirectory,
+            bool liveReload,
+            IReadOnlyDictionary<string, string> contentTypes,
+            IReadOnlyDictionary<string, string> customHeaders,
+            IEnumerable<ILoggerProvider> loggerProviders)
         {
             _contentTypes = contentTypes;
+            _customHeaders = customHeaders;
             LocalPath = localPath.ThrowIfNull(nameof(localPath));
             Port = port <= 0 ? throw new ArgumentException("The port must be greater than 0") : port;
             Extensionless = extensionless;
@@ -183,6 +200,12 @@ namespace Statiq.Web.Hosting
             {
                 // TODO: let the user specify additional default extensions
                 app.UseDefaultExtensions(new DefaultExtensionsOptions());
+            }
+
+            // Support for custom headers
+            if (_customHeaders?.Count > 0)
+            {
+                app.UseCustomHeaders(new CustomHeadersOptions(_customHeaders));
             }
 
             // Use our large set of mappings and add any additional ones

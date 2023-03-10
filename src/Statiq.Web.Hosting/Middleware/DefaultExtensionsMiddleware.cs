@@ -17,7 +17,11 @@ namespace Statiq.Web.Hosting.Middleware
         private readonly string[] _extensions;
         private readonly ILogger _logger;
 
-        public DefaultExtensionsMiddleware(RequestDelegate next, IWebHostEnvironment hostingEnv, IOptions<DefaultExtensionsOptions> options, ILoggerFactory loggerFactory)
+        public DefaultExtensionsMiddleware(
+            RequestDelegate next,
+            IWebHostEnvironment hostingEnv,
+            IOptions<DefaultExtensionsOptions> options,
+            ILoggerFactory loggerFactory)
         {
             hostingEnv.ThrowIfNull(nameof(hostingEnv));
             options.ThrowIfNull(nameof(options));

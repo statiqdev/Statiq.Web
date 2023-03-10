@@ -58,7 +58,10 @@ namespace Statiq.Web.Commands
             }
 
             Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
-                ? PreviewCommand.GetContentTypes(commandSettings.ContentTypes)
+                ? PreviewCommand.GetKeyValues(commandSettings.ContentTypes, "content type")
+                : new Dictionary<string, string>();
+            Dictionary<string, string> customHeaders = commandSettings.CustomHeaders?.Length > 0
+                ? PreviewCommand.GetKeyValues(commandSettings.CustomHeaders, "custom header")
                 : new Dictionary<string, string>();
             IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
 
@@ -75,6 +78,7 @@ namespace Statiq.Web.Commands
                     commandSettings.VirtualDirectory,
                     !commandSettings.NoReload,
                     contentTypes,
+                    customHeaders,
                     loggerProviders,
                     logger);
 
