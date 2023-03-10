@@ -620,5 +620,19 @@ namespace Statiq.Web
         public const string AzureAppServiceUsername = nameof(AzureAppServiceUsername);
 
         public const string AzureAppServicePassword = nameof(AzureAppServicePassword);
+
+        ////////// Preview Server
+
+        /// <summary>
+        /// Additional content types to use in the preview server in the format of "extension=content-type".
+        /// Can be a single string or an array of strings, one per content type mapping.
+        /// </summary>
+        public const string ServerContentTypes = nameof(ServerContentTypes);
+
+        /// <summary>
+        /// Custom headers to use in the preview server in the format of "name=value".
+        /// Can be a single string or an array of strings, one per custom header.
+        /// </summary>
+        public const string ServerCustomHeaders = nameof(ServerCustomHeaders);
     }
 }

@@ -210,7 +210,7 @@ namespace Statiq.Web.Hosting
 
             // Use our large set of mappings and add any additional ones
             FileExtensionContentTypeProvider contentTypeProvider = new FileExtensionContentTypeProvider(MediaTypes.ExtensionMappings);
-            if (_contentTypes is object)
+            if (_contentTypes?.Count > 0)
             {
                 foreach (KeyValuePair<string, string> contentType in _contentTypes)
                 {

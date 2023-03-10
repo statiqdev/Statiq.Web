@@ -20,6 +20,8 @@ namespace Statiq.Web.Commands
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
         private readonly InterlockedBool _exit = new InterlockedBool(false);
+        private Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
+        private Dictionary<string, string> _customHeaders = new Dictionary<string, string>();
 
         public ServeCommand(
             IConfiguratorCollection configurators,
@@ -57,12 +59,23 @@ namespace Statiq.Web.Commands
                 serveDirectory = FileSystem.GetRootDirectory();
             }
 
-            Dictionary<string, string> contentTypes = commandSettings.ContentTypes?.Length > 0
-                ? PreviewCommand.GetKeyValues(commandSettings.ContentTypes, "content type")
-                : new Dictionary<string, string>();
-            Dictionary<string, string> customHeaders = commandSettings.CustomHeaders?.Length > 0
-                ? PreviewCommand.GetKeyValues(commandSettings.CustomHeaders, "custom header")
-                : new Dictionary<string, string>();
+            // Get content types and custom headers from the settings and/or CLI
+            PreviewCommand.GetKeyValues(
+                _contentTypes,
+                WebKeys.ServerContentTypes,
+                Settings,
+                engineManager.Engine,
+                commandSettings.ContentTypes,
+                "content type");
+            PreviewCommand.GetKeyValues(
+                _customHeaders,
+                WebKeys.ServerCustomHeaders,
+                Settings,
+                engineManager.Engine,
+                commandSettings.CustomHeaders,
+                "custom header");
+
+            // Start the preview server
             IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
 
             Server previewServer = null;
@@ -77,8 +90,8 @@ namespace Statiq.Web.Commands
                     commandSettings.ForceExt,
                     commandSettings.VirtualDirectory,
                     !commandSettings.NoReload,
-                    contentTypes,
-                    customHeaders,
+                    _contentTypes,
+                    _customHeaders,
                     loggerProviders,
                     logger);
 

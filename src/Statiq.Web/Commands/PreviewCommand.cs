@@ -22,8 +22,8 @@ namespace Statiq.Web.Commands
 
         private InputFileWatcher _inputFolderWatcher;
         private Server _previewServer;
-        private Dictionary<string, string> _contentTypes;
-        private Dictionary<string, string> _customHeaders;
+        private Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
+        private Dictionary<string, string> _customHeaders = new Dictionary<string, string>();
         private bool _resetCache = false;
 
         public PreviewCommand(
@@ -52,13 +52,23 @@ namespace Statiq.Web.Commands
         {
             ILogger logger = engineManager.Engine.Services.GetRequiredService<ILogger<Bootstrapper>>();
 
+            // Get content types and custom headers from the settings and/or CLI
+            GetKeyValues(
+                _contentTypes,
+                WebKeys.ServerContentTypes,
+                Settings,
+                engineManager.Engine,
+                commandSettings.ContentTypes,
+                "content type");
+            GetKeyValues(
+                _customHeaders,
+                WebKeys.ServerCustomHeaders,
+                Settings,
+                engineManager.Engine,
+                commandSettings.CustomHeaders,
+                "custom header");
+
             // Start the preview server
-            _contentTypes = commandSettings.ContentTypes?.Length > 0
-                ? GetKeyValues(commandSettings.ContentTypes, "content type")
-                : new Dictionary<string, string>();
-            _customHeaders = commandSettings.CustomHeaders?.Length > 0
-                ? GetKeyValues(commandSettings.CustomHeaders, "custom header")
-                : new Dictionary<string, string>();
             IEnumerable<ILoggerProvider> loggerProviders = engineManager.Engine.Services.GetServices<ILoggerProvider>();
             IDirectory outputDirectory = engineManager.Engine.FileSystem.GetOutputDirectory();
             if (outputDirectory.Exists)
@@ -185,7 +195,36 @@ namespace Statiq.Web.Commands
             return Task.CompletedTask;
         }
 
-        internal static Dictionary<string, string> GetKeyValues(string[] keysAndValues, string optionName)
+        internal static void GetKeyValues(
+            Dictionary<string, string> dictionary,
+            string settingsKey,
+            Settings commandSettings,
+            IEngine engine,
+            string[] commandValues,
+            string optionName)
+        {
+            // First get them from the command settings (likely none here, but try anyway)
+            IReadOnlyList<string> values = commandSettings.GetList<string>(settingsKey);
+            if (values?.Count > 0)
+            {
+                dictionary.AddOrReplaceRange(GetKeyValues(values, optionName));
+            }
+
+            // Then try the engine settings
+            values = engine.Settings.GetList<string>(settingsKey);
+            if (values?.Count > 0)
+            {
+                dictionary.AddOrReplaceRange(GetKeyValues(values, optionName));
+            }
+
+            // Then finally apply from the command line
+            if (commandValues?.Length > 0)
+            {
+                dictionary.AddOrReplaceRange(GetKeyValues(commandValues, optionName));
+            }
+        }
+
+        private static Dictionary<string, string> GetKeyValues(IEnumerable<string> keysAndValues, string optionName)
         {
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
             foreach (string keyAndValue in keysAndValues)
