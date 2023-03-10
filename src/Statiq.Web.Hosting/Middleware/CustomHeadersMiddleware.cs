@@ -34,7 +34,7 @@ namespace Statiq.Web.Hosting.Middleware
 
             foreach (KeyValuePair<string, string> header in _customHeaders)
             {
-                context.Response.Headers.Append(header.Key, header.Value);
+                context.Response.Headers.Append(header.Key, header.Value ?? string.Empty);
             }
         }
     }

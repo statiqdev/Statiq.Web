@@ -224,17 +224,27 @@ namespace Statiq.Web.Commands
             }
         }
 
-        private static Dictionary<string, string> GetKeyValues(IEnumerable<string> keysAndValues, string optionName)
+        private static Dictionary<string, string> GetKeyValues(
+            IEnumerable<string> keysAndValues,
+            string optionName)
         {
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
             foreach (string keyAndValue in keysAndValues)
             {
-                string[] split = keyAndValue.Split('=');
-                if (split.Length < 2)
+                int equalsLocation = keyAndValue.IndexOf("=");
+                if (equalsLocation == 0)
                 {
-                    throw new ArgumentException($"Invalid {optionName} {keyAndValue} specified.");
+                    throw new ArgumentException($"Invalid {optionName} (no key): {keyAndValue}");
                 }
-                dictionary[split[0].Trim().Trim('\"')] = split[1].Trim().Trim('\"');
+                if (equalsLocation >= keyAndValue.Length - 1)
+                {
+                    throw new ArgumentException($"Invalid {optionName} (no value): {keyAndValue}");
+                }
+                if (equalsLocation < 0)
+                {
+                    throw new ArgumentException($"Invalid {optionName} (no equals sign): {keyAndValue}");
+                }
+                dictionary[keyAndValue.Substring(0, equalsLocation)] = keyAndValue.Substring(equalsLocation + 1);
             }
             return dictionary;
         }
