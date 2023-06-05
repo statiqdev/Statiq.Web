@@ -1,3 +1,7 @@
+# 1.0.0-beta.56
+
+- Updated Statiq Framework reference to version [1.0.0-beta.68](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.68).
+
 # 1.0.0-beta.55
 
 - Added a new `ServerFactory` class in `Statiq.Web.Hosting` that makes it easier to set individual properties of the built-in Statiq preview server.
