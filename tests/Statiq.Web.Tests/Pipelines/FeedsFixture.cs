@@ -20,7 +20,9 @@ namespace Statiq.Web.Tests.Pipelines
             public async Task AllowsStringIds()
             {
                 // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(Keys.Host, "statiq.dev");
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },
@@ -44,7 +46,9 @@ FeedRss: true"
             public async Task ExcludesAssetContentType()
             {
                 // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(Keys.Host, "statiq.dev");
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },
@@ -68,7 +72,9 @@ FeedRss: true"
             public async Task ToggleFeedWithPath()
             {
                 // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(Keys.Host, "statiq.dev");
                 TestFileProvider fileProvider = new TestFileProvider
                 {
                     { "/input/foo.md", "Hi!" },
@@ -95,7 +101,9 @@ FeedRss: true"
                 string feedTitle, string title, string siteTitle, string expected)
             {
                 // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(Keys.Host, "statiq.dev");
                 if (siteTitle is object)
                 {
                     bootstrapper.AddSetting(WebKeys.SiteTitle, siteTitle);
@@ -128,7 +136,9 @@ Title: {title}")
                 string feedDescription, string description, string siteDescription, string expected)
             {
                 // Given
-                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory
+                    .CreateWeb(Array.Empty<string>())
+                    .AddSetting(Keys.Host, "statiq.dev");
                 if (siteDescription is object)
                 {
                     bootstrapper.AddSetting(WebKeys.SiteDescription, siteDescription);
