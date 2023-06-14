@@ -9,6 +9,16 @@ namespace Statiq.Web
         ////////// Global
 
         /// <summary>
+        /// The title of the site, often used by themes.
+        /// </summary>
+        public const string SiteTitle = nameof(SiteTitle);
+
+        /// <summary>
+        /// The description of the site, often used by themes.
+        /// </summary>
+        public const string SiteDescription = nameof(SiteDescription);
+
+        /// <summary>
         /// The globbing pattern(s) used to read input files.
         /// </summary>
         /// <remarks>
@@ -559,9 +569,9 @@ namespace Statiq.Web
 
         public const string FeedId = nameof(FeedId);  // A Uri, links to the root of the site by default
 
-        public const string FeedTitle = nameof(FeedTitle);  // Defaults to WebKeys.Title
+        public const string FeedTitle = nameof(FeedTitle);  // If not specified, defaults to "Title" and then "SiteTitle"
 
-        public const string FeedDescription = nameof(FeedDescription);  // Defaults to WebKeys.Description
+        public const string FeedDescription = nameof(FeedDescription);  // If not specified, defaults to "Description" and then "SiteDescription"
 
         public const string FeedAuthor = nameof(FeedAuthor);  // Defaults to WebKeys.Author
 

@@ -86,6 +86,73 @@ FeedRss: true"
                 IDocument document = result.Outputs[nameof(Web.Pipelines.Feeds)][Phase.Process].ShouldHaveSingleItem();
                 document.Destination.ShouldBe("rss/custom-feed.xml");
             }
+
+            [TestCase("a", "b", "c", "a")]
+            [TestCase(null, "b", "c", "b")]
+            [TestCase(null, null, "c", "c")]
+            [TestCase(null, null, null, "Feed")]
+            public async Task ShouldSetCorrectFeedTitle(
+                string feedTitle, string title, string siteTitle, string expected)
+            {
+                // Given
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                if (siteTitle is object)
+                {
+                    bootstrapper.AddSetting(WebKeys.SiteTitle, siteTitle);
+                }
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/foo.md", "Hi!" },
+                    {
+                        "/input/feed.yml",
+                        @"FeedItemId: => ""Bar""
+FeedRss: true" + (feedTitle is null ? string.Empty : $@"
+FeedTitle: {feedTitle}") + (title is null ? string.Empty : $@"
+Title: {title}")
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Web.Pipelines.Feeds)][Phase.Process].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldContain($"<title>{expected}</title>");
+            }
+
+            [TestCase("a", "b", "c", "a")]
+            [TestCase(null, "b", "c", "b")]
+            [TestCase(null, null, "c", "c")]
+            public async Task ShouldSetCorrectFeedDescription(
+                string feedDescription, string description, string siteDescription, string expected)
+            {
+                // Given
+                App.Bootstrapper bootstrapper = App.Bootstrapper.Factory.CreateWeb(Array.Empty<string>());
+                if (siteDescription is object)
+                {
+                    bootstrapper.AddSetting(WebKeys.SiteDescription, siteDescription);
+                }
+                TestFileProvider fileProvider = new TestFileProvider
+                {
+                    { "/input/foo.md", "Hi!" },
+                    {
+                        "/input/feed.yml",
+                        @"FeedItemId: => ""Bar""
+FeedRss: true" + (feedDescription is null ? string.Empty : $@"
+FeedDescription: {feedDescription}") + (description is null ? string.Empty : $@"
+Description: {description}")
+                    }
+                };
+
+                // When
+                BootstrapperTestResult result = await bootstrapper.RunTestAsync(fileProvider);
+
+                // Then
+                result.ExitCode.ShouldBe((int)ExitCode.Normal);
+                IDocument document = result.Outputs[nameof(Web.Pipelines.Feeds)][Phase.Process].ShouldHaveSingleItem();
+                (await document.GetContentStringAsync()).ShouldContain($"<description>{expected}</description>");
+            }
         }
     }
 }

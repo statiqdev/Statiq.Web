@@ -1,3 +1,8 @@
+# 1.0.0-beta.58
+
+- Ensures feed title and description fallback to the site title and description if a feed-specific one was not provided (#1012).
+- Updated Statiq Framework reference to version [1.0.0-beta.70](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.70).
+
 # 1.0.0-beta.57
 
 - Updated Statiq Framework reference to version [1.0.0-beta.69](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.69).
