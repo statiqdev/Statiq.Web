@@ -719,7 +719,7 @@ return $""# {foo}\nContent"";"
                 IDocument document = result.Outputs[nameof(Content)][Phase.PostProcess].ShouldHaveSingleItem();
                 document.Destination.ShouldBe("foo.html");
                 document.GetContentStringAsync().Result.ShouldBe(
-                    "<html><head></head><body><pre><code class=\"language-ebnf hljs\"><span class=\"hljs-attribute\">int foo</span> = 1;</code></pre></body></html>",
+                    "<html><head></head><body><pre><code class=\"language-cpp hljs\"><span class=\"hljs-type\">int</span> foo = <span class=\"hljs-number\">1</span>;</code></pre></body></html>",
                     StringCompareShould.IgnoreLineEndings);
             }
 
