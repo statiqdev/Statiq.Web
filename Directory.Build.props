@@ -22,6 +22,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904;CA1724</WarningsNotAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

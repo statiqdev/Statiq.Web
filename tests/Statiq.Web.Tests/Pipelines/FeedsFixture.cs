@@ -14,7 +14,7 @@ namespace Statiq.Web.Tests.Pipelines
     [TestFixture]
     public class FeedsFixture : BaseFixture
     {
-        public class ExecuteTests : DataFixture
+        public class ExecuteTests : FeedsFixture
         {
             [Test]
             public async Task AllowsStringIds()

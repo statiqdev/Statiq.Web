@@ -10,9 +10,9 @@ using Statiq.Web.Pipelines;
 namespace Statiq.Web.Tests.Pipelines
 {
     [TestFixture]
-    public class SitemapFixture
+    public class SitemapFixture : BaseFixture
     {
-        public class ExecuteTests : DataFixture
+        public class ExecuteTests : SitemapFixture
         {
             [Test]
             public async Task IncludeInSitemapByDefault()

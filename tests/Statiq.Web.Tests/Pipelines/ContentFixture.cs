@@ -16,7 +16,7 @@ namespace Statiq.Web.Tests.Pipelines
     [TestFixture]
     public class ContentFixture : BaseFixture
     {
-        public class ExecuteTests : DataFixture
+        public class ExecuteTests : ContentFixture
         {
             // https://github.com/statiqdev/Statiq.Web/issues/981
             // Markdig will encode the quote character reference, but we need to make sure AngleSharp
