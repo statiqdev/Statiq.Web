@@ -1,3 +1,9 @@
+# 1.0.0-beta.60
+
+- Added extra cache invalidation logic to ensure Sass/Scss files are invalidated whenever any other Sass/Scss files are changed since those are likely imports (#1019).
+- Added a new `WebKeys.ChangedFiles` setting to propagate the list of changed files when using the `preview` or `serve` command.
+- Updated Statiq Framework reference to version [1.0.0-beta.72](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.72).
+
 # 1.0.0-beta.59
 
 - Updated Statiq Framework reference to version [1.0.0-beta.71](https://github.com/statiqdev/Statiq.Framework/releases/tag/v1.0.0-beta.71).

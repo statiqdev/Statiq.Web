@@ -132,6 +132,10 @@ namespace Statiq.Web.Commands
                     logger.LogInformation($"{changedFile} has changed");
                 }
             }
+
+            // Use a setting to propagate the list of changed files
+            engineManager.Engine.Settings[WebKeys.ChangedFiles] = changedFiles;
+
             if (forceExecution || changedFiles.Count > 0)
             {
                 if (changedFiles.Count > 0)

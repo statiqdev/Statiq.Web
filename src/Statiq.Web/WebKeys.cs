@@ -330,6 +330,11 @@ namespace Statiq.Web
         /// </summary>
         public const string IgnoreInvalidXrefs = nameof(IgnoreInvalidXrefs);
 
+        /// <summary>
+        /// Set by the preview and serve commands to indicate which files have changed and triggered execution.
+        /// </summary>
+        public const string ChangedFiles = nameof(ChangedFiles);
+
         ////////// Document
 
         /// <summary>

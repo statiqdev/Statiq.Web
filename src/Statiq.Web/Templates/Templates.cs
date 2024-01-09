@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using Statiq.Common;
 using Statiq.Core;
@@ -22,7 +23,13 @@ namespace Statiq.Web
         {
             // Assets
             Add(MediaTypes.Less, new Template(ContentType.Asset, Phase.Process, new CacheDocuments { new CompileLess() }));
-            Add(MediaTypes.Sass, new Template(ContentType.Asset, Phase.Process, new CacheDocuments { new CompileSass().WithCompactOutputStyle() }));
+            Add(MediaTypes.Sass, new Template(
+                ContentType.Asset,
+                Phase.Process,
+                new CacheDocuments { new CompileSass().WithCompactOutputStyle() }
+                    .InvalidateDocumentsWhere(
+                        Config.FromContext(
+                            ctx => ctx.GetList<string>(WebKeys.ChangedFiles)?.Any(x => MediaTypes.IsMediaType(x, MediaTypes.Sass, MediaTypes.Scss)) == true))));
             Add(MediaTypes.Scss, this[MediaTypes.Sass]);
 
             // Data

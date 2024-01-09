@@ -136,6 +136,10 @@ namespace Statiq.Web.Commands
                         }
                     }
 
+                    // Use a setting to propagate the list of changed files
+                    engineManager.Engine.Settings[WebKeys.ChangedFiles] = changedFiles;
+
+                    // If files have changed, reload
                     if (changedFiles.Count > 0)
                     {
                         logger.LogInformation($"{changedFiles.Count} files have changed, re-loading");
