@@ -27,7 +27,8 @@ namespace Statiq.Web.Pipelines
                     {
                         ModuleList modules = new ModuleList();
 
-                        // Get outputs from the pipeline(s)
+                        // Get outputs from the pipeline(s) and merge the archive metadata with them, which is the
+                        // magic that allows archive metadata like ArchiveFilter to be evaluated on the candidate items
                         modules.Add(
                             new ReplaceDocuments(archiveDoc.GetList(WebKeys.ArchivePipelines, new[] { nameof(Content) }).ToArray()),
                             new MergeMetadata(Config.FromValue(archiveDoc.Yield())).KeepExisting());
